@@ -133,10 +133,10 @@ class AGADIR(object):
         dG_Hbond = energies.get_dG_Hbond(seq, i, j)
 
         # side-chain interactions, excluding N- and C-terminal capping residues
-        dG_i1_tot = energies.get_dG_i1(seq, i, j)
+        # dG_i1_tot = energies.get_dG_i1(seq, i, j)
         dG_i3_tot = energies.get_dG_i3(seq, i, j, self.pH, self.T)
         dG_i4_tot = energies.get_dG_i4(seq, i, j, self.pH, self.T)
-        dG_SD = dG_i1_tot + dG_i3_tot + dG_i4_tot
+        dG_SD = dG_i3_tot + dG_i4_tot  # dG_i1_tot
 
         # get the interactions between N- and C-terminal capping charges and the helix macrodipole
         dG_N_term, dG_C_term = energies.get_dG_terminals(seq, i, j, self.molarity, self.pH, self.T, self.has_acetyl, self.has_succinyl, self.has_amide)

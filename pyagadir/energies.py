@@ -371,38 +371,38 @@ def get_dG_Hbond(pept: str, i: int, j: int) -> float:
     return energy
 
 
-def get_dG_i1(pept: str, i: int, j: int) -> np.ndarray:
-    """
-    Get the free energy contribution for interaction between each AAi and AAi+1 in the sequence.
+# def get_dG_i1(pept: str, i: int, j: int) -> np.ndarray:
+#     """
+#     Get the free energy contribution for interaction between each AAi and AAi+1 in the sequence.
 
-    Args:
-        pept (str): The peptide sequence.
-        i (int): The helix start index, python 0-indexed.
-        j (int): The helix length.
+#     Args:
+#         pept (str): The peptide sequence.
+#         i (int): The helix start index, python 0-indexed.
+#         j (int): The helix length.
 
-    Returns:
-        np.ndarray: The free energy contributions for each interaction.
-    """
-    helix = get_helix(pept, i, j)
+#     Returns:
+#         np.ndarray: The free energy contributions for each interaction.
+#     """
+#     helix = get_helix(pept, i, j)
 
-    # NOTE: the this is the "old" code from the other Agadir implementation, have not changed it yet. Unclear whether I should.
-    # TODO: Do we need to update this code?
+#     # NOTE: the this is the "old" code from the other Agadir implementation, have not changed it yet. Unclear whether I should.
+#     # TODO: Do we need to update this code?
 
-    energy = np.zeros(len(helix))
-    for idx in range(len(helix) - 1):
-        AAi = helix[idx]
-        AAi1 = helix[idx + 1]
-        charge = 1
-        for AA in [AAi, AAi1]:
-            if AA in set(['R', 'H', 'K']):
-                charge *= 1
-            elif AA in set(['D', 'E']):
-                charge *= -1
-            else:
-                charge = 0
-                break
-        energy[idx] = 0.05 * charge if charge != 0 else 0.0
-    return energy
+#     energy = np.zeros(len(helix))
+#     for idx in range(len(helix) - 1):
+#         AAi = helix[idx]
+#         AAi1 = helix[idx + 1]
+#         charge = 1
+#         for AA in [AAi, AAi1]:
+#             if AA in set(['R', 'H', 'K']):
+#                 charge *= 1
+#             elif AA in set(['D', 'E']):
+#                 charge *= -1
+#             else:
+#                 charge = 0
+#                 break
+#         energy[idx] = 0.05 * charge if charge != 0 else 0.0
+#     return energy
 
 
 def get_dG_i3(pept: str, i: int, j: int, pH: float, T: float) -> np.ndarray:
