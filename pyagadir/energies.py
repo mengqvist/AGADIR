@@ -116,7 +116,7 @@ def get_helix(pept: str, i: int, j:int) -> str:
     return pept[i:i+j]
 
 
-def get_dG_Int(pept: str, i: int, j: int, pH: float = 7.0) -> np.ndarray:
+def get_dG_Int(pept: str, i: int, j: int, pH: float, T: float) -> np.ndarray:
     """
     Get the intrinsic free energy contributions for a sequence. 
     The first and last residues are considered to be the caps and 
@@ -126,7 +126,8 @@ def get_dG_Int(pept: str, i: int, j: int, pH: float = 7.0) -> np.ndarray:
         pept (str): The peptide sequence.
         i (int): The helix start index, python 0-indexed.
         j (int): The helix length.
-        pH (float): The pH value. Default is 7.0.
+        pH (float): The pH value.
+        T (float): Temperature in Kelvin.
 
     Returns:
         np.ndarray: The intrinsic free energy contributions for each amino acid in the sequence.
@@ -162,8 +163,18 @@ def get_dG_Int(pept: str, i: int, j: int, pH: float = 7.0) -> np.ndarray:
             if AA not in ['C', 'D', 'E', 'H', 'K', 'R', 'Y']:
                 energy[idx] = table_1_lacroix.loc[AA, 'Ncen']
             else:
-                ## TODO decide when to pick Ncen or Neutral depending on the pH
-                energy[idx] = table_1_lacroix.loc[AA, 'Ncen'] # what avout Neutral?
+                # pH-dependent selection between 'Ncen' and 'Neutral'
+                pKa = pka_values.loc[AA, 'pKa']
+                basic_energy_ncen = table_1_lacroix.loc[AA, 'Ncen']
+                basic_energy_neutral = table_1_lacroix.loc[AA, 'Neutral']
+                if AA in ['C', 'D', 'E']:
+                    q = acidic_residue_ionization(pH, pKa, 0, T)
+                    energy[idx] = q * basic_energy_ncen + (1-q) * basic_energy_neutral
+                elif AA in ['H', 'K', 'R', 'Y']:
+                    q = basic_residue_ionization(pH, pKa, 0, T)
+                    energy[idx] = q * basic_energy_ncen + (1-q) * basic_energy_neutral
+                else:
+                    raise ValueError(f"Invalid logic in internal energy selection: {AA}")
 
     return energy
 
@@ -462,38 +473,6 @@ def get_dG_i4(pept: str, i: int, j: int, pH: float, T: float) -> np.ndarray:
             energy[idx] = base_energy
 
     return energy
-
-
-# def get_dG_dipole(seq: str) -> tuple[np.ndarray, np.ndarray]:
-#     """
-#     Calculate the dipole free energy contribution.
-#     The nomenclature is that of Richardson & Richardson (1988),
-#     which is different from the one used in the AGADIR paper.
-#     Richardson considers the first and last helical residues as the caps.
-
-#     Args:
-#         seq (str): The amino acid sequence.
-
-#     Returns:
-#         tuple[np.ndarray, np.ndarray]: The dipole free energy contributions for N-terminal and C-terminal.
-#     """
-#     is_valid_peptide_sequence(seq)
-    
-#     N = len(seq)
-#     dG_N_dipole = np.zeros(N)
-#     dG_C_dipole = np.zeros(N)
-
-#     # N-term dipole contributions
-#     for i in range(0, min(N, 10)):
-#         dG_N_dipole[i] = table3a.loc[seq[i], i]
-
-#     # C-term dipole contributions
-#     seq_inv = seq[::-1]
-#     for i in range(0, min(N, 10)):
-#         dG_C_dipole[i] = table3b.loc[seq_inv[i], i*-1]
-#     dG_C_dipole = dG_C_dipole[::-1]
-
-#     return dG_N_dipole, dG_C_dipole
 
 
 def acidic_residue_ionization(pH: float, pKa: float, deltaG: float, T: float) -> float:
