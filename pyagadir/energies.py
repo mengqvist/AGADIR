@@ -394,7 +394,7 @@ def get_dG_i1(pept: str, i: int, j: int) -> np.ndarray:
     return energy
 
 
-def get_dG_i3(pept: str, i: int, j: int) -> np.ndarray:
+def get_dG_i3(pept: str, i: int, j: int, pH: float, T: float) -> np.ndarray:
     """
     Get the free energy contribution for interaction between each AAi and AAi+3 in the sequence.
 
@@ -402,6 +402,8 @@ def get_dG_i3(pept: str, i: int, j: int) -> np.ndarray:
         pept (str): The peptide sequence.
         i (int): The helix start index, python 0-indexed.
         j (int): The helix length.
+        pH (float): The pH value.
+        T (float): The temperature in Kelvin.
 
     Returns:
         np.ndarray: The free energy contributions for each interaction.
@@ -414,17 +416,20 @@ def get_dG_i3(pept: str, i: int, j: int) -> np.ndarray:
     for idx in range(len(helix) - 3):
         AAi = helix[idx]
         AAi3 = helix[idx + 3]
-        energy[idx] = table_4a_lacroix.loc[AAi, AAi3] / 100
+        base_energy = table_4a_lacroix.loc[AAi, AAi3] / 100
 
-        # TODO: I have to add values from table 5 of the lacroix paper, depending on ionization state of the residues. But how to do this?
-        # "The interaction free energies correspond to those between non-charged residues, or in the case of two residues that can be charged 
-        # to those cases in which at least one of the two is non-charged (the interaction is scaled according to the population of charged and 
-        # neutral forms of the participating amino acids)."
+        # Scale energy based on ionization state
+        if AAi in ['K', 'R', 'H', 'D', 'E'] and AAi3 in ['K', 'R', 'H', 'D', 'E']:
+            q_i = basic_residue_ionization(pH, pka_values.loc[AAi, 'pKa'], 0, T) if AAi in ['K', 'R', 'H'] else acidic_residue_ionization(pH, pka_values.loc[AAi, 'pKa'], 0, T)
+            q_i3 = basic_residue_ionization(pH, pka_values.loc[AAi3, 'pKa'], 0, T) if AAi3 in ['K', 'R', 'H'] else acidic_residue_ionization(pH, pka_values.loc[AAi3, 'pKa'], 0, T)
+            energy[idx] = base_energy * abs(q_i * q_i3)
+        else:
+            energy[idx] = base_energy
 
     return energy
 
 
-def get_dG_i4(pept: str, i: int, j: int) -> np.ndarray:
+def get_dG_i4(pept: str, i: int, j: int, pH: float, T: float) -> np.ndarray:
     """
     Get the free energy contribution for interaction between each AAi and AAi+4 in the sequence.
 
@@ -432,6 +437,8 @@ def get_dG_i4(pept: str, i: int, j: int) -> np.ndarray:
         pept (str): The peptide sequence.
         i (int): The helix start index, python 0-indexed.
         j (int): The helix length.
+        pH (float): The pH of the solution.
+        T (float): Temperature in Kelvin.
 
     Returns:
         np.ndarray: The free energy contributions for each interaction.
@@ -444,12 +451,15 @@ def get_dG_i4(pept: str, i: int, j: int) -> np.ndarray:
     for idx in range(len(helix) - 4):
         AAi = helix[idx]
         AAi4 = helix[idx + 4]
-        energy[idx] = table_4b_lacroix.loc[AAi, AAi4] / 100
+        base_energy = table_4b_lacroix.loc[AAi, AAi4] / 100
 
-        # TODO: I have to add values from table 5 of the lacroix paper, depending on ionization state of the residues. But how to do this?
-        # "The interaction free energies correspond to those between non-charged residues, or in the case of two residues that can be charged 
-        # to those cases in which at least one of the two is non-charged (the interaction is scaled according to the population of charged and 
-        # neutral forms of the participating amino acids)."
+        # Scale energy based on ionization state
+        if AAi in ['K', 'R', 'H', 'D', 'E'] and AAi4 in ['K', 'R', 'H', 'D', 'E']:
+            q_i = basic_residue_ionization(pH, pka_values.loc[AAi, 'pKa'], 0, T) if AAi in ['K', 'R', 'H'] else acidic_residue_ionization(pH, pka_values.loc[AAi, 'pKa'], 0, T)
+            q_i4 = basic_residue_ionization(pH, pka_values.loc[AAi4, 'pKa'], 0, T) if AAi4 in ['K', 'R', 'H'] else acidic_residue_ionization(pH, pka_values.loc[AAi4, 'pKa'], 0, T)
+            energy[idx] = base_energy * abs(q_i * q_i4)
+        else:
+            energy[idx] = base_energy
 
     return energy
 
