@@ -1,7 +1,6 @@
 
 from importlib.resources import files
 from itertools import combinations
-from itertools import combinations
 import math
 
 import numpy as np
@@ -798,3 +797,51 @@ def get_dG_electrost(pept: str, i: int, j: int, ionic_strength: float, pH: float
         energy_sum += G_hel - G_rc
 
     return energy_sum
+
+
+def get_dG_sidechain_macrodipole(pept: str, i: int, j: int, ionic_strength: float, pH: float, T: float) -> np.ndarray:
+    """
+    Calculate the interaction energy between charged side-chains and the helix macrodipole.
+
+    Args:
+        pept (str): The peptide sequence.
+        i (int): The helix start index, python 0-indexed.
+        j (int): The helix length.
+        ionic_strength (float): Ionic strength of the solution in mol/L.
+        pH (float): The pH of the solution.
+        T (float): Temperature in Kelvin.
+
+    Returns:
+        np.ndarray: The free energy contribution for each residue in the helix.
+    """
+    helix = get_helix(pept, i, j)
+    energy = np.zeros(len(helix))
+    
+    q_dipole = 0.5  # Half-charge for the helix macrodipole
+    
+    for idx, aa in enumerate(helix):
+        if aa in ['K', 'R', 'H']:  # Positively charged residues
+            # N-terminal interaction
+            distance = table_7_ncap_lacroix.loc[aa, f'N{idx+1}']
+            energy[idx] += electrostatic_interaction_energy(q_dipole, 1, distance, ionic_strength, T)
+            
+            # C-terminal interaction
+            distance = table_7_ccap_lacroix.loc[aa, f'C{len(helix)-idx}']
+            energy[idx] -= electrostatic_interaction_energy(q_dipole, 1, distance, ionic_strength, T)
+            
+        elif aa in ['D', 'E']:  # Negatively charged residues
+            # N-terminal interaction
+            distance = table_7_ncap_lacroix.loc[aa, f'N{idx+1}']
+            energy[idx] -= electrostatic_interaction_energy(q_dipole, 1, distance, ionic_strength, T)
+            
+            # C-terminal interaction
+            distance = table_7_ccap_lacroix.loc[aa, f'C{len(helix)-idx}']
+            energy[idx] += electrostatic_interaction_energy(q_dipole, 1, distance, ionic_strength, T)
+        
+        # Scale energy by the probability of the residue being charged
+        if aa in ['K', 'R', 'H']:
+            energy[idx] *= basic_residue_ionization(pH, pka_values.loc[aa, 'pKa'], energy[idx], T)
+        elif aa in ['D', 'E']:
+            energy[idx] *= -acidic_residue_ionization(pH, pka_values.loc[aa, 'pKa'], energy[idx], T)
+    
+    return energy

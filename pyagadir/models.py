@@ -144,8 +144,11 @@ class AGADIR(object):
         # dG_N_dipole, dG_C_dipole = energies.get_dG_dipole(seq, i, j)
         # dG_dipole = dG_N_dipole + dG_C_dipole
 
-        # get electrostatic interactions between N- and C-terminal capping charges and the helix macrodipole
+        # get the interactions between N- and C-terminal capping charges and the helix macrodipole
         dG_N_term, dG_C_term = energies.get_dG_terminals(seq, i, j, self.molarity, self.pH, self.T)
+
+        # get the interaction between charged side chains and the helix macrodipole
+        dG_dipole = energies.get_dG_sidechain_macrodipole(seq, i, j, self.molarity, self.pH, self.T)
 
         # get electrostatic energies between pairs of charged side chains
         dG_electrost = energies.get_dG_electrost(seq, i, j, self.molarity, self.pH, self.T)
@@ -164,7 +167,7 @@ class AGADIR(object):
             print(f'g C term = {dG_C_term[arr_idx]:.4f}')
             print(f'g capping =   {dG_nonH[arr_idx]:.4f}')
             print(f'g intrinsic = {dG_Int[arr_idx]:.4f}')
-            print(f'g dipole = ')
+            print(f'g dipole = {dG_dipole[arr_idx]:.4f}')
             print(f'gresidue = ')
             print('****************')
         print('Additional terms for helical segment')
@@ -177,8 +180,7 @@ class AGADIR(object):
         print(f'ionic strngth corr. from eq. 12 {dG_ionic:.4f}')
 
         # sum all components
-        dG_Hel = sum(dG_Int) + sum(dG_nonH) +  sum(dG_SD) + dG_staple + dG_schellman + dG_Hbond + dG_ionic + sum(dG_N_term) + sum(dG_C_term) + dG_electrost # + sum(dG_dipole) 
-        dG_Hel = sum(dG_Int) + sum(dG_nonH) +  sum(dG_SD) + dG_staple + dG_schellman + dG_Hbond + dG_ionic + sum(dG_N_term) + sum(dG_C_term) + dG_electrost # + sum(dG_dipole) 
+        dG_Hel = sum(dG_Int) + sum(dG_nonH) +  sum(dG_SD) + dG_staple + dG_schellman + dG_Hbond + dG_ionic + sum(dG_N_term) + sum(dG_C_term) + dG_electrost + np.sum(dG_dipole)
 
         print(f'total Helix free energy = {dG_Hel:.4f}')
         print('==============================================')
