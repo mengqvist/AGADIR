@@ -630,7 +630,7 @@ def calculate_term_dipole_interaction_energy(mu_helix: float, distance_r: float,
     return energy
 
 
-def get_dG_terminals(pept: str, i: int, j: int, ionic_strength: float, pH: float, T: int) -> tuple[np.ndarray, np.ndarray]:
+def get_dG_terminals(pept: str, i: int, j: int, ionic_strength: float, pH: float, T: int, has_acetyl: bool, has_succinyl: bool, has_amide: bool) -> tuple[np.ndarray, np.ndarray]:
     """Get the interaction energy for each residue with the N and C terminals.
 
     Args:
@@ -640,6 +640,9 @@ def get_dG_terminals(pept: str, i: int, j: int, ionic_strength: float, pH: float
         ionic_strength (float): Ionic strength of the solution.
         pH (float): pH of the solution.
         T (int): Temperature in Kelvin.
+        has_acetyl (bool): Whether the N-terminal has an acetyl group.
+        has_succinyl (bool): Whether the N-terminal has a succinyl group.
+        has_amide (bool): Whether the C-terminal has an amide group.
 
     Returns:
         tuple[np.ndarray, np.ndarray]: Interaction energies for N and C terminals.
@@ -651,29 +654,32 @@ def get_dG_terminals(pept: str, i: int, j: int, ionic_strength: float, pH: float
 
     # N terminal
     residue = helix[0]
-    # TODO: Add values for each aa
-    qKaN = pka_values.loc['Nterm', 'pKa']
-    distance_r_angstrom = calculate_r(i)  # Distance to N terminal
-    distance_r_meter = distance_r_angstrom * 1e-10  # Convert distance from Ångströms to meters
-    kappa = debue_screening_length(ionic_strength, T)
-    screening_factor = math.exp(-kappa * distance_r_meter) # Second half of equation 6 from Lacroix, 1998.
-    N_term_energy = calculate_term_dipole_interaction_energy(mu_helix, distance_r_angstrom, screening_factor, T)
-    q = basic_residue_ionization(pH, qKaN, N_term_energy, T)
-    N_term_energy *= q
-    N_term[0] = N_term_energy
+    if not has_acetyl and not has_succinyl: # guard against N-termenal capping residues (no charge, no interaction)
+        # TODO: Add pKa values for each aa
+        qKaN = pka_values.loc['Nterm', 'pKa']
+        distance_r_angstrom = calculate_r(i)  # Distance to N terminal
+        distance_r_meter = distance_r_angstrom * 1e-10  # Convert distance from Ångströms to meters
+        kappa = debue_screening_length(ionic_strength, T)
+        screening_factor = math.exp(-kappa * distance_r_meter) # Second half of equation 6 from Lacroix, 1998.
+        N_term_energy = calculate_term_dipole_interaction_energy(mu_helix, distance_r_angstrom, screening_factor, T)
+        q = basic_residue_ionization(pH, qKaN, N_term_energy, T)
+        N_term_energy *= q
+        N_term[0] = N_term_energy
 
     # C terminal
     residue = helix[-1]
-    # TODO: Add values for each aa
-    qKaC = pka_values.loc['Cterm', 'pKa']
-    distance_r_angstrom = calculate_r(len(pept) - (i + j))  # Distance to C terminal
-    distance_r_meter = distance_r_angstrom * 1e-10  # Convert distance from Ångströms to meters
-    kappa = debue_screening_length(ionic_strength, T)
-    screening_factor = math.exp(-kappa * distance_r_meter) # Second half of equation 6 from Lacroix, 1998.
-    C_term_energy = calculate_term_dipole_interaction_energy(mu_helix, distance_r_angstrom, screening_factor, T)
-    q = acidic_residue_ionization(pH, qKaC, C_term_energy, T)
-    C_term_energy *= -q
-    C_term[-1] = C_term_energy
+    if not has_amide: # guard against C-terminal capping residues (no charge, no interaction)
+        # TODO: Add pKa values for each aa
+        qKaC = pka_values.loc['Cterm', 'pKa']
+        distance_r_angstrom = calculate_r(len(pept) - (i + j))  # Distance to C terminal
+        distance_r_meter = distance_r_angstrom * 1e-10  # Convert distance from Ångströms to meters
+        kappa = debue_screening_length(ionic_strength, T)
+        screening_factor = math.exp(-kappa * distance_r_meter) # Second half of equation 6 from Lacroix, 1998.
+        C_term_energy = calculate_term_dipole_interaction_energy(mu_helix, distance_r_angstrom, screening_factor, T)
+        q = acidic_residue_ionization(pH, qKaC, C_term_energy, T)
+        C_term_energy *= -q
+        C_term[-1] = C_term_energy
+
     return N_term, C_term
 
 

@@ -139,7 +139,7 @@ class AGADIR(object):
         dG_SD = dG_i1_tot + dG_i3_tot + dG_i4_tot
 
         # get the interactions between N- and C-terminal capping charges and the helix macrodipole
-        dG_N_term, dG_C_term = energies.get_dG_terminals(seq, i, j, self.molarity, self.pH, self.T)
+        dG_N_term, dG_C_term = energies.get_dG_terminals(seq, i, j, self.molarity, self.pH, self.T, self.has_acetyl, self.has_succinyl, self.has_amide)
 
         # get the interaction between charged side chains and the helix macrodipole
         dG_dipole = energies.get_dG_sidechain_macrodipole(seq, i, j, self.molarity, self.pH, self.T)
