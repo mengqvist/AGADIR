@@ -636,10 +636,8 @@ def calculate_term_dipole_interaction_energy(mu_helix: float, distance_r: float,
     epsilon_r = calculate_permittivity(T)  # Relative permittivity of water
 
     # In the form of equation (10.62) from DOI 10.1007/978-1-4419-6351-2_10
-    potential_at_distance_r = B_kappa * screening_factor / (epsilon_r * distance_r)
-
-    # Interaction energy
-    energy = mu_helix * potential_at_distance_r
+    coloumb_potential = mu_helix / (epsilon_r * distance_r)
+    energy = B_kappa * screening_factor * coloumb_potential
 
     return energy
 
