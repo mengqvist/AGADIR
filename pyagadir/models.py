@@ -115,7 +115,7 @@ class AGADIR(object):
             Tuple[np.float64, Dict[str, float]]: The Helix free energy and its components.
         """
         # intrinsic energies for the helical segment, excluding N- and C-terminal capping residues
-        dG_Int = energies.get_dG_Int(seq, i, j)
+        dG_Int = energies.get_dG_Int(seq, i, j, self.pH, self.T)
 
         # "non-hydrogen bond" capping energies, only for the first and last residues of the helix
         dG_Ncap = energies.get_dG_Ncap(seq, i, j)
@@ -134,15 +134,9 @@ class AGADIR(object):
 
         # side-chain interactions, excluding N- and C-terminal capping residues
         dG_i1_tot = energies.get_dG_i1(seq, i, j)
-        dG_i3_tot = energies.get_dG_i3(seq, i, j)
-        dG_i4_tot = energies.get_dG_i4(seq, i, j)
+        dG_i3_tot = energies.get_dG_i3(seq, i, j, self.pH, self.T)
+        dG_i4_tot = energies.get_dG_i4(seq, i, j, self.pH, self.T)
         dG_SD = dG_i1_tot + dG_i3_tot + dG_i4_tot
-
-        # TODO: figure out how the dipole is supposed to be calculated
-        # # dipole interactions, excluding N- and C-terminal capping residues
-        # # the nomenclature is that of Richardson & Richardson (1988).
-        # dG_N_dipole, dG_C_dipole = energies.get_dG_dipole(seq, i, j)
-        # dG_dipole = dG_N_dipole + dG_C_dipole
 
         # get the interactions between N- and C-terminal capping charges and the helix macrodipole
         dG_N_term, dG_C_term = energies.get_dG_terminals(seq, i, j, self.molarity, self.pH, self.T)
