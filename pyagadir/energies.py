@@ -811,32 +811,36 @@ def get_dG_sidechain_macrodipole(pept: str, i: int, j: int, ionic_strength: floa
     """
     helix = get_helix(pept, i, j)
     energy = np.zeros(len(helix))
-    
     q_dipole = 0.5  # Half-charge for the helix macrodipole
     
     for idx, aa in enumerate(helix):
+        print(f'{idx+1}: {aa}')
         if aa in ['K', 'R', 'H']:  # Positively charged residues
             # N-terminal interaction
-            distance = table_7_ncap_lacroix.loc[aa, f'N{idx+1}']
+            distance = table_7_ncap_lacroix.loc[aa, f'N{idx}']
+            print(f'N-terminal distance: {distance*10:.0f}')
             energy[idx] += electrostatic_interaction_energy(q_dipole, 1, distance, ionic_strength, T)
             
             # C-terminal interaction
-            distance = table_7_ccap_lacroix.loc[aa, f'C{len(helix)-idx}']
+            distance = table_7_ccap_lacroix.loc[aa, f'C{len(helix)-idx-1}']
+            print(f'C-terminal distance: {distance*10:.0f}')
             energy[idx] -= electrostatic_interaction_energy(q_dipole, 1, distance, ionic_strength, T)
             
-        elif aa in ['D', 'E']:  # Negatively charged residues
+        elif aa in ['D', 'E', 'C', 'Y']:  # Negatively charged residues
             # N-terminal interaction
-            distance = table_7_ncap_lacroix.loc[aa, f'N{idx+1}']
+            distance = table_7_ncap_lacroix.loc[aa, f'N{idx}']
+            print(f'N-terminal distance: {distance*10:.0f}')
             energy[idx] -= electrostatic_interaction_energy(q_dipole, 1, distance, ionic_strength, T)
             
             # C-terminal interaction
-            distance = table_7_ccap_lacroix.loc[aa, f'C{len(helix)-idx}']
+            distance = table_7_ccap_lacroix.loc[aa, f'C{len(helix)-idx-1}']
+            print(f'C-terminal distance: {distance*10:.0f}')
             energy[idx] += electrostatic_interaction_energy(q_dipole, 1, distance, ionic_strength, T)
         
         # Scale energy by the probability of the residue being charged
         if aa in ['K', 'R', 'H']:
             energy[idx] *= basic_residue_ionization(pH, pka_values.loc[aa, 'pKa'], energy[idx], T)
-        elif aa in ['D', 'E']:
+        elif aa in ['D', 'E', 'C', 'Y']:
             energy[idx] *= -acidic_residue_ionization(pH, pka_values.loc[aa, 'pKa'], energy[idx], T)
     
     return energy
