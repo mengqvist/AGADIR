@@ -704,7 +704,7 @@ def electrostatic_interaction_energy(qi: float, qp: float, r: float, ionic_stren
     e = 1.602e-19  # Elementary charge in Coulombs
     
     r = r * 1e-10 # Convert distance from Ångströms to meters
-    coulomb_term = (e**2 * qi * qp) / (3 * math.pi * epsilon_0 * epsilon_r * r) # TODO: The canonical equation has 4 in the denominator, not 3. Why?
+    coulomb_term = (e**2 * qi * qp) / (4 * math.pi * epsilon_0 * epsilon_r * r)
     kappa = debue_screening_length(ionic_strength, T)
     energy_joules = coulomb_term * math.exp(-kappa * r)
     energy_kcal_mol = N_A * energy_joules / 4184
@@ -811,32 +811,30 @@ def get_dG_sidechain_macrodipole(pept: str, i: int, j: int, ionic_strength: floa
     """
     helix = get_helix(pept, i, j)
     energy = np.zeros(len(helix))
-    
     q_dipole = 0.5  # Half-charge for the helix macrodipole
     
     for idx, aa in enumerate(helix):
         if aa in ['K', 'R', 'H']:  # Positively charged residues
             # N-terminal interaction
-            distance = table_7_ncap_lacroix.loc[aa, f'N{idx+1}']
+            distance = table_7_ncap_lacroix.loc[aa, f'N{idx}']
             energy[idx] += electrostatic_interaction_energy(q_dipole, 1, distance, ionic_strength, T)
-            
             # C-terminal interaction
-            distance = table_7_ccap_lacroix.loc[aa, f'C{len(helix)-idx}']
+            distance = table_7_ccap_lacroix.loc[aa, f'C{len(helix)-idx-1}']
             energy[idx] -= electrostatic_interaction_energy(q_dipole, 1, distance, ionic_strength, T)
             
-        elif aa in ['D', 'E']:  # Negatively charged residues
+        elif aa in ['D', 'E', 'C', 'Y']:  # Negatively charged residues
             # N-terminal interaction
-            distance = table_7_ncap_lacroix.loc[aa, f'N{idx+1}']
+            distance = table_7_ncap_lacroix.loc[aa, f'N{idx}']
             energy[idx] -= electrostatic_interaction_energy(q_dipole, 1, distance, ionic_strength, T)
             
             # C-terminal interaction
-            distance = table_7_ccap_lacroix.loc[aa, f'C{len(helix)-idx}']
+            distance = table_7_ccap_lacroix.loc[aa, f'C{len(helix)-idx-1}']
             energy[idx] += electrostatic_interaction_energy(q_dipole, 1, distance, ionic_strength, T)
-        
+
         # Scale energy by the probability of the residue being charged
         if aa in ['K', 'R', 'H']:
             energy[idx] *= basic_residue_ionization(pH, pka_values.loc[aa, 'pKa'], energy[idx], T)
-        elif aa in ['D', 'E']:
+        elif aa in ['D', 'E', 'C', 'Y']:
             energy[idx] *= -acidic_residue_ionization(pH, pka_values.loc[aa, 'pKa'], energy[idx], T)
     
     return energy
