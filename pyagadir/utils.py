@@ -28,6 +28,7 @@ def is_valid_peptide_sequence(pept: str) -> None:
             f"Invalid residues found in sequence: {', '.join(invalid_residues)}"
         )
 
+
 def is_valid_index(pept: str, i: int, j: int) -> None:
     """
     Validate that the input indexes are valid.

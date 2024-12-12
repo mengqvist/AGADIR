@@ -94,6 +94,25 @@ class AGADIR(object):
             See documentation and AGADIR papers for more information. \
             "
             )
+
+        # check for valid pH
+        if not isinstance(pH, float):
+            raise ValueError("pH must be a float")
+        if pH < 0 or pH > 14:
+            raise ValueError("pH must be between 0 and 14")
+
+        # check for valid temperature
+        if not isinstance(T, float):
+            raise ValueError("Temperature must be a float")
+        if T < -273.15:
+            raise ValueError("Temperature must be above absolute zero")
+
+        # check for valid molarity
+        if not isinstance(M, float):
+            raise ValueError("Molarity must be a float")
+        if M < 0:
+            raise ValueError("Molarity must be greater than 0")
+
         self._method = method
         self.T = T + 273.15
         self.molarity = M
@@ -105,14 +124,11 @@ class AGADIR(object):
 
         self.min_helix_length = 6
 
-    def _calc_dG_Hel(
-        self, seq: str, i: int, j: int
-    ) -> Tuple[np.float64, Dict[str, float]]:
+    def _calc_dG_Hel(self, i: int, j: int) -> Tuple[np.float64, Dict[str, float]]:
         """
         Calculate the Helix free energy and its components.
 
         Args:
-            seq (str): The helical segment sequence.
             i (int): The starting position of the helical segment.
             j (int): The length of the helical segment.
 
@@ -120,32 +136,42 @@ class AGADIR(object):
             Tuple[np.float64, Dict[str, float]]: The Helix free energy and its components.
         """
         # intrinsic energies for the helical segment, excluding N- and C-terminal capping residues
-        dG_Int = energies.get_dG_Int(seq, i, j, self.pH, self.T)
+        dG_Int = energies.get_dG_Int(
+            self.result.seq,
+            i,
+            j,
+            pH=self.pH,
+            T=self.T,
+            has_acetyl=self.has_acetyl,
+            has_succinyl=self.has_succinyl,
+            has_amide=self.has_amide,
+        )
 
         # "non-hydrogen bond" capping energies, only for the first and last residues of the helix
-        dG_Ncap = energies.get_dG_Ncap(seq, i, j)
-        dG_Ccap = energies.get_dG_Ccap(seq, i, j)
+        dG_Ncap = energies.get_dG_Ncap(self.result.seq, i, j)
+        dG_Ccap = energies.get_dG_Ccap(self.result.seq, i, j)
         dG_nonH = dG_Ncap + dG_Ccap
         # TODO dG_nonH might need further adjustment, see page 175 in lacroix paper
 
+        # TODO: which values should be used for ncap and ccap modifications?
+
         # get hydrophobic staple motif energies
-        dG_staple = energies.get_dG_staple(seq, i, j)
+        dG_staple = energies.get_dG_staple(self.result.seq, i, j)
 
         # get schellman motif energies
-        dG_schellman = energies.get_dG_schellman(seq, i, j)
+        dG_schellman = energies.get_dG_schellman(self.result.seq, i, j)
 
         # calculate dG_Hbond for the helical segment here
-        dG_Hbond = energies.get_dG_Hbond(seq, i, j)
+        dG_Hbond = energies.get_dG_Hbond(self.result.seq, i, j)
 
         # side-chain interactions, excluding N- and C-terminal capping residues
-        # dG_i1_tot = energies.get_dG_i1(seq, i, j)
-        dG_i3_tot = energies.get_dG_i3(seq, i, j, self.pH, self.T)
-        dG_i4_tot = energies.get_dG_i4(seq, i, j, self.pH, self.T)
+        dG_i3_tot = energies.get_dG_i3(self.result.seq, i, j, self.pH, self.T)
+        dG_i4_tot = energies.get_dG_i4(self.result.seq, i, j, self.pH, self.T)
         dG_SD = dG_i3_tot + dG_i4_tot  # dG_i1_tot
 
         # get the interactions between N- and C-terminal capping charges and the helix macrodipole
         dG_N_term, dG_C_term = energies.get_dG_terminals(
-            seq,
+            self.result.seq,
             i,
             j,
             self.molarity,
@@ -158,12 +184,12 @@ class AGADIR(object):
 
         # get the interaction between charged side chains and the helix macrodipole
         dG_dipole = energies.get_dG_sidechain_macrodipole(
-            seq, i, j, self.molarity, self.pH, self.T
+            self.result.seq, i, j, self.molarity, self.pH, self.T
         )
 
         # get electrostatic energies between pairs of charged side chains
         dG_electrost = energies.get_dG_electrost(
-            seq, i, j, self.molarity, self.pH, self.T
+            self.result.seq, i, j, self.molarity, self.pH, self.T
         )
 
         # modify by ionic strength according to equation 12 of the paper
@@ -175,7 +201,7 @@ class AGADIR(object):
         for seq_idx, arr_idx in zip(range(i, i + j), range(j)):
             print(f"Helix: start= {i+1} end= {i+j}  length=  {j}")
             print(f"residue index = {seq_idx+1}")
-            print(f"residue = {seq[seq_idx]}")
+            print(f"residue = {self.result.seq[seq_idx]}")
             print(f"g N term = {dG_N_term[arr_idx]:.4f}")
             print(f"g C term = {dG_C_term[arr_idx]:.4f}")
             print(f"g capping =   {dG_nonH[arr_idx]:.4f}")
@@ -259,7 +285,7 @@ class AGADIR(object):
             ):  # helical segment positions
 
                 # calculate dG_Hel and dG_dict
-                dG_Hel, dG_dict = self._calc_dG_Hel(seq=self.result.seq, i=i, j=j)
+                dG_Hel, dG_dict = self._calc_dG_Hel(i=i, j=j)
 
                 # TODO: these shuld be accounted for in the new table 1, verify this!
                 # # Add acetylation and amidation effects.
@@ -316,8 +342,8 @@ class AGADIR(object):
 
         Args:
             seq (str): Input sequence.
-            ncap (str): N-terminal capping modification (acetylation, succinylation).
-            ccap (str): C-terminal capping modification (amidation).
+            ncap (str): N-terminal capping modification (acetylation='Z', succinylation='X').
+            ccap (str): C-terminal capping modification (amidation='B').
 
         Returns:
             ModelResult: Object containing the predicted helical propensity.
@@ -328,14 +354,18 @@ class AGADIR(object):
             raise ValueError(
                 f"Input sequence must be at least {self.min_helix_length} amino acids long."
             )
-        
+
         if ncap is not None:
             if ncap not in ["Z", "X"]:
-                raise ValueError(f"Invalid N-terminal capping modification: {ncap}, must be None,'Z' or 'X'")
+                raise ValueError(
+                    f"Invalid N-terminal capping modification: {ncap}, must be None,'Z' or 'X'"
+                )
 
         if ccap is not None:
             if ccap not in ["B"]:
-                raise ValueError(f"Invalid C-terminal capping modification: {ccap}, must be None or 'B'")
+                raise ValueError(
+                    f"Invalid C-terminal capping modification: {ccap}, must be None or 'B'"
+                )
 
         # check for acylation and amidation
         if ncap == "Z":
