@@ -211,11 +211,11 @@ def reproduce_figure_3b():
     ]
 
     # AGADIR results
-    pept = "ZYGGSAAAAAAAKRAAAB"  # KR-1a from the paper
+    pept = "YGGSAAAAAAAKRAAA"  # KR-1a from the paper
     pyagadir_predicted_data_helix = []
     for ph in paper_predicted_data_ph:
         model = AGADIR(method="1s", T=0.0, M=0.1, pH=ph)
-        result = model.predict(pept)
+        result = model.predict(pept, ncap="Z", ccap="B")
         pyagadir_predicted_data_helix.append(result.get_percent_helix())
 
     # plot
