@@ -1,9 +1,7 @@
-
 import numpy as np
 from typing import List, Tuple, Dict
 from pyagadir import energies
 from pyagadir.utils import is_valid_peptide_sequence, is_valid_index
-
 
 
 class ModelResult(object):
@@ -20,7 +18,9 @@ class ModelResult(object):
         """
         self.seq: str = seq
         n: int = len(seq)
-        self.dG_dict_mat: List[List[None]] = [None for j in range(5)] + [[None for _ in range(0, n - j)] for j in range(5, n)] # helix length is at least 6 but we zero-index
+        self.dG_dict_mat: List[List[None]] = [None for j in range(5)] + [
+            [None for _ in range(0, n - j)] for j in range(5, n)
+        ]  # helix length is at least 6 but we zero-index
         self.K_tot: float = 0.0
         self.K_tot_array: np.ndarray = np.zeros(len(seq))
         self.Z: float = 0.0
@@ -36,7 +36,7 @@ class ModelResult(object):
             str: The helical propensity.
         """
         return str(self.helical_propensity)
-    
+
     def get_sequence(self) -> str:
         """
         Get the peptide sequence.
@@ -65,13 +65,14 @@ class ModelResult(object):
         return self.percent_helix
 
 
-
 class AGADIR(object):
     """
     AGADIR class for predicting helical propensity using AGADIR method.
     """
 
-    def __init__(self, method: str = '1s', T: float = 4.0, M: float = 0.15, pH: float = 7.0):
+    def __init__(
+        self, method: str = "1s", T: float = 4.0, M: float = 0.15, pH: float = 7.0
+    ):
         """
         Initialize AGADIR object.
 
@@ -82,7 +83,7 @@ class AGADIR(object):
             T (float): Temperature in Celsius. Default is 4.0.
             M (float): Ionic strength in Molar. Default is 0.15.
         """
-        self.method_options = ['r', '1s']
+        self.method_options = ["r", "1s"]
         if method not in self.method_options:
             raise ValueError(
                 "Method provided must be one of ['r','1s']; \
@@ -95,14 +96,16 @@ class AGADIR(object):
         self.T = T + 273.15
         self.molarity = M
         self.pH = pH
- 
+
         self.has_acetyl = False
         self.has_succinyl = False
         self.has_amide = False
 
         self.min_helix_length = 6
 
-    def _calc_dG_Hel(self, seq: str, i:int, j:int) -> Tuple[np.float64, Dict[str, float]]:
+    def _calc_dG_Hel(
+        self, seq: str, i: int, j: int
+    ) -> Tuple[np.float64, Dict[str, float]]:
         """
         Calculate the Helix free energy and its components.
 
@@ -139,13 +142,27 @@ class AGADIR(object):
         dG_SD = dG_i3_tot + dG_i4_tot  # dG_i1_tot
 
         # get the interactions between N- and C-terminal capping charges and the helix macrodipole
-        dG_N_term, dG_C_term = energies.get_dG_terminals(seq, i, j, self.molarity, self.pH, self.T, self.has_acetyl, self.has_succinyl, self.has_amide)
+        dG_N_term, dG_C_term = energies.get_dG_terminals(
+            seq,
+            i,
+            j,
+            self.molarity,
+            self.pH,
+            self.T,
+            self.has_acetyl,
+            self.has_succinyl,
+            self.has_amide,
+        )
 
         # get the interaction between charged side chains and the helix macrodipole
-        dG_dipole = energies.get_dG_sidechain_macrodipole(seq, i, j, self.molarity, self.pH, self.T)
+        dG_dipole = energies.get_dG_sidechain_macrodipole(
+            seq, i, j, self.molarity, self.pH, self.T
+        )
 
         # get electrostatic energies between pairs of charged side chains
-        dG_electrost = energies.get_dG_electrost(seq, i, j, self.molarity, self.pH, self.T)
+        dG_electrost = energies.get_dG_electrost(
+            seq, i, j, self.molarity, self.pH, self.T
+        )
 
         # modify by ionic strength according to equation 12 of the paper
         alpha = 0.15
@@ -153,31 +170,43 @@ class AGADIR(object):
         dG_ionic = -alpha * (1 - np.exp(-beta * self.molarity))
 
         # make fancy printout for debugging and development
-        for seq_idx, arr_idx in zip(range(i, i+j), range(j)):
-            print(f'Helix: start= {i+1} end= {i+j}  length=  {j}')
-            print(f'residue index = {seq_idx+1}')
-            print(f'residue = {seq[seq_idx]}')
-            print(f'g N term = {dG_N_term[arr_idx]:.4f}')
-            print(f'g C term = {dG_C_term[arr_idx]:.4f}')
-            print(f'g capping =   {dG_nonH[arr_idx]:.4f}')
-            print(f'g intrinsic = {dG_Int[arr_idx]:.4f}')
-            print(f'g dipole = {dG_dipole[arr_idx]:.4f}')
-            print(f'gresidue = ')
-            print('****************')
-        print('Additional terms for helical segment')
-        print(f'i,i+3 and i,i+4 side chain-side chain interaction = {sum(dG_SD):.4f}')
-        print(f'g staple = {dG_staple:.4f}')
-        print(f'g schellman = {dG_schellman:.4f}')
-        print(f'dG_electrost = {dG_electrost:.4f}')
-        print(f'dG_electrost = {dG_electrost:.4f}')
-        print(f'main chain-main chain H-bonds = {dG_Hbond:.4f}')
-        print(f'ionic strngth corr. from eq. 12 {dG_ionic:.4f}')
+        for seq_idx, arr_idx in zip(range(i, i + j), range(j)):
+            print(f"Helix: start= {i+1} end= {i+j}  length=  {j}")
+            print(f"residue index = {seq_idx+1}")
+            print(f"residue = {seq[seq_idx]}")
+            print(f"g N term = {dG_N_term[arr_idx]:.4f}")
+            print(f"g C term = {dG_C_term[arr_idx]:.4f}")
+            print(f"g capping =   {dG_nonH[arr_idx]:.4f}")
+            print(f"g intrinsic = {dG_Int[arr_idx]:.4f}")
+            print(f"g dipole = {dG_dipole[arr_idx]:.4f}")
+            print(f"gresidue = ")
+            print("****************")
+        print("Additional terms for helical segment")
+        print(f"i,i+3 and i,i+4 side chain-side chain interaction = {sum(dG_SD):.4f}")
+        print(f"g staple = {dG_staple:.4f}")
+        print(f"g schellman = {dG_schellman:.4f}")
+        print(f"dG_electrost = {dG_electrost:.4f}")
+        print(f"dG_electrost = {dG_electrost:.4f}")
+        print(f"main chain-main chain H-bonds = {dG_Hbond:.4f}")
+        print(f"ionic strngth corr. from eq. 12 {dG_ionic:.4f}")
 
         # sum all components
-        dG_Hel = sum(dG_Int) + sum(dG_nonH) +  sum(dG_SD) + dG_staple + dG_schellman + dG_Hbond + dG_ionic + sum(dG_N_term) + sum(dG_C_term) + dG_electrost + np.sum(dG_dipole)
+        dG_Hel = (
+            sum(dG_Int)
+            + sum(dG_nonH)
+            + sum(dG_SD)
+            + dG_staple
+            + dG_schellman
+            + dG_Hbond
+            + dG_ionic
+            + sum(dG_N_term)
+            + sum(dG_C_term)
+            + dG_electrost
+            + np.sum(dG_dipole)
+        )
 
-        print(f'total Helix free energy = {dG_Hel:.4f}')
-        print('==============================================')
+        print(f"total Helix free energy = {dG_Hel:.4f}")
+        print("==============================================")
 
         # TODO: do we need to return all these components? It was initally intended for the "ms" partition function calculation
 
@@ -209,26 +238,30 @@ class AGADIR(object):
         Returns:
             float: The equilibrium constant K.
         """
-        R = 1.987204258e-3 # kcal/mol/K
+        R = 1.987204258e-3  # kcal/mol/K
         return np.exp(-dG_Hel / (R * self.T))
 
     def _calc_partition_fxn(self) -> None:
         """
-        Calculate partition function for helical segments 
+        Calculate partition function for helical segments
         by summing over all possible helices.
         """
         # for i in range(0, len(self.result.seq) - self.min_helix_length + 1):  # for each position i
         #     for j in range(self.min_helix_length, len(self.result.seq) - i + 1):  # for each helix length j
 
-        for j in range(self.min_helix_length, len(self.result.seq) + 1): # helix lengths (including caps)
-            for i in range(0, len(self.result.seq) - j + 1): # helical segment positions
+        for j in range(
+            self.min_helix_length, len(self.result.seq) + 1
+        ):  # helix lengths (including caps)
+            for i in range(
+                0, len(self.result.seq) - j + 1
+            ):  # helical segment positions
 
                 # calculate dG_Hel and dG_dict
                 dG_Hel, dG_dict = self._calc_dG_Hel(seq=self.result.seq, i=i, j=j)
 
                 # TODO: these shuld be accounted for in the new table 1, verify this!
                 # # Add acetylation and amidation effects.
-                # # These are only considered for the first and last residues of the helix, 
+                # # These are only considered for the first and last residues of the helix,
                 # # and only if the peptide has been created in a way that they are present.
                 # if i == 0 and self.has_acetyl is True:
                 #     dG_Hel += -1.275
@@ -247,7 +280,9 @@ class AGADIR(object):
 
                 # calculate the partition function K
                 K = self._calc_K(dG_Hel)
-                self.result.K_tot_array[i + 1:i + j - 1] += K  # method='r', by definition helical region does not include caps
+                self.result.K_tot_array[
+                    i + 1 : i + j - 1
+                ] += K  # method='r', by definition helical region does not include caps
                 self.result.K_tot += K  # method='1s'
 
         # if method='ms' (custom calculation here with result.dG_dict_mat)
@@ -258,13 +293,17 @@ class AGADIR(object):
         Calculate helical propensity based on the selected method.
         """
         # get per residue helical propensity
-        if self._method == 'r':
-            print('r')
-            self.result.helical_propensity = 100 * self.result.K_tot_array / (1.0 + self.result.K_tot_array)
+        if self._method == "r":
+            print("r")
+            self.result.helical_propensity = (
+                100 * self.result.K_tot_array / (1.0 + self.result.K_tot_array)
+            )
 
-        elif self._method == '1s':
-            print('1s')
-            self.result.helical_propensity = 100 * self.result.K_tot_array / (1.0 + self.result.K_tot)
+        elif self._method == "1s":
+            print("1s")
+            self.result.helical_propensity = (
+                100 * self.result.K_tot_array / (1.0 + self.result.K_tot)
+            )
 
         # get overall percentage helix
         self.result.percent_helix = np.round(np.mean(self.result.helical_propensity), 2)
@@ -282,18 +321,20 @@ class AGADIR(object):
         seq = seq.upper()
 
         if len(seq) < self.min_helix_length:
-            raise ValueError(f"Input sequence must be at least {self.min_helix_length} amino acids long.")
+            raise ValueError(
+                f"Input sequence must be at least {self.min_helix_length} amino acids long."
+            )
 
         # check for acylation and amidation
-        if seq[0] == 'Z':
+        if seq[0] == "Z":
             self.has_acetyl = True
             seq = seq[1:]
 
-        elif seq[0] == 'X':
+        elif seq[0] == "X":
             self.has_succinyl = True
             seq = seq[1:]
 
-        if seq[-1] == 'B':
+        if seq[-1] == "B":
             self.has_amide = True
             seq = seq[:-1]
 
@@ -304,6 +345,7 @@ class AGADIR(object):
         self._calc_partition_fxn()
         self._calc_helical_propensity()
         return self.result
+
 
 if __name__ == "__main__":
     pass
