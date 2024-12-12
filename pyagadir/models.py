@@ -310,12 +310,14 @@ class AGADIR(object):
         # get overall percentage helix
         self.result.percent_helix = np.round(np.mean(self.result.helical_propensity), 2)
 
-    def predict(self, seq: str) -> ModelResult:
+    def predict(self, seq: str, ncap: str = None, ccap: str = None) -> ModelResult:
         """
         Predict helical propensity for a given sequence.
 
         Args:
             seq (str): Input sequence.
+            ncap (str): N-terminal capping modification (acetylation, succinylation).
+            ccap (str): C-terminal capping modification (amidation).
 
         Returns:
             ModelResult: Object containing the predicted helical propensity.
@@ -326,19 +328,24 @@ class AGADIR(object):
             raise ValueError(
                 f"Input sequence must be at least {self.min_helix_length} amino acids long."
             )
+        
+        if ncap is not None:
+            if ncap not in ["Z", "X"]:
+                raise ValueError(f"Invalid N-terminal capping modification: {ncap}, must be None,'Z' or 'X'")
+
+        if ccap is not None:
+            if ccap not in ["B"]:
+                raise ValueError(f"Invalid C-terminal capping modification: {ccap}, must be None or 'B'")
 
         # check for acylation and amidation
-        if seq[0] == "Z":
+        if ncap == "Z":
             self.has_acetyl = True
-            seq = seq[1:]
 
-        elif seq[0] == "X":
+        elif ncap == "X":
             self.has_succinyl = True
-            seq = seq[1:]
 
-        if seq[-1] == "B":
+        if ccap == "B":
             self.has_amide = True
-            seq = seq[:-1]
 
         # ensure that the sequence is valid
         is_valid_peptide_sequence(seq)
