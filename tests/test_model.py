@@ -1,8 +1,8 @@
-import pytest
-from pyagadir import predict_alphahelix
-from pyagadir.models import ModelResult
-from pyagadir.models import AGADIR
 import numpy as np
+import pytest
+
+from pyagadir import predict_alphahelix
+from pyagadir.models import AGADIR, ModelResult
 
 
 # This is the function we will be testing

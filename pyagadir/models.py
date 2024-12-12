@@ -1,7 +1,9 @@
+from typing import Dict, List, Tuple
+
 import numpy as np
-from typing import List, Tuple, Dict
+
 from pyagadir import energies
-from pyagadir.utils import is_valid_peptide_sequence, is_valid_index
+from pyagadir.utils import is_valid_index, is_valid_peptide_sequence
 
 
 class ModelResult(object):

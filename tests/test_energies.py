@@ -1,17 +1,12 @@
-import pytest
-from pyagadir.energies import (
-    get_dG_dipole,
-    get_dG_Int,
-    get_dG_i1,
-    get_dG_i3,
-    get_dG_i4,
-    get_dG_Ncap,
-    get_dG_Ccap,
-    get_dG_Hbond,
-)
+from importlib.resources import files
+
 import numpy as np
 import pandas as pd
-from importlib.resources import files
+import pytest
+
+from pyagadir.energies import (get_dG_Ccap, get_dG_dipole, get_dG_Hbond,
+                               get_dG_i1, get_dG_i3, get_dG_i4, get_dG_Int,
+                               get_dG_Ncap)
 
 # get params
 datapath = files("pyagadir.data")

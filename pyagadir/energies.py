@@ -1,12 +1,11 @@
+import math
 from importlib.resources import files
 from itertools import combinations
-import math
 
 import numpy as np
 import pandas as pd
 
-from pyagadir.utils import is_valid_peptide_sequence, is_valid_index
-
+from pyagadir.utils import is_valid_index, is_valid_peptide_sequence
 
 # get params
 datapath = files("pyagadir.data")

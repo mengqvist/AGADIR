@@ -1,7 +1,9 @@
 # Test script
 import argparse
+
 import matplotlib.pyplot as plt
 import numpy as np
+
 from pyagadir.models import AGADIR
 
 parser = argparse.ArgumentParser(description="AGADIR test")
