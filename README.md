@@ -13,13 +13,52 @@ Structure: STC  STC  STC -He---He---He---He---He---He---He---He---He---He---He--
 Index:     -2   -1   0    1    2    3    4    5    6    7    8    9    10   11   12   13   14   15
 ```
 
+## Installation
 
-## Install
+### Production Environment
 
-Install the computational environment with Conda (https://conda.io).
+Install the computational environment with Conda (https://conda.io):
 
 ```bash
+# Create the environment
 conda env create -f environment.yml
+
+# Activate the environment
+conda activate agadir
+
+# Install the package in development mode
+pip install -e .
+```
+
+### Development Environment
+
+For development work (including running tests, formatting code, etc.), use the development environment:
+
+```bash
+# Create the development environment
+conda env create -f environment-dev.yml
+
+# Activate the development environment
+conda activate agadir-dev
+
+# Install the package in development mode
+pip install -e .
+```
+
+The development environment includes additional tools:
+- Jupyter notebooks for interactive development
+- Matplotlib for visualization
+- Code quality tools (black, flake8, isort, mypy)
+
+To format and check your code in the development environment:
+```bash
+# Format code
+black .
+isort .
+
+# Check code
+flake8 .
+mypy .
 ```
 
 ## Usage
