@@ -119,8 +119,8 @@ def get_capping_status(
 ) -> tuple[bool, bool]:
     """
     Determine whether the first and last residues of a helical segment should be treated as capping residues,
-    due to modifications. Internal helical segments should be unaffected by modifications and 
-    the capping status should be determined by the helix start and end indices when those are at 
+    due to modifications. Internal helical segments should be unaffected by modifications and
+    the capping status should be determined by the helix start and end indices when those are at
     the peptide termini.
 
     Args:
@@ -448,19 +448,19 @@ def get_dG_Hbond(pept: str, i: int, j: int) -> float:
 
 
 def get_dG_Hbond(
-    pept: str, 
-    i: int, 
-    j: int, 
+    pept: str,
+    i: int,
+    j: int,
     has_acetyl: bool = False,
     has_succinyl: bool = False,
-    has_amide: bool = False
+    has_amide: bool = False,
 ) -> float:
     """
     Get the free energy contribution for hydrogen bonding for a sequence.
-    
+
     Always subtract 4 residues for nucleation.
     Add 1 additional non-contributing residue for each cap, as determined by get_capping_status().
-    
+
     Args:
         pept (str): The peptide sequence.
         i (int): The helix start index, python 0-indexed.
@@ -477,12 +477,12 @@ def get_dG_Hbond(
 
     # Start with nucleating residues
     non_contributing = 4
-    
+
     # Add caps according to get_capping_status
     has_ncap, has_ccap = get_capping_status(
         pept, i, j, has_acetyl, has_succinyl, has_amide
     )
-    
+
     if has_ncap:
         non_contributing += 1
     if has_ccap:
@@ -492,41 +492,6 @@ def get_dG_Hbond(
     energy = -0.895 * max((j - non_contributing), 0)
 
     return energy
-
-
-
-# def get_dG_i1(pept: str, i: int, j: int) -> np.ndarray:
-#     """
-#     Get the free energy contribution for interaction between each AAi and AAi+1 in the sequence.
-
-#     Args:
-#         pept (str): The peptide sequence.
-#         i (int): The helix start index, python 0-indexed.
-#         j (int): The helix length.
-
-#     Returns:
-#         np.ndarray: The free energy contributions for each interaction.
-#     """
-#     helix = get_helix(pept, i, j)
-
-#     # NOTE: the this is the "old" code from the other Agadir implementation, have not changed it yet. Unclear whether I should.
-#     # TODO: Do we need to update this code?
-
-#     energy = np.zeros(len(helix))
-#     for idx in range(len(helix) - 1):
-#         AAi = helix[idx]
-#         AAi1 = helix[idx + 1]
-#         charge = 1
-#         for AA in [AAi, AAi1]:
-#             if AA in set(['R', 'H', 'K']):
-#                 charge *= 1
-#             elif AA in set(['D', 'E']):
-#                 charge *= -1
-#             else:
-#                 charge = 0
-#                 break
-#         energy[idx] = 0.05 * charge if charge != 0 else 0.0
-#     return energy
 
 
 def get_dG_i3(pept: str, i: int, j: int, pH: float, T: float) -> np.ndarray:
@@ -770,7 +735,7 @@ def calculate_term_dipole_interaction_energy(
     return energy
 
 
-def get_dG_terminals(
+def get_dG_terminals_macrodipole(
     pept: str,
     i: int,
     j: int,
@@ -781,7 +746,7 @@ def get_dG_terminals(
     has_succinyl: bool,
     has_amide: bool,
 ) -> tuple[np.ndarray, np.ndarray]:
-    """Get the interaction energy for each residue with the N and C terminals.
+    """Get the interaction energies for N- and C-terminal capping residues with the helix macrodipole.
 
     Args:
         pept (str): Peptide sequence.
