@@ -224,7 +224,14 @@ def get_dG_Int(
     return energy
 
 
-def get_dG_Ncap(pept: str, i: int, j: int) -> np.ndarray:
+def get_dG_Ncap(
+    pept: str,
+    i: int,
+    j: int,
+    has_acetyl: bool = False,
+    has_succinyl: bool = False,
+    has_amide: bool = False,
+) -> np.ndarray:
     """
     Get the free energy contribution for N-terminal capping.
 
@@ -232,15 +239,20 @@ def get_dG_Ncap(pept: str, i: int, j: int) -> np.ndarray:
         pept (str): The peptide sequence.
         i (int): The helix start index, python 0-indexed.
         j (int): The helix length.
-
+        has_acetyl (bool): Whether the peptide has N-terminal acetylation
+        has_succinyl (bool): Whether the peptide has N-terminal succinylation
+        has_amide (bool): Whether the peptide has C-terminal amidation
     Returns:
         np.ndarray: The free energy contribution.
     """
     helix = get_helix(pept, i, j)
+    has_ncap, has_ccap = get_capping_status(
+        pept, i, j, has_acetyl, has_succinyl, has_amide
+    )
 
     # fix the blocking group names to match the table
     Ncap_AA = helix[0]
-    if Ncap_AA in ["Z", "X"]:
+    if has_ncap:
         Ncap_AA = "Ac"
 
     energy = np.zeros(len(helix))
@@ -266,23 +278,36 @@ def get_dG_Ncap(pept: str, i: int, j: int) -> np.ndarray:
     return energy
 
 
-def get_dG_Ccap(pept: str, i: int, j: int) -> np.ndarray:
+def get_dG_Ccap(
+    pept: str,
+    i: int,
+    j: int,
+    has_acetyl: bool = False,
+    has_succinyl: bool = False,
+    has_amide: bool = False,
+) -> np.ndarray:
     """
-    Get the free energy contribution for N-terminal capping.
+    Get the free energy contribution for C-terminal capping.
 
     Args:
         pept (str): The peptide sequence.
         i (int): The helix start index, python 0-indexed.
         j (int): The helix length.
+        has_acetyl (bool): Whether the peptide has N-terminal acetylation
+        has_succinyl (bool): Whether the peptide has N-terminal succinylation
+        has_amide (bool): Whether the peptide has C-terminal amidation
 
     Returns:
         np.ndarray: The free energy contribution.
     """
     helix = get_helix(pept, i, j)
+    has_ncap, has_ccap = get_capping_status(
+        pept, i, j, has_acetyl, has_succinyl, has_amide
+    )
 
     # fix the blocking group names to match the table
     Ccap_AA = helix[-1]
-    if Ccap_AA == "B":
+    if has_ccap:
         Ccap_AA = "Am"
 
     energy = np.zeros(len(helix))
@@ -902,6 +927,7 @@ def get_dG_sidechain_macrodipole(
 ) -> np.ndarray:
     """
     Calculate the interaction energy between charged side-chains and the helix macrodipole.
+    The energy should be unaffected by N- and C-terminal modifications.
 
     Args:
         pept (str): The peptide sequence.
