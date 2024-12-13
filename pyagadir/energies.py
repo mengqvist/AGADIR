@@ -118,7 +118,10 @@ def get_capping_status(
     pept: str, i: int, j: int, has_acetyl: bool, has_succinyl: bool, has_amide: bool
 ) -> tuple[bool, bool]:
     """
-    Determine whether the first and last residues of a helical segment should be treated as capping residues.
+    Determine whether the first and last residues of a helical segment should be treated as capping residues,
+    due to modifications. Internal helical segments should be unaffected by modifications and 
+    the capping status should be determined by the helix start and end indices when those are at 
+    the peptide termini.
 
     Args:
         pept (str): The complete peptide sequence
@@ -252,7 +255,7 @@ def get_dG_Ncap(
 
     # fix the blocking group names to match the table
     Ncap_AA = helix[0]
-    if has_ncap:
+    if not has_ncap:
         Ncap_AA = "Ac"
 
     energy = np.zeros(len(helix))
@@ -307,7 +310,7 @@ def get_dG_Ccap(
 
     # fix the blocking group names to match the table
     Ccap_AA = helix[-1]
-    if has_ccap:
+    if not has_ccap:
         Ccap_AA = "Am"
 
     energy = np.zeros(len(helix))
@@ -394,6 +397,7 @@ def get_dG_schellman(pept: str, i: int, j: int) -> float:
     Returns:
         float: The free energy contribution.
     """
+    # TODO: is this affected by acylation, succinylation, or amidation? Find out!
     helix = get_helix(pept, i, j)
     energy = 0.0
 
@@ -441,6 +445,54 @@ def get_dG_Hbond(pept: str, i: int, j: int) -> float:
     )  # value from discussion section of the 1998 lacroix paper
 
     return energy
+
+
+def get_dG_Hbond(
+    pept: str, 
+    i: int, 
+    j: int, 
+    has_acetyl: bool = False,
+    has_succinyl: bool = False,
+    has_amide: bool = False
+) -> float:
+    """
+    Get the free energy contribution for hydrogen bonding for a sequence.
+    
+    Always subtract 4 residues for nucleation.
+    Add 1 additional non-contributing residue for each cap, as determined by get_capping_status().
+    
+    Args:
+        pept (str): The peptide sequence.
+        i (int): The helix start index, python 0-indexed.
+        j (int): The helix length.
+        has_acetyl (bool): Whether N-terminal is acetylated
+        has_succinyl (bool): Whether N-terminal is succinylated
+        has_amide (bool): Whether C-terminal is amidated
+
+    Returns:
+        float: The total free energy contribution for hydrogen bonding in the sequence.
+    """
+    is_valid_peptide_sequence(pept)
+    is_valid_index(pept, i, j)
+
+    # Start with nucleating residues
+    non_contributing = 4
+    
+    # Add caps according to get_capping_status
+    has_ncap, has_ccap = get_capping_status(
+        pept, i, j, has_acetyl, has_succinyl, has_amide
+    )
+    
+    if has_ncap:
+        non_contributing += 1
+    if has_ccap:
+        non_contributing += 1
+
+    # Calculate H-bond energy for remaining residues
+    energy = -0.895 * max((j - non_contributing), 0)
+
+    return energy
+
 
 
 # def get_dG_i1(pept: str, i: int, j: int) -> np.ndarray:
