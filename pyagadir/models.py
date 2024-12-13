@@ -148,12 +148,24 @@ class AGADIR(object):
         )
 
         # "non-hydrogen bond" capping energies, only for the first and last residues of the helix
-        dG_Ncap = energies.get_dG_Ncap(self.result.seq, i, j)
-        dG_Ccap = energies.get_dG_Ccap(self.result.seq, i, j)
+        dG_Ncap = energies.get_dG_Ncap(
+            self.result.seq,
+            i,
+            j,
+            has_acetyl=self.has_acetyl,
+            has_succinyl=self.has_succinyl,
+            has_amide=self.has_amide,
+        )
+        dG_Ccap = energies.get_dG_Ccap(
+            self.result.seq,
+            i,
+            j,
+            has_amide=self.has_amide,
+            has_acetyl=self.has_acetyl,
+            has_succinyl=self.has_succinyl,
+        )
         dG_nonH = dG_Ncap + dG_Ccap
         # TODO dG_nonH might need further adjustment, see page 175 in lacroix paper
-
-        # TODO: which values should be used for ncap and ccap modifications?
 
         # get hydrophobic staple motif energies
         dG_staple = energies.get_dG_staple(self.result.seq, i, j)
@@ -162,7 +174,14 @@ class AGADIR(object):
         dG_schellman = energies.get_dG_schellman(self.result.seq, i, j)
 
         # calculate dG_Hbond for the helical segment here
-        dG_Hbond = energies.get_dG_Hbond(self.result.seq, i, j)
+        dG_Hbond = energies.get_dG_Hbond(
+            self.result.seq,
+            i,
+            j,
+            has_acetyl=self.has_acetyl,
+            has_succinyl=self.has_succinyl,
+            has_amide=self.has_amide,
+        )
 
         # side-chain interactions, excluding N- and C-terminal capping residues
         dG_i3_tot = energies.get_dG_i3(self.result.seq, i, j, self.pH, self.T)
@@ -170,7 +189,7 @@ class AGADIR(object):
         dG_SD = dG_i3_tot + dG_i4_tot  # dG_i1_tot
 
         # get the interactions between N- and C-terminal capping charges and the helix macrodipole
-        dG_N_term, dG_C_term = energies.get_dG_terminals(
+        dG_N_term, dG_C_term = energies.get_dG_terminals_macrodipole(
             self.result.seq,
             i,
             j,
