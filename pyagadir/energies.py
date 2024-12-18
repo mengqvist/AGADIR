@@ -4,6 +4,7 @@ from itertools import combinations
 
 import numpy as np
 import pandas as pd
+from typing import Dict
 
 from pyagadir.utils import is_valid_index, is_valid_peptide_sequence
 
@@ -152,432 +153,6 @@ def get_capping_status(
             has_ccap = False
 
     return has_ncap, has_ccap
-
-
-def get_dG_Int(
-    pept: str,
-    i: int,
-    j: int,
-    pH: float,
-    T: float,
-    has_acetyl: bool = False,
-    has_succinyl: bool = False,
-    has_amide: bool = False,
-) -> np.ndarray:
-    """
-    Get the intrinsic free energy contributions for a sequence.
-    The first and last residues are considered to be caps unless they are
-    terminal residues with modifications.
-
-    Args:
-        pept (str): The peptide sequence.
-        i (int): The helix start index, python 0-indexed.
-        j (int): The helix length.
-        pH (float): The pH value.
-        T (float): Temperature in Kelvin.
-        has_acetyl (bool): Whether the peptide has N-terminal acetylation
-        has_succinyl (bool): Whether the peptide has N-terminal succinylation
-        has_amide (bool): Whether the peptide has C-terminal amidation
-
-    Returns:
-        np.ndarray: The intrinsic free energy contributions for each amino acid in the sequence.
-    """
-    helix = get_helix(pept, i, j)
-    has_ncap, has_ccap = get_capping_status(
-        pept, i, j, has_acetyl, has_succinyl, has_amide
-    )
-
-    # initialize energy array
-    energy = np.zeros(len(helix))
-
-    # iterate over the helix and get the intrinsic energy for each residue
-    for idx, AA in enumerate(helix):
-        # Skip caps only if they exist for this segment
-        if (idx == 0 and has_ncap) or (idx == len(helix) - 1 and has_ccap):
-            continue
-
-        # Handle N-terminal region specially (note: these positions are relative to helix start)
-        if idx == 1 or (idx == 0 and not has_ncap):
-            energy[idx] = table_1_lacroix.loc[AA, "N1"]
-        elif idx == 2 or (idx == 1 and not has_ncap):
-            energy[idx] = table_1_lacroix.loc[AA, "N2"]
-        elif idx == 3 or (idx == 2 and not has_ncap):
-            energy[idx] = table_1_lacroix.loc[AA, "N3"]
-        elif idx == 4 or (idx == 3 and not has_ncap):
-            energy[idx] = table_1_lacroix.loc[AA, "N4"]
-        else:
-            if AA not in ["C", "D", "E", "H", "K", "R", "Y"]:
-                energy[idx] = table_1_lacroix.loc[AA, "Ncen"]
-            else:
-                # pH-dependent selection between 'Ncen' and 'Neutral'
-                pKa = pka_values.loc[AA, "pKa"]
-                basic_energy_ncen = table_1_lacroix.loc[AA, "Ncen"]
-                basic_energy_neutral = table_1_lacroix.loc[AA, "Neutral"]
-                if AA in ["C", "D", "E"]:
-                    q = acidic_residue_ionization(pH, pKa, 0, T)
-                    energy[idx] = q * basic_energy_ncen + (1 - q) * basic_energy_neutral
-                elif AA in ["H", "K", "R", "Y"]:
-                    q = basic_residue_ionization(pH, pKa, 0, T)
-                    energy[idx] = q * basic_energy_ncen + (1 - q) * basic_energy_neutral
-                else:
-                    raise ValueError(
-                        f"Invalid logic in internal energy selection: {AA}"
-                    )
-
-    return energy
-
-
-def get_dG_Ncap(
-    pept: str,
-    i: int,
-    j: int,
-    has_acetyl: bool = False,
-    has_succinyl: bool = False,
-    has_amide: bool = False,
-) -> np.ndarray:
-    """
-    Get the free energy contribution for N-terminal capping.
-
-    Args:
-        pept (str): The peptide sequence.
-        i (int): The helix start index, python 0-indexed.
-        j (int): The helix length.
-        has_acetyl (bool): Whether the peptide has N-terminal acetylation
-        has_succinyl (bool): Whether the peptide has N-terminal succinylation
-        has_amide (bool): Whether the peptide has C-terminal amidation
-    Returns:
-        np.ndarray: The free energy contribution.
-    """
-    helix = get_helix(pept, i, j)
-    has_ncap, has_ccap = get_capping_status(
-        pept, i, j, has_acetyl, has_succinyl, has_amide
-    )
-
-    # fix the blocking group names to match the table
-    Ncap_AA = helix[0]
-    if not has_ncap:
-        Ncap_AA = "Ac"
-
-    energy = np.zeros(len(helix))
-
-    # Nc-4 	N-cap values when there is a Pro at position N1 and Glu, Asp or Gln at position N3.
-    N1_AA = helix[1]
-    N3_AA = helix[3]
-    if N1_AA == "P" and N3_AA in ["E", "D", "Q"]:
-        energy[0] = table_1_lacroix.loc[Ncap_AA, "Nc-4"]
-
-    # Nc-3 	N-cap values when there is a Glu, Asp or Gln at position N3.
-    elif N3_AA in ["E", "D", "Q"]:
-        energy[0] = table_1_lacroix.loc[Ncap_AA, "Nc-3"]
-
-    # Nc-2 	N-cap values when there is a Pro at position N1.
-    elif N1_AA == "P":
-        energy[0] = table_1_lacroix.loc[Ncap_AA, "Nc-2"]
-
-    # Nc-1 	Normal N-cap values.
-    else:
-        energy[0] = table_1_lacroix.loc[Ncap_AA, "Nc-1"]
-
-    return energy
-
-
-def get_dG_Ccap(
-    pept: str,
-    i: int,
-    j: int,
-    has_acetyl: bool = False,
-    has_succinyl: bool = False,
-    has_amide: bool = False,
-) -> np.ndarray:
-    """
-    Get the free energy contribution for C-terminal capping.
-
-    Args:
-        pept (str): The peptide sequence.
-        i (int): The helix start index, python 0-indexed.
-        j (int): The helix length.
-        has_acetyl (bool): Whether the peptide has N-terminal acetylation
-        has_succinyl (bool): Whether the peptide has N-terminal succinylation
-        has_amide (bool): Whether the peptide has C-terminal amidation
-
-    Returns:
-        np.ndarray: The free energy contribution.
-    """
-    helix = get_helix(pept, i, j)
-    has_ncap, has_ccap = get_capping_status(
-        pept, i, j, has_acetyl, has_succinyl, has_amide
-    )
-
-    # fix the blocking group names to match the table
-    Ccap_AA = helix[-1]
-    if not has_ccap:
-        Ccap_AA = "Am"
-
-    energy = np.zeros(len(helix))
-
-    # Cc-2 	C-cap values when there is a Pro residue at position C'
-    c_prime_idx = i + j
-    if (len(pept) > c_prime_idx) and (pept[c_prime_idx] == "P"):
-        energy[-1] = table_1_lacroix.loc[Ccap_AA, "Cc-2"]
-
-    # Cc-1 	Normal C-cap values
-    else:
-        energy[-1] = table_1_lacroix.loc[Ccap_AA, "Cc-1"]
-
-    return energy
-
-
-def get_dG_staple(pept: str, i: int, j: int) -> float:
-    """
-    Get the free energy contribution for the hydrophobic staple motif.
-    The hydrophobic interaction is between the N' and N4 residues of the helix.
-    See https://doi.org/10.1038/nsb0595-380 for more details.
-
-    Args:
-        pept (str): The peptide sequence.
-        i (int): The helix start index, python 0-indexed.
-        j (int): The helix length.
-
-    Returns:
-        float: The free energy contribution.
-    """
-    helix = get_helix(pept, i, j)
-
-    energy = np.zeros(len(helix))
-
-    # get the amino acids governing the staple motif
-    N_prime_AA = pept[i - 1]
-    Ncap_AA = helix[0]
-    N3_AA = helix[3]
-    N4_AA = helix[4]
-    energy = 0.0
-
-    # staple motif requires the N' residue before the Ncap, so the first residue of the helix cannot be the first residue of the peptide
-    if i == 0:
-        return energy
-
-    # TODO: verify that the code below is correct
-
-    # The hydrophobic staple motif is only considered whenever the N-cap residue is Asn, Asp, Ser, Pro or Thr.
-    if Ncap_AA in ["N", "D", "S", "P", "T"]:
-        energy = table_2_lacroix.loc[N_prime_AA, N4_AA]
-
-        # whenever the N-cap residue is Asn, Asp, Ser, or Thr and the N3 residue is Glu, Asp or Gln, multiply by 1.0
-        if Ncap_AA in ["N", "D", "S", "T"] and N3_AA in ["E", "D", "Q"]:
-            print("staple case i")
-            energy *= 1.0
-
-        # whenever the N-cap residue is Asp or Asn and the N3 residue is Ser or Thr
-        elif Ncap_AA in ["N", "D"] and N3_AA in ["S", "T"]:
-            print("staple case ii")
-            energy *= 1.0
-
-        # other cases they are multiplied by 0.5
-        else:
-            print("staple case iii")
-            energy *= 0.5
-
-    else:
-        print("no staple motif")
-
-    return energy
-
-
-def get_dG_schellman(pept: str, i: int, j: int) -> float:
-    """
-    Get the free energy contribution for the Schellman motif.
-    The Schellman motif is only considered whenever Gly is the C-cap residue,
-    where the interaction happens between the C' and C3 residues of the helix.
-
-    Args:
-        pept (str): The peptide sequence.
-        i (int): The helix start index, python 0-indexed.
-        j (int): The helix length.
-
-    Returns:
-        float: The free energy contribution.
-    """
-    # TODO: is this affected by acylation, succinylation, or amidation? Find out!
-    helix = get_helix(pept, i, j)
-    energy = 0.0
-
-    # TODO verify that the code below is correct
-
-    # C-cap residue has to be Gly
-    if helix[-1] != "G":
-        print("no G cap for schellman")
-        return energy
-
-    # there has to be a C' residue after the helix
-    if i + j >= len(pept):
-        print("no C prime for schellman")
-        return energy
-
-    # get the amino acids governing the Schellman motif and extract the energy
-    print("detected schellman case")
-    C3_AA = helix[3]
-    C_prime_AA = pept[i + j]
-    energy = table_3_lacroix.loc[C3_AA, C_prime_AA] / 100
-
-    return energy
-
-
-def get_dG_Hbond(pept: str, i: int, j: int) -> float:
-    """
-    Get the free energy contribution for hydrogen bonding for a sequence.
-
-    Args:
-        pept (str): The peptide sequence.
-        i (int): The helix start index, python 0-indexed.
-        j (int): The helix length.
-
-    Returns:
-        float: The total free energy contribution for hydrogen bonding in the sequence.
-    """
-    is_valid_peptide_sequence(pept)
-    is_valid_index(pept, i, j)
-
-    # The first 4 helical amino acids are considered to have zero net enthalpy
-    # since they are nucleating residues and caps don't count,
-    # for a total of 6.
-    energy = -0.895 * max(
-        (j - 6), 0
-    )  # value from discussion section of the 1998 lacroix paper
-
-    return energy
-
-
-def get_dG_Hbond(
-    pept: str,
-    i: int,
-    j: int,
-    has_acetyl: bool = False,
-    has_succinyl: bool = False,
-    has_amide: bool = False,
-) -> float:
-    """
-    Get the free energy contribution for hydrogen bonding for a sequence.
-
-    Always subtract 4 residues for nucleation.
-    Add 1 additional non-contributing residue for each cap, as determined by get_capping_status().
-
-    Args:
-        pept (str): The peptide sequence.
-        i (int): The helix start index, python 0-indexed.
-        j (int): The helix length.
-        has_acetyl (bool): Whether N-terminal is acetylated
-        has_succinyl (bool): Whether N-terminal is succinylated
-        has_amide (bool): Whether C-terminal is amidated
-
-    Returns:
-        float: The total free energy contribution for hydrogen bonding in the sequence.
-    """
-    is_valid_peptide_sequence(pept)
-    is_valid_index(pept, i, j)
-
-    # Start with nucleating residues
-    non_contributing = 4
-
-    # Add caps according to get_capping_status
-    has_ncap, has_ccap = get_capping_status(
-        pept, i, j, has_acetyl, has_succinyl, has_amide
-    )
-
-    if has_ncap:
-        non_contributing += 1
-    if has_ccap:
-        non_contributing += 1
-
-    # Calculate H-bond energy for remaining residues
-    energy = -0.895 * max((j - non_contributing), 0)
-
-    return energy
-
-
-def get_dG_i3(pept: str, i: int, j: int, pH: float, T: float) -> np.ndarray:
-    """
-    Get the free energy contribution for interaction between each AAi and AAi+3 in the sequence.
-
-    Args:
-        pept (str): The peptide sequence.
-        i (int): The helix start index, python 0-indexed.
-        j (int): The helix length.
-        pH (float): The pH value.
-        T (float): The temperature in Kelvin.
-
-    Returns:
-        np.ndarray: The free energy contributions for each interaction.
-    """
-    helix = get_helix(pept, i, j)
-
-    energy = np.zeros(len(helix))
-
-    # Get interaction free energies between non-charged residues
-    for idx in range(len(helix) - 3):
-        AAi = helix[idx]
-        AAi3 = helix[idx + 3]
-        base_energy = table_4a_lacroix.loc[AAi, AAi3] / 100
-
-        # Scale energy based on ionization state
-        if AAi in ["K", "R", "H", "D", "E"] and AAi3 in ["K", "R", "H", "D", "E"]:
-            q_i = (
-                basic_residue_ionization(pH, pka_values.loc[AAi, "pKa"], 0, T)
-                if AAi in ["K", "R", "H"]
-                else acidic_residue_ionization(pH, pka_values.loc[AAi, "pKa"], 0, T)
-            )
-            q_i3 = (
-                basic_residue_ionization(pH, pka_values.loc[AAi3, "pKa"], 0, T)
-                if AAi3 in ["K", "R", "H"]
-                else acidic_residue_ionization(pH, pka_values.loc[AAi3, "pKa"], 0, T)
-            )
-            energy[idx] = base_energy * abs(q_i * q_i3)
-        else:
-            energy[idx] = base_energy
-
-    return energy
-
-
-def get_dG_i4(pept: str, i: int, j: int, pH: float, T: float) -> np.ndarray:
-    """
-    Get the free energy contribution for interaction between each AAi and AAi+4 in the sequence.
-
-    Args:
-        pept (str): The peptide sequence.
-        i (int): The helix start index, python 0-indexed.
-        j (int): The helix length.
-        pH (float): The pH of the solution.
-        T (float): Temperature in Kelvin.
-
-    Returns:
-        np.ndarray: The free energy contributions for each interaction.
-    """
-    helix = get_helix(pept, i, j)
-
-    energy = np.zeros(len(helix))
-
-    # Get interaction free energies between non-charged residues
-    for idx in range(len(helix) - 4):
-        AAi = helix[idx]
-        AAi4 = helix[idx + 4]
-        base_energy = table_4b_lacroix.loc[AAi, AAi4] / 100
-
-        # Scale energy based on ionization state
-        if AAi in ["K", "R", "H", "D", "E"] and AAi4 in ["K", "R", "H", "D", "E"]:
-            q_i = (
-                basic_residue_ionization(pH, pka_values.loc[AAi, "pKa"], 0, T)
-                if AAi in ["K", "R", "H"]
-                else acidic_residue_ionization(pH, pka_values.loc[AAi, "pKa"], 0, T)
-            )
-            q_i4 = (
-                basic_residue_ionization(pH, pka_values.loc[AAi4, "pKa"], 0, T)
-                if AAi4 in ["K", "R", "H"]
-                else acidic_residue_ionization(pH, pka_values.loc[AAi4, "pKa"], 0, T)
-            )
-            energy[idx] = base_energy * abs(q_i * q_i4)
-        else:
-            energy[idx] = base_energy
-
-    return energy
 
 
 def acidic_residue_ionization(pH: float, pKa: float, deltaG: float, T: float) -> float:
@@ -735,85 +310,6 @@ def calculate_term_dipole_interaction_energy(
     return energy
 
 
-def get_dG_terminals_macrodipole(
-    pept: str,
-    i: int,
-    j: int,
-    ionic_strength: float,
-    pH: float,
-    T: int,
-    has_acetyl: bool,
-    has_succinyl: bool,
-    has_amide: bool,
-) -> tuple[np.ndarray, np.ndarray]:
-    """Get the interaction energies for N- and C-terminal capping residues with the helix macrodipole.
-
-    Args:
-        pept (str): Peptide sequence.
-        i (int): Starting index of the helix segment.
-        j (int): Length of the helix segment.
-        ionic_strength (float): Ionic strength of the solution.
-        pH (float): pH of the solution.
-        T (int): Temperature in Kelvin.
-        has_acetyl (bool): Whether the N-terminal has an acetyl group.
-        has_succinyl (bool): Whether the N-terminal has a succinyl group.
-        has_amide (bool): Whether the C-terminal has an amide group.
-
-    Returns:
-        tuple[np.ndarray, np.ndarray]: Interaction energies for N and C terminals.
-    """
-    mu_helix = 0.5
-    helix = get_helix(pept, i, j)
-    N_term = np.zeros(len(helix))
-    C_term = np.zeros(len(helix))
-
-    # N terminal
-    residue = helix[0]
-    if (
-        not has_acetyl and not has_succinyl
-    ):  # guard against N-termenal capping residues (no charge, no interaction)
-        # TODO: Add pKa values for each aa
-        qKaN = pka_values.loc["Nterm", "pKa"]
-        distance_r_angstrom = calculate_r(i)  # Distance to N terminal
-        distance_r_meter = (
-            distance_r_angstrom * 1e-10
-        )  # Convert distance from Ångströms to meters
-        kappa = debue_screening_length(ionic_strength, T)
-        screening_factor = math.exp(
-            -kappa * distance_r_meter
-        )  # Second half of equation 6 from Lacroix, 1998.
-        N_term_energy = calculate_term_dipole_interaction_energy(
-            mu_helix, distance_r_angstrom, screening_factor, T
-        )
-        q = basic_residue_ionization(pH, qKaN, N_term_energy, T)
-        N_term_energy *= q
-        N_term[0] = N_term_energy
-
-    # C terminal
-    residue = helix[-1]
-    if (
-        not has_amide
-    ):  # guard against C-terminal capping residues (no charge, no interaction)
-        # TODO: Add pKa values for each aa
-        qKaC = pka_values.loc["Cterm", "pKa"]
-        distance_r_angstrom = calculate_r(len(pept) - (i + j))  # Distance to C terminal
-        distance_r_meter = (
-            distance_r_angstrom * 1e-10
-        )  # Convert distance from Ångströms to meters
-        kappa = debue_screening_length(ionic_strength, T)
-        screening_factor = math.exp(
-            -kappa * distance_r_meter
-        )  # Second half of equation 6 from Lacroix, 1998.
-        C_term_energy = calculate_term_dipole_interaction_energy(
-            mu_helix, distance_r_angstrom, screening_factor, T
-        )
-        q = acidic_residue_ionization(pH, qKaC, C_term_energy, T)
-        C_term_energy *= -q
-        C_term[-1] = C_term_energy
-
-    return N_term, C_term
-
-
 def electrostatic_interaction_energy(
     qi: float, qp: float, r: float, ionic_strength: float, T: float
 ) -> float:
@@ -867,135 +363,590 @@ def find_charged_pairs(seq: str) -> list[tuple[str, int]]:
             result.append((pair, distance))
     return result
 
-
-def get_dG_electrost(
-    pept: str, i: int, j: int, ionic_strength: float, pH: float, T: float
-) -> float:
-    """From Lecroix et al. 1998:
-    'This new term includes all electrostatic interactions between two charged residues
-    inside and outside the helical segment'
-    Use equations (5) - (11) from the 1998 lacroix paper.
-
-    Args:
-        pept (str): The peptide sequence.
-        i (int): The helix start index, python 0-indexed.
-        j (int): The helix length.
-        ionic_strength (float): Ionic strength of the solution.
-        pH (float): pH of the solution.
-        T (float): Temperature in Kelvin.
+class EnergyCalculator:
     """
-    # TODO: Should we add the N- and C-term backbone charges here as well? Or better separated into a different function?
+    Class to calculate the free energy contributions for a peptide sequence.
+    """
+    def __init__(self, pept: str, pH: float, T: float, ionic_strength: float, has_acetyl=False, has_succinyl=False, has_amide=False):
+        """
+        Initialize the EnergyCalculator for a peptide sequence.
 
-    helix = get_helix(pept, i, j)
-    charged_pairs = find_charged_pairs(helix)
-    energy_sum = 0.0
-    for p in charged_pairs:
-        pair, distance = p[0], f"i+{p[1]}"
-        helix_dist = table_6_helix_lacroix.loc[pair, distance]
-        coil_dist = table_6_coil_lacroix.loc[pair, distance]
+        Args:
+            pept (str): Peptide sequence.
+            pH (float): Solution pH.
+            T (float): Temperature in Kelvin.
+            ionic_strength (float): Ionic strength of the solution in mol/L.
+            has_acetyl (bool): N-terminal acetylation flag.
+            has_succinyl (bool): N-terminal succinylation flag.
+            has_amide (bool): C-terminal amidation flag.
+        """
+        self.pept = pept
+        self.pH = pH
+        self.T = T
+        self.ionic_strength = ionic_strength
+        self.has_acetyl = has_acetyl
+        self.has_succinyl = has_succinyl
+        self.has_amide = has_amide
 
-        # Lacroix Eq (6). First assume qp = qi = 1
-        qi, qp = 1, 1
-        G_hel = electrostatic_interaction_energy(qi, qp, helix_dist, ionic_strength, T)
-        G_rc = electrostatic_interaction_energy(qi, qp, coil_dist, ionic_strength, T)
+        # Precompute ionization states
+        self.ionization_states = self._precompute_ionization_states()
 
-        # Lacroix Eq (8)
-        res1, res2 = pair
-        pKa_ref_1 = pka_values.loc[res1, "pKa"]
-        pKa_ref_2 = pka_values.loc[res2, "pKa"]
-        pKa_rc_1, pKa_rc_2 = pKa_ref_1 + G_rc / (
-            2.3 * 1.987e-3 * T
-        ), pKa_ref_2 + G_rc / (2.3 * 1.987e-3 * T)
+    def _precompute_ionization_states(self) -> np.ndarray:
+        """Precompute ionization states for all residues in the peptide.
+        
+        Returns:
+            np.ndarray: Array of ionization states for each residue in the peptide.
+                       0 = neutral, 1 = ionized.
+        """
+        ionization_states = np.zeros(len(self.pept))
+        for idx, AA in enumerate(self.pept):
+            if AA in ["C", "D", "E", "Y"]:
+                pKa = pka_values.loc[AA, "pKa"]
+                ionization_states[idx] = acidic_residue_ionization(self.pH, pKa, 0, self.T)
+            elif AA in ["K", "R", "H"]:
+                pKa = pka_values.loc[AA, "pKa"]
+                ionization_states[idx] = basic_residue_ionization(self.pH, pKa, 0, self.T)
 
-        # Lacroix Eq (9)
-        pKa_hel_1, pKa_hel_2 = pKa_ref_1 + G_hel / (
-            2.3 * 1.987e-3 * T
-        ), pKa_ref_2 + G_hel / (2.3 * 1.987e-3 * T)
+        return ionization_states
 
-        # Lacroix Eq (10)
-        if res1 in ["D", "E"]:
-            q1_hel = acidic_residue_ionization(pH, pKa_hel_1, G_hel, T)
-            q1_rc = acidic_residue_ionization(pH, pKa_rc_1, G_rc, T)
-        else:
-            q1_hel = basic_residue_ionization(pH, pKa_hel_1, G_hel, T)
-            q1_rc = basic_residue_ionization(pH, pKa_rc_1, G_rc, T)
 
-        if res2 in ["D", "E"]:
-            q2_hel = acidic_residue_ionization(pH, pKa_hel_2, G_hel, T)
-            q2_rc = acidic_residue_ionization(pH, pKa_rc_2, G_rc, T)
-        else:
-            q2_hel = basic_residue_ionization(pH, pKa_hel_2, G_hel, T)
-            q2_rc = basic_residue_ionization(pH, pKa_rc_2, G_rc, T)
+    def get_dG_Int(
+        self,
+        i: int,
+        j: int,
+    ) -> np.ndarray:
+        """
+        Get the intrinsic free energy contributions for a sequence.
+        The first and last residues are considered to be caps unless they are
+        terminal residues with modifications.
 
-        # Lacroix Eq (6) again, with the updated values
-        G_hel = electrostatic_interaction_energy(
-            q1_hel, q2_hel, helix_dist, ionic_strength, T
+        Args:
+            i (int): The helix start index, python 0-indexed.
+            j (int): The helix length.
+
+        Returns:
+            np.ndarray: The intrinsic free energy contributions for each amino acid in the sequence.
+        """
+        helix = get_helix(self.pept, i, j)
+        has_ncap, has_ccap = get_capping_status(
+            self.pept, i, j, self.has_acetyl, self.has_succinyl, self.has_amide
         )
-        G_rc = electrostatic_interaction_energy(
-            q1_rc, q2_rc, coil_dist, ionic_strength, T
+
+        # initialize energy array
+        energy = np.zeros(len(helix))
+
+        # iterate over the helix and get the intrinsic energy for each residue
+        for idx, AA in enumerate(helix):
+            # Skip caps only if they exist for this segment
+            if (idx == 0 and has_ncap) or (idx == len(helix) - 1 and has_ccap):
+                continue
+
+            # Handle N-terminal region specially (note: these positions are relative to helix start)
+            if idx == 1 or (idx == 0 and not has_ncap):
+                energy[idx] = table_1_lacroix.loc[AA, "N1"]
+            elif idx == 2 or (idx == 1 and not has_ncap):
+                energy[idx] = table_1_lacroix.loc[AA, "N2"]
+            elif idx == 3 or (idx == 2 and not has_ncap):
+                energy[idx] = table_1_lacroix.loc[AA, "N3"]
+            elif idx == 4 or (idx == 3 and not has_ncap):
+                energy[idx] = table_1_lacroix.loc[AA, "N4"]
+            else:
+                if AA not in ["C", "D", "E", "H", "K", "R", "Y"]:
+                    energy[idx] = table_1_lacroix.loc[AA, "Ncen"]
+                else:
+                    # pH-dependent selection between 'Ncen' and 'Neutral'
+                    pKa = pka_values.loc[AA, "pKa"]
+                    basic_energy_ncen = table_1_lacroix.loc[AA, "Ncen"]
+                    basic_energy_neutral = table_1_lacroix.loc[AA, "Neutral"]
+                    if AA in ["C", "D", "E", "Y"]:
+                        q = acidic_residue_ionization(self.pH, pKa, 0, self.T)
+                        energy[idx] = q * basic_energy_ncen + (1 - q) * basic_energy_neutral
+                    elif AA in ["H", "K", "R"]:
+                        q = basic_residue_ionization(self.pH, pKa, 0, self.T)
+                        energy[idx] = q * basic_energy_ncen + (1 - q) * basic_energy_neutral
+                    else:
+                        raise ValueError(
+                            f"Invalid logic in internal energy selection: {AA}"
+                        )
+
+        return energy
+
+    def get_dG_Ncap(
+        self,
+        i: int,
+        j: int,
+    ) -> np.ndarray:
+        """
+        Get the free energy contribution for N-terminal capping.
+
+        Args:
+            i (int): The helix start index, python 0-indexed.
+            j (int): The helix length.
+
+        Returns:
+            np.ndarray: The free energy contribution.
+        """
+        helix = get_helix(self.pept, i, j)
+        has_ncap, has_ccap = get_capping_status(
+            self.pept, i, j, self.has_acetyl, self.has_succinyl, self.has_amide
         )
-        energy_sum += G_hel - G_rc
 
-    return energy_sum
+        # fix the blocking group names to match the table
+        Ncap_AA = helix[0]
+        if not has_ncap:
+            Ncap_AA = "Ac"
 
+        energy = np.zeros(len(helix))
 
-def get_dG_sidechain_macrodipole(
-    pept: str, i: int, j: int, ionic_strength: float, pH: float, T: float
-) -> np.ndarray:
-    """
-    Calculate the interaction energy between charged side-chains and the helix macrodipole.
-    The energy should be unaffected by N- and C-terminal modifications.
+        # Nc-4 	N-cap values when there is a Pro at position N1 and Glu, Asp or Gln at position N3.
+        N1_AA = helix[1]
+        N3_AA = helix[3]
+        if N1_AA == "P" and N3_AA in ["E", "D", "Q"]:
+            energy[0] = table_1_lacroix.loc[Ncap_AA, "Nc-4"]
 
-    Args:
-        pept (str): The peptide sequence.
-        i (int): The helix start index, python 0-indexed.
-        j (int): The helix length.
-        ionic_strength (float): Ionic strength of the solution in mol/L.
-        pH (float): The pH of the solution.
-        T (float): Temperature in Kelvin.
+        # Nc-3 	N-cap values when there is a Glu, Asp or Gln at position N3.
+        elif N3_AA in ["E", "D", "Q"]:
+            energy[0] = table_1_lacroix.loc[Ncap_AA, "Nc-3"]
 
-    Returns:
-        np.ndarray: The free energy contribution for each residue in the helix.
-    """
-    helix = get_helix(pept, i, j)
-    energy = np.zeros(len(helix))
-    q_dipole = 0.5  # Half-charge for the helix macrodipole
+        # Nc-2 	N-cap values when there is a Pro at position N1.
+        elif N1_AA == "P":
+            energy[0] = table_1_lacroix.loc[Ncap_AA, "Nc-2"]
 
-    for idx, aa in enumerate(helix):
-        # The distance tables only contain values up to C13 from the C-terminus
-        # and N13 from the N-terminus, so we need to limit the calculations
-        # to avoid indexing errors
-        if len(helix) - idx - 1 > 13 or idx > 13:
-            continue
+        # Nc-1 	Normal N-cap values.
+        else:
+            energy[0] = table_1_lacroix.loc[Ncap_AA, "Nc-1"]
 
-        if aa in ["K", "R", "H"]:  # Positively charged residues
-            # N-terminal interaction
-            position = "Ncap" if idx == 0 else f"N{idx}"
-            distance = table_7_ncap_lacroix.loc[aa, position]
-            energy[idx] += electrostatic_interaction_energy(
-                q_dipole, 1, distance, ionic_strength, T
+        return energy
+
+    def get_dG_Ccap(
+        self,
+        i: int,
+        j: int,
+    ) -> np.ndarray:
+        """
+        Get the free energy contribution for C-terminal capping.
+
+        Args:
+            i (int): The helix start index, python 0-indexed.
+            j (int): The helix length.
+
+        Returns:
+            np.ndarray: The free energy contribution.
+        """
+        helix = get_helix(self.pept, i, j)
+        has_ncap, has_ccap = get_capping_status(
+            self.pept, i, j, self.has_acetyl, self.has_succinyl, self.has_amide
+        )
+
+        # fix the blocking group names to match the table
+        Ccap_AA = helix[-1]
+        if not has_ccap:
+            Ccap_AA = "Am"
+
+        energy = np.zeros(len(helix))
+
+        # Cc-2 	C-cap values when there is a Pro residue at position C'
+        c_prime_idx = i + j
+        if (len(self.pept) > c_prime_idx) and (self.pept[c_prime_idx] == "P"):
+            energy[-1] = table_1_lacroix.loc[Ccap_AA, "Cc-2"]
+
+        # Cc-1 	Normal C-cap values
+        else:
+            energy[-1] = table_1_lacroix.loc[Ccap_AA, "Cc-1"]
+
+        return energy
+
+    def get_dG_staple(self, i: int, j: int) -> float:
+        """
+        Get the free energy contribution for the hydrophobic staple motif.
+        The hydrophobic interaction is between the N' and N4 residues of the helix.
+        See https://doi.org/10.1038/nsb0595-380 for more details.
+
+        Args:
+            i (int): The helix start index, python 0-indexed.
+            j (int): The helix length.
+
+        Returns:
+            float: The free energy contribution.
+        """
+        helix = get_helix(self.pept, i, j)
+
+        energy = np.zeros(len(helix))
+
+        # get the amino acids governing the staple motif
+        N_prime_AA = self.pept[i - 1]
+        Ncap_AA = helix[0]
+        N3_AA = helix[3]
+        N4_AA = helix[4]
+        energy = 0.0
+
+        # staple motif requires the N' residue before the Ncap, so the first residue of the helix cannot be the first residue of the peptide
+        if i == 0:
+            return energy
+
+        # TODO: verify that the code below is correct
+
+        # The hydrophobic staple motif is only considered whenever the N-cap residue is Asn, Asp, Ser, Pro or Thr.
+        if Ncap_AA in ["N", "D", "S", "P", "T"]:
+            energy = table_2_lacroix.loc[N_prime_AA, N4_AA]
+
+            # whenever the N-cap residue is Asn, Asp, Ser, or Thr and the N3 residue is Glu, Asp or Gln, multiply by 1.0
+            if Ncap_AA in ["N", "D", "S", "T"] and N3_AA in ["E", "D", "Q"]:
+                print("staple case i")
+                energy *= 1.0
+
+            # whenever the N-cap residue is Asp or Asn and the N3 residue is Ser or Thr
+            elif Ncap_AA in ["N", "D"] and N3_AA in ["S", "T"]:
+                print("staple case ii")
+                energy *= 1.0
+
+            # other cases they are multiplied by 0.5
+            else:
+                print("staple case iii")
+                energy *= 0.5
+
+        else:
+            print("no staple motif")
+
+        return energy
+
+    def get_dG_schellman(self, i: int, j: int) -> float:
+        """
+        Get the free energy contribution for the Schellman motif.
+        The Schellman motif is only considered whenever Gly is the C-cap residue,
+        where the interaction happens between the C' and C3 residues of the helix.
+
+        Args:
+            i (int): The helix start index, python 0-indexed.
+            j (int): The helix length.
+
+        Returns:
+            float: The free energy contribution.
+        """
+        # TODO: is this affected by acylation, succinylation, or amidation? Find out!
+        helix = get_helix(self.pept, i, j)
+        energy = 0.0
+
+        # TODO verify that the code below is correct
+
+        # C-cap residue has to be Gly
+        if helix[-1] != "G":
+            print("no G cap for schellman")
+            return energy
+
+        # there has to be a C' residue after the helix
+        if i + j >= len(self.pept):
+            print("no C prime for schellman")
+            return energy
+
+        # get the amino acids governing the Schellman motif and extract the energy
+        print("detected schellman case")
+        C3_AA = helix[3]
+        C_prime_AA = self.pept[i + j]
+        energy = table_3_lacroix.loc[C3_AA, C_prime_AA] / 100
+
+        return energy
+
+    def get_dG_Hbond(self, i: int, j: int) -> float:
+        """
+        Get the free energy contribution for hydrogen bonding for a sequence.
+
+        Always subtract 4 residues for nucleation.
+        Add 1 additional non-contributing residue for each cap, as determined by get_capping_status().
+
+        Args:
+            i (int): The helix start index, python 0-indexed.
+            j (int): The helix length.
+
+        Returns:
+            float: The total free energy contribution for hydrogen bonding in the sequence.
+        """
+        is_valid_peptide_sequence(self.pept)
+        is_valid_index(self.pept, i, j)
+
+        # Start with nucleating residues
+        non_contributing = 4
+
+        # Add caps according to get_capping_status
+        has_ncap, has_ccap = get_capping_status(
+            self.pept, i, j, self.has_acetyl, self.has_succinyl, self.has_amide
+        )
+
+        if has_ncap:
+            non_contributing += 1
+        if has_ccap:
+            non_contributing += 1
+
+        # Calculate H-bond energy for remaining residues
+        energy = -0.895 * max((j - non_contributing), 0)
+
+        return energy
+
+    def get_dG_i3(self, i: int, j: int) -> np.ndarray:
+        """
+        Get the free energy contribution for interaction between each AAi and AAi+3 in the sequence.
+
+        Args:
+            i (int): The helix start index, python 0-indexed.
+            j (int): The helix length.
+
+        Returns:
+            np.ndarray: The free energy contributions for each interaction.
+        """
+        helix = get_helix(self.pept, i, j)
+
+        energy = np.zeros(len(helix))
+
+        # Get interaction free energies between non-charged residues
+        for idx in range(len(helix) - 3):
+            AAi = helix[idx]
+            AAi3 = helix[idx + 3]
+            base_energy = table_4a_lacroix.loc[AAi, AAi3] / 100
+
+            # Scale energy based on ionization state
+            if AAi in ["K", "R", "H", "D", "E"] and AAi3 in ["K", "R", "H", "D", "E"]:
+                q_i = (
+                    basic_residue_ionization(self.pH, pka_values.loc[AAi, "pKa"], 0, self.T)
+                    if AAi in ["K", "R", "H"]
+                    else acidic_residue_ionization(self.pH, pka_values.loc[AAi, "pKa"], 0, self.T)
+                )
+                q_i3 = (
+                    basic_residue_ionization(self.pH, pka_values.loc[AAi3, "pKa"], 0, self.T)
+                    if AAi3 in ["K", "R", "H"]
+                    else acidic_residue_ionization(self.pH, pka_values.loc[AAi3, "pKa"], 0, self.T)
+                )
+                energy[idx] = base_energy * abs(q_i * q_i3)
+            else:
+                energy[idx] = base_energy
+
+        return energy
+
+    def get_dG_i4(self, i: int, j: int) -> np.ndarray:
+        """
+        Get the free energy contribution for interaction between each AAi and AAi+4 in the sequence.
+
+        Args:
+            i (int): The helix start index, python 0-indexed.
+            j (int): The helix length.
+
+        Returns:
+            np.ndarray: The free energy contributions for each interaction.
+        """
+        helix = get_helix(self.pept, i, j)
+
+        energy = np.zeros(len(helix))
+
+        # Get interaction free energies between non-charged residues
+        for idx in range(len(helix) - 4):
+            AAi = helix[idx]
+            AAi4 = helix[idx + 4]
+            base_energy = table_4b_lacroix.loc[AAi, AAi4] / 100
+
+            # Scale energy based on ionization state
+            if AAi in ["K", "R", "H", "D", "E"] and AAi4 in ["K", "R", "H", "D", "E"]:
+                q_i = (
+                    basic_residue_ionization(self.pH, pka_values.loc[AAi, "pKa"], 0, self.T)
+                    if AAi in ["K", "R", "H"]
+                    else acidic_residue_ionization(self.pH, pka_values.loc[AAi, "pKa"], 0, self.T)
+                )
+                q_i4 = (
+                    basic_residue_ionization(self.pH, pka_values.loc[AAi4, "pKa"], 0, self.T)
+                    if AAi4 in ["K", "R", "H"]
+                    else acidic_residue_ionization(self.pH, pka_values.loc[AAi4, "pKa"], 0, self.T)
+                )
+                energy[idx] = base_energy * abs(q_i * q_i4)
+            else:
+                energy[idx] = base_energy
+
+        return energy
+
+    def get_dG_terminals_macrodipole(
+        self,
+        i: int,
+        j: int,
+    ) -> tuple[np.ndarray, np.ndarray]:
+        """Get the interaction energies for N- and C-terminal capping residues with the helix macrodipole.
+
+        Args:
+            i (int): Starting index of the helix segment.
+            j (int): Length of the helix segment.
+
+        Returns:
+            tuple[np.ndarray, np.ndarray]: Interaction energies for N and C terminals.
+        """
+        mu_helix = 0.5
+        helix = get_helix(self.pept, i, j)
+        N_term = np.zeros(len(helix))
+        C_term = np.zeros(len(helix))
+
+        # N terminal
+        residue = helix[0]
+        if (
+            not self.has_acetyl and not self.has_succinyl
+        ):  # guard against N-termenal capping residues (no charge, no interaction)
+            # TODO: Add pKa values for each aa
+            qKaN = pka_values.loc["Nterm", "pKa"]
+            distance_r_angstrom = calculate_r(i)  # Distance to N terminal
+            distance_r_meter = (
+                distance_r_angstrom * 1e-10
+            )  # Convert distance from Ångströms to meters
+            kappa = debue_screening_length(self.ionic_strength, self.T)
+            screening_factor = math.exp(
+                -kappa * distance_r_meter
+            )  # Second half of equation 6 from Lacroix, 1998.
+            N_term_energy = calculate_term_dipole_interaction_energy(
+                mu_helix, distance_r_angstrom, screening_factor, self.T
             )
+            q = basic_residue_ionization(self.pH, qKaN, N_term_energy, self.T)
+            N_term_energy *= q
+            N_term[0] = N_term_energy
 
-            # C-terminal interaction
-            position = "Ccap" if idx == len(helix) - 1 else f"C{len(helix)-idx-1}"
-            distance = table_7_ccap_lacroix.loc[aa, position]
-            energy[idx] -= electrostatic_interaction_energy(
-                q_dipole, 1, distance, ionic_strength, T
+        # C terminal
+        residue = helix[-1]
+        if (
+            not self.has_amide
+        ):  # guard against C-terminal capping residues (no charge, no interaction)
+            # TODO: Add pKa values for each aa
+            qKaC = pka_values.loc["Cterm", "pKa"]
+            distance_r_angstrom = calculate_r(len(self.pept) - (i + j))  # Distance to C terminal
+            distance_r_meter = (
+                distance_r_angstrom * 1e-10
+            )  # Convert distance from Ångströms to meters
+            kappa = debue_screening_length(self.ionic_strength, self.T)
+            screening_factor = math.exp(
+                -kappa * distance_r_meter
+            )  # Second half of equation 6 from Lacroix, 1998.
+            C_term_energy = calculate_term_dipole_interaction_energy(
+                mu_helix, distance_r_angstrom, screening_factor, self.T
             )
+            q = acidic_residue_ionization(self.pH, qKaC, C_term_energy, self.T)
+            C_term_energy *= -q
+            C_term[-1] = C_term_energy
 
-        elif aa in ["D", "E", "C", "Y"]:  # Negatively charged residues
-            # N-terminal interaction
-            position = "Ncap" if idx == 0 else f"N{idx}"
-            distance = table_7_ncap_lacroix.loc[aa, position]
-            energy[idx] -= electrostatic_interaction_energy(
-                q_dipole, 1, distance, ionic_strength, T
+        return N_term, C_term
+
+    def get_dG_sidechain_macrodipole(
+        self, i: int, j: int
+    ) -> np.ndarray:
+        """
+        Calculate the interaction energy between charged side-chains and the helix macrodipole.
+        The energy should be unaffected by N- and C-terminal modifications.
+
+        Args:
+            i (int): The helix start index, python 0-indexed.
+            j (int): The helix length.
+
+        Returns:
+            np.ndarray: The free energy contribution for each residue in the helix.
+        """
+        helix = get_helix(self.pept, i, j)
+        energy = np.zeros(len(helix))
+        q_dipole = 0.5  # Half-charge for the helix macrodipole
+
+        for idx, aa in enumerate(helix):
+            # The distance tables only contain values up to C13 from the C-terminus
+            # and N13 from the N-terminus, so we need to limit the calculations
+            # to avoid indexing errors
+            if len(helix) - idx - 1 > 13 or idx > 13:
+                continue
+
+            if aa in ["K", "R", "H"]:  # Positively charged residues
+                # N-terminal interaction
+                position = "Ncap" if idx == 0 else f"N{idx}"
+                distance = table_7_ncap_lacroix.loc[aa, position]
+                energy[idx] += electrostatic_interaction_energy(
+                    q_dipole, 1, distance, self.ionic_strength, self.T
+                )
+
+                # C-terminal interaction
+                position = "Ccap" if idx == len(helix) - 1 else f"C{len(helix)-idx-1}"
+                distance = table_7_ccap_lacroix.loc[aa, position]
+                energy[idx] -= electrostatic_interaction_energy(
+                    q_dipole, 1, distance, self.ionic_strength, self.T
+                )
+
+            elif aa in ["D", "E", "C", "Y"]:  # Negatively charged residues
+                # N-terminal interaction
+                position = "Ncap" if idx == 0 else f"N{idx}"
+                distance = table_7_ncap_lacroix.loc[aa, position]
+                energy[idx] -= electrostatic_interaction_energy(
+                    q_dipole, 1, distance, self.ionic_strength, self.T
+                )
+
+                # C-terminal interaction
+                position = "Ccap" if idx == len(helix) - 1 else f"C{len(helix)-idx-1}"
+                distance = table_7_ccap_lacroix.loc[aa, position]
+                energy[idx] += electrostatic_interaction_energy(
+                    q_dipole, 1, distance, self.ionic_strength, self.T
+                )
+
+        return energy
+
+    def get_dG_electrost(
+        self,
+        i: int,
+        j: int,
+    ) -> float:
+        """From Lecroix et al. 1998:
+        'This new term includes all electrostatic interactions between two charged residues
+        inside and outside the helical segment'
+        Use equations (5) - (11) from the 1998 lacroix paper.
+
+        Args:
+            i (int): The helix start index, python 0-indexed.
+            j (int): The helix length.
+        """
+        # TODO: Should we add the N- and C-term backbone charges here as well? Or better separated into a different function?
+
+        helix = get_helix(self.pept, i, j)
+        charged_pairs = find_charged_pairs(helix)
+        energy_sum = 0.0
+        for p in charged_pairs:
+            pair, distance = p[0], f"i+{p[1]}"
+            helix_dist = table_6_helix_lacroix.loc[pair, distance]
+            coil_dist = table_6_coil_lacroix.loc[pair, distance]
+
+            # Lacroix Eq (6). First assume qp = qi = 1
+            qi, qp = 1, 1
+            G_hel = electrostatic_interaction_energy(qi, qp, helix_dist, self.ionic_strength, self.T)
+            G_rc = electrostatic_interaction_energy(qi, qp, coil_dist, self.ionic_strength, self.T)
+
+            # Lacroix Eq (8)
+            res1, res2 = pair
+            pKa_ref_1 = pka_values.loc[res1, "pKa"]
+            pKa_ref_2 = pka_values.loc[res2, "pKa"]
+            pKa_rc_1, pKa_rc_2 = pKa_ref_1 + G_rc / (
+                2.3 * 1.987e-3 * self.T
+            ), pKa_ref_2 + G_rc / (2.3 * 1.987e-3 * self.T)
+
+            # Lacroix Eq (9)
+            pKa_hel_1, pKa_hel_2 = pKa_ref_1 + G_hel / (
+                2.3 * 1.987e-3 * self.T
+            ), pKa_ref_2 + G_hel / (2.3 * 1.987e-3 * self.T)
+
+            # Lacroix Eq (10)
+            if res1 in ["D", "E"]:
+                q1_hel = acidic_residue_ionization(self.pH, pKa_hel_1, G_hel, self.T)
+                q1_rc = acidic_residue_ionization(self.pH, pKa_rc_1, G_rc, self.T)
+            else:
+                q1_hel = basic_residue_ionization(self.pH, pKa_hel_1, G_hel, self.T)
+                q1_rc = basic_residue_ionization(self.pH, pKa_rc_1, G_rc, self.T)
+
+            if res2 in ["D", "E"]:
+                q2_hel = acidic_residue_ionization(self.pH, pKa_hel_2, G_hel, self.T)
+                q2_rc = acidic_residue_ionization(self.pH, pKa_rc_2, G_rc, self.T)
+            else:
+                q2_hel = basic_residue_ionization(self.pH, pKa_hel_2, G_hel, self.T)
+                q2_rc = basic_residue_ionization(self.pH, pKa_rc_2, G_rc, self.T)
+
+            # Lacroix Eq (6) again, with the updated values
+            G_hel = electrostatic_interaction_energy(
+                q1_hel, q2_hel, helix_dist, self.ionic_strength, self.T
             )
-
-            # C-terminal interaction
-            position = "Ccap" if idx == len(helix) - 1 else f"C{len(helix)-idx-1}"
-            distance = table_7_ccap_lacroix.loc[aa, position]
-            energy[idx] += electrostatic_interaction_energy(
-                q_dipole, 1, distance, ionic_strength, T
+            G_rc = electrostatic_interaction_energy(
+                q1_rc, q2_rc, coil_dist, self.ionic_strength, self.T
             )
+            energy_sum += G_hel - G_rc
 
-    return energy
+        return energy_sum
+
