@@ -435,11 +435,7 @@ class EnergyCalculator:
 
         return result
 
-    def get_dG_Int(
-        self,
-        i: int,
-        j: int,
-    ) -> np.ndarray:
+    def get_dG_Int(self, i: int, j: int) -> np.ndarray:
         """
         Get the intrinsic free energy contributions for a sequence.
         The first and last residues are considered to be caps unless they are
@@ -457,16 +453,16 @@ class EnergyCalculator:
             self.pept, i, j, self.has_acetyl, self.has_succinyl, self.has_amide
         )
 
-        # initialize energy array
+        # Initialize energy array
         energy = np.zeros(len(helix))
 
-        # iterate over the helix and get the intrinsic energy for each residue
+        # Iterate over the helix and get the intrinsic energy for each residue
         for idx, AA in enumerate(helix):
             # Skip caps only if they exist for this segment
             if (idx == 0 and has_ncap) or (idx == len(helix) - 1 and has_ccap):
                 continue
 
-            # Handle N-terminal region specially (note: these positions are relative to helix start)
+            # Handle N-terminal region specially
             if idx == 1 or (idx == 0 and not has_ncap):
                 energy[idx] = table_1_lacroix.loc[AA, "N1"]
             elif idx == 2 or (idx == 1 and not has_ncap):
@@ -476,16 +472,18 @@ class EnergyCalculator:
             elif idx == 4 or (idx == 3 and not has_ncap):
                 energy[idx] = table_1_lacroix.loc[AA, "N4"]
             else:
-                # Use precomputed ionization state for helical residues
-                q = self.q_global_hel[i + idx]
-                if AA not in ["C", "D", "E", "H", "K", "R", "Y"]:
-                    energy[idx] = table_1_lacroix.loc[AA, "Ncen"]
-                else:
+                # For central residues
+                if AA in ["C", "D", "E", "H", "K", "R", "Y"]:
+                    # Charged residues: use precomputed ionization state
+                    q = self.q_global_hel[i + idx]
                     basic_energy_ncen = table_1_lacroix.loc[AA, "Ncen"]
                     basic_energy_neutral = table_1_lacroix.loc[AA, "Neutral"]
                     energy[idx] = q * basic_energy_ncen + (1 - q) * basic_energy_neutral
+                else:
+                    # Uncharged residues: directly use Ncen
+                    energy[idx] = table_1_lacroix.loc[AA, "Ncen"]
 
-            return energy
+        return energy
 
     def get_dG_Ncap(
         self,
