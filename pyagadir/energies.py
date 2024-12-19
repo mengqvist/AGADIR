@@ -155,44 +155,51 @@ def get_capping_status(
     return has_ncap, has_ccap
 
 
-def acidic_residue_ionization(pH: float, pKa: float, deltaG: float, T: float) -> float:
-    """Degree of ionization indicates the fraction of molecules that
-    are protonated (neutral) vs. deprotonated (negatively charged).
-    Uses the Henderson-Hasselbalch equation to calculate the degree of ionization.
+def adjust_pKa(T: float, pKa_ref: float, deltaG: float) -> float:
+    """
+    Adjust the pKa of a residue based on its free energy difference.
+    Eq. 8-9 in Lacroix 1998
+
+    Args:
+        T (float): Temperature in Kelvin.
+        pKa_ref (float): Reference pKa value.
+        deltaG (float): Free energy difference (kcal/mol).
+
+    Returns:
+        float: Adjusted pKa value.
+    """
+    R = 1.987e-3  # kcal/(mol K)
+    return pKa_ref + deltaG / (2.3 * R * T)
+
+
+def acidic_residue_ionization(pH: float, pKa: float) -> float:
+    """
+    Calculate the degree of ionization for acidic residues.
+    Uses the Henderson-Hasselbalch equation.
 
     Args:
         pH (float): The pH of the solution.
-        pKa (float): The pKa value of the basic residue.
-        deltaG (float): The free energy of Helix or coil
-        T (float): The temperature in Kelvin.
+        pKa (float): Adjusted pKa value.
 
     Returns:
-        float: The degree of ionization.
+        float: Ionization state (-1 for fully deprotonated, 0 for neutral).
     """
-    R = 1.987e-3  # kcal/(mol K)
-    pKa = pKa + deltaG / (2.3 * R * T)  # Eq. 8-9 Lacroix 1998
-    q_acid = -1 / (1 + 10 ** (pKa - pH))
-    return q_acid
+    return -1 / (1 + 10 ** (pKa - pH))
 
 
-def basic_residue_ionization(pH: float, pKa: float, deltaG: float, T: float) -> float:
-    """Degree of ionization indicates the fraction of molecules that
-    are protonated (positively charged) vs. deprotonated (neutral).
-    Uses the Henderson-Hasselbalch equation to calculate the degree of ionization.
+def basic_residue_ionization(pH: float, pKa: float) -> float:
+    """
+    Calculate the degree of ionization for basic residues.
+    Uses the Henderson-Hasselbalch equation.
 
     Args:
         pH (float): The pH of the solution.
-        pKa (float): The pKa value of the basic residue.
-        deltaG (float): The free energy of Helix or coil
-        T (float): The temperature in Kelvin.
+        pKa (float): Adjusted pKa value.
 
     Returns:
-        float: The degree of ionization.
+        float: Ionization state (1 for fully protonated, 0 for neutral).
     """
-    R = 1.987e-3  # kcal/(mol K)
-    pKa = pKa - deltaG / (2.3 * R * T)  # Eq. 8-9 Lacroix 1998
-    q_base = 1 / (1 + 10 ** (pH - pKa))
-    return q_base
+    return 1 / (1 + 10 ** (pH - pKa))
 
 
 def calculate_r(N: int) -> float:
@@ -342,26 +349,6 @@ def electrostatic_interaction_energy(
     return energy_kcal_mol
 
 
-def find_charged_pairs(seq: str) -> list[tuple[str, int]]:
-    """Find all pairs of charged residues in a sequence and their distance.
-
-    Args:
-        seq (str): The peptide sequence.
-
-    Returns:
-        list[tuple[str, int]]: List of pairs of charged residues and their distance.
-    """
-    charged_amino_acids = {"K", "R", "H", "D", "E"}
-    positions = [(i + 1, aa) for i, aa in enumerate(seq) if aa in charged_amino_acids]
-    result = []
-    for i in range(len(positions)):
-        pos_i, aa_i = positions[i]
-        for j in range(i + 1, len(positions)):
-            pos_j, aa_j = positions[j]
-            pair = aa_i + aa_j
-            distance = pos_j - pos_i
-            result.append((pair, distance))
-    return result
 
 class EnergyCalculator:
     """
@@ -388,27 +375,65 @@ class EnergyCalculator:
         self.has_succinyl = has_succinyl
         self.has_amide = has_amide
 
-        # Precompute ionization states
-        self.ionization_states = self._precompute_ionization_states()
+        # Precompute ionization states for helical and random-coil states
+        self.q_global_hel, self.q_global_rc = self._precompute_ionization_states()
 
-    def _precompute_ionization_states(self) -> np.ndarray:
-        """Precompute ionization states for all residues in the peptide.
-        
-        Returns:
-            np.ndarray: Array of ionization states for each residue in the peptide.
-                       0 = neutral, 1 = ionized.
+    def _precompute_ionization_states(self) -> tuple[np.ndarray, np.ndarray]:
         """
-        ionization_states = np.zeros(len(self.pept))
+        Precompute ionization states for all residues in the peptide
+        for both helical and random-coil states.
+
+        Returns:
+            tuple[np.ndarray, np.ndarray]: Ionization states for helical and random-coil states.
+        """
+        q_hel = np.zeros(len(self.pept))
+        q_rc = np.zeros(len(self.pept))
+
         for idx, AA in enumerate(self.pept):
+
             if AA in ["C", "D", "E", "Y"]:
-                pKa = pka_values.loc[AA, "pKa"]
-                ionization_states[idx] = acidic_residue_ionization(self.pH, pKa, 0, self.T)
+                pKa_ref = pka_values.loc[AA, "pKa"]
+                pKa_rc = adjust_pKa(self.T, pKa_ref, deltaG=0.0)  # Coil state
+                pKa_hel = adjust_pKa(self.T, pKa_ref, deltaG=-0.5)  # Helix state (example deltaG)
+                q_rc[idx] = acidic_residue_ionization(self.pH, pKa_rc)
+                q_hel[idx] = acidic_residue_ionization(self.pH, pKa_hel)
+
             elif AA in ["K", "R", "H"]:
-                pKa = pka_values.loc[AA, "pKa"]
-                ionization_states[idx] = basic_residue_ionization(self.pH, pKa, 0, self.T)
+                pKa_ref = pka_values.loc[AA, "pKa"]
+                pKa_rc = adjust_pKa(self.T, pKa_ref, deltaG=0.0)  # Coil state
+                pKa_hel = adjust_pKa(self.T, pKa_ref, deltaG=-0.5)  # Helix state (example deltaG)
+                q_rc[idx] = basic_residue_ionization(self.pH, pKa_rc)
+                q_hel[idx] = basic_residue_ionization(self.pH, pKa_hel)
 
-        return ionization_states
+        return q_hel, q_rc
 
+    def _find_charged_pairs(self, seq: str, start_idx: int = 0) -> list[tuple[str, int, int]]:
+        """
+        Find all pairs of charged residues in a sequence and their global positions.
+
+        Args:
+            seq (str): The peptide sequence.
+            start_idx (int): The global start index of the sequence in the full peptide.
+
+        Returns:
+            list[tuple[str, int, int]]: List of tuples containing:
+                - Pair of charged residues as a string (e.g., "KR").
+                - Global index of the first residue.
+                - Global index of the second residue.
+        """
+        charged_amino_acids = {"K", "R", "H", "D", "E", "Y"}
+        positions = [(start_idx + i, aa) for i, aa in enumerate(seq) if aa in charged_amino_acids]
+        result = []
+
+        # Iterate over all pairs of charged residues
+        for i in range(len(positions)):
+            pos_i, aa_i = positions[i]
+            for j in range(i + 1, len(positions)):
+                pos_j, aa_j = positions[j]
+                pair = aa_i + aa_j
+                result.append((pair, pos_i, pos_j))  # Include global positions
+
+        return result
 
     def get_dG_Int(
         self,
@@ -451,25 +476,16 @@ class EnergyCalculator:
             elif idx == 4 or (idx == 3 and not has_ncap):
                 energy[idx] = table_1_lacroix.loc[AA, "N4"]
             else:
+                # Use precomputed ionization state for helical residues
+                q = self.q_global_hel[i + idx]
                 if AA not in ["C", "D", "E", "H", "K", "R", "Y"]:
                     energy[idx] = table_1_lacroix.loc[AA, "Ncen"]
                 else:
-                    # pH-dependent selection between 'Ncen' and 'Neutral'
-                    pKa = pka_values.loc[AA, "pKa"]
                     basic_energy_ncen = table_1_lacroix.loc[AA, "Ncen"]
                     basic_energy_neutral = table_1_lacroix.loc[AA, "Neutral"]
-                    if AA in ["C", "D", "E", "Y"]:
-                        q = acidic_residue_ionization(self.pH, pKa, 0, self.T)
-                        energy[idx] = q * basic_energy_ncen + (1 - q) * basic_energy_neutral
-                    elif AA in ["H", "K", "R"]:
-                        q = basic_residue_ionization(self.pH, pKa, 0, self.T)
-                        energy[idx] = q * basic_energy_ncen + (1 - q) * basic_energy_neutral
-                    else:
-                        raise ValueError(
-                            f"Invalid logic in internal energy selection: {AA}"
-                        )
+                    energy[idx] = q * basic_energy_ncen + (1 - q) * basic_energy_neutral
 
-        return energy
+            return energy
 
     def get_dG_Ncap(
         self,
@@ -661,15 +677,14 @@ class EnergyCalculator:
         Returns:
             float: The total free energy contribution for hydrogen bonding in the sequence.
         """
-        is_valid_peptide_sequence(self.pept)
-        is_valid_index(self.pept, i, j)
+        helix = get_helix(self.pept, i, j)
 
         # Start with nucleating residues
         non_contributing = 4
 
         # Add caps according to get_capping_status
         has_ncap, has_ccap = get_capping_status(
-            self.pept, i, j, self.has_acetyl, self.has_succinyl, self.has_amide
+            helix, i, j, self.has_acetyl, self.has_succinyl, self.has_amide
         )
 
         if has_ncap:
@@ -694,27 +709,18 @@ class EnergyCalculator:
             np.ndarray: The free energy contributions for each interaction.
         """
         helix = get_helix(self.pept, i, j)
-
         energy = np.zeros(len(helix))
 
-        # Get interaction free energies between non-charged residues
+        # Get interaction free energies for charged residues
         for idx in range(len(helix) - 3):
             AAi = helix[idx]
             AAi3 = helix[idx + 3]
             base_energy = table_4a_lacroix.loc[AAi, AAi3] / 100
 
-            # Scale energy based on ionization state
             if AAi in ["K", "R", "H", "D", "E"] and AAi3 in ["K", "R", "H", "D", "E"]:
-                q_i = (
-                    basic_residue_ionization(self.pH, pka_values.loc[AAi, "pKa"], 0, self.T)
-                    if AAi in ["K", "R", "H"]
-                    else acidic_residue_ionization(self.pH, pka_values.loc[AAi, "pKa"], 0, self.T)
-                )
-                q_i3 = (
-                    basic_residue_ionization(self.pH, pka_values.loc[AAi3, "pKa"], 0, self.T)
-                    if AAi3 in ["K", "R", "H"]
-                    else acidic_residue_ionization(self.pH, pka_values.loc[AAi3, "pKa"], 0, self.T)
-                )
+                # Use precomputed ionization states for the helical state
+                q_i = self.q_global_hel[i + idx]
+                q_i3 = self.q_global_hel[i + idx + 3]
                 energy[idx] = base_energy * abs(q_i * q_i3)
             else:
                 energy[idx] = base_energy
@@ -733,97 +739,166 @@ class EnergyCalculator:
             np.ndarray: The free energy contributions for each interaction.
         """
         helix = get_helix(self.pept, i, j)
-
         energy = np.zeros(len(helix))
 
-        # Get interaction free energies between non-charged residues
+        # Get interaction free energies for charged residues
         for idx in range(len(helix) - 4):
             AAi = helix[idx]
             AAi4 = helix[idx + 4]
             base_energy = table_4b_lacroix.loc[AAi, AAi4] / 100
 
-            # Scale energy based on ionization state
             if AAi in ["K", "R", "H", "D", "E"] and AAi4 in ["K", "R", "H", "D", "E"]:
-                q_i = (
-                    basic_residue_ionization(self.pH, pka_values.loc[AAi, "pKa"], 0, self.T)
-                    if AAi in ["K", "R", "H"]
-                    else acidic_residue_ionization(self.pH, pka_values.loc[AAi, "pKa"], 0, self.T)
-                )
-                q_i4 = (
-                    basic_residue_ionization(self.pH, pka_values.loc[AAi4, "pKa"], 0, self.T)
-                    if AAi4 in ["K", "R", "H"]
-                    else acidic_residue_ionization(self.pH, pka_values.loc[AAi4, "pKa"], 0, self.T)
-                )
+                # Use precomputed ionization states for the helical state
+                q_i = self.q_global_hel[i + idx]
+                q_i4 = self.q_global_hel[i + idx + 4]
                 energy[idx] = base_energy * abs(q_i * q_i4)
             else:
                 energy[idx] = base_energy
 
         return energy
 
-    def get_dG_terminals_macrodipole(
-        self,
-        i: int,
-        j: int,
-    ) -> tuple[np.ndarray, np.ndarray]:
-        """Get the interaction energies for N- and C-terminal capping residues with the helix macrodipole.
+    def get_dG_terminals_macrodipole(self, i: int, j: int) -> tuple[np.ndarray, np.ndarray]:
+        """
+        Calculate interaction energies between N- and C-terminal residues and the helix macrodipole.
 
         Args:
             i (int): Starting index of the helix segment.
             j (int): Length of the helix segment.
 
         Returns:
-            tuple[np.ndarray, np.ndarray]: Interaction energies for N and C terminals.
+            tuple[np.ndarray, np.ndarray]: Interaction energies for N-terminal and C-terminal residues.
         """
-        mu_helix = 0.5
+        mu_helix = 0.5  # Helix dipole moment
         helix = get_helix(self.pept, i, j)
         N_term = np.zeros(len(helix))
         C_term = np.zeros(len(helix))
 
-        # N terminal
-        residue = helix[0]
-        if (
-            not self.has_acetyl and not self.has_succinyl
-        ):  # guard against N-termenal capping residues (no charge, no interaction)
-            # TODO: Add pKa values for each aa
-            qKaN = pka_values.loc["Nterm", "pKa"]
-            distance_r_angstrom = calculate_r(i)  # Distance to N terminal
-            distance_r_meter = (
-                distance_r_angstrom * 1e-10
-            )  # Convert distance from Ångströms to meters
+        def _calculate_terminal_energy(
+            distance_r_angstrom: float, pKa_ref: float, residue_type: str, terminal: str
+        ) -> float:
+            """
+            Calculate interaction energy for terminal residues with the helix dipole.
+
+            Args:
+                distance_r_angstrom (float): Distance from terminal to helix.
+                pKa_ref (float): Reference pKa value.
+                residue_type (str): 'acidic' or 'basic'.
+                terminal (str): 'N' or 'C'.
+
+            Returns:
+                float: The calculated terminal energy.
+            """
+            # Convert distance to meters and compute screening factor
+            distance_r_meter = distance_r_angstrom * 1e-10
             kappa = debue_screening_length(self.ionic_strength, self.T)
-            screening_factor = math.exp(
-                -kappa * distance_r_meter
-            )  # Second half of equation 6 from Lacroix, 1998.
-            N_term_energy = calculate_term_dipole_interaction_energy(
+            screening_factor = math.exp(-kappa * distance_r_meter)
+
+            # Calculate terminal interaction energy
+            energy = calculate_term_dipole_interaction_energy(
                 mu_helix, distance_r_angstrom, screening_factor, self.T
             )
-            q = basic_residue_ionization(self.pH, qKaN, N_term_energy, self.T)
-            N_term_energy *= q
+
+            # Adjust ionization state using precomputed pKa
+            if residue_type == "basic":
+                q = basic_residue_ionization(self.pH, pKa_ref)
+            elif residue_type == "acidic":
+                q = acidic_residue_ionization(self.pH, pKa_ref)
+            else:
+                raise ValueError(f"Invalid residue type: {residue_type}")
+
+            # Adjust energy by ionization state
+            if terminal == "C":
+                energy *= -q  # C-terminal interaction is negative
+            else:
+                energy *= q  # N-terminal interaction
+
+            return energy
+
+        # N-terminal calculation
+        if not self.has_acetyl and not self.has_succinyl:  # N-terminal not capped
+            pKa_Nterm = pka_values.loc["Nterm", "pKa"]
+            distance_r_N = calculate_r(i)
+            N_term_energy = _calculate_terminal_energy(
+                distance_r_N, pKa_Nterm, "basic", terminal="N"
+            )
             N_term[0] = N_term_energy
 
-        # C terminal
-        residue = helix[-1]
-        if (
-            not self.has_amide
-        ):  # guard against C-terminal capping residues (no charge, no interaction)
-            # TODO: Add pKa values for each aa
-            qKaC = pka_values.loc["Cterm", "pKa"]
-            distance_r_angstrom = calculate_r(len(self.pept) - (i + j))  # Distance to C terminal
-            distance_r_meter = (
-                distance_r_angstrom * 1e-10
-            )  # Convert distance from Ångströms to meters
-            kappa = debue_screening_length(self.ionic_strength, self.T)
-            screening_factor = math.exp(
-                -kappa * distance_r_meter
-            )  # Second half of equation 6 from Lacroix, 1998.
-            C_term_energy = calculate_term_dipole_interaction_energy(
-                mu_helix, distance_r_angstrom, screening_factor, self.T
+        # C-terminal calculation
+        if not self.has_amide:  # C-terminal not capped
+            pKa_Cterm = pka_values.loc["Cterm", "pKa"]
+            distance_r_C = calculate_r(len(self.pept) - (i + j))
+            C_term_energy = _calculate_terminal_energy(
+                distance_r_C, pKa_Cterm, "acidic", terminal="C"
             )
-            q = acidic_residue_ionization(self.pH, qKaC, C_term_energy, self.T)
-            C_term_energy *= -q
             C_term[-1] = C_term_energy
 
         return N_term, C_term
+
+
+    # def get_dG_terminals_macrodipole(
+    #     self,
+    #     i: int,
+    #     j: int,
+    # ) -> tuple[np.ndarray, np.ndarray]:
+    #     """Get the interaction energies for N- and C-terminal capping residues with the helix macrodipole.
+
+    #     Args:
+    #         i (int): Starting index of the helix segment.
+    #         j (int): Length of the helix segment.
+
+    #     Returns:
+    #         tuple[np.ndarray, np.ndarray]: Interaction energies for N and C terminals.
+    #     """
+    #     mu_helix = 0.5
+    #     helix = get_helix(self.pept, i, j)
+    #     N_term = np.zeros(len(helix))
+    #     C_term = np.zeros(len(helix))
+
+    #     # N terminal
+    #     residue = helix[0]
+    #     if (
+    #         not self.has_acetyl and not self.has_succinyl
+    #     ):  # guard against N-termenal capping residues (no charge, no interaction)
+    #         # TODO: Add pKa values for each aa
+    #         qKaN = pka_values.loc["Nterm", "pKa"]
+    #         distance_r_angstrom = calculate_r(i)  # Distance to N terminal
+    #         distance_r_meter = (
+    #             distance_r_angstrom * 1e-10
+    #         )  # Convert distance from Ångströms to meters
+    #         kappa = debue_screening_length(self.ionic_strength, self.T)
+    #         screening_factor = math.exp(
+    #             -kappa * distance_r_meter
+    #         )  # Second half of equation 6 from Lacroix, 1998.
+    #         N_term_energy = calculate_term_dipole_interaction_energy(
+    #             mu_helix, distance_r_angstrom, screening_factor, self.T
+    #         )
+    #         q = basic_residue_ionization(self.pH, qKaN, N_term_energy, self.T)
+    #         N_term_energy *= q
+    #         N_term[0] = N_term_energy
+
+    #     # C terminal
+    #     residue = helix[-1]
+    #     if (
+    #         not self.has_amide
+    #     ):  # guard against C-terminal capping residues (no charge, no interaction)
+    #         # TODO: Add pKa values for each aa
+    #         qKaC = pka_values.loc["Cterm", "pKa"]
+    #         distance_r_angstrom = calculate_r(len(self.pept) - (i + j))  # Distance to C terminal
+    #         distance_r_meter = (
+    #             distance_r_angstrom * 1e-10
+    #         )  # Convert distance from Ångströms to meters
+    #         kappa = debue_screening_length(self.ionic_strength, self.T)
+    #         screening_factor = math.exp(
+    #             -kappa * distance_r_meter
+    #         )  # Second half of equation 6 from Lacroix, 1998.
+    #         C_term_energy = calculate_term_dipole_interaction_energy(
+    #             mu_helix, distance_r_angstrom, screening_factor, self.T
+    #         )
+    #         q = acidic_residue_ionization(self.pH, qKaC, C_term_energy, self.T)
+    #         C_term_energy *= -q
+    #         C_term[-1] = C_term_energy
+
+    #     return N_term, C_term
 
     def get_dG_sidechain_macrodipole(
         self, i: int, j: int
@@ -881,72 +956,136 @@ class EnergyCalculator:
                 )
 
         return energy
-
-    def get_dG_electrost(
-        self,
-        i: int,
-        j: int,
-    ) -> float:
-        """From Lecroix et al. 1998:
-        'This new term includes all electrostatic interactions between two charged residues
-        inside and outside the helical segment'
-        Use equations (5) - (11) from the 1998 lacroix paper.
+        
+    def get_dG_electrost(self, i: int, j: int) -> float:
+        """
+        Calculate the electrostatic free energy contribution for charged residues inside and outside
+        the helical segment, using Lacroix et al. (1998) equations.
 
         Args:
-            i (int): The helix start index, python 0-indexed.
+            i (int): The helix start index (0-indexed).
             j (int): The helix length.
+
+        Returns:
+            float: The total electrostatic free energy contribution.
         """
-        # TODO: Should we add the N- and C-term backbone charges here as well? Or better separated into a different function?
-
-        helix = get_helix(self.pept, i, j)
-        charged_pairs = find_charged_pairs(helix)
+        helix = get_helix(self.pept, i, j)  # Extract helical segment
+        charged_pairs = self._find_charged_pairs(helix, start_idx=i)  # Identify charged pairs
         energy_sum = 0.0
-        for p in charged_pairs:
-            pair, distance = p[0], f"i+{p[1]}"
-            helix_dist = table_6_helix_lacroix.loc[pair, distance]
-            coil_dist = table_6_coil_lacroix.loc[pair, distance]
 
-            # Lacroix Eq (6). First assume qp = qi = 1
-            qi, qp = 1, 1
-            G_hel = electrostatic_interaction_energy(qi, qp, helix_dist, self.ionic_strength, self.T)
-            G_rc = electrostatic_interaction_energy(qi, qp, coil_dist, self.ionic_strength, self.T)
+        # Iterate over all charged residue pairs
+        for pair, idx1, idx2 in charged_pairs:
+            res1, res2 = pair  # Amino acid types (e.g., "K", "E")
+            distance_key = f"i+{abs(idx2 - idx1)}"
 
-            # Lacroix Eq (8)
-            res1, res2 = pair
+            # Fetch distances from tables
+            # TODO: There are more special cases to handle here, e.g. in the case of capping glycines, need to fix!
+            # TODO: The distance only goes to 12 residues, so we need to handle the case where the distance is too long.
+            try:
+                helix_dist = table_6_helix_lacroix.loc[pair, distance_key]
+            except (KeyError, ValueError):
+                helix_dist = table_6_helix_lacroix.loc['HelixRest', distance_key]
+
+            try:
+                coil_dist = table_6_coil_lacroix.loc[pair, distance_key]
+            except (KeyError, ValueError):
+                coil_dist = table_6_coil_lacroix.loc['RcoilRest', distance_key]
+
+            # Step 1: Get reference pKa values for both residues
             pKa_ref_1 = pka_values.loc[res1, "pKa"]
             pKa_ref_2 = pka_values.loc[res2, "pKa"]
-            pKa_rc_1, pKa_rc_2 = pKa_ref_1 + G_rc / (
-                2.3 * 1.987e-3 * self.T
-            ), pKa_ref_2 + G_rc / (2.3 * 1.987e-3 * self.T)
 
-            # Lacroix Eq (9)
-            pKa_hel_1, pKa_hel_2 = pKa_ref_1 + G_hel / (
-                2.3 * 1.987e-3 * self.T
-            ), pKa_ref_2 + G_hel / (2.3 * 1.987e-3 * self.T)
+            # Step 2: Assume full unit charges and calculate initial G_hel and G_rc, Lacroix Eq 6
+            G_hel = electrostatic_interaction_energy(1, 1, helix_dist, self.ionic_strength, self.T)
+            G_rc = electrostatic_interaction_energy(1, 1, coil_dist, self.ionic_strength, self.T)
 
-            # Lacroix Eq (10)
-            if res1 in ["D", "E"]:
-                q1_hel = acidic_residue_ionization(self.pH, pKa_hel_1, G_hel, self.T)
-                q1_rc = acidic_residue_ionization(self.pH, pKa_rc_1, G_rc, self.T)
-            else:
-                q1_hel = basic_residue_ionization(self.pH, pKa_hel_1, G_hel, self.T)
-                q1_rc = basic_residue_ionization(self.pH, pKa_rc_1, G_rc, self.T)
+            # Step 3: Adjust pKa values based on the local free energy contributions, Lacroix Eq 8 and 9
+            pKa_hel_1 = adjust_pKa(self.T, pKa_ref_1, G_hel)
+            pKa_hel_2 = adjust_pKa(self.T, pKa_ref_2, G_hel)
+            pKa_rc_1 = adjust_pKa(self.T, pKa_ref_1, G_rc)
+            pKa_rc_2 = adjust_pKa(self.T, pKa_ref_2, G_rc)
 
-            if res2 in ["D", "E"]:
-                q2_hel = acidic_residue_ionization(self.pH, pKa_hel_2, G_hel, self.T)
-                q2_rc = acidic_residue_ionization(self.pH, pKa_rc_2, G_rc, self.T)
-            else:
-                q2_hel = basic_residue_ionization(self.pH, pKa_hel_2, G_hel, self.T)
-                q2_rc = basic_residue_ionization(self.pH, pKa_rc_2, G_rc, self.T)
+            # Step 4: Recalculate ionization states using adjusted pKa (Equations 10-11)
+            q1_hel = acidic_residue_ionization(self.pH, pKa_hel_1) if res1 in ["D", "E"] else basic_residue_ionization(self.pH, pKa_hel_1)
+            q2_hel = acidic_residue_ionization(self.pH, pKa_hel_2) if res2 in ["D", "E"] else basic_residue_ionization(self.pH, pKa_hel_2)
+            q1_rc = acidic_residue_ionization(self.pH, pKa_rc_1) if res1 in ["D", "E"] else basic_residue_ionization(self.pH, pKa_rc_1)
+            q2_rc = acidic_residue_ionization(self.pH, pKa_rc_2) if res2 in ["D", "E"] else basic_residue_ionization(self.pH, pKa_rc_2)
 
-            # Lacroix Eq (6) again, with the updated values
-            G_hel = electrostatic_interaction_energy(
-                q1_hel, q2_hel, helix_dist, self.ionic_strength, self.T
-            )
-            G_rc = electrostatic_interaction_energy(
-                q1_rc, q2_rc, coil_dist, self.ionic_strength, self.T
-            )
+            # Step 5: Recalculate electrostatic interaction energies with adjusted ionization states, Lacroix Eq 6
+            G_hel = electrostatic_interaction_energy(q1_hel, q2_hel, helix_dist, self.ionic_strength, self.T)
+            G_rc = electrostatic_interaction_energy(q1_rc, q2_rc, coil_dist, self.ionic_strength, self.T)
+
+            # Step 6: Add the energy difference to the total
             energy_sum += G_hel - G_rc
 
         return energy_sum
+
+
+    # def get_dG_electrost(
+    #     self,
+    #     i: int,
+    #     j: int,
+    # ) -> float:
+    #     """From Lecroix et al. 1998:
+    #     'This new term includes all electrostatic interactions between two charged residues
+    #     inside and outside the helical segment'
+    #     Use equations (5) - (11) from the 1998 lacroix paper.
+
+    #     Args:
+    #         i (int): The helix start index, python 0-indexed.
+    #         j (int): The helix length.
+    #     """
+    #     # TODO: Should we add the N- and C-term backbone charges here as well? Or better separated into a different function?
+
+    #     helix = get_helix(self.pept, i, j)
+    #     charged_pairs = find_charged_pairs(helix)
+    #     energy_sum = 0.0
+    #     for p in charged_pairs:
+    #         pair, distance = p[0], f"i+{p[1]}"
+    #         helix_dist = table_6_helix_lacroix.loc[pair, distance]
+    #         coil_dist = table_6_coil_lacroix.loc[pair, distance]
+
+    #         # Lacroix Eq (6). First assume qp = qi = 1
+    #         qi, qp = 1, 1
+    #         G_hel = electrostatic_interaction_energy(qi, qp, helix_dist, self.ionic_strength, self.T)
+    #         G_rc = electrostatic_interaction_energy(qi, qp, coil_dist, self.ionic_strength, self.T)
+
+    #         # Lacroix Eq (8)
+    #         res1, res2 = pair
+    #         pKa_ref_1 = pka_values.loc[res1, "pKa"]
+    #         pKa_ref_2 = pka_values.loc[res2, "pKa"]
+    #         pKa_rc_1, pKa_rc_2 = pKa_ref_1 + G_rc / (
+    #             2.3 * 1.987e-3 * self.T
+    #         ), pKa_ref_2 + G_rc / (2.3 * 1.987e-3 * self.T)
+
+    #         # Lacroix Eq (9)
+    #         pKa_hel_1, pKa_hel_2 = pKa_ref_1 + G_hel / (
+    #             2.3 * 1.987e-3 * self.T
+    #         ), pKa_ref_2 + G_hel / (2.3 * 1.987e-3 * self.T)
+
+    #         # Lacroix Eq (10)
+    #         if res1 in ["D", "E"]:
+    #             q1_hel = acidic_residue_ionization(self.pH, pKa_hel_1, G_hel, self.T)
+    #             q1_rc = acidic_residue_ionization(self.pH, pKa_rc_1, G_rc, self.T)
+    #         else:
+    #             q1_hel = basic_residue_ionization(self.pH, pKa_hel_1, G_hel, self.T)
+    #             q1_rc = basic_residue_ionization(self.pH, pKa_rc_1, G_rc, self.T)
+
+    #         if res2 in ["D", "E"]:
+    #             q2_hel = acidic_residue_ionization(self.pH, pKa_hel_2, G_hel, self.T)
+    #             q2_rc = acidic_residue_ionization(self.pH, pKa_rc_2, G_rc, self.T)
+    #         else:
+    #             q2_hel = basic_residue_ionization(self.pH, pKa_hel_2, G_hel, self.T)
+    #             q2_rc = basic_residue_ionization(self.pH, pKa_rc_2, G_rc, self.T)
+
+    #         # Lacroix Eq (6) again, with the updated values
+    #         G_hel = electrostatic_interaction_energy(
+    #             q1_hel, q2_hel, helix_dist, self.ionic_strength, self.T
+    #         )
+    #         G_rc = electrostatic_interaction_energy(
+    #             q1_rc, q2_rc, coil_dist, self.ionic_strength, self.T
+    #         )
+    #         energy_sum += G_hel - G_rc
+
+    #     return energy_sum
 
