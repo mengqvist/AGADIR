@@ -242,7 +242,7 @@ def reproduce_figure_3b():
 
     # set the x-axis to be the same as the paper
     ax.set_xlim(2.8, 12)
-    ax.set_ylim(0, 65)
+    ax.set_ylim(-10, 100)
 
     # plot pyagadir as orange circles
     ax.plot(
