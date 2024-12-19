@@ -174,6 +174,21 @@ class AGADIR(object):
         beta = 6.0
         dG_ionic = -alpha * (1 - np.exp(-beta * self.molarity))
 
+        # sum all components
+        dG_Hel = (
+            sum(dG_Int)
+            + sum(dG_nonH)
+            + sum(dG_SD)
+            + dG_staple
+            + dG_schellman
+            + dG_Hbond
+            + dG_ionic
+            + sum(dG_N_term)
+            + sum(dG_C_term)
+            + dG_electrost
+            + np.sum(dG_dipole)
+        )
+
         # make fancy printout for debugging and development
         for seq_idx, arr_idx in zip(range(i, i + j), range(j)):
             print(f"Helix: start= {i+1} end= {i+j}  length=  {j}")
@@ -194,22 +209,6 @@ class AGADIR(object):
         print(f"dG_electrost = {dG_electrost:.4f}")
         print(f"main chain-main chain H-bonds = {dG_Hbond:.4f}")
         print(f"ionic strngth corr. from eq. 12 {dG_ionic:.4f}")
-
-        # sum all components
-        dG_Hel = (
-            sum(dG_Int)
-            + sum(dG_nonH)
-            + sum(dG_SD)
-            + dG_staple
-            + dG_schellman
-            + dG_Hbond
-            + dG_ionic
-            + sum(dG_N_term)
-            + sum(dG_C_term)
-            + dG_electrost
-            + np.sum(dG_dipole)
-        )
-
         print(f"total Helix free energy = {dG_Hel:.4f}")
         print("==============================================")
 
