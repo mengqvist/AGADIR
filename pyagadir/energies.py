@@ -292,33 +292,6 @@ def debue_screening_length(ionic_strength: float, T: int) -> float:
     return kappa
 
 
-def calculate_term_dipole_interaction_energy(
-    mu_helix: float, distance_r: float, screening_factor: float, T: float
-) -> float:
-    """Calculate the interaction energy between charged termini and the helix dipole.
-    Uses equation 10.62 from DOI 10.1007/978-1-4419-6351-2_10 as a base.
-
-    Args:
-        mu_helix (float): Helix dipole moment.
-        distance_r (float): Distance from the terminal to the helix in Ångströms.
-        screening_factor (float): Debye-Huckel screening factor.
-        T (float): Temperature in Kelvin.
-
-    Returns:
-        float: The interaction energy.
-    """
-    B_kappa = 332.0  # in kcal Å / (mol e^2)
-    epsilon_r = calculate_permittivity(T)  # Relative permittivity of water
-
-    # In the form of equation (10.62) from DOI 10.1007/978-1-4419-6351-2_10
-    coloumb_potential = mu_helix / (epsilon_r * distance_r)
-    energy = B_kappa * screening_factor * coloumb_potential
-
-    return energy
-
-
-
-
 class EnergyCalculator:
     """
     Class to calculate the free energy contributions for a peptide sequence.
@@ -436,6 +409,30 @@ class EnergyCalculator:
         energy_joules = coulomb_term * math.exp(-kappa * r)
         energy_kcal_mol = N_A * energy_joules / 4184
         return energy_kcal_mol
+
+    def _calculate_term_dipole_interaction_energy(
+        self, mu_helix: float, distance_r: float, screening_factor: float
+    ) -> float:
+        """Calculate the interaction energy between charged termini and the helix dipole.
+        Uses equation 10.62 from DOI 10.1007/978-1-4419-6351-2_10 as a base.
+
+        Args:
+            mu_helix (float): Helix dipole moment.
+            distance_r (float): Distance from the terminal to the helix in Ångströms.
+            screening_factor (float): Debye-Huckel screening factor.
+            T (float): Temperature in Kelvin.
+
+        Returns:
+            float: The interaction energy.
+        """
+        B_kappa = 332.0  # in kcal Å / (mol e^2)
+        epsilon_r = calculate_permittivity(T)  # Relative permittivity of water
+
+        # In the form of equation (10.62) from DOI 10.1007/978-1-4419-6351-2_10
+        coloumb_potential = mu_helix / (epsilon_r * distance_r)
+        energy = B_kappa * screening_factor * coloumb_potential
+
+        return energy
 
     def get_dG_Int(self, i: int, j: int) -> np.ndarray:
         """
@@ -795,7 +792,7 @@ class EnergyCalculator:
             screening_factor = math.exp(-kappa * distance_r_meter)
 
             # Calculate terminal interaction energy
-            energy = calculate_term_dipole_interaction_energy(
+            energy = self._calculate_term_dipole_interaction_energy(
                 mu_helix, distance_r_angstrom, screening_factor, self.T
             )
 
