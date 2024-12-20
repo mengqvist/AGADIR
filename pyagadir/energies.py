@@ -920,6 +920,10 @@ class EnergyCalculator:
         q_dipole = 0.5  # Half-charge for the helix macrodipole
 
         for idx, aa in enumerate(helix):
+            # Skip if amino acid is not charged
+            if aa not in ["K", "R", "H", "D", "E", "C", "Y"]:
+                continue
+
             # The distance tables only contain values up to C13 from the C-terminus and N13 from the N-terminus
             # Try to fetch the distance here
             N_position = "Ncap" if idx == 0 else f"N{idx}"
