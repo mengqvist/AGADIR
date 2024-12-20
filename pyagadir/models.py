@@ -169,7 +169,6 @@ class AGADIR(object):
 
         # get electrostatic energies between pairs of charged side chains as a matrix
         dG_electrost = self.energy_calculator.get_dG_electrost(i, j)
-        print(dG_electrost)
 
         # modify by ionic strength according to equation 12 of the paper
         alpha = 0.15

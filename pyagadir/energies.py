@@ -719,7 +719,7 @@ class EnergyCalculator:
                 # Use precomputed ionization states for the helical state
                 q_i = self.q_global_hel[i + idx]
                 q_i3 = self.q_global_hel[i + idx + 3]
-                energy[idx] = base_energy * abs(q_i * q_i3)
+                energy[idx] = base_energy * abs(q_i * q_i3) # TODO: Does this calculation make sense?
             else:
                 energy[idx] = base_energy
 
@@ -749,7 +749,7 @@ class EnergyCalculator:
                 # Use precomputed ionization states for the helical state
                 q_i = self.q_global_hel[i + idx]
                 q_i4 = self.q_global_hel[i + idx + 4]
-                energy[idx] = base_energy * abs(q_i * q_i4)
+                energy[idx] = base_energy * abs(q_i * q_i4) # TODO: Does this calculation make sense?
             else:
                 energy[idx] = base_energy
 
@@ -920,43 +920,35 @@ class EnergyCalculator:
         q_dipole = 0.5  # Half-charge for the helix macrodipole
 
         for idx, aa in enumerate(helix):
-            # The distance tables only contain values up to C13 from the C-terminus
-            # and N13 from the N-terminus, so we need to limit the calculations
-            # to avoid indexing errors
-            if len(helix) - idx - 1 > 13 or idx > 13:
-                continue
+            # The distance tables only contain values up to C13 from the C-terminus and N13 from the N-terminus
+            # Try to fetch the distance here
+            N_position = "Ncap" if idx == 0 else f"N{idx}"
+            try:
+                N_distance = table_7_ncap_lacroix.loc[aa, N_position]
+            except (KeyError, ValueError):
+                print(f'{aa} with position {N_position} not found in table_7_ncap_lacroix')
+                N_distance = None
+
+            C_position = "Ccap" if idx == len(helix) - 1 else f"C{len(helix)-idx-1}"
+            try:
+                C_distance = table_7_ccap_lacroix.loc[aa, C_position]
+            except (KeyError, ValueError):
+                print(f'{aa} with position {C_position} not found in table_7_ccap_lacroix')
+                C_distance = None
 
             # Fetch the precomputed ionization state
             q_sidechain = self.q_global_hel[i + idx]
 
-            if aa in ["K", "R", "H"]:  # Positively charged residues
-                # N-terminal interaction
-                position = "Ncap" if idx == 0 else f"N{idx}"
-                distance = table_7_ncap_lacroix.loc[aa, position]
+            # N-terminal interaction
+            if N_distance is not None:
                 energy_N[idx] += self._electrostatic_interaction_energy(
-                    q_dipole, q_sidechain, distance
+                    q_dipole, q_sidechain, N_distance
                 )
 
-                # C-terminal interaction
-                position = "Ccap" if idx == len(helix) - 1 else f"C{len(helix)-idx-1}"
-                distance = table_7_ccap_lacroix.loc[aa, position]
+            # C-terminal interaction
+            if C_distance is not None:
                 energy_C[idx] += self._electrostatic_interaction_energy(
-                    -q_dipole, q_sidechain, distance
-                )
-
-            elif aa in ["D", "E", "C", "Y"]:  # Negatively charged residues
-                # N-terminal interaction
-                position = "Ncap" if idx == 0 else f"N{idx}"
-                distance = table_7_ncap_lacroix.loc[aa, position]
-                energy_N[idx] += self._electrostatic_interaction_energy(
-                    q_dipole, q_sidechain, distance
-                )
-
-                # C-terminal interaction
-                position = "Ccap" if idx == len(helix) - 1 else f"C{len(helix)-idx-1}"
-                distance = table_7_ccap_lacroix.loc[aa, position]
-                energy_C[idx] += self._electrostatic_interaction_energy(
-                    -q_dipole, q_sidechain, distance
+                    -q_dipole, q_sidechain, C_distance
                 )
 
         return energy_N, energy_C
