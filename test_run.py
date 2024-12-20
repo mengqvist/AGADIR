@@ -46,14 +46,6 @@ parser.add_argument(
 
 args = parser.parse_args()
 
-model = AGADIR(
-    method=args.method, T=args.temperature, M=args.ionic_strength, pH=args.pH
-)
-# result = model.predict(args.peptide)
-result = model.predict("AAADKAAA")
-print(result)
-
-
 def reproduce_figure_3b():
     """
     Reproduce the figure 3b from the AGADIR paper.
