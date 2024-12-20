@@ -164,10 +164,12 @@ class AGADIR(object):
         dG_N_term, dG_C_term = self.energy_calculator.get_dG_terminals_macrodipole(i, j)
 
         # get the interaction between charged side chains and the helix macrodipole
-        dG_dipole = self.energy_calculator.get_dG_sidechain_macrodipole(i, j)
+        dG_dipole_N, dG_dipole_C = self.energy_calculator.get_dG_sidechain_macrodipole(i, j)
+        dG_dipole = dG_dipole_N + dG_dipole_C
 
-        # get electrostatic energies between pairs of charged side chains
+        # get electrostatic energies between pairs of charged side chains as a matrix
         dG_electrost = self.energy_calculator.get_dG_electrost(i, j)
+        print(dG_electrost)
 
         # modify by ionic strength according to equation 12 of the paper
         alpha = 0.15
@@ -185,7 +187,7 @@ class AGADIR(object):
             + dG_ionic
             + sum(dG_N_term)
             + sum(dG_C_term)
-            + dG_electrost
+            + np.sum(dG_electrost)
             + np.sum(dG_dipole)
         )
 
@@ -198,15 +200,16 @@ class AGADIR(object):
             print(f"g C term = {dG_C_term[arr_idx]:.4f}")
             print(f"g capping =   {dG_nonH[arr_idx]:.4f}")
             print(f"g intrinsic = {dG_Int[arr_idx]:.4f}")
-            print(f"g dipole = {dG_dipole[arr_idx]:.4f}")
-            print(f"gresidue = ")
+            print(f"g dipole N = {dG_dipole_N[arr_idx]:.4f}")
+            print(f"g dipole C = {dG_dipole_C[arr_idx]:.4f}")
+            print(f"g dipole total = {dG_dipole[arr_idx]:.4f}")
+            print(f"gresidue = {dG_N_term[arr_idx] + dG_C_term[arr_idx] + dG_nonH[arr_idx] + dG_Int[arr_idx] + dG_dipole[arr_idx]:.4f}")
             print("****************")
         print("Additional terms for helical segment")
         print(f"i,i+3 and i,i+4 side chain-side chain interaction = {sum(dG_SD):.4f}")
         print(f"g staple = {dG_staple:.4f}")
         print(f"g schellman = {dG_schellman:.4f}")
-        print(f"dG_electrost = {dG_electrost:.4f}")
-        print(f"dG_electrost = {dG_electrost:.4f}")
+        print(f"dG_electrost = {np.sum(dG_electrost):.4f}")
         print(f"main chain-main chain H-bonds = {dG_Hbond:.4f}")
         print(f"ionic strngth corr. from eq. 12 {dG_ionic:.4f}")
         print(f"total Helix free energy = {dG_Hel:.4f}")
