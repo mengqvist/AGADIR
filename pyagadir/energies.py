@@ -868,74 +868,147 @@ def find_charged_pairs(seq: str) -> list[tuple[str, int]]:
     return result
 
 
+# def get_dG_electrost(
+#     pept: str, i: int, j: int, ionic_strength: float, pH: float, T: float
+# ) -> float:
+#     """From Lecroix et al. 1998:
+#     'This new term includes all electrostatic interactions between two charged residues
+#     inside and outside the helical segment'
+#     Use equations (5) - (11) from the 1998 lacroix paper.
+
+#     Args:
+#         pept (str): The peptide sequence.
+#         i (int): The helix start index, python 0-indexed.
+#         j (int): The helix length.
+#         ionic_strength (float): Ionic strength of the solution.
+#         pH (float): pH of the solution.
+#         T (float): Temperature in Kelvin.
+#     """
+#     # TODO: Should we add the N- and C-term backbone charges here as well? Or better separated into a different function?
+
+#     helix = get_helix(pept, i, j)
+#     charged_pairs = find_charged_pairs(helix)
+#     energy_sum = 0.0
+#     for p in charged_pairs:
+#         pair, distance = p[0], f"i+{p[1]}"
+#         helix_dist = table_6_helix_lacroix.loc[pair, distance]
+#         coil_dist = table_6_coil_lacroix.loc[pair, distance]
+
+#         # Lacroix Eq (6). First assume qp = qi = 1
+#         qi, qp = 1, 1
+#         G_hel = electrostatic_interaction_energy(qi, qp, helix_dist, ionic_strength, T)
+#         G_rc = electrostatic_interaction_energy(qi, qp, coil_dist, ionic_strength, T)
+
+#         # Lacroix Eq (8)
+#         res1, res2 = pair
+#         pKa_ref_1 = pka_values.loc[res1, "pKa"]
+#         pKa_ref_2 = pka_values.loc[res2, "pKa"]
+#         pKa_rc_1, pKa_rc_2 = pKa_ref_1 + G_rc / (
+#             2.3 * 1.987e-3 * T
+#         ), pKa_ref_2 + G_rc / (2.3 * 1.987e-3 * T)
+
+#         # Lacroix Eq (9)
+#         pKa_hel_1, pKa_hel_2 = pKa_ref_1 + G_hel / (
+#             2.3 * 1.987e-3 * T
+#         ), pKa_ref_2 + G_hel / (2.3 * 1.987e-3 * T)
+
+#         # Lacroix Eq (10)
+#         if res1 in ["D", "E"]:
+#             q1_hel = acidic_residue_ionization(pH, pKa_hel_1, G_hel, T)
+#             q1_rc = acidic_residue_ionization(pH, pKa_rc_1, G_rc, T)
+#         else:
+#             q1_hel = basic_residue_ionization(pH, pKa_hel_1, G_hel, T)
+#             q1_rc = basic_residue_ionization(pH, pKa_rc_1, G_rc, T)
+
+#         if res2 in ["D", "E"]:
+#             q2_hel = acidic_residue_ionization(pH, pKa_hel_2, G_hel, T)
+#             q2_rc = acidic_residue_ionization(pH, pKa_rc_2, G_rc, T)
+#         else:
+#             q2_hel = basic_residue_ionization(pH, pKa_hel_2, G_hel, T)
+#             q2_rc = basic_residue_ionization(pH, pKa_rc_2, G_rc, T)
+
+#         # Lacroix Eq (6) again, with the updated values
+#         G_hel = electrostatic_interaction_energy(
+#             q1_hel, q2_hel, helix_dist, ionic_strength, T
+#         )
+#         G_rc = electrostatic_interaction_energy(
+#             q1_rc, q2_rc, coil_dist, ionic_strength, T
+#         )
+#         energy_sum += G_hel - G_rc
+
+#     return energy_sum
+
 def get_dG_electrost(
     pept: str, i: int, j: int, ionic_strength: float, pH: float, T: float
 ) -> float:
-    """From Lecroix et al. 1998:
-    'This new term includes all electrostatic interactions between two charged residues
-    inside and outside the helical segment'
-    Use equations (5) - (11) from the 1998 lacroix paper.
-
-    Args:
-        pept (str): The peptide sequence.
-        i (int): The helix start index, python 0-indexed.
-        j (int): The helix length.
-        ionic_strength (float): Ionic strength of the solution.
-        pH (float): pH of the solution.
-        T (float): Temperature in Kelvin.
+    """From Lacroix et al. 1998:
+    Calculate all electrostatic interactions between charged residues with
+    iterative pKa convergence.
     """
-    # TODO: Should we add the N- and C-term backbone charges here as well? Or better separated into a different function?
-
     helix = get_helix(pept, i, j)
     charged_pairs = find_charged_pairs(helix)
     energy_sum = 0.0
+    
     for p in charged_pairs:
         pair, distance = p[0], f"i+{p[1]}"
         helix_dist = table_6_helix_lacroix.loc[pair, distance]
         coil_dist = table_6_coil_lacroix.loc[pair, distance]
-
-        # Lacroix Eq (6). First assume qp = qi = 1
-        qi, qp = 1, 1
-        G_hel = electrostatic_interaction_energy(qi, qp, helix_dist, ionic_strength, T)
-        G_rc = electrostatic_interaction_energy(qi, qp, coil_dist, ionic_strength, T)
-
-        # Lacroix Eq (8)
+        
+        # Get residue info
         res1, res2 = pair
         pKa_ref_1 = pka_values.loc[res1, "pKa"]
         pKa_ref_2 = pka_values.loc[res2, "pKa"]
-        pKa_rc_1, pKa_rc_2 = pKa_ref_1 + G_rc / (
-            2.3 * 1.987e-3 * T
-        ), pKa_ref_2 + G_rc / (2.3 * 1.987e-3 * T)
 
-        # Lacroix Eq (9)
-        pKa_hel_1, pKa_hel_2 = pKa_ref_1 + G_hel / (
-            2.3 * 1.987e-3 * T
-        ), pKa_ref_2 + G_hel / (2.3 * 1.987e-3 * T)
+        # Initial calculation with qi = qp = 1
+        G_hel = electrostatic_interaction_energy(1, 1, helix_dist, ionic_strength, T)
+        G_rc = electrostatic_interaction_energy(1, 1, coil_dist, ionic_strength, T)
+        
+        # Iterative convergence
+        max_iter = 10  # Maximum iterations 
+        tolerance = 0.01  # Convergence tolerance for pKa change
+        
+        old_pKa_hel_1, old_pKa_hel_2 = 0, 0
+        pKa_hel_1 = pKa_ref_1 + G_hel / (2.3 * 1.987e-3 * T)
+        pKa_hel_2 = pKa_ref_2 + G_hel / (2.3 * 1.987e-3 * T)
+        
+        for _ in range(max_iter):
+            # Store old values
+            old_pKa_hel_1, old_pKa_hel_2 = pKa_hel_1, pKa_hel_2
+            
+            # Calculate ionization
+            if res1 in ["D", "E"]:
+                q1_hel = acidic_residue_ionization(pH, pKa_hel_1, G_hel, T)
+                q1_rc = acidic_residue_ionization(pH, pKa_ref_1, G_rc, T)
+            else:
+                q1_hel = basic_residue_ionization(pH, pKa_hel_1, G_hel, T)
+                q1_rc = basic_residue_ionization(pH, pKa_ref_1, G_rc, T)
+                
+            if res2 in ["D", "E"]:
+                q2_hel = acidic_residue_ionization(pH, pKa_hel_2, G_hel, T)
+                q2_rc = acidic_residue_ionization(pH, pKa_ref_2, G_rc, T)
+            else:
+                q2_hel = basic_residue_ionization(pH, pKa_hel_2, G_hel, T)
+                q2_rc = basic_residue_ionization(pH, pKa_ref_2, G_rc, T)
 
-        # Lacroix Eq (10)
-        if res1 in ["D", "E"]:
-            q1_hel = acidic_residue_ionization(pH, pKa_hel_1, G_hel, T)
-            q1_rc = acidic_residue_ionization(pH, pKa_rc_1, G_rc, T)
-        else:
-            q1_hel = basic_residue_ionization(pH, pKa_hel_1, G_hel, T)
-            q1_rc = basic_residue_ionization(pH, pKa_rc_1, G_rc, T)
-
-        if res2 in ["D", "E"]:
-            q2_hel = acidic_residue_ionization(pH, pKa_hel_2, G_hel, T)
-            q2_rc = acidic_residue_ionization(pH, pKa_rc_2, G_rc, T)
-        else:
-            q2_hel = basic_residue_ionization(pH, pKa_hel_2, G_hel, T)
-            q2_rc = basic_residue_ionization(pH, pKa_rc_2, G_rc, T)
-
-        # Lacroix Eq (6) again, with the updated values
-        G_hel = electrostatic_interaction_energy(
-            q1_hel, q2_hel, helix_dist, ionic_strength, T
-        )
-        G_rc = electrostatic_interaction_energy(
-            q1_rc, q2_rc, coil_dist, ionic_strength, T
-        )
+            # Recalculate energies with new charges
+            G_hel = electrostatic_interaction_energy(
+                q1_hel, q2_hel, helix_dist, ionic_strength, T
+            )
+            G_rc = electrostatic_interaction_energy(
+                q1_rc, q2_rc, coil_dist, ionic_strength, T
+            )
+            
+            # Update pKas
+            pKa_hel_1 = pKa_ref_1 + G_hel / (2.3 * 1.987e-3 * T)
+            pKa_hel_2 = pKa_ref_2 + G_hel / (2.3 * 1.987e-3 * T)
+            
+            # Check convergence
+            if (abs(pKa_hel_1 - old_pKa_hel_1) < tolerance and 
+                abs(pKa_hel_2 - old_pKa_hel_2) < tolerance):
+                break
+                
         energy_sum += G_hel - G_rc
-
+        
     return energy_sum
 
 
