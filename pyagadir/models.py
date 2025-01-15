@@ -3,6 +3,7 @@ from typing import Dict, List, Tuple
 import numpy as np
 
 from pyagadir import energies
+from pyagadir.energies import EnergyCalculator
 from pyagadir.utils import is_valid_index, is_valid_peptide_sequence
 
 
@@ -123,6 +124,7 @@ class AGADIR(object):
         self.has_amide = False
 
         self.min_helix_length = 6
+        self.ionization_states = None
 
     def _calc_dG_Hel(self, i: int, j: int) -> Tuple[np.float64, Dict[str, float]]:
         """
@@ -136,106 +138,42 @@ class AGADIR(object):
             Tuple[np.float64, Dict[str, float]]: The Helix free energy and its components.
         """
         # intrinsic energies for the helical segment, excluding N- and C-terminal capping residues
-        dG_Int = energies.get_dG_Int(
-            self.result.seq,
-            i,
-            j,
-            pH=self.pH,
-            T=self.T,
-            has_acetyl=self.has_acetyl,
-            has_succinyl=self.has_succinyl,
-            has_amide=self.has_amide,
-        )
+        dG_Int = self.energy_calculator.get_dG_Int(i, j)
 
         # "non-hydrogen bond" capping energies, only for the first and last residues of the helix
-        dG_Ncap = energies.get_dG_Ncap(
-            self.result.seq,
-            i,
-            j,
-            has_acetyl=self.has_acetyl,
-            has_succinyl=self.has_succinyl,
-            has_amide=self.has_amide,
-        )
-        dG_Ccap = energies.get_dG_Ccap(
-            self.result.seq,
-            i,
-            j,
-            has_amide=self.has_amide,
-            has_acetyl=self.has_acetyl,
-            has_succinyl=self.has_succinyl,
-        )
+        dG_Ncap = self.energy_calculator.get_dG_Ncap(i, j)
+        dG_Ccap = self.energy_calculator.get_dG_Ccap(i, j)
         dG_nonH = dG_Ncap + dG_Ccap
         # TODO dG_nonH might need further adjustment, see page 175 in lacroix paper
 
         # get hydrophobic staple motif energies
-        dG_staple = energies.get_dG_staple(self.result.seq, i, j)
+        dG_staple = self.energy_calculator.get_dG_staple(i, j)
 
         # get schellman motif energies
-        dG_schellman = energies.get_dG_schellman(self.result.seq, i, j)
+        dG_schellman = self.energy_calculator.get_dG_schellman(i, j)
 
         # calculate dG_Hbond for the helical segment here
-        dG_Hbond = energies.get_dG_Hbond(
-            self.result.seq,
-            i,
-            j,
-            has_acetyl=self.has_acetyl,
-            has_succinyl=self.has_succinyl,
-            has_amide=self.has_amide,
-        )
+        dG_Hbond = self.energy_calculator.get_dG_Hbond(i, j)
 
         # side-chain interactions, excluding N- and C-terminal capping residues
-        dG_i3_tot = energies.get_dG_i3(self.result.seq, i, j, self.pH, self.T)
-        dG_i4_tot = energies.get_dG_i4(self.result.seq, i, j, self.pH, self.T)
+        dG_i3_tot = self.energy_calculator.get_dG_i3(i, j)
+        dG_i4_tot = self.energy_calculator.get_dG_i4(i, j)
         dG_SD = dG_i3_tot + dG_i4_tot  # dG_i1_tot
 
         # get the interactions between N- and C-terminal capping charges and the helix macrodipole
-        dG_N_term, dG_C_term = energies.get_dG_terminals_macrodipole(
-            self.result.seq,
-            i,
-            j,
-            self.molarity,
-            self.pH,
-            self.T,
-            self.has_acetyl,
-            self.has_succinyl,
-            self.has_amide,
-        )
+        dG_N_term, dG_C_term = self.energy_calculator.get_dG_terminals_macrodipole(i, j)
 
         # get the interaction between charged side chains and the helix macrodipole
-        dG_dipole = energies.get_dG_sidechain_macrodipole(
-            self.result.seq, i, j, self.molarity, self.pH, self.T
-        )
+        dG_dipole_N, dG_dipole_C = self.energy_calculator.get_dG_sidechain_macrodipole(i, j)
+        dG_dipole = dG_dipole_N + dG_dipole_C
 
-        # get electrostatic energies between pairs of charged side chains
-        dG_electrost = energies.get_dG_electrost(
-            self.result.seq, i, j, self.molarity, self.pH, self.T
-        )
+        # get electrostatic energies between pairs of charged side chains as a matrix
+        dG_electrost = self.energy_calculator.get_dG_electrost(i, j)
 
         # modify by ionic strength according to equation 12 of the paper
         alpha = 0.15
         beta = 6.0
         dG_ionic = -alpha * (1 - np.exp(-beta * self.molarity))
-
-        # make fancy printout for debugging and development
-        for seq_idx, arr_idx in zip(range(i, i + j), range(j)):
-            print(f"Helix: start= {i+1} end= {i+j}  length=  {j}")
-            print(f"residue index = {seq_idx+1}")
-            print(f"residue = {self.result.seq[seq_idx]}")
-            print(f"g N term = {dG_N_term[arr_idx]:.4f}")
-            print(f"g C term = {dG_C_term[arr_idx]:.4f}")
-            print(f"g capping =   {dG_nonH[arr_idx]:.4f}")
-            print(f"g intrinsic = {dG_Int[arr_idx]:.4f}")
-            print(f"g dipole = {dG_dipole[arr_idx]:.4f}")
-            print(f"gresidue = ")
-            print("****************")
-        print("Additional terms for helical segment")
-        print(f"i,i+3 and i,i+4 side chain-side chain interaction = {sum(dG_SD):.4f}")
-        print(f"g staple = {dG_staple:.4f}")
-        print(f"g schellman = {dG_schellman:.4f}")
-        print(f"dG_electrost = {dG_electrost:.4f}")
-        print(f"dG_electrost = {dG_electrost:.4f}")
-        print(f"main chain-main chain H-bonds = {dG_Hbond:.4f}")
-        print(f"ionic strngth corr. from eq. 12 {dG_ionic:.4f}")
 
         # sum all components
         dG_Hel = (
@@ -248,10 +186,31 @@ class AGADIR(object):
             + dG_ionic
             + sum(dG_N_term)
             + sum(dG_C_term)
-            + dG_electrost
+            + np.sum(dG_electrost)
             + np.sum(dG_dipole)
         )
 
+        # make fancy printout for debugging and development
+        for seq_idx, arr_idx in zip(range(i, i + j), range(j)):
+            print(f"Helix: start= {i+1} end= {i+j}  length=  {j}")
+            print(f"residue index = {seq_idx+1}")
+            print(f"residue = {self.result.seq[seq_idx]}")
+            print(f"g N term = {dG_N_term[arr_idx]:.4f}")
+            print(f"g C term = {dG_C_term[arr_idx]:.4f}")
+            print(f"g capping =   {dG_nonH[arr_idx]:.4f}")
+            print(f"g intrinsic = {dG_Int[arr_idx]:.4f}")
+            print(f"g dipole N = {dG_dipole_N[arr_idx]:.4f}")
+            print(f"g dipole C = {dG_dipole_C[arr_idx]:.4f}")
+            print(f"g dipole total = {dG_dipole[arr_idx]:.4f}")
+            print(f"gresidue = {dG_N_term[arr_idx] + dG_C_term[arr_idx] + dG_nonH[arr_idx] + dG_Int[arr_idx] + dG_dipole[arr_idx]:.4f}")
+            print("****************")
+        print("Additional terms for helical segment")
+        print(f"i,i+3 and i,i+4 side chain-side chain interaction = {sum(dG_SD):.4f}")
+        print(f"g staple = {dG_staple:.4f}")
+        print(f"g schellman = {dG_schellman:.4f}")
+        print(f"dG_electrost = {np.sum(dG_electrost):.4f}")
+        print(f"main chain-main chain H-bonds = {dG_Hbond:.4f}")
+        print(f"ionic strngth corr. from eq. 12 {dG_ionic:.4f}")
         print(f"total Helix free energy = {dG_Hel:.4f}")
         print("==============================================")
 
@@ -398,6 +357,17 @@ class AGADIR(object):
 
         # ensure that the sequence is valid
         is_valid_peptide_sequence(seq)
+
+        # create energy calculator instance
+        self.energy_calculator = EnergyCalculator(
+            seq,
+            pH=self.pH,
+            T=self.T,
+            ionic_strength=self.molarity,
+            has_acetyl=self.has_acetyl,
+            has_succinyl=self.has_succinyl,
+            has_amide=self.has_amide,
+        )
 
         self.result = ModelResult(seq)
         self._calc_partition_fxn()
