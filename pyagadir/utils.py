@@ -29,7 +29,7 @@ def is_valid_peptide_sequence(pept: str) -> None:
         )
 
 
-def is_valid_index(pept: str, i: int, j: int) -> None:
+def is_valid_index(pept: str, i: int, j: int, min_helix_length: int, has_acetyl: bool, has_succinyl: bool, has_amide: bool) -> None:
     """
     Validate that the input indexes are valid.
 
@@ -37,7 +37,10 @@ def is_valid_index(pept: str, i: int, j: int) -> None:
         pept (str): The peptide sequence.
         i (int): The start index.
         j (int): The helix length.
-
+        min_helix_length (int): The minimum helix length.
+        has_acetyl (bool): Whether the peptide has an N-terminal acetyl modification.
+        has_succinyl (bool): Whether the peptide has a C-terminal succinyl modification.
+        has_amide (bool): Whether the peptide has a C-terminal amide modification.
     Raises:
         TypeError: If the input indexes are not integers.
         ValueError: If the indexes are out of range.
@@ -48,8 +51,8 @@ def is_valid_index(pept: str, i: int, j: int) -> None:
     if i < 0:
         raise ValueError("Start index must be greater than or equal to zero.")
 
-    if j < 6:
-        raise ValueError("Helix length must be greater than or equal to 6.")
+    if j < min_helix_length - (1 if has_acetyl or has_succinyl else 0) - (1 if has_amide else 0):
+        raise ValueError(f"Helix length must be greater than or equal to {min_helix_length}.")
 
     if i + j > len(pept):
         raise ValueError(

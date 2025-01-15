@@ -123,7 +123,7 @@ class AGADIR(object):
         self.has_succinyl = False
         self.has_amide = False
 
-        self.min_helix_length = 6
+        self.min_helix_length = 6 # default from Lacroix 1998
         self.ionization_states = None
 
     def _calc_dG_Hel(self, i: int, j: int) -> Tuple[np.float64, Dict[str, float]]:
@@ -214,25 +214,7 @@ class AGADIR(object):
         print(f"total Helix free energy = {dG_Hel:.4f}")
         print("==============================================")
 
-        # TODO: do we need to return all these components? It was initally intended for the "ms" partition function calculation
-
-        # dG_dict = {
-        #     'dG_Helix': dG_Hel,
-        #     'dG_Int': dG_Int,
-        #     'dG_Hbond': dG_Hbond,
-        #     'dG_SD': dG_SD,
-        #     'dG_nonH': dG_nonH,
-        #     'dG_dipole': dG_dipole,
-        #     'dG_N_dipole': dG_N_dipole,
-        #     'dG_C_dipole': dG_C_dipole,
-        #     'dG_i1_tot': dG_i1_tot,
-        #     'dG_i3_tot': dG_i3_tot,
-        #     'dG_i4_tot': dG_i4_tot,
-        #     'dG_Ncap': dG_Ncap,
-        #     'dG_Ccap': dG_Ccap
-        # }
-
-        return dG_Hel, {}
+        return dG_Hel
 
     def _calc_K(self, dG_Hel: float) -> float:
         """
@@ -252,9 +234,25 @@ class AGADIR(object):
         Calculate partition function for helical segments
         by summing over all possible helices.
         """
-        # for i in range(0, len(self.result.seq) - self.min_helix_length + 1):  # for each position i
-        #     for j in range(self.min_helix_length, len(self.result.seq) - i + 1):  # for each helix length j
+        # special case for when there is a N-terminal modification, the helix starting at the first residue can be one residue shorter
+        # get the energies for all helices starting at the first residue 
+        if self.has_acetyl or self.has_succinyl:
+            for j in range(self.min_helix_length-1, len(self.result.seq) + 1):
+                i = 0
+                dG_Hel = self._calc_dG_Hel(i=i, j=j)
+                K = self._calc_K(dG_Hel)
+                self.result.K_tot_array[0:j-1] += K
 
+        # special case for when there is a C-terminal modification, the helix ending at the last residue can be one residue shorter
+        # get the energies for all helices ending at the last residue 
+        if self.has_amide:
+            for j in range(self.min_helix_length-1, len(self.result.seq) + 1):
+                i = len(self.result.seq) - j
+                dG_Hel = self._calc_dG_Hel(i=i, j=j)
+                K = self._calc_K(dG_Hel)
+                self.result.K_tot_array[i+1:i+j-1] += K
+
+        # general case for all other helices, these must be the minimum length of 6 residues
         for j in range(
             self.min_helix_length, len(self.result.seq) + 1
         ):  # helix lengths (including caps)
@@ -263,32 +261,15 @@ class AGADIR(object):
             ):  # helical segment positions
 
                 # calculate dG_Hel and dG_dict
-                dG_Hel, dG_dict = self._calc_dG_Hel(i=i, j=j)
-
-                # TODO: these shuld be accounted for in the new table 1, verify this!
-                # # Add acetylation and amidation effects.
-                # # These are only considered for the first and last residues of the helix,
-                # # and only if the peptide has been created in a way that they are present.
-                # if i == 0 and self.has_acetyl is True:
-                #     dG_Hel += -1.275
-                #     if self.result.seq[0] == 'A':
-                #         dG_Hel += -0.1
-
-                # elif i == 0 and self.has_succinyl is True:
-                #     dG_Hel += -1.775
-                #     if self.result.seq[0] == 'A':
-                #         dG_Hel += -0.1
-
-                # if (i + j == len(self.result.seq)) and (self.has_amide is True):
-                #     dG_Hel += -0.81
-                #     if self.result.seq[-1] == 'A':
-                #         dG_Hel += -0.1
+                dG_Hel = self._calc_dG_Hel(i=i, j=j)
 
                 # calculate the partition function K
                 K = self._calc_K(dG_Hel)
+
+                # TODO: should add IF ELSE here where there are n or c cap modifications, no need to do i + 1 or i + j - 1 when they are present
                 self.result.K_tot_array[
                     i + 1 : i + j - 1
-                ] += K  # method='r', by definition helical region does not include caps
+                ] += K  # method='r', by definition helical region does not include capping residues
                 self.result.K_tot += K  # method='1s'
 
         # if method='ms' (custom calculation here with result.dG_dict_mat)
@@ -328,32 +309,30 @@ class AGADIR(object):
         """
         seq = seq.upper()
 
-        if len(seq) < self.min_helix_length:
-            raise ValueError(
-                f"Input sequence must be at least {self.min_helix_length} amino acids long."
-            )
-
         if ncap is not None:
             if ncap not in ["Z", "X"]:
                 raise ValueError(
                     f"Invalid N-terminal capping modification: {ncap}, must be None,'Z' or 'X'"
                 )
+            elif ncap == "Z":
+               self.has_acetyl = True
+            elif ncap == "X":
+                self.has_succinyl = True
 
         if ccap is not None:
             if ccap not in ["B"]:
                 raise ValueError(
                     f"Invalid C-terminal capping modification: {ccap}, must be None or 'B'"
                 )
+            elif ccap == "B":
+                self.has_amide = True
 
-        # check for acylation and amidation
-        if ncap == "Z":
-            self.has_acetyl = True
-
-        elif ncap == "X":
-            self.has_succinyl = True
-
-        if ccap == "B":
-            self.has_amide = True
+        # check for valid sequence length
+        # TODO: should probably modify down to 4 if there is n or c cap modification
+        if len(seq) < self.min_helix_length:
+            raise ValueError(
+                f"Input sequence must be at least {self.min_helix_length} amino acids long."
+            )
 
         # ensure that the sequence is valid
         is_valid_peptide_sequence(seq)
@@ -364,6 +343,7 @@ class AGADIR(object):
             pH=self.pH,
             T=self.T,
             ionic_strength=self.molarity,
+            min_helix_length=self.min_helix_length,
             has_acetyl=self.has_acetyl,
             has_succinyl=self.has_succinyl,
             has_amide=self.has_amide,
