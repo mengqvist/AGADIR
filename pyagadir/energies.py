@@ -97,7 +97,7 @@ pka_values = pd.read_csv(
 # table3b.columns = table3b.columns.astype(int)
 
 
-def get_helix(pept: str, i: int, j: int) -> str:
+def get_helix(pept: str, i: int, j: int, min_helix_length: int, has_acetyl: bool, has_succinyl: bool, has_amide: bool) -> str:
     """
     Get the helix region of a peptide sequence, including the N- and C-caps.
 
@@ -105,12 +105,16 @@ def get_helix(pept: str, i: int, j: int) -> str:
         pept (str): The peptide sequence.
         i (int): The helix start index, python 0-indexed.
         j (int): The helix length.
+        min_helix_length (int): The minimum helix length.
+        has_acetyl (bool): Whether the peptide has an N-terminal acetyl modification.
+        has_succinyl (bool): Whether the peptide has a C-terminal succinyl modification.
+        has_amide (bool): Whether the peptide has a C-terminal amide modification.
 
     Returns:
         str: The helix region of the peptide sequence.
     """
     is_valid_peptide_sequence(pept)
-    is_valid_index(pept, i, j)
+    is_valid_index(pept, i, j, min_helix_length, has_acetyl, has_succinyl, has_amide)
 
     return pept[i : i + j]
 
@@ -296,7 +300,7 @@ class EnergyCalculator:
     """
     Class to calculate the free energy contributions for a peptide sequence.
     """
-    def __init__(self, pept: str, pH: float, T: float, ionic_strength: float, has_acetyl=False, has_succinyl=False, has_amide=False):
+    def __init__(self, pept: str, pH: float, T: float, ionic_strength: float, min_helix_length: int, has_acetyl=False, has_succinyl=False, has_amide=False):
         """
         Initialize the EnergyCalculator for a peptide sequence.
 
@@ -305,6 +309,7 @@ class EnergyCalculator:
             pH (float): Solution pH.
             T (float): Temperature in Kelvin.
             ionic_strength (float): Ionic strength of the solution in mol/L.
+            min_helix_length (int): The minimum helix length.
             has_acetyl (bool): N-terminal acetylation flag.
             has_succinyl (bool): N-terminal succinylation flag.
             has_amide (bool): C-terminal amidation flag.
@@ -313,6 +318,7 @@ class EnergyCalculator:
         self.pH = pH
         self.T = T
         self.ionic_strength = ionic_strength
+        self.min_helix_length = min_helix_length
         self.has_acetyl = has_acetyl
         self.has_succinyl = has_succinyl
         self.has_amide = has_amide
@@ -426,7 +432,7 @@ class EnergyCalculator:
             float: The interaction energy.
         """
         B_kappa = 332.0  # in kcal Å / (mol e^2)
-        epsilon_r = calculate_permittivity(T)  # Relative permittivity of water
+        epsilon_r = calculate_permittivity(self.T)  # Relative permittivity of water
 
         # In the form of equation (10.62) from DOI 10.1007/978-1-4419-6351-2_10
         coloumb_potential = mu_helix / (epsilon_r * distance_r)
@@ -447,7 +453,7 @@ class EnergyCalculator:
         Returns:
             np.ndarray: The intrinsic free energy contributions for each amino acid in the sequence.
         """
-        helix = get_helix(self.pept, i, j)
+        helix = get_helix(self.pept, i, j, self.min_helix_length, self.has_acetyl, self.has_succinyl, self.has_amide)
         has_ncap, has_ccap = get_capping_status(
             self.pept, i, j, self.has_acetyl, self.has_succinyl, self.has_amide
         )
@@ -499,7 +505,7 @@ class EnergyCalculator:
         Returns:
             np.ndarray: The free energy contribution.
         """
-        helix = get_helix(self.pept, i, j)
+        helix = get_helix(self.pept, i, j, self.min_helix_length, self.has_acetyl, self.has_succinyl, self.has_amide)
         has_ncap, has_ccap = get_capping_status(
             self.pept, i, j, self.has_acetyl, self.has_succinyl, self.has_amide
         )
@@ -546,7 +552,7 @@ class EnergyCalculator:
         Returns:
             np.ndarray: The free energy contribution.
         """
-        helix = get_helix(self.pept, i, j)
+        helix = get_helix(self.pept, i, j, self.min_helix_length, self.has_acetyl, self.has_succinyl, self.has_amide)
         has_ncap, has_ccap = get_capping_status(
             self.pept, i, j, self.has_acetyl, self.has_succinyl, self.has_amide
         )
@@ -582,7 +588,7 @@ class EnergyCalculator:
         Returns:
             float: The free energy contribution.
         """
-        helix = get_helix(self.pept, i, j)
+        helix = get_helix(self.pept, i, j, self.min_helix_length, self.has_acetyl, self.has_succinyl, self.has_amide)
 
         energy = np.zeros(len(helix))
 
@@ -638,7 +644,7 @@ class EnergyCalculator:
             float: The free energy contribution.
         """
         # TODO: is this affected by acylation, succinylation, or amidation? Find out!
-        helix = get_helix(self.pept, i, j)
+        helix = get_helix(self.pept, i, j, self.min_helix_length, self.has_acetyl, self.has_succinyl, self.has_amide)
         energy = 0.0
 
         # TODO verify that the code below is correct
@@ -675,7 +681,7 @@ class EnergyCalculator:
         Returns:
             float: The total free energy contribution for hydrogen bonding in the sequence.
         """
-        helix = get_helix(self.pept, i, j)
+        helix = get_helix(self.pept, i, j, self.min_helix_length, self.has_acetyl, self.has_succinyl, self.has_amide)
 
         # Start with nucleating residues
         non_contributing = 4
@@ -706,7 +712,7 @@ class EnergyCalculator:
         Returns:
             np.ndarray: The free energy contributions for each interaction.
         """
-        helix = get_helix(self.pept, i, j)
+        helix = get_helix(self.pept, i, j, self.min_helix_length, self.has_acetyl, self.has_succinyl, self.has_amide)
         energy = np.zeros(len(helix))
 
         # Get interaction free energies for charged residues
@@ -736,7 +742,7 @@ class EnergyCalculator:
         Returns:
             np.ndarray: The free energy contributions for each interaction.
         """
-        helix = get_helix(self.pept, i, j)
+        helix = get_helix(self.pept, i, j, self.min_helix_length, self.has_acetyl, self.has_succinyl, self.has_amide)
         energy = np.zeros(len(helix))
 
         # Get interaction free energies for charged residues
@@ -767,7 +773,7 @@ class EnergyCalculator:
             tuple[np.ndarray, np.ndarray]: Interaction energies for N-terminal and C-terminal residues.
         """
         mu_helix = 0.5  # Helix dipole moment
-        helix = get_helix(self.pept, i, j)
+        helix = get_helix(self.pept, i, j, self.min_helix_length, self.has_acetyl, self.has_succinyl, self.has_amide)
         N_term = np.zeros(len(helix))
         C_term = np.zeros(len(helix))
 
@@ -914,7 +920,7 @@ class EnergyCalculator:
             tuple[np.ndarray, np.ndarray]: The free energy contribution for each residue in the helix, 
             N-terminal and C-terminal contributions.
         """
-        helix = get_helix(self.pept, i, j)
+        helix = get_helix(self.pept, i, j, self.min_helix_length, self.has_acetyl, self.has_succinyl, self.has_amide)
         energy_N = np.zeros(len(helix))
         energy_C = np.zeros(len(helix))
         q_dipole = 0.5  # Half-charge for the helix macrodipole
@@ -970,7 +976,7 @@ class EnergyCalculator:
             np.ndarray: n x n symmetric matrix of pairwise electrostatic free energy contributions,
                        with each interaction energy split between upper and lower triangles.
         """
-        helix = get_helix(self.pept, i, j)  # Extract helical segment
+        helix = get_helix(self.pept, i, j, self.min_helix_length, self.has_acetyl, self.has_succinyl, self.has_amide)  # Extract helical segment
         charged_pairs = self._find_charged_pairs(helix, start_idx=i)  # Identify charged pairs
         energy_matrix = np.zeros((len(helix), len(helix)))
 
