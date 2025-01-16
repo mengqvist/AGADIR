@@ -101,13 +101,33 @@ In many helix stability studies, it is common to "cap" the helix by adding on ac
 
 In pyAgadir we have chosen to represent acylation with the single letter **Z**, succinylation with **X**, and amidation with **B**. The peptide **ILKSLEEFLKVTLRSTRQT**, when capped with acylation and amidation, would be written **ZILKSLEEFLKVTLRSTRQTB** when submitted to pyAgadir. When extracting a single alpha helix from a longer protein chain, such as a pdb structure, you should consider capping it in order to simulate the absence of N- and C-terminal charges and obtain accurate estimates of helicity.
 
+## Validation
+
+The implementation has been validated against the original AGADIR paper results. To run the validation:
+
+1. Activate the development environment (required for matplotlib):
+```bash
+conda activate agadir-dev
+```
+
+2. Run the validation script:
+```bash
+python -m pyagadir.validation
+```
+
+This will generate comparison plots in the `pyagadir/figures` directory. Below is a validation plot for Figure 3b from the original paper, showing the pH dependence of helix content for the peptide Ac-YGGSAAAAAAAKRAAA-Am:
+
+![Figure 3b Validation](pyagadir/figures/figure_3b.png)
+
+- Black circles: Experimental measurements from the paper
+- White circles: Original AGADIR predictions from the paper
+- Orange circles: Current pyAGADIR predictions
+
+
 ## Questions / To Do
 
-* How is the i+1 term supposed to be calculated?
-* How do we add charge interactions in the i+3 and i+4 terms? Potental duplication of electrostatics term?
 * Test correct functioning of staple term or schellman term.
 * We need to locate a source for the N- and C-terminal pKa values for the individual amino acids. Currently using average value from Stryer.
-* Ensure that N- and C-terminal capping is dealt with appropriately. Introduce protein "capping" for accurate estimations of helices in proteins?
 * Update pytests to fit new model.
 
 

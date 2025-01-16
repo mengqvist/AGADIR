@@ -9,7 +9,7 @@ from typing import Dict
 from pyagadir.utils import is_valid_index, is_valid_peptide_sequence
 
 # get params
-datapath = files("pyagadir.data")
+datapath = files("pyagadir.data.params")
 
 # load energy contributions for intrinsic propensities, capping, etc.
 table_1_lacroix = pd.read_csv(
