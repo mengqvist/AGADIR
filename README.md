@@ -172,7 +172,7 @@ conda activate agadir-dev
 
 2. Run the validation script:
 ```bash
-python -m ./pyagadir/validation.py
+python ./pyagadir/validation.py
 ```
 
 This will generate comparison plots in the `pyagadir/figures` directory. 

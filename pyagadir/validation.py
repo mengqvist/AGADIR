@@ -12,7 +12,7 @@ def get_package_data_dir():
 def ensure_figures_dir():
     """Create figures directory if it doesn't exist."""
     data_dir = get_package_data_dir()
-    figures_dir = data_dir.parent / 'figures'
+    figures_dir = data_dir / 'figures'
     figures_dir.mkdir(exist_ok=True)
     return figures_dir
 
