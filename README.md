@@ -112,16 +112,14 @@ conda activate agadir-dev
 
 2. Run the validation script:
 ```bash
-python -m pyagadir.validation
+python -m ./pyagadir/validation.py
 ```
 
-This will generate comparison plots in the `pyagadir/figures` directory. Below is a validation plot for Figure 3b from the original paper, showing the pH dependence of helix content for the peptide Ac-YGGSAAAAAAAKRAAA-Am:
+This will generate comparison plots in the `pyagadir/figures` directory. 
+
+Below is a validation plot for Figure 3b with reference data extractedfrom the original paper, showing the pH dependence of helix content:
 
 ![Figure 3b Validation](pyagadir/figures/figure_3b.png)
-
-- Black circles: Experimental measurements from the paper
-- White circles: Original AGADIR predictions from the paper
-- Orange circles: Current pyAGADIR predictions
 
 
 ## Questions / To Do
