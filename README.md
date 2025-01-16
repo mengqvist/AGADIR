@@ -178,10 +178,12 @@ python -m ./pyagadir/validation.py
 This will generate comparison plots in the `pyagadir/figures` directory. 
 
 Below is a validation plot for Figure 3b with reference data extractedfrom the original paper (Lacroix et al., 1998, using WebPlotDigitizer), showing the pH dependence of helix content:
-<img src="pyagadir/figures/figure_3b.png" width="200" alt="Figure 3b Validation">
+
+<img src="pyagadir/figures/figure_3b.png" width="400" alt="Figure 3b Validation">
 
 Below is a validation plot for Figure 4 with reference data extractedfrom the original paper (Lacroix et al., 1998, using WebPlotDigitizer), showing the pH dependence of helix content:
-<img src="pyagadir/figures/figure_4.png" width="400" alt="Figure 4 Validation">
+
+<img src="pyagadir/figures/figure_4.png" width="800" alt="Figure 4 Validation">
 
 ## Questions / To Do
 * Based on the validation plots, the model generally shows the correct trend, but some of the pH-dependent electrostatic energies look like they need work.
