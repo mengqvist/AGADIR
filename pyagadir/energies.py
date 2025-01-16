@@ -426,7 +426,6 @@ class EnergyCalculator:
             mu_helix (float): Helix dipole moment.
             distance_r (float): Distance from the terminal to the helix in Ångströms.
             screening_factor (float): Debye-Huckel screening factor.
-            T (float): Temperature in Kelvin.
 
         Returns:
             float: The interaction energy.
@@ -799,7 +798,7 @@ class EnergyCalculator:
 
             # Calculate terminal interaction energy
             energy = self._calculate_term_dipole_interaction_energy(
-                mu_helix, distance_r_angstrom, screening_factor, self.T
+                mu_helix, distance_r_angstrom, screening_factor
             )
 
             # Adjust ionization state using precomputed pKa
