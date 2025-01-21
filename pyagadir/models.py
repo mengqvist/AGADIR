@@ -163,13 +163,16 @@ class AGADIR(object):
         dG_N_term, dG_C_term = self.energy_calculator.get_dG_terminals_macrodipole(i, j)
 
         # get the interaction between charged side chains and the helix macrodipole
-        dG_dipole_N, dG_dipole_C = self.energy_calculator.get_dG_sidechain_macrodipole(
-            i, j
-        )
+        dG_dipole_N, dG_dipole_C = self.energy_calculator.get_dG_sidechain_macrodipole(i, j)
         dG_dipole = dG_dipole_N + dG_dipole_C
 
+        # get electrostatic energies between N- and C-terminal backbone charges and charged side chains
+        # TODO 
+        # dG_electrost_term_N, dG_electrost_term_C = self.energy_calculator.get_dG_terminals_sidechain_electrost(i, j)
+        # dG_electrost_term = dG_electrost_term_N + dG_electrost_term_C
+
         # get electrostatic energies between pairs of charged side chains
-        dG_electrost = self.energy_calculator.get_dG_electrost(i, j)
+        dG_electrost_sidechain = self.energy_calculator.get_dG_sidechain_sidechain_electrost(i, j)
 
         # modify by ionic strength according to equation 12 of the paper
         alpha = 0.15
@@ -187,7 +190,7 @@ class AGADIR(object):
             + dG_ionic
             + sum(dG_N_term)
             + sum(dG_C_term)
-            + np.sum(dG_electrost)
+            + np.sum(dG_electrost_sidechain)
             + np.sum(dG_dipole)
         )
 
@@ -209,7 +212,7 @@ class AGADIR(object):
         # print(f"i,i+3 and i,i+4 side chain-side chain interaction = {sum(dG_SD):.4f}")
         # print(f"g staple = {dG_staple:.4f}")
         # print(f"g schellman = {dG_schellman:.4f}")
-        # print(f"dG_electrost = {np.sum(dG_electrost):.4f}")
+        # print(f"dG_electrost = {np.sum(dG_electrost_sidechain):.4f}")
         # print(f"main chain-main chain H-bonds = {dG_Hbond:.4f}")
         # print(f"ionic strngth corr. from eq. 12 {dG_ionic:.4f}")
         # print(f"total Helix free energy = {dG_Hel:.4f}")
@@ -237,18 +240,18 @@ class AGADIR(object):
         """
         # Special case for when there is a N-terminal modification (acetylation or succinylation)
         # The helix starting at the first residue can be one residue shorter because the modification acts as a capping residue
-        # Get the energies for all helices starting at the first residue
+        # Get the energies for all helices starting at the first residue, allowing for a helix length of 1 residue shorter than the minimum length
         if self.has_acetyl or self.has_succinyl:
             for j in range(self.min_helix_length - 1, len(self.result.seq) + 1):
                 i = 0
                 dG_Hel = self._calc_dG_Hel(i=i, j=j)
                 K = self._calc_K(dG_Hel)
-                self.result.K_tot_array[0 : j - 1] += K
+                self.result.K_tot_array[i : i + j - 1] += K
                 self.result.K_tot += K
 
         # Special case for when there is a C-terminal modification (amidation)
         # The helix ending at the last residue can be one residue shorter because the modification acts as a capping residue
-        # Get the energies for all helices ending at the last residue
+        # Get the energies for all helices ending at the last residue, allowing for a helix length of 1 residue shorter than the minimum length
         if self.has_amide:
             for j in range(self.min_helix_length - 1, len(self.result.seq) + 1):
                 i = len(self.result.seq) - j
@@ -257,8 +260,8 @@ class AGADIR(object):
                 self.result.K_tot_array[i + 1 : i + j] += K
                 self.result.K_tot += K
 
-        # General case for all other helices, these must be the minimum length of 6 residues
-        # Here the first and last residues act as capping residues
+        # General case for all other helices
+        # Here the first and last residues act as capping residues, these must be the minimum length of 6 residues
         for j in range(
             self.min_helix_length, len(self.result.seq) + 1
         ):  # helix lengths (including capping residues)
@@ -284,13 +287,11 @@ class AGADIR(object):
         """
         # get per residue helical propensity
         if self._method == "r":
-            print("r")
             self.result.helical_propensity = (
                 100 * self.result.K_tot_array / (1.0 + self.result.K_tot_array)
             )
 
         elif self._method == "1s":
-            print("1s")
             self.result.helical_propensity = (
                 100 * self.result.K_tot_array / (1.0 + self.result.K_tot)
             )
@@ -342,6 +343,8 @@ class AGADIR(object):
             raise ValueError(
                 f"Input sequence must be at least {self.min_helix_length} amino acids long."
             )
+        
+        print(f"Predicting helical propensity for sequence: {seq}, method: {self._method}, T(C): {self.T_celsius}, M: {self.molarity}, pH: {self.pH}, ncap: {self.n_cap}, ccap: {self.c_cap}")
 
         # create energy calculator instance
         self.energy_calculator = EnergyCalculator(

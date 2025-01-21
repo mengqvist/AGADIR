@@ -47,6 +47,7 @@ def plot_ph_helix_content(paper_measured_data_ph, paper_measured_data_helix,
         color="white",
         markeredgecolor="black",
         markeredgewidth=1,
+        markersize=5,
         label="Paper predicted",
     )
     ax.plot(
@@ -54,6 +55,7 @@ def plot_ph_helix_content(paper_measured_data_ph, paper_measured_data_helix,
         paper_measured_data_helix,
         "o",
         color="black", 
+        markersize=5,
         label="Paper measured",
     )
     ax.plot(
@@ -61,6 +63,9 @@ def plot_ph_helix_content(paper_measured_data_ph, paper_measured_data_helix,
         pyagadir_predicted_data_helix,
         "o",
         color="orange",
+        markeredgecolor="black",
+        markeredgewidth=1,
+        markersize=5,
         label="PyAGADIR",
     )
 
@@ -84,7 +89,7 @@ def plot_ph_helix_content(paper_measured_data_ph, paper_measured_data_helix,
     
     return fig, ax
 
-def reproduce_figure_3b():
+def reproduce_figure_3b(method="1s"):
     """
     Reproduce figure 3b from the AGADIR paper.
     """
@@ -109,7 +114,7 @@ def reproduce_figure_3b():
     # AGADIR results
     pyagadir_predicted_data_helix = []
     for ph in paper_predicted_data_ph:
-        model = AGADIR(method="1s", T=0.0, M=0.1, pH=ph)
+        model = AGADIR(method=method, T=0.0, M=0.1, pH=ph)
         result = model.predict(peptide, ncap=ncap, ccap=ccap)
         pyagadir_predicted_data_helix.append(result.get_percent_helix())
         
@@ -122,7 +127,7 @@ def reproduce_figure_3b():
     fig.savefig(figures_dir / "figure_3b.png", dpi=300, bbox_inches='tight')
     plt.close(fig)
 
-def reproduce_figure_4():
+def reproduce_figure_4(method="1s"):
     """
     Reproduce figure 4 from the AGADIR paper.
     """
@@ -155,9 +160,10 @@ def reproduce_figure_4():
 
         pyagadir_predicted_data_helix = []
         for ph in paper_predicted_data_ph:
-            model = AGADIR(method="1s", T=0.0, M=0.1, pH=ph)
+            model = AGADIR(method=method, T=0.0, M=0.1, pH=ph)
             result = model.predict(peptide, ncap=ncap, ccap=ccap)
             pyagadir_predicted_data_helix.append(result.get_percent_helix())
+            
 
         _, ax = plot_ph_helix_content(paper_measured_data_ph, paper_measured_data_helix,
                                         paper_predicted_data_ph, paper_predicted_data_helix,
@@ -169,5 +175,6 @@ def reproduce_figure_4():
     plt.close(fig)
 
 if __name__ == "__main__":
-    reproduce_figure_3b()
-    reproduce_figure_4()
+    method = "r"
+    reproduce_figure_3b(method=method)
+    reproduce_figure_4(method=method)

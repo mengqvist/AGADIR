@@ -115,10 +115,10 @@ from pyagadir.energies import EnergyCalculator
 # Initialize calculator
 calc = EnergyCalculator(
     pept="ILKSLEEFLKVTLRSTRQT",
-    pH=7.0,
-    T=277.15,  # Temperature in Kelvin
+    pH=7.0,  # pH of solution
+    T=4.0,  # Temperature in Celsius
     ionic_strength=0.15,  # Ionic strength in mol/L
-    min_helix_length=6,
+    min_helix_length=6,  # Minimum helix length, default 6 as in the paper
     has_acetyl=False,  # N-terminal acetylation 
     has_succinyl=False,  # N-terminal succinylation
     has_amide=False  # C-terminal amidation
@@ -175,21 +175,24 @@ conda activate agadir-dev
 python ./pyagadir/validation.py
 ```
 
-This will generate comparison plots in the `pyagadir/figures` directory. 
+This will generate comparison plots in the `pyagadir/data/figures` directory. 
 
-Below is a validation plot for Figure 3b with reference data extractedfrom the original paper (Lacroix et al., 1998, using WebPlotDigitizer), showing the pH dependence of helix content:
+Below is a validation plot for Figure 3b with reference data extracted from the original paper (Lacroix et al., 1998, using WebPlotDigitizer), showing the pH dependence of helix content:
 
 <img src="pyagadir/data/figures/figure_3b.png" width="400" alt="Figure 3b Validation">
 
-Below is a validation plot for Figure 4 with reference data extractedfrom the original paper (Lacroix et al., 1998, using WebPlotDigitizer), showing the pH dependence of helix content:
+Below is a validation plot for Figure 4 with reference data extracted from the original paper (Lacroix et al., 1998, using WebPlotDigitizer), showing the pH dependence of helix content:
 
 <img src="pyagadir/data/figures/figure_4.png" width="800" alt="Figure 4 Validation">
 
 ## Questions / To Do
 * Based on the validation plots, the model generally shows the correct trend, but some of the pH-dependent electrostatic energies look like they need work.
+* How to make ionization state consistent between the different energy terms?
 * Test correct functioning of staple term or schellman term.
 * We need to locate a source for the N- and C-terminal pKa values for the individual amino acids. Currently using average value from Stryer.
-* Update pytests to fit new model.
+* Update pytests to test all the code.
+* Ionic strengths should probably be adjusted based on whether the ions are monovalent or divalent. Otherwise the screening correction may not be correct.
+* The original papers used to have an i-i+1 term, but it's not clear to me how this is accounted for in Lacroix et al. (1998), and consequently in this implementation.
 
 
 ## Citations
