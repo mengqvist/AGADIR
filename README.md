@@ -8,9 +8,9 @@ The energy parameters used in this model were extracted from the supplementary m
 
 The paper uses the terminology of Richardson & Richardson (1988) where STC (S, strand; T, turn; and C, coil) indicates a non-helical conformation and He is a helical residue. Python indexing starting from the Ncap is used to describe these positions in the model.
 ```text
-Name:      N''  N'   Ncap N1   N2   N3   N4   N5.............C5   C4   C3   C2   C1   Ccap C'   C''  
-Structure: STC  STC  STC -He---He---He---He---He---He---He---He---He---He---He---He---STC  STC  STC
-Index:     -2   -1   0    1    2    3    4    5    6    7    8    9    10   11   12   13   14   15
+Name:      N''  N'   Ncap  N1   N2   N3   N4   N5.............C5   C4   C3   C2   C1   Ccap C'   C''  
+Structure: STC  STC  STC---He---He---He---He---He---He---He---He---He---He---He---He---STC  STC  STC
+Index:     -2   -1    0    1    2    3    4    5    6    7    8    9    10   11   12   13   14   15
 ```
 
 ## Installation
@@ -91,10 +91,10 @@ The result object provides several methods to access the predictions:
 When predicting helix propensity, the charged termini can significantly affect the results. In real proteins, helices are typically part of a larger sequence and don't experience these terminal charges. The package supports three types of terminal modifications to simulate this:
 
 - N-terminal modifications (ncap):
-  - `'Z'`: Acetylation - neutralizes the positive N-terminal charge
-  - `'X'`: Succinylation - neutralizes the positive N-terminal charge
+  - `'Z'`: Acetylation - can act as a helix capping residue and neutralizes the positive N-terminal backbone charge.
+  - `'X'`: Succinylation - can act as a helix capping residue, neutralizes the positive N-terminal backbone charge, BUT is treated as negatively charged.
 - C-terminal modification (ccap):
-  - `'B'`: Amidation - neutralizes the negative C-terminal charge
+  - `'B'`: Amidation - can act as a helix capping residue and neutralizes the negative C-terminal backbone charge.
 
 These modifications are particularly important when analyzing helices extracted from larger proteins. For example, if you're predicting the helical propensity of a segment taken from a crystal structure, you should consider adding these caps to better simulate the actual environment where the helix exists within the protein:
 
