@@ -739,17 +739,28 @@ class EnergyCalculator:
 
             return energy
 
-        # N-terminal calculation
-        if not self.has_acetyl:  # N-terminal not capped by acetyl, but beware that succinyl is treated as charged and CAN interact with the helix macrodipole (page 177 in Lacroix, 1998)
+        # N-terminal calculation, not capped by acetyl nor succinyl, so it is positively charged
+        if not self.has_acetyl and not self.has_succinyl:
             pKa_Nterm = pka_values.loc["Nterm", "pKa"]
             distance_r_N = self._calculate_r(i)
             N_term_energy = _calculate_terminal_energy(
                 distance_r_N, pKa_Nterm, "basic", terminal="N"
             )
             N_term[0] = N_term_energy
+            
+        # N-terminal calculation, here we account for the negative charge of succinyl, 
+        # which is a special case since the N-terminal is normally positively charged
+        # and CAN interact with the helix macrodipole (page 177 in Lacroix, 1998)
+        elif self.has_succinyl: 
+            pKa_Nterm = pka_values.loc["Succinyl", "pKa"]
+            distance_r_N = self._calculate_r(i)
+            N_term_energy = _calculate_terminal_energy(
+                distance_r_N, pKa_Nterm, "acidic", terminal="N"
+            )
+            N_term[0] = N_term_energy
 
-        # C-terminal calculation
-        if not self.has_amide:  # C-terminal not capped
+        # C-terminal calculation, only if not capped by amidation
+        if not self.has_amide:
             pKa_Cterm = pka_values.loc["Cterm", "pKa"]
             distance_r_C = self._calculate_r(len(self.seq) - (i + j))
             C_term_energy = _calculate_terminal_energy(
