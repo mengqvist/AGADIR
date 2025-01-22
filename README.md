@@ -193,7 +193,7 @@ Below is a validation plot for Figure 4 with reference data extracted from the o
 * Update pytests to test all the code.
 * Ionic strengths should probably be adjusted based on whether the ions are monovalent or divalent. Otherwise the screening correction may not be correct.
 * The original papers used to have an i-i+1 term, but it's not clear to me how this is accounted for in Lacroix et al. (1998), and consequently in this implementation.
-
+* The values in table 5 are not currently used in the implementation. Figure out where they are needed.
 
 ## Citations
 
