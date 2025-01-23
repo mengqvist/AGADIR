@@ -16,6 +16,95 @@ class PrecomputeParams:
     Class to load parameters for the AGADIR model and
     for pre-computing distances, and ionization states.
     """
+
+    _params = None # class variable to store the params
+
+    @classmethod
+    def load_params(cls):
+        """
+        Load the parameters for the AGADIR model.
+        Only load once, and store in class variable to 
+        save time and memory when many instances are created.
+        """
+        if cls._params is None:
+
+            cls._params = {}
+
+            # get params
+            datapath = files("pyagadir.data.params")
+
+            # load energy contributions for intrinsic propensities, capping, etc.
+            cls._params["table_1_lacroix"] = pd.read_csv(
+                datapath.joinpath("table_1_lacroix.tsv"),
+                index_col="AA",
+                sep="\t",
+            ).astype(float)
+
+            # load the hydrophobic staple motif energy contributions
+            cls._params["table_2_lacroix"] = pd.read_csv(
+                datapath.joinpath("table_2_lacroix.tsv"),
+                index_col="AA",
+                sep="\t",
+            ).astype(float)
+
+            # load the schellman motif energy contributions
+            cls._params["table_3_lacroix"] = pd.read_csv(
+                datapath.joinpath("table_3_lacroix.tsv"),
+                index_col="AA",
+                sep="\t",
+            ).astype(float)
+
+            # load energy contributions for interactions between i and i+3
+            cls._params["table_4a_lacroix"] = pd.read_csv(
+                datapath.joinpath("table_4a_lacroix.tsv"),
+                index_col="AA",
+                sep="\t",
+            ).astype(float)
+
+            # load energy contributions for interactions between i and i+4
+            cls._params["table_4b_lacroix"] = pd.read_csv(
+                datapath.joinpath("table_4b_lacroix.tsv"),
+                index_col="AA",
+                sep="\t",
+            ).astype(float)
+
+            # load sidechain distances for helices
+            cls._params["table_6_helix_lacroix"] = pd.read_csv(
+                datapath.joinpath("table_6_helix_lacroix.tsv"),
+                index_col="Pos",
+                sep="\t",
+            ).astype(float)
+
+            # load sidechain distances for coils
+            cls._params["table_6_coil_lacroix"] = pd.read_csv(
+                datapath.joinpath("table_6_coil_lacroix.tsv"),
+                index_col="Pos",
+                sep="\t",
+            ).astype(float)
+
+            # load N-terminal distances between charged amino acids and the half charge from the helix macrodipole
+            cls._params["table_7_ccap_lacroix"] = pd.read_csv(
+                datapath.joinpath("table_7_Ccap_lacroix.tsv"),
+                index_col="AA",
+                sep="\t",
+            ).astype(float)
+
+            # load C-terminal distances between charged amino acids and the half charge from the helix macrodipole
+            cls._params["table_7_ncap_lacroix"] = pd.read_csv(
+                datapath.joinpath("table_7_Ncap_lacroix.tsv"),
+                index_col="AA",
+                sep="\t",
+            ).astype(float)
+
+            # load pKa values for for side chain ionization and the N- and C-terminal capping groups
+            cls._params["pka_values"] = pd.read_csv(
+                datapath.joinpath("pka_values.tsv"),
+                index_col="AA",
+                sep="\t",
+            ).astype(float)
+
+        return cls._params
+
     def __init__(self, seq: str, i: int, j: int, pH: float, T: float, ionic_strength: float, ncap: str = None, ccap: str = None):
         """
         Initialize the PrecomputedParams for a peptide sequence.
@@ -30,17 +119,31 @@ class PrecomputeParams:
             ncap (str): N-terminal capping modification (acetylation='Ac', succinylation='Sc').
             ccap (str): C-terminal capping modification (amidation='Am').
         """
+        # load params
+        params = self.load_params()
+        self.table_1_lacroix = params["table_1_lacroix"]
+        self.table_2_lacroix = params["table_2_lacroix"]
+        self.table_3_lacroix = params["table_3_lacroix"]
+        self.table_4a_lacroix = params["table_4a_lacroix"]
+        self.table_4b_lacroix = params["table_4b_lacroix"]
+        self.table_6_helix_lacroix = params["table_6_helix_lacroix"]
+        self.table_6_coil_lacroix = params["table_6_coil_lacroix"]
+        self.table_7_ccap_lacroix = params["table_7_ccap_lacroix"]
+        self.table_7_ncap_lacroix = params["table_7_ncap_lacroix"]
+        self.table_pka_values = params["pka_values"]
+
         is_valid_peptide_sequence(seq)
         is_valid_ncap_ccap(ncap, ccap)
-        is_valid_index(seq, i, j, ncap, ccap)
+        # is_valid_index(seq, i, j, ncap, ccap)
         is_valid_conditions(pH, T, ionic_strength)
 
         self.seq = seq
         self.seq_list = list(seq)
         if ncap is not None:
-            self.seq_list = [ncap] + self.seq_list
+            self.seq_list.insert(0, ncap)
         if ccap is not None:
-            self.seq_list = self.seq_list + [ccap]
+            self.seq_list.append(ccap)
+        self.helix = self.seq_list[i:i+j]
         self.i = i
         self.j = j
         self.pH = pH
@@ -67,114 +170,27 @@ class PrecomputeParams:
         self.e = 1.602e-19  # Elementary charge in Coulombs
 
         # assign None to all variables
-        self.table_1_lacroix = None
-        self.table_2_lacroix = None
-        self.table_3_lacroix = None
-        self.table_4a_lacroix = None
-        self.table_4b_lacroix = None
-        self.table_6_helix_lacroix = None
-        self.table_6_coil_lacroix = None
-        self.table_7_ccap_lacroix = None
-        self.table_7_ncap_lacroix = None
-
-        self.pka_values = None
+        self.seq_pka = None
+        self.nterm_pka = None
+        self.cterm_pka = None
         self.distances_hel = None
         self.distances_rc = None
-        self.ionization_states = None
+        self.seq_ionization = None
         self.nterm_ionization = None
         self.cterm_ionization = None
-        self.modified_ionization_states = None
+        self.modified_seq_ionization_hel = None
+        self.modified_seq_ionization_rc = None
         self.modified_nterm_ionization = None
         self.modified_cterm_ionization = None
 
         self.category_pad = 15
         self.value_pad = 5
 
-        # load params
-        self._load_params()
-
         # assign pKa values, distances, and ionization states
         self._assign_pka_values()
         # self._assign_distances()
         self._assign_ionization_states()
-        # self._assign_modified_ionization_states()
-
-    def _load_params(self):
-        """
-        Load the parameters for the AGADIR model.
-        """
-        # get params
-        datapath = files("pyagadir.data.params")
-
-        # load energy contributions for intrinsic propensities, capping, etc.
-        self.table_1_lacroix = pd.read_csv(
-            datapath.joinpath("table_1_lacroix.tsv"),
-            index_col="AA",
-            sep="\t",
-        ).astype(float)
-
-        # load the hydrophobic staple motif energy contributions
-        self.table_2_lacroix = pd.read_csv(
-            datapath.joinpath("table_2_lacroix.tsv"),
-            index_col="AA",
-            sep="\t",
-        ).astype(float)
-
-        # load the schellman motif energy contributions
-        self.table_3_lacroix = pd.read_csv(
-            datapath.joinpath("table_3_lacroix.tsv"),
-            index_col="AA",
-            sep="\t",
-        ).astype(float)
-
-        # load energy contributions for interactions between i and i+3
-        self.table_4a_lacroix = pd.read_csv(
-            datapath.joinpath("table_4a_lacroix.tsv"),
-            index_col="AA",
-            sep="\t",
-        ).astype(float)
-
-        # load energy contributions for interactions between i and i+4
-        self.table_4b_lacroix = pd.read_csv(
-            datapath.joinpath("table_4b_lacroix.tsv"),
-            index_col="AA",
-            sep="\t",
-        ).astype(float)
-
-        # load sidechain distances for helices
-        self.table_6_helix_lacroix = pd.read_csv(
-            datapath.joinpath("table_6_helix_lacroix.tsv"),
-            index_col="Pos",
-            sep="\t",
-        ).astype(float)
-
-        # load sidechain distances for coils
-        self.table_6_coil_lacroix = pd.read_csv(
-            datapath.joinpath("table_6_coil_lacroix.tsv"),
-            index_col="Pos",
-            sep="\t",
-        ).astype(float)
-
-        # load N-terminal distances between charged amino acids and the half charge from the helix macrodipole
-        self.table_7_ccap_lacroix = pd.read_csv(
-            datapath.joinpath("table_7_Ccap_lacroix.tsv"),
-            index_col="AA",
-            sep="\t",
-        ).astype(float)
-
-        # load C-terminal distances between charged amino acids and the half charge from the helix macrodipole
-        self.table_7_ncap_lacroix = pd.read_csv(
-            datapath.joinpath("table_7_Ncap_lacroix.tsv"),
-            index_col="AA",
-            sep="\t",
-        ).astype(float)
-
-        # load pKa values for for side chain ionization and the N- and C-terminal capping groups
-        self.pka_values = pd.read_csv(
-            datapath.joinpath("pka_values.tsv"),
-            index_col="AA",
-            sep="\t",
-        ).astype(float)
+        self._assign_modified_ionization_states()
 
     def _make_box(self, title: str):
         """
@@ -207,10 +223,10 @@ class PrecomputeParams:
         """
         Assign pKa values to the sequence.
         """
-        self.seq_pka_values = np.array([float(self.pka_values.loc[aa]["pKa"]) if aa in self.neg_charge_aa + self.pos_charge_aa else np.nan 
+        self.seq_pka = np.array([float(self.table_pka_values.loc[aa]["pKa"]) if aa in self.neg_charge_aa + self.pos_charge_aa else np.nan 
                                   for aa in self.seq_list])
-        self.nterm_pka = float(self.pka_values.loc["Nterm"]["pKa"]) if self.ncap is None else float(self.pka_values.loc["Sc"]["pKa"]) if self.ncap == "Sc" else np.nan
-        self.cterm_pka = float(self.pka_values.loc["Cterm"]["pKa"]) if self.ccap is None else np.nan
+        self.nterm_pka = float(self.table_pka_values.loc["Nterm"]["pKa"]) if self.ncap is None else float(self.table_pka_values.loc["Sc"]["pKa"]) if self.ncap == "Sc" else np.nan
+        self.cterm_pka = float(self.table_pka_values.loc["Cterm"]["pKa"]) if self.ccap is None else np.nan
 
     def get_pka_values(self):
         """
@@ -221,7 +237,7 @@ class PrecomputeParams:
             float: pKa value for the N-terminal capping group.
             float: pKa value for the C-terminal capping group.
         """
-        return self.seq_pka_values, self.nterm_pka, self.cterm_pka
+        return self.seq_pka, self.nterm_pka, self.cterm_pka
     
     def show_pka_values(self):
         """
@@ -229,7 +245,7 @@ class PrecomputeParams:
         """
         print(self._make_box("pKa values"))
         print(f'{"seq:".ljust(self.category_pad)} {"".join([aa.ljust(self.value_pad) for aa in self.seq_list])}')
-        print(f'{"pKa:".ljust(self.category_pad)} {"".join([f"{pka:.1f}".ljust(self.value_pad) for pka in self.seq_pka_values])}')
+        print(f'{"pKa:".ljust(self.category_pad)} {"".join([f"{pka:.1f}".ljust(self.value_pad) for pka in self.seq_pka])}')
         print(f'{"nterm_pka:".ljust(self.category_pad)} {self.nterm_pka:.1f}')
         print(f'{"cterm_pka:".ljust(self.category_pad)} {self.cterm_pka:.1f}')
         print("")
@@ -238,10 +254,10 @@ class PrecomputeParams:
         """
         Compute ionization states for charged residues in the sequence.
         """
-        self.ionization_states = np.array([
+        self.seq_ionization = np.array([
             acidic_residue_ionization(self.pH, pKa) if aa in self.neg_charge_aa else 
             basic_residue_ionization(self.pH, pKa) if aa in self.pos_charge_aa else 0.0 
-            for aa, pKa in zip(self.seq_list, self.seq_pka_values)
+            for aa, pKa in zip(self.seq_list, self.seq_pka)
         ])
         
         self.nterm_ionization = (
@@ -262,7 +278,7 @@ class PrecomputeParams:
             float: Ionization state for the N-terminal capping group.
             float: Ionization state for the C-terminal capping group.
         """
-        return self.ionization_states, self.nterm_ionization, self.cterm_ionization
+        return self.seq_ionization, self.nterm_ionization, self.cterm_ionization
 
     def show_ionization_states(self):
         """
@@ -270,10 +286,21 @@ class PrecomputeParams:
         """
         print(self._make_box("Ionization states"))
         print(f'{"seq:".ljust(self.category_pad)} {"".join([aa.ljust(self.value_pad) for aa in self.seq_list])}')
-        print(f'{"charge:".ljust(self.category_pad)} {"".join([f"{q:.1f}".ljust(self.value_pad) for q in self.ionization_states])}')
+        print(f'{"charge:".ljust(self.category_pad)} {"".join([f"{q:.1f}".ljust(self.value_pad) for q in self.seq_ionization])}')
         print(f'{"nterm_charge:".ljust(self.category_pad)} {self.nterm_ionization:.1f}')
         print(f'{"cterm_charge:".ljust(self.category_pad)} {self.cterm_ionization:.1f}')
         print("")
+
+    def _assign_modified_ionization_states(self):
+        """
+        Assign modified ionization states for the sequence.
+        This is influenced by the helix macrodipole etc.
+        """
+        # TODO: Implement this, just putting placeholder values for now
+        self.modified_seq_ionization_hel = self.seq_ionization
+        self.modified_seq_ionization_rc = self.seq_ionization
+        self.modified_nterm_ionization = self.nterm_ionization
+        self.modified_cterm_ionization = self.cterm_ionization
 
     def _assign_distances(self):
         """
@@ -314,6 +341,8 @@ class PrecomputeParams:
         self.show_helix()
         self.show_pka_values()
         self.show_ionization_states()
+        self.show_modified_ionization_states()
+
 
 class EnergyCalculator(PrecomputeParams):
     """
@@ -403,14 +432,14 @@ class EnergyCalculator(PrecomputeParams):
         for idx, AA in enumerate(self.seq):
 
             if AA in self.neg_charge_aa:
-                pKa_ref = self.pka_values.loc[AA, "pKa"]
+                pKa_ref = self.table_pka_values.loc[AA, "pKa"]
                 pKa_rc = adjust_pKa(self.T_kelvin, pKa_ref, deltaG=0.0)  # Coil state
                 pKa_hel = adjust_pKa(self.T_kelvin, pKa_ref, deltaG=-0.5)  # Helix state
                 q_rc[idx] = acidic_residue_ionization(self.pH, pKa_rc)
                 q_hel[idx] = acidic_residue_ionization(self.pH, pKa_hel)
 
             elif AA in self.pos_charge_aa:
-                pKa_ref = self.pka_values.loc[AA, "pKa"]
+                pKa_ref = self.table_pka_values.loc[AA, "pKa"]
                 pKa_rc = adjust_pKa(self.T_kelvin, pKa_ref, deltaG=0.0)  # Coil state
                 pKa_hel = adjust_pKa(self.T_kelvin, pKa_ref, deltaG=-0.5)  # Helix state
                 q_rc[idx] = basic_residue_ionization(self.pH, pKa_rc)
@@ -428,22 +457,6 @@ class EnergyCalculator(PrecomputeParams):
         #     q_cterm = acidic_residue_ionization(self.pH, pKa_cterm)
 
         return q_hel, q_rc
-
-    def _get_helix(self, i: int, j: int) -> str:
-        """
-        Get the helical segment of a peptide sequence, including 
-        the residues forming the N- and C-caps of the helix.
-
-        Args:
-            i (int): The helix start index, python 0-indexed.
-            j (int): The helix length.
-
-        Returns:
-            str: The helix region of the peptide sequence.
-        """
-        is_valid_index(self.seq, i, j, self.ncap, self.ccap)
-
-        return self.seq[i : i + j]
 
     def _are_terminal_residues_capping(self, pept_len: int, i: int, j: int) -> tuple[bool, bool]:
         """
@@ -598,39 +611,45 @@ class EnergyCalculator(PrecomputeParams):
         Returns:
             np.ndarray: The intrinsic free energy contributions for each amino acid in the helical segment.
         """
-        helix = self._get_helix(i, j)
+        helix = self.helix
         res_is_ncap, res_is_ccap = self._are_terminal_residues_capping(len(self.seq), i, j)
 
         # Initialize energy array
-        energy = np.zeros(len(helix))
+        energy = np.zeros(len(self.seq_list))
 
         # Iterate over the helix and get the intrinsic energy for each residue, 
         # not including residues that are capping for the helical segment
-        for idx, AA in enumerate(helix):
+        for idx in range(j):
+            AA = self.seq_list[i + idx]
+
             # Skip caps only if they exist for this segment
             if (idx == 0 and res_is_ncap) or (idx == len(helix) - 1 and res_is_ccap):
                 continue
 
+            # No energies for terminal modifications
+            if AA in ['Ac', 'Sc', 'Am']:
+                continue
+
             # Handle N-terminal region specially
             if idx == 1 or (idx == 0 and not res_is_ncap):
-                energy[idx] = self.table_1_lacroix.loc[AA, "N1"]
+                energy[i + idx] = self.table_1_lacroix.loc[AA, "N1"]
             elif idx == 2 or (idx == 1 and not res_is_ncap):
-                energy[idx] = self.table_1_lacroix.loc[AA, "N2"]
+                energy[i + idx] = self.table_1_lacroix.loc[AA, "N2"]
             elif idx == 3 or (idx == 2 and not res_is_ncap):
-                energy[idx] = self.table_1_lacroix.loc[AA, "N3"]
+                energy[i + idx] = self.table_1_lacroix.loc[AA, "N3"]
             elif idx == 4 or (idx == 3 and not res_is_ncap):
-                energy[idx] = self.table_1_lacroix.loc[AA, "N4"]
+                energy[i + idx] = self.table_1_lacroix.loc[AA, "N4"]
             else:
-                energy[idx] = self.table_1_lacroix.loc[AA, "Ncen"]
+                energy[i + idx] = self.table_1_lacroix.loc[AA, "Ncen"]
 
             if AA in self.neg_charge_aa + self.pos_charge_aa:
                 # Charged residues: use precomputed ionization state and balance energy based on ionization state
                 # If they are completely ionized, use base value, if they are completely neutral, use Neutral, 
                 # if they are partially ionized, use a weighted average of base value and Neutral
-                q = self.q_global_hel[i + idx]
-                basic_energy = energy[idx]
+                q = self.modified_seq_ionization_hel[i + idx]
+                basic_energy = energy[i + idx]
                 basic_energy_neutral = self.table_1_lacroix.loc[AA, "Neutral"]
-                energy[idx] = q * basic_energy + (1 - q) * basic_energy_neutral
+                energy[i + idx] = q * basic_energy + (1 - q) * basic_energy_neutral
 
         return energy
 
@@ -650,7 +669,7 @@ class EnergyCalculator(PrecomputeParams):
         Returns:
             np.ndarray: The free energy contribution.
         """
-        helix = self._get_helix(i, j)
+        helix = self.helix
         res_is_ncap, res_is_ccap = self._are_terminal_residues_capping(helix, i, j)
 
         # If it's the peptide N-terminal residue and it's not capping in the helical segment, 
@@ -659,7 +678,7 @@ class EnergyCalculator(PrecomputeParams):
         if i == 0 and not res_is_ncap:
             Ncap_AA = "Ac"
 
-        energy = np.zeros(len(helix))
+        energy = np.zeros(len(self.seq_list))
 
         # Get the N1 and N3 residues, which are the first and third residues of the helical segment.
         # If the helical segment is the peptide N-terminal residue, and it's not capping, then we have to shift the indices
@@ -675,19 +694,19 @@ class EnergyCalculator(PrecomputeParams):
 
         # Nc-4 	N-cap values when there is a Pro at position N1 and Glu, Asp or Gln at position N3.
         if N1_AA == "P" and N3_AA in ["E", "D", "Q"]:
-            energy[0] = self.table_1_lacroix.loc[Ncap_AA, "Nc-4"]
+            energy[i] = self.table_1_lacroix.loc[Ncap_AA, "Nc-4"]
 
         # Nc-3 	N-cap values when there is a Glu, Asp or Gln at position N3.
         elif N3_AA in ["E", "D", "Q"]:
-            energy[0] = self.table_1_lacroix.loc[Ncap_AA, "Nc-3"]
+            energy[i] = self.table_1_lacroix.loc[Ncap_AA, "Nc-3"]
 
         # Nc-2 	N-cap values when there is a Pro at position N1.
         elif N1_AA == "P":
-            energy[0] = self.table_1_lacroix.loc[Ncap_AA, "Nc-2"]
+            energy[i] = self.table_1_lacroix.loc[Ncap_AA, "Nc-2"]
 
         # Nc-1 	Normal N-cap values.
         else:
-            energy[0] = self.table_1_lacroix.loc[Ncap_AA, "Nc-1"]
+            energy[i] = self.table_1_lacroix.loc[Ncap_AA, "Nc-1"]
 
         return energy
 
@@ -706,25 +725,18 @@ class EnergyCalculator(PrecomputeParams):
         Returns:
             np.ndarray: The free energy contribution.
         """
-        helix = self._get_helix(i, j)
-        res_is_ncap, res_is_ccap = self._are_terminal_residues_capping(len(self.seq), i, j)
-
-        # fix the blocking group names to match the table
-        if i + j == len(self.seq) and not res_is_ccap:
-            Ccap_AA = "Am"
-        else:
-            Ccap_AA = helix[-1]
-
-        energy = np.zeros(len(helix))
+        # get the C-terminal capping residue
+        Ccap_AA = self.seq_list[i + j - 1]
+        energy = np.zeros(len(self.seq_list))
 
         # Cc-2 	C-cap values when there is a Pro residue at position C'
         c_prime_idx = i + j
-        if (len(self.seq) > c_prime_idx) and (self.seq[c_prime_idx] == "P"):
-            energy[-1] = self.table_1_lacroix.loc[Ccap_AA, "Cc-2"]
+        if (len(self.seq_list) > c_prime_idx) and (self.seq_list[c_prime_idx] == "P"):
+            energy[i + j - 1] = self.table_1_lacroix.loc[Ccap_AA, "Cc-2"]
 
         # Cc-1 	Normal C-cap values
         else:
-            energy[-1] = self.table_1_lacroix.loc[Ccap_AA, "Cc-1"]
+            energy[i + j - 1] = self.table_1_lacroix.loc[Ccap_AA, "Cc-1"]
 
         return energy
 
@@ -742,10 +754,8 @@ class EnergyCalculator(PrecomputeParams):
         Returns:
             float: The free energy contribution.
         """
-        helix = self._get_helix(i, j)
+        helix = self.helix
         res_is_ncap, res_is_ccap = self._are_terminal_residues_capping(len(self.seq), i, j)
-
-        energy = np.zeros(len(helix))
 
         # Staple motif requires the N' residue before the Ncap, so the first residue of the helix cannot be the first residue of the peptide
         # This should be true regardless of whether there is an N-terminal modification or not
@@ -800,7 +810,7 @@ class EnergyCalculator(PrecomputeParams):
         Returns:
             float: The free energy contribution.
         """
-        helix = self._get_helix(i, j)
+        helix = self.helix
         res_is_ncap, res_is_ccap = self._are_terminal_residues_capping(len(self.seq), i, j)
 
         # The Schellman motif is only considered whenever Gly is the C-cap residue,
@@ -826,9 +836,11 @@ class EnergyCalculator(PrecomputeParams):
         """
         Get the free energy contribution for hydrogen bonding for a sequence.
 
-        Always subtract 4 residues for nucleation.
-        Add 1 additional non-contributing residue for each residue that is capping, 
-        as determined by get_capping_status().
+        Capping residues, don't count toward hydrogen bonding, which gives 2.
+        Additionally, the first 4 helical amino acids are considered to have 
+        zero net enthalpy since they are nucleating residues. 
+        This gives a total of 6 residues that don't count toward hydrogen bonding.
+        Hbond value is -0.895 kcal/mol per residue, which is the value from the discussion section of the 1998 lacroix paper.
 
         Args:
             i (int): The helix start index, python 0-indexed.
@@ -837,22 +849,7 @@ class EnergyCalculator(PrecomputeParams):
         Returns:
             float: The total free energy contribution for hydrogen bonding in the sequence.
         """
-        # Start with nucleating residues
-        non_contributing = 4
-
-        # Figure out whether the first and last residues are capping for the helical segment
-        helix = self._get_helix(i, j)
-        res_is_ncap, res_is_ccap = self._are_terminal_residues_capping(len(helix), i, j) # it's a bit strange to use len(helix) here, instead of len(self.seq), but it's consistent with the expected behavior of the function
-
-        if res_is_ncap:
-            non_contributing += 1
-        if res_is_ccap:
-            non_contributing += 1
-
-        # Calculate H-bond energy for remaining residues
-        energy = -0.895 * max((j - non_contributing), 0)
-
-        return energy
+        return -0.895 * max((j - 6), 0) 
 
     def get_dG_i3(self, i: int, j: int) -> np.ndarray:
         """
@@ -865,19 +862,23 @@ class EnergyCalculator(PrecomputeParams):
         Returns:
             np.ndarray: The free energy contributions for each interaction.
         """
-        helix = self._get_helix(i, j)
-        energy = np.zeros(len(helix))
+        energy = np.zeros(len(self.seq_list))
 
         # Get interaction free energies for charged residues
-        for idx in range(len(helix) - 3):
-            AAi = helix[idx]
-            AAi3 = helix[idx + 3]
+        for idx in range(j - 3):
+            AAi = self.seq_list[i+idx]
+            AAi3 = self.seq_list[i+idx + 3]
+
+            # Skip if N- and C-terminal modifications
+            if AAi in ["Ac", "Am", "Sc"] or AAi3 in ["Ac", "Am", "Sc"]:
+                continue
+
             base_energy = self.table_4a_lacroix.loc[AAi, AAi3] / 100
 
             if AAi in self.pos_charge_aa + self.neg_charge_aa and AAi3 in self.neg_charge_aa + self.pos_charge_aa:
                 # Use precomputed ionization states for the helical state
-                q_i = self.q_global_hel[i + idx]
-                q_i3 = self.q_global_hel[i + idx + 3]
+                q_i = self.modified_seq_ionization_hel[i + idx]
+                q_i3 = self.modified_seq_ionization_hel[i + idx + 3]
                 energy[idx] = base_energy * abs(q_i * q_i3)
             else:
                 energy[idx] = base_energy
@@ -895,22 +896,27 @@ class EnergyCalculator(PrecomputeParams):
         Returns:
             np.ndarray: The free energy contributions for each interaction.
         """
-        helix = self._get_helix(i, j)
-        energy = np.zeros(len(helix))
+        helix = self.helix
+        energy = np.zeros(len(self.seq_list))
 
         # Get interaction free energies for charged residues
-        for idx in range(len(helix) - 4):
-            AAi = helix[idx]
-            AAi4 = helix[idx + 4]
+        for idx in range(j - 4):
+            AAi = self.seq_list[i+idx]
+            AAi4 = self.seq_list[i+idx + 4]
+
+            # Skip if N- and C-terminal modifications
+            if AAi in ["Ac", "Am", "Sc"] or AAi4 in ["Ac", "Am", "Sc"]:
+                continue
+
             base_energy = self.table_4b_lacroix.loc[AAi, AAi4] / 100
 
             if AAi in self.pos_charge_aa + self.neg_charge_aa and AAi4 in self.pos_charge_aa + self.neg_charge_aa:
                 # Use precomputed ionization states for the helical state
-                q_i = self.q_global_hel[i + idx]
-                q_i4 = self.q_global_hel[i + idx + 4]
-                energy[idx] = base_energy * abs(q_i * q_i4)
+                q_i = self.modified_seq_ionization_hel[i + idx]
+                q_i4 = self.modified_seq_ionization_hel[i + idx + 4]
+                energy[i+idx] = base_energy * abs(q_i * q_i4)
             else:
-                energy[idx] = base_energy
+                energy[i+idx] = base_energy
 
         return energy
 
@@ -925,13 +931,12 @@ class EnergyCalculator(PrecomputeParams):
         Returns:
             tuple[np.ndarray, np.ndarray]: Interaction energies for N-terminal and C-terminal residues.
         """
-        helix = self._get_helix(i, j)
-        N_term = np.zeros(len(helix))
-        C_term = np.zeros(len(helix))
+        N_term = np.zeros(len(self.seq_list))
+        C_term = np.zeros(len(self.seq_list))
 
         # N-terminal calculation, not capped by acetyl nor succinyl, so it is positively charged
         if not self.has_acetyl and not self.has_succinyl:
-            pKa_Nterm = self.pka_values.loc["Nterm", "pKa"]
+            pKa_Nterm = self.table_pka_values.loc["Nterm", "pKa"]
             distance_r_N = self._calculate_r(i)
             N_term_energy = self._calculate_terminal_energy(
                 distance_r_N, pKa_Nterm, "basic", terminal="N"
@@ -942,7 +947,7 @@ class EnergyCalculator(PrecomputeParams):
         # which is a special case since the N-terminal is normally positively charged
         # and CAN interact with the helix macrodipole (page 177 in Lacroix, 1998)
         elif self.has_succinyl: 
-            pKa_Nterm = self.pka_values.loc["Succinyl", "pKa"]
+            pKa_Nterm = self.table_pka_values.loc["Succinyl", "pKa"]
             distance_r_N = self._calculate_r(i)
             N_term_energy = self._calculate_terminal_energy(
                 distance_r_N, pKa_Nterm, "acidic", terminal="N"
@@ -951,7 +956,7 @@ class EnergyCalculator(PrecomputeParams):
 
         # C-terminal calculation, only if not capped by amidation
         if not self.has_amide:
-            pKa_Cterm = self.pka_values.loc["Cterm", "pKa"]
+            pKa_Cterm = self.table_pka_values.loc["Cterm", "pKa"]
             distance_r_C = self._calculate_r(len(self.seq) - (i + j))
             C_term_energy = self._calculate_terminal_energy(
                 distance_r_C, pKa_Cterm, "acidic", terminal="C"
@@ -1043,71 +1048,80 @@ class EnergyCalculator(PrecomputeParams):
             tuple[np.ndarray, np.ndarray]: The free energy contribution for each residue in the helix, 
             N-terminal and C-terminal contributions.
         """
-        helix = self._get_helix(i, j)
-        energy_N = np.zeros(len(self.seq))
-        energy_C = np.zeros(len(self.seq))
+        energy_N = np.zeros(len(self.seq_list))
+        energy_C = np.zeros(len(self.seq_list))
 
         # Get the interaction energies for the side chains outside the helix, i.e. in the coils
-        for idx, aa in enumerate(self.seq):
-            # Skip if amino acid is in the helical region
+        for idx, aa in enumerate(self.seq_list):
+
+            # Skip if amino acid is not charged
+            if aa not in self.neg_charge_aa + self.pos_charge_aa:
+                continue
+
+            # print("Achtung!!!")
+            # print(f"idx = {idx}, i = {i}, j = {j}, aa = {aa}")
+
+            # If amino acid is in the helical region
             if i <= idx < i + j:
-                continue
-
-            # Skip if amino acid is not charged
-            if aa not in self.neg_charge_aa + self.pos_charge_aa:
-                continue
-
-            # Get the distance to the helix macrodipole
-            if idx < i: # N-terminal
-                num_resi_between_helix_and_charged_residue = i - idx
-                N_distance_angstrom = self._calculate_r(num_resi_between_helix_and_charged_residue)
-                q_sidechain = self.q_global_rc[idx] # use random coil ionization state
-                energy = self._electrostatic_interaction_energy(qi=self.mu_helix, qj=q_sidechain, r=N_distance_angstrom)
-                energy_N[idx] = energy
-
-            else: # C-terminal
-                num_resi_between_helix_and_charged_residue = idx - (i + j)
-                C_distance_angstrom = self._calculate_r(num_resi_between_helix_and_charged_residue)
-                q_sidechain = self.q_global_rc[idx] # use random coil ionization state
-                energy = self._electrostatic_interaction_energy(qi=-self.mu_helix, qj=q_sidechain, r=C_distance_angstrom)
-                energy_C[idx] = energy
-
-        # Get the macrodipole interaction energies for the side chains inside the helix
-        for idx, aa in enumerate(helix):
-            # Skip if amino acid is not charged
-            if aa not in self.neg_charge_aa + self.pos_charge_aa:
-                continue
-
-            # The distance tables only contain values up to C13 from the C-terminus and N13 from the N-terminus
-            # Try to fetch the distance here
-            N_position = "Ncap" if idx == 0 else f"N{idx}"
-            try:
-                N_distance = self.table_7_ncap_lacroix.loc[aa, N_position]
-            except (KeyError, ValueError):
-                warnings.warn(f'{aa} with position {N_position} not found in table_7_ncap_lacroix')
+                    
+                # The distance tables only contain values up to C13 from the C-terminus and N13 from the N-terminus
+                # Get the distances to the half charge of the N- and C-terminal dipoles
+                dist = idx - i
                 N_distance = None
+                if 0 <= dist <= 13:
+                    N_position = f"N{dist}" if dist != 0 else "Ncap"
+                    # print(f"N_position = {N_position}")
+                    N_distance = self.table_7_ncap_lacroix.loc[aa, N_position]
 
-            C_position = "Ccap" if idx == len(helix) - 1 else f"C{len(helix)-idx-1}"
-            try:
-                C_distance = self.table_7_ccap_lacroix.loc[aa, C_position]
-            except (KeyError, ValueError):
-                warnings.warn(f'{aa} with position {C_position} not found in table_7_ccap_lacroix')
+                elif dist < 0:
+                    raise ValueError(f"Distance to N-terminal dipole is negative: {dist}")
+
+                dist = (i + j - 1) - idx
                 C_distance = None
+                if 0 <= dist <= 13:
+                    C_position = f"C{dist}" if dist != 0 else "Ccap"
+                    # print(f"C_position = {C_position}")
+                    C_distance = self.table_7_ccap_lacroix.loc[aa, C_position]
 
-            # Fetch the precomputed ionization state
-            q_sidechain = self.q_global_hel[i + idx]
+                elif dist < 0:
+                    raise ValueError(f"Distance to C-terminal dipole is negative: {dist}")
 
-            # N-terminal interaction
-            if N_distance is not None:
-                energy_N[i + idx] += self._electrostatic_interaction_energy(
-                    qi=self.mu_helix, qj=q_sidechain, r=N_distance
-                )
+                # Fetch the precomputed ionization state
+                q_sidechain = self.modified_seq_ionization_hel[idx]
+                # print(f"q_sidechain = {q_sidechain}")
 
-            # C-terminal interaction
-            if C_distance is not None:
-                energy_C[i + idx] += self._electrostatic_interaction_energy(
-                    qi=-self.mu_helix, qj=q_sidechain, r=C_distance
-                )
+                # N-terminal interaction
+                if N_distance is not None:
+                    energy_N[idx] += self._electrostatic_interaction_energy(
+                        qi=self.mu_helix, qj=q_sidechain, r=N_distance
+                    )
+
+                # C-terminal interaction
+                if C_distance is not None:
+                    energy_C[idx] += self._electrostatic_interaction_energy(
+                        qi=-self.mu_helix, qj=q_sidechain, r=C_distance
+                    )
+
+            # If amino acid is outside the helical region
+            else:
+                # Get the distance to the helix macrodipole
+                if idx < i: # N-terminal
+                    num_resi_between_helix_and_charged_residue = i - idx - 1
+                    # print(f"N, {num_resi_between_helix_and_charged_residue}")
+                    # self.show_helix()
+                    N_distance_angstrom = self._calculate_r(num_resi_between_helix_and_charged_residue)
+                    q_sidechain = self.modified_seq_ionization_rc[idx] # use random coil ionization state
+                    energy = self._electrostatic_interaction_energy(qi=self.mu_helix, qj=q_sidechain, r=N_distance_angstrom)
+                    energy_N[idx] = energy
+
+                else: # C-terminal
+                    num_resi_between_helix_and_charged_residue = idx - (i + j - 1) - 1
+                    # print(f"C, {num_resi_between_helix_and_charged_residue}")
+                    # self.show_helix()
+                    C_distance_angstrom = self._calculate_r(num_resi_between_helix_and_charged_residue)
+                    q_sidechain = self.modified_seq_ionization_rc[idx] # use random coil ionization state
+                    energy = self._electrostatic_interaction_energy(qi=-self.mu_helix, qj=q_sidechain, r=C_distance_angstrom)
+                    energy_C[idx] = energy
 
         return energy_N, energy_C
         
@@ -1124,9 +1138,9 @@ class EnergyCalculator(PrecomputeParams):
             np.ndarray: n x n symmetric matrix of pairwise electrostatic free energy contributions,
                        with each interaction energy split between upper and lower triangles.
         """
-        helix = self._get_helix(i, j)  # Extract helical segment
+        helix = self.helix
         charged_pairs = self._find_charged_pairs(helix, start_idx=i)  # Identify charged pairs
-        energy_matrix = np.zeros((len(helix), len(helix)))
+        energy_matrix = np.zeros((len(self.seq_list), len(self.seq_list)))
 
         # Iterate over all charged residue pairs
         for pair, idx1, idx2 in charged_pairs:
@@ -1151,8 +1165,8 @@ class EnergyCalculator(PrecomputeParams):
                 coil_dist = self.table_6_coil_lacroix.loc['RcoilRest', distance_key]
 
             # Step 1: Get reference pKa values for both residues
-            pKa_ref_1 = self.pka_values.loc[res1, "pKa"]
-            pKa_ref_2 = self.pka_values.loc[res2, "pKa"]
+            pKa_ref_1 = self.table_pka_values.loc[res1, "pKa"]
+            pKa_ref_2 = self.table_pka_values.loc[res2, "pKa"]
 
             # Step 2: Assume full unit charges and calculate initial G_hel and G_rc, Lacroix Eq 6
             G_hel = self._electrostatic_interaction_energy(qi=1, qj=1, r=helix_dist)
@@ -1176,8 +1190,8 @@ class EnergyCalculator(PrecomputeParams):
 
             # Step 6: Store half the energy difference in both triangles of the matrix
             energy_diff = (G_hel - G_rc) / 2
-            energy_matrix[idx1 - i, idx2 - i] = energy_diff  # Upper triangle
-            energy_matrix[idx2 - i, idx1 - i] = energy_diff  # Lower triangle
+            energy_matrix[idx1, idx2] = energy_diff  # Upper triangle
+            energy_matrix[idx2, idx1] = energy_diff  # Lower triangle
 
         return energy_matrix
     

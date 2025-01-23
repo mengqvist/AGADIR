@@ -11,7 +11,7 @@ class ModelResult:
     Class containing the result of a model.
     """
 
-    def __init__(self, seq: str) -> None:
+    def __init__(self, seq: str, ncap: str = None, ccap: str = None) -> None:
         """
         Initialize the ModelResult object.
 
@@ -21,10 +21,18 @@ class ModelResult:
         is_valid_peptide_sequence(seq)
 
         self.seq = seq
+        self.ncap = ncap
+        self.ccap = ccap
+        self.seq_list = list(self.seq)
+        if self.ncap is not None:  
+            self.seq_list.insert(0, self.ncap)
+        if self.ccap is not None:
+            self.seq_list.append(self.ccap)
+        self.seq_length = len(self.seq_list)
         self.K_tot = 0.0
-        self.K_tot_array = np.zeros(len(seq))
+        self.K_tot_array = np.zeros(self.seq_length)
         self.Z = 0.0
-        self.Z_array = np.zeros(len(seq))
+        self.Z_array = np.zeros(self.seq_length)
         self.helical_propensity = None
         self.percent_helix = None
 
@@ -167,15 +175,15 @@ class AGADIR(object):
         for seq_idx, arr_idx in zip(range(i, i + j), range(j)):
             print(f"Helix: start= {i+1} end= {i+j}  length=  {j}")
             print(f"residue index = {seq_idx+1}")
-            print(f"residue = {self.seq_list[seq_idx]}")
-            print(f"g N term = {dG_N_term[arr_idx]:.4f}")
-            print(f"g C term = {dG_C_term[arr_idx]:.4f}")
-            print(f"g capping =   {dG_nonH[arr_idx]:.4f}")
-            print(f"g intrinsic = {dG_Int[arr_idx]:.4f}")
-            print(f"g dipole N = {dG_sidechain_dipole_N[arr_idx]:.4f}")
-            print(f"g dipole C = {dG_sidechain_dipole_C[arr_idx]:.4f}")
-            print(f"g dipole total = {dG_sidechain_dipole[arr_idx]:.4f}")
-            print(f"gresidue = {dG_N_term[arr_idx] + dG_C_term[arr_idx] + dG_nonH[arr_idx] + dG_Int[arr_idx] + dG_sidechain_dipole[arr_idx]:.4f}")
+            print(f"residue = {self.result.seq_list[seq_idx]}")
+            print(f"g N term = {dG_N_term[seq_idx]:.4f}")
+            print(f"g C term = {dG_C_term[seq_idx]:.4f}")
+            print(f"g capping =   {dG_nonH[seq_idx]:.4f}")
+            print(f"g intrinsic = {dG_Int[seq_idx]:.4f}")
+            print(f"g dipole N = {dG_sidechain_dipole_N[seq_idx]:.4f}")
+            print(f"g dipole C = {dG_sidechain_dipole_C[seq_idx]:.4f}")
+            print(f"g dipole total = {dG_sidechain_dipole[seq_idx]:.4f}")
+            print(f"gresidue = {dG_N_term[seq_idx] + dG_C_term[seq_idx] + dG_nonH[seq_idx] + dG_Int[seq_idx] + dG_sidechain_dipole[seq_idx]:.4f}")
             print("****************")
         print("Additional terms for helical segment")
         print(f"i,i+3 and i,i+4 side chain-side chain interaction = {sum(dG_SD):.4f}")
@@ -294,52 +302,11 @@ class AGADIR(object):
         Calculate partition function for helical segments
         by summing over all possible helices.
         """
-        # # Special case for when there is a N-terminal modification (acetylation or succinylation)
-        # # The helix starting at the first residue can be one residue shorter because the modification acts as a capping residue
-        # # Get the energies for all helices starting at the first residue, allowing for a helix length of 1 residue shorter than the minimum length
-        # if self.has_acetyl or self.has_succinyl:
-        #     for j in range(self.min_helix_length - 1, len(self.result.seq) + 1):
-        #         i = 0
-        #         dG_Hel = self._calc_dG_Hel(i=i, j=j)
-        #         K = self._calc_K(dG_Hel)
-        #         self.result.K_tot_array[i : i + j - 1] += K
-        #         self.result.K_tot += K
-
-        # # Special case for when there is a C-terminal modification (amidation)
-        # # The helix ending at the last residue can be one residue shorter because the modification acts as a capping residue
-        # # Get the energies for all helices ending at the last residue, allowing for a helix length of 1 residue shorter than the minimum length
-        # if self.has_amide:
-        #     for j in range(self.min_helix_length - 1, len(self.result.seq) + 1):
-        #         i = len(self.result.seq) - j
-        #         dG_Hel = self._calc_dG_Hel(i=i, j=j)
-        #         K = self._calc_K(dG_Hel)
-        #         self.result.K_tot_array[i + 1 : i + j] += K
-        #         self.result.K_tot += K
-
-        # # Special case for when there is both an N-terminal and C-terminal modification
-        # # This helix can be two residues shorter than the minimum length
-        # if (self.has_acetyl or self.has_succinyl) and self.has_amide:
-        #     j = len(self.result.seq)
-        #     i = 0
-        #     dG_Hel = self._calc_dG_Hel(i=i, j=j)
-        #     K = self._calc_K(dG_Hel)
-        #     self.result.K_tot_array[i : i + j] += K
-        #     self.result.K_tot += K
-
-        # General case for all other helices
-        # Here the first and last residues act as capping residues, these must be the minimum length of 6 residues
-        self.seq_list = list(self.result.seq)
-        if self.n_cap is not None:  
-            self.seq_list.insert(0, self.n_cap)
-        if self.c_cap is not None:
-            self.seq_list.append(self.c_cap)
-
-        self.seq_length = len(self.seq_list)
         for j in range(
-            self.min_helix_length, self.seq_length + 1
+            self.min_helix_length, self.result.seq_length + 1
         ):  # helix lengths (including capping residues)
             for i in range(
-                0, self.seq_length - j + 1
+                0, self.result.seq_length - j + 1
             ):  # helical segment positions
 
                 # create energy calculator instance
@@ -431,7 +398,7 @@ class AGADIR(object):
         print(f"Predicting helical propensity for sequence: {seq}, method: {self._method}, T(C): {self.T_celsius}, M: {self.molarity}, pH: {self.pH}, ncap: {self.n_cap}, ccap: {self.c_cap}")
 
         # initialize the result object
-        self.result = ModelResult(seq)
+        self.result = ModelResult(seq, ncap=self.n_cap, ccap=self.c_cap)
 
         # calculate the partition function and helical propensity
         self._calc_partition_fxn()

@@ -2,8 +2,8 @@
     "figure3b":{
         "name": "KR-1a",
         "peptide": "YGGSAAAAAAAKRAAA",
-        "ncap": "Z",
-        "ccap": "B",
+        "ncap": "Ac",
+        "ccap": "Am",
         "measured_data_ph": [
             3.02,
             3.28,
