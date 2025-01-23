@@ -7,6 +7,7 @@ import pandas as pd
 from pyagadir.chemistry import calculate_ionic_strength, adjust_pKa, acidic_residue_ionization, basic_residue_ionization, calculate_permittivity, debye_screening_length
 from pyagadir.utils import is_valid_index, is_valid_peptide_sequence, is_valid_ncap_ccap, is_valid_conditions
 import warnings
+import itertools
 
 
 
@@ -170,27 +171,95 @@ class PrecomputeParams:
         self.e = 1.602e-19  # Elementary charge in Coulombs
 
         # assign None to all variables
+        self.charged_pairs = None
         self.seq_pka = None
         self.nterm_pka = None
         self.cterm_pka = None
+
         self.distances_hel = None
         self.distances_rc = None
+
         self.seq_ionization = None
         self.nterm_ionization = None
         self.cterm_ionization = None
+
+        # modified pKa values
+        self.modified_seq_pka_hel = None
+        self.modified_seq_pka_rc = None
+        self.modified_nterm_pka = None
+        self.modified_cterm_pka = None
+
+        # modified ionization states    
         self.modified_seq_ionization_hel = None
         self.modified_seq_ionization_rc = None
         self.modified_nterm_ionization = None
         self.modified_cterm_ionization = None
 
+        # for printing
         self.category_pad = 15
         self.value_pad = 5
 
+        # find charged pairs
+        self._find_charged_pairs()
+
         # assign pKa values, distances, and ionization states
         self._assign_pka_values()
-        # self._assign_distances()
         self._assign_ionization_states()
-        self._assign_modified_ionization_states()
+        self._assign_sidechain_macrodipole_distances()
+        self._assign_charged_sidechain_distances()
+        self._assign_modified_pka_values_and_ionization_states()
+
+    def _find_charged_pairs(self) -> list[tuple[str, int, int]]:
+        """
+        Find all pairs of charged residues in a sequence and their global positions.
+        """
+        charged_amino_acids = self.neg_charge_aa + self.pos_charge_aa
+        result = []
+
+        # Iterate over all pairs of charged residues
+        for idx1 in range(len(self.seq_list)):
+            for idx2 in range(idx1 + 1, len(self.seq_list)):
+                dist = idx2 - idx1
+                if dist >= 13:
+                    continue
+                AA1 = self.seq_list[idx1]
+                AA2 = self.seq_list[idx2]
+                if not all(aa in charged_amino_acids for aa in (AA1, AA2)):
+                    continue
+                result.append((AA1, AA2, idx1, idx2))  # Include global positions
+        self.charged_pairs = result
+
+    def _calculate_r(self, N: int) -> float:
+        """Function to calculate the distance r from the peptide terminal to the helix
+        start, where N is the number of residues between the terminal and the helix.
+        p. 177 of Lacroix, 1998. Distances in Ångströms as 2.1, 4.1, 6.1...
+
+        Args:
+            N (int): The number of residues between the peptide terminal and the helix start.
+
+        Returns:
+            float: The calculated distance r in Ångströms.
+        """
+        r = 0.1 + (N + 1) * 2
+        return r
+
+    def _electrostatic_interaction_energy(self, qi: float, qj: float, r: float) -> float:
+        """Calculate the interaction energy between two charges by
+        applying equation 6 from Lacroix, 1998.
+
+        Args:
+            qi (float): Charge of the first residue.
+            qj (float): Charge of the second residue.
+            r (float): Distance between the residues in Ångströms.
+
+        Returns:
+            float: The interaction energy in kcal/mol.
+        """
+        r = r * 1e-10  # Convert distance from Ångströms to meters
+        coulomb_term = (self.e**2 * qi * qj) / (4 * math.pi * self.epsilon_0 * self.epsilon_r * r)
+        energy_joules = coulomb_term * math.exp(-self.kappa * r)
+        energy_kcal_mol = self.N_A * energy_joules / 4184
+        return energy_kcal_mol
 
     def _make_box(self, title: str):
         """
@@ -244,7 +313,7 @@ class PrecomputeParams:
         Print out pKa values for the sequence in a nicely formatted way.
         """
         print(self._make_box("pKa values"))
-        print(f'{"seq:".ljust(self.category_pad)} {"".join([aa.ljust(self.value_pad) for aa in self.seq_list])}')
+        print(f'{"sequence:".ljust(self.category_pad)} {"".join([aa.ljust(self.value_pad) for aa in self.seq_list])}')
         print(f'{"pKa:".ljust(self.category_pad)} {"".join([f"{pka:.1f}".ljust(self.value_pad) for pka in self.seq_pka])}')
         print(f'{"nterm_pka:".ljust(self.category_pad)} {self.nterm_pka:.1f}')
         print(f'{"cterm_pka:".ljust(self.category_pad)} {self.cterm_pka:.1f}')
@@ -285,53 +354,374 @@ class PrecomputeParams:
         Print out ionization states for the sequence in a nicely formatted way.
         """
         print(self._make_box("Ionization states"))
-        print(f'{"seq:".ljust(self.category_pad)} {"".join([aa.ljust(self.value_pad) for aa in self.seq_list])}')
+        print(f'{"sequence:".ljust(self.category_pad)} {"".join([aa.ljust(self.value_pad) for aa in self.seq_list])}')
         print(f'{"charge:".ljust(self.category_pad)} {"".join([f"{q:.1f}".ljust(self.value_pad) for q in self.seq_ionization])}')
         print(f'{"nterm_charge:".ljust(self.category_pad)} {self.nterm_ionization:.1f}')
         print(f'{"cterm_charge:".ljust(self.category_pad)} {self.cterm_ionization:.1f}')
         print("")
 
-    def _assign_modified_ionization_states(self):
+    def _assign_sidechain_macrodipole_distances(self):
         """
-        Assign modified ionization states for the sequence.
-        This is influenced by the helix macrodipole etc.
+        Assign all distances between charged sidechains for the sequence,
+        and the helix dipole. This is only relevant for peptides in the helical state.
         """
-        # TODO: Implement this, just putting placeholder values for now
-        self.modified_seq_ionization_hel = self.seq_ionization
-        self.modified_seq_ionization_rc = self.seq_ionization
-        self.modified_nterm_ionization = self.nterm_ionization
-        self.modified_cterm_ionization = self.cterm_ionization
+        self.sidechain_macrodipole_distances_nterm = np.full((len(self.seq_list)), np.nan)
+        self.sidechain_macrodipole_distances_cterm = np.full((len(self.seq_list)), np.nan)
 
-    def _assign_distances(self):
-        """
-        Assign all pairwise distances for the sequence,
-        both for helical and random-coil states.
-        """
-        # self.distances_hel = np.array([self.table_6_helix_lacroix.loc[idx, "dist"] if self.i <= idx < self.i + self.j else self.table_6_coil_lacroix.loc[idx, "dist"] for idx in range(len(self.seq_list))])
-        # self.distances_rc = np.array([self.table_6_coil_lacroix.loc[idx, "dist"] for idx in range(len(self.seq_list))])
-        raise NotImplementedError("Not implemented")
+        for idx, AA in enumerate(self.seq_list):
 
-    def get_distances(self):
+            if AA not in self.neg_charge_aa + self.pos_charge_aa:
+                continue
+
+            # If amino acid is in the helical region
+            if self.i <= idx < self.i + self.j:
+                N_separation = idx - self.i
+                C_separation = (self.i + self.j - 1) - idx
+
+                # The distance tables only contain values up to C13 from the C-terminus and N13 from the N-terminus
+                # Get the distances to the half charge of the N- and C-terminal dipoles
+                if 0 <= N_separation <= 13:
+                    N_position = f"N{N_separation}" if N_separation != 0 else "Ncap"
+                    self.sidechain_macrodipole_distances_nterm[idx] = self.table_7_ncap_lacroix.loc[AA, N_position]
+                elif N_separation < 0:
+                    raise ValueError(f"Distance to N-terminal dipole is negative: {N_separation}")
+
+                if 0 <= C_separation <= 13:
+                    C_position = f"C{C_separation}" if C_separation != 0 else "Ccap"
+                    self.sidechain_macrodipole_distances_cterm[idx] = self.table_7_ccap_lacroix.loc[AA, C_position]
+                elif C_separation < 0:
+                    raise ValueError(f"Distance to C-terminal dipole is negative: {C_separation}")
+    
+            # If amino acid is in the coil region
+            else:
+                N_separation = abs(self.i - idx) - 1  # Distance to helix start
+                C_separation = abs(idx - (self.i + self.j - 1)) - 1  # Distance to helix end
+                self.sidechain_macrodipole_distances_nterm[idx] = self._calculate_r(N_separation)
+                self.sidechain_macrodipole_distances_cterm[idx] = self._calculate_r(C_separation)
+
+    def get_sidechain_macrodipole_distances(self):
         """
         Get the distances for the sequence, both for helical and random-coil states.
 
         Returns:
-            np.ndarray: Pairwise distances for the sequence helical state.
-            np.ndarray: Pairwise distances for the sequence in random-coil state.
+            np.ndarray: Distances for charged sidechains to the N-terminal helix dipole.
+            np.ndarray: Distances for charged sidechains to the C-terminal helix dipole.
         """
-        return self.distances_hel, self.distances_rc
+        return self.sidechain_macrodipole_distances_nterm, self.sidechain_macrodipole_distances_cterm
     
-    def show_distances(self):
+    def show_sidechain_macrodipole_distances(self):
         """
         Print out the pairwise distances for the sequence in a nicely formatted way.
         """
-        # print(self._make_box("Pairwise distances, coiled state (Å)"))
-        # print(f'{"distances_rc:".ljust(self.category_pad)} {"".join([f"{d:.1f}".ljust(self.value_pad) for d in self.distances_rc])}')
-        # print("")
-        # print(self._make_box("Pairwise distances, helical state (Å)"))
-        # print(f'{"distances_hel:".ljust(self.category_pad)} {"".join([f"{d:.1f}".ljust(self.value_pad) for d in self.distances_hel])}')
-        # print("")
-        raise NotImplementedError("Not implemented")
+        print(self._make_box("Sidechain macrodipole distances (Å)"))
+        print(f'{"sequence:".ljust(self.category_pad)} {"".join([aa.ljust(self.value_pad) for aa in self.seq_list])}')
+        print(f'{"nterm:".ljust(self.category_pad)} {"".join([f"{d:.1f}".ljust(self.value_pad) for d in self.sidechain_macrodipole_distances_nterm])}')
+        print(f'{"cterm:".ljust(self.category_pad)} {"".join([f"{d:.1f}".ljust(self.value_pad) for d in self.sidechain_macrodipole_distances_cterm])}')
+        print("")
+
+    def _assign_charged_sidechain_distances(self):
+        """
+        Get the distance between two charged sidechains, handling:
+        1. Both residues in helix: use table 6 helix distances
+        2. Both residues in coil: use table 6 coil distances 
+        3. One in helix, one in coil: combine distances through the helix boundary
+        Special case: Use HelixRest for Tyrosine pairs since they're missing from table
+        """
+        self.charged_sidechain_distances_hel = np.full((len(self.seq_list), len(self.seq_list)), np.nan)
+        self.charged_sidechain_distances_rc = np.full((len(self.seq_list), len(self.seq_list)), np.nan)
+
+        ### Assign distances to coil state ###
+        for AA1, AA2, idx1, idx2 in self.charged_pairs:
+            separation = idx2 - idx1
+            distance_key = f"i+{separation}"
+                        
+            # Handle Tyrosine special case
+            pair = AA1 + AA2
+            if 'Y' in pair:
+                pair = 'RcoilRest'
+            self.charged_sidechain_distances_rc[idx1, idx2] = self.table_6_coil_lacroix.loc[pair, distance_key]
+            self.charged_sidechain_distances_rc[idx2, idx1] = self.table_6_coil_lacroix.loc[pair, distance_key]
+            
+        ### Assign distances to helix state ###
+        for AA1, AA2, idx1, idx2 in self.charged_pairs:
+            separation = idx2 - idx1
+            distance_key = f"i+{separation}"
+            
+            # Handle Tyrosine special case
+            pair = AA1 + AA2
+            if 'Y' in pair:
+                pair = 'HelixRest'
+
+            # Both residues in helix
+            if self.i <= idx1 < self.i + self.j and self.i <= idx2 < self.i + self.j:
+                try:
+                    self.charged_sidechain_distances_hel[idx1, idx2] = self.table_6_helix_lacroix.loc[pair, distance_key]
+                    self.charged_sidechain_distances_hel[idx2, idx1] = self.table_6_helix_lacroix.loc[pair, distance_key]
+                except (KeyError, ValueError):
+                    raise ValueError(f"Distance not found for pair {pair} at distance key {distance_key}")
+            
+            # Both residues in coil part of a peptide that (at a different position) contains the helix
+            elif (idx1 < self.i or idx1 >= self.i + self.j) and (idx2 < self.i or idx2 >= self.i + self.j):
+                try:
+                    self.charged_sidechain_distances_hel[idx1, idx2] = self.table_6_coil_lacroix.loc[pair, distance_key]
+                    self.charged_sidechain_distances_hel[idx2, idx1] = self.table_6_coil_lacroix.loc[pair, distance_key]
+                except (KeyError, ValueError):
+                    raise ValueError(f"Distance not found for pair {pair} at distance key {distance_key}")
+            
+            # One residue in helix, one in coil
+            else:
+                # Figure out which residue is in helix and which in coil
+                if self.i <= idx1 < self.i + self.j:
+                    helix_idx = idx1
+                    coil_idx = idx2
+                else:
+                    helix_idx = idx2
+                    coil_idx = idx1
+                    
+                # Calculate distance through helix boundary
+                if coil_idx < self.i:
+                    # Coil residue is before helix
+                    coil_separation = self.i - coil_idx
+                    helix_separation = helix_idx - self.i
+                    # print('coil, helix idx1 idx2', coil_separation, helix_separation, idx1, idx2)
+                    d_coil = 0.0 if coil_separation == 0 else self.table_6_coil_lacroix.loc['RcoilRest', f"i+{coil_separation}"]  # Distance to helix start
+                    d_helix = 0.0 if helix_separation == 0 else self.table_6_helix_lacroix.loc['HelixRest', f"i+{helix_separation}"]  # Distance from helix start to helix residue
+                else:
+                    # Coil residue is after helix
+                    coil_separation = coil_idx - (self.i + self.j - 1)
+                    helix_separation = self.i + self.j - 1 - helix_idx
+                    # print('coil, helix idx1 idx2', coil_separation, helix_separation, idx1, idx2)
+                    d_coil = 0.0 if coil_separation == 0 else self.table_6_coil_lacroix.loc['RcoilRest', f"i+{coil_separation}"]  # Distance from helix end
+                    d_helix = 0.0 if helix_separation == 0 else self.table_6_helix_lacroix.loc['HelixRest', f"i+{helix_separation}"]  # Distance from helix residue to helix end
+                    
+                self.charged_sidechain_distances_hel[idx1, idx2] = d_coil + d_helix
+                self.charged_sidechain_distances_hel[idx2, idx1] = d_coil + d_helix
+
+    def get_charged_sidechain_distances(self):
+        """
+        Get the charged sidechain distances for the sequence, both for helical and random-coil states.
+        """
+        return self.charged_sidechain_distances_hel, self.charged_sidechain_distances_rc
+
+    def show_charged_sidechain_distances(self):
+        """
+        Print out the charged sidechain distances for the sequence in a nicely formatted way.
+        """
+        print(self._make_box("Charged sidechain distances, helix (Å)"))
+        print(f'{"".ljust(self.category_pad)}{"".join([aa.ljust(self.value_pad) for aa in self.seq_list])}')
+        for i in range(len(self.seq_list)):
+            print(f'{self.seq_list[i].ljust(self.category_pad)}{"".join([f"{d:.1f}".ljust(self.value_pad) for d in self.charged_sidechain_distances_hel[i]])}')
+        print("")
+
+        print(self._make_box("Charged sidechain distances, coil (Å)"))
+        print(f'{"".ljust(self.category_pad)}{"".join([aa.ljust(self.value_pad) for aa in self.seq_list])}')
+        for i in range(len(self.seq_list)):
+            print(f'{self.seq_list[i].ljust(self.category_pad)}{"".join([f"{d:.1f}".ljust(self.value_pad) for d in self.charged_sidechain_distances_rc[i]])}')
+        print("")
+
+    def _assign_modified_pka_values_and_ionization_states(self):
+        """
+        Assign modified pKa values and ionization states for residues in the sequence.
+        Accounts for:
+        1. Helix macrodipole interactions (screened)
+        2. Charged sidechain-sidechain interactions (screened)
+        Uses iteration to reach a self-consistent solution.
+        """
+        MAX_ITERATIONS = 10
+        CONVERGENCE_THRESHOLD = 0.01
+        
+        # Initialize arrays with unmodified values for iteration
+        current_seq_ionization = self.seq_ionization.copy()
+        current_nterm_ionization = self.nterm_ionization
+        current_cterm_ionization = self.cterm_ionization
+        
+        # Arrays to store final modified values
+        modified_seq_pka = self.seq_pka.copy()
+        modified_nterm_pka = self.nterm_pka
+        modified_cterm_pka = self.cterm_pka
+
+        # print("Starting ionization state iteration...")
+        
+        # Iterative solution
+        for iteration in range(MAX_ITERATIONS):
+            old_seq_ionization_hel = current_seq_ionization.copy()
+            old_nterm_ionization = current_nterm_ionization
+            old_cterm_ionization = current_cterm_ionization
+
+            # For each residue
+            for idx1, AA1 in enumerate(self.seq_list):
+                if AA1 not in self.neg_charge_aa + self.pos_charge_aa:
+                    continue
+                    
+                # print(f"\nProcessing {AA1} at position {idx1}")
+                deltaG_total = 0.0
+                
+                # 1. Get helix macrodipole contribution using current charge
+                N_distance = self.sidechain_macrodipole_distances_nterm[idx1]
+                C_distance = self.sidechain_macrodipole_distances_cterm[idx1]
+                if np.isnan(N_distance):
+                    raise ValueError(f"N_distance is nan: {N_distance}")
+                if np.isnan(C_distance):
+                    raise ValueError(f"C_distance is nan: {C_distance}")
+                
+                # Use current ionization state
+                q = current_seq_ionization[idx1]
+                
+                # print(f"Current charge: {q}")
+                # print(f"Distances N, C: {N_distance}, {C_distance}")
+                
+                # Calculate deltaG for N-terminal dipole
+                deltaG_N = self._electrostatic_interaction_energy(
+                    qi=self.mu_helix, qj=q, r=N_distance
+                )
+                deltaG_total += deltaG_N
+                # print(f"deltaG_N: {deltaG_N}")
+                
+                # Calculate deltaG for C-terminal dipole
+                deltaG_C = self._electrostatic_interaction_energy(
+                    qi=-self.mu_helix, qj=q, r=C_distance
+                )
+                deltaG_total += deltaG_C
+                # print(f"deltaG_C: {deltaG_C}")
+                
+                # 2. Get charged sidechain interactions using current charges
+                for idx2, AA2 in enumerate(self.seq_list):
+                    if idx2 <= idx1 or AA2 not in self.neg_charge_aa + self.pos_charge_aa:
+                        continue
+
+                    distance = self.charged_sidechain_distances_hel[idx1, idx2]
+                    if np.isnan(distance):
+                        raise ValueError(f"Sidechain distance is nan: {distance}")
+                        
+                    # Use current ionization states
+                    q1 = current_seq_ionization[idx1]
+                    q2 = current_seq_ionization[idx2]
+                    
+                    # if not (np.isnan(q1) or np.isnan(q2)):
+                    deltaG = self._electrostatic_interaction_energy(qi=q1, qj=q2, r=distance)
+                    deltaG_total += deltaG
+                    # print(f"Interaction with {AA2} at {idx2}: deltaG = {deltaG}")
+
+                # print(f"Total deltaG: {deltaG_total}")
+                
+                # Calculate new pKa relative to intrinsic value
+                pKa_intrinsic = self.seq_pka[idx1]
+                if not np.isnan(deltaG_total):
+                    modified_seq_pka[idx1] = adjust_pKa(self.T_kelvin, pKa_intrinsic, deltaG_total)
+                    # print(f"Modified pKa: {modified_seq_pka[idx1]} (from intrinsic {pKa_intrinsic})")
+                    
+                    # Calculate new ionization state
+                    if AA1 in self.neg_charge_aa:
+                        current_seq_ionization[idx1] = acidic_residue_ionization(
+                            self.pH, modified_seq_pka[idx1]
+                        )
+                    else:  # AA1 in self.pos_charge_aa
+                        current_seq_ionization[idx1] = basic_residue_ionization(
+                            self.pH, modified_seq_pka[idx1]
+                        )
+                    # print(f"New ionization state: {current_seq_ionization[idx1]}")
+            
+            # Filter out nan values for convergence check
+            valid_old = old_seq_ionization_hel[~np.isnan(old_seq_ionization_hel)]
+            valid_current = current_seq_ionization[~np.isnan(current_seq_ionization)]
+            if len(valid_old) > 0 and len(valid_current) > 0:
+                max_change = np.max(np.abs(valid_current - valid_old))
+                # print(f"\nIteration {iteration+1}: max change in ionization = {max_change:.6f}")
+                
+                # Check for convergence
+                if max_change < CONVERGENCE_THRESHOLD:
+                    # print(f"Converged after {iteration+1} iterations")
+                    break
+            # else:
+            #     print(f"\nIteration {iteration+1}: No valid ionization states to compare")
+        
+        # Save final converged values
+        self.modified_seq_pka_hel = modified_seq_pka
+        self.modified_nterm_pka = modified_nterm_pka
+        self.modified_cterm_pka = modified_cterm_pka
+        
+        self.modified_seq_ionization_hel = current_seq_ionization
+        self.modified_nterm_ionization_hel = current_nterm_ionization
+        self.modified_cterm_ionization_hel = current_cterm_ionization
+
+    def get_modified_pka_values(self):
+        """
+        Get the modified pKa values for the sequence.
+        """
+        return self.modified_seq_pka_hel, self.modified_nterm_pka, self.modified_cterm_pka
+    
+    def show_modified_pka_values(self):
+        """
+        Print out the modified pKa values for the sequence in a nicely formatted way.
+        """
+        print(self._make_box("Modified pKa values, helix"))
+        print(f'{"sequence:".ljust(self.category_pad)} {"".join([aa.ljust(self.value_pad) for aa in self.seq_list])}')
+        print(f'{"pKa:".ljust(self.category_pad)} {"".join([f"{pka:.1f}".ljust(self.value_pad) for pka in self.modified_seq_pka_hel])}')
+        print(f'{"nterm_pka:".ljust(self.category_pad)} {self.modified_nterm_pka:.1f}')
+        print(f'{"cterm_pka:".ljust(self.category_pad)} {self.modified_cterm_pka:.1f}')
+        print("")
+
+    def get_modified_ionization_states(self):
+        """
+        Get the modified ionization states for the sequence.
+        """
+        return self.modified_seq_ionization_hel, self.modified_nterm_ionization_hel, self.modified_cterm_ionization_hel
+
+    def show_modified_ionization_states(self):
+        """
+        Print out the modified ionization states for the sequence in a nicely formatted way.
+        """
+        print(self._make_box("Modified ionization states, helix"))
+        print(f'{"sequence:".ljust(self.category_pad)} {"".join([aa.ljust(self.value_pad) for aa in self.seq_list])}')
+        print(f'{"ionization:".ljust(self.category_pad)} {"".join([f"{q:.1f}".ljust(self.value_pad) for q in self.modified_seq_ionization_hel])}')
+        print(f'{"nterm_ionization:".ljust(self.category_pad)} {self.modified_nterm_ionization_hel:.1f}')
+        print(f'{"cterm_ionization:".ljust(self.category_pad)} {self.modified_cterm_ionization_hel:.1f}')
+        print("")
+
+    # def _assign_modified_pka_values_and_ionization_states(self):
+    #     """
+    #     Assign modified ionization states for the sequence.
+    #     This is influenced by the helix macrodipole etc.
+    #     """
+    #     self.modified_seq_pka_hel = self.seq_pka.copy()
+    #     self.modified_seq_pka_rc = self.seq_pka.copy()
+    #     self.modified_nterm_pka = self.nterm_pka
+    #     self.modified_cterm_pka = self.cterm_pka
+
+    #     self.modified_seq_ionization_hel = self.seq_ionization.copy()
+    #     self.modified_seq_ionization_rc = self.seq_ionization.copy()
+    #     self.modified_nterm_ionization = self.nterm_ionization
+    #     self.modified_cterm_ionization = self.cterm_ionization
+
+
+        # for idx, AA in enumerate(self.seq_list):
+
+        #     if AA not in self.neg_charge_aa + self.pos_charge_aa:
+        #         continue
+
+        #     pKa_ref = self.seq_pka[idx]
+        #     self.modified_seq_pka_hel[idx] = adjust_pKa(self.T_kelvin, pKa_ref, deltaG=-self.mu_helix)  # Helix state
+        #     self.modified_seq_pka_rc[idx] = adjust_pKa(self.T_kelvin, pKa_ref, deltaG=0.0)  # Coil state
+
+        #     if AA in self.neg_charge_aa:
+        #         self.modified_seq_ionization_hel[idx] = acidic_residue_ionization(self.pH, self.modified_seq_pka_hel[idx])
+        #         self.modified_seq_ionization_rc[idx] = acidic_residue_ionization(self.pH, self.modified_seq_pka_rc[idx])
+
+        #     elif AA in self.pos_charge_aa:
+        #         self.modified_seq_ionization_hel[idx] = basic_residue_ionization(self.pH, self.modified_seq_pka_hel[idx])
+        #         self.modified_seq_ionization_rc[idx] = basic_residue_ionization(self.pH, self.modified_seq_pka_rc[idx])
+
+        # # Handle terminal ionization states
+        # if not (self.has_acetyl or self.has_succinyl):  # Free N-terminus
+        #     pKa_ref = pka_values.loc["Nterm", "pKa"]
+        #     pKa_nterm = adjust_pKa(self.T_kelvin, pKa_ref, deltaG=0.0) # or -0.5?, or both coil and helix?
+        #     q_nterm = basic_residue_ionization(self.pH, pKa_nterm)
+
+        # if not self.has_amide:  # Free C-terminus
+        #     pKa_ref = pka_values.loc["Cterm", "pKa"]
+        #     pKa_cterm = adjust_pKa(self.T_kelvin, pKa_ref, deltaG=0.0)  # or -0.5?, or both coil and helix?
+        #     q_cterm = acidic_residue_ionization(self.pH, pKa_cterm)
+
 
     def show_all(self):
         """
@@ -341,7 +731,8 @@ class PrecomputeParams:
         self.show_helix()
         self.show_pka_values()
         self.show_ionization_states()
-        self.show_modified_ionization_states()
+        self.show_sidechain_macrodipole_distances()
+        self.show_charged_sidechain_distances()
 
 
 class EnergyCalculator(PrecomputeParams):
@@ -363,15 +754,6 @@ class EnergyCalculator(PrecomputeParams):
             ccap (str): C-terminal capping modification (amidation='Am').
         """
         super().__init__(seq, i, j, pH, T, ionic_strength, ncap, ccap)
-
-        # Precompute ionization states for helical and random-coil states
-        self.q_global_hel, self.q_global_rc = self._precompute_ionization_states()
-        # print("****************")
-        # print(pH)
-        # print(self.seq)
-        # print(self.q_global_hel)
-        # print(self.q_global_rc)
-        # print("****************")
 
 
     # def calculate_ionization_state(self, residue_idx: int, helix_start: int, helix_length: int, is_helical: bool) -> float:
@@ -418,46 +800,6 @@ class EnergyCalculator(PrecomputeParams):
     #     else:
     #         return basic_residue_ionization(self.pH, pKa_adjusted)
 
-    def _precompute_ionization_states(self) -> tuple[np.ndarray, np.ndarray]:
-        """
-        Precompute ionization states for all residues in the peptide
-        for both helical and random-coil states.
-
-        Returns:
-            tuple[np.ndarray, np.ndarray]: Ionization states for helical and random-coil states.
-        """
-        q_hel = np.zeros(len(self.seq))
-        q_rc = np.zeros(len(self.seq))
-
-        for idx, AA in enumerate(self.seq):
-
-            if AA in self.neg_charge_aa:
-                pKa_ref = self.table_pka_values.loc[AA, "pKa"]
-                pKa_rc = adjust_pKa(self.T_kelvin, pKa_ref, deltaG=0.0)  # Coil state
-                pKa_hel = adjust_pKa(self.T_kelvin, pKa_ref, deltaG=-0.5)  # Helix state
-                q_rc[idx] = acidic_residue_ionization(self.pH, pKa_rc)
-                q_hel[idx] = acidic_residue_ionization(self.pH, pKa_hel)
-
-            elif AA in self.pos_charge_aa:
-                pKa_ref = self.table_pka_values.loc[AA, "pKa"]
-                pKa_rc = adjust_pKa(self.T_kelvin, pKa_ref, deltaG=0.0)  # Coil state
-                pKa_hel = adjust_pKa(self.T_kelvin, pKa_ref, deltaG=-0.5)  # Helix state
-                q_rc[idx] = basic_residue_ionization(self.pH, pKa_rc)
-                q_hel[idx] = basic_residue_ionization(self.pH, pKa_hel)
-
-        # # Handle terminal ionization states
-        # if not (self.has_acetyl or self.has_succinyl):  # Free N-terminus
-        #     pKa_ref = pka_values.loc["Nterm", "pKa"]
-        #     pKa_nterm = adjust_pKa(self.T_kelvin, pKa_ref, deltaG=0.0) # or -0.5?, or both coil and helix?
-        #     q_nterm = basic_residue_ionization(self.pH, pKa_nterm)
-
-        # if not self.has_amide:  # Free C-terminus
-        #     pKa_ref = pka_values.loc["Cterm", "pKa"]
-        #     pKa_cterm = adjust_pKa(self.T_kelvin, pKa_ref, deltaG=0.0)  # or -0.5?, or both coil and helix?
-        #     q_cterm = acidic_residue_ionization(self.pH, pKa_cterm)
-
-        return q_hel, q_rc
-
     def _are_terminal_residues_capping(self, pept_len: int, i: int, j: int) -> tuple[bool, bool]:
         """
         Determine whether the first and last residues of a helical segment should be treated as capping residues. 
@@ -493,109 +835,49 @@ class EnergyCalculator(PrecomputeParams):
             if self.has_amide:
                 c_term_is_cap = False
 
-        return n_term_is_cap, c_term_is_cap
-
-    def _calculate_r(self, N: int) -> float:
-        """Function to calculate the distance r from the peptide terminal to the helix
-        start, where N is the number of residues between the terminal and the helix.
-        p. 177 of Lacroix, 1998. Distances in Ångströms as 2.1, 4.1, 6.1...
-
-        Args:
-            N (int): The number of residues between the peptide terminal and the helix start.
-
-        Returns:
-            float: The calculated distance r in Ångströms.
-        """
-        r = 0.1 + (N + 1) * 2
-        return r
-
-    def _find_charged_pairs(self, seq: str, start_idx: int = 0) -> list[tuple[str, int, int]]:
-        """
-        Find all pairs of charged residues in a sequence and their global positions.
-
-        Args:
-            seq (str): The peptide sequence.
-            start_idx (int): The global start index of the sequence in the full peptide.
-
-        Returns:
-            list[tuple[str, int, int]]: List of tuples containing:
-                - Pair of charged residues as a string (e.g., "KR").
-                - Global index of the first residue.
-                - Global index of the second residue.
-        """
-        charged_amino_acids = set(self.neg_charge_aa + self.pos_charge_aa)
-        positions = [(start_idx + i, aa) for i, aa in enumerate(seq) if aa in charged_amino_acids]
-        result = []
-
-        # Iterate over all pairs of charged residues
-        for i in range(len(positions)):
-            pos_i, aa_i = positions[i]
-            for j in range(i + 1, len(positions)):
-                pos_j, aa_j = positions[j]
-                pair = aa_i + aa_j
-                result.append((pair, pos_i, pos_j))  # Include global positions
-
-        return result
-    
-    def _electrostatic_interaction_energy(self, qi: float, qj: float, r: float) -> float:
-        """Calculate the interaction energy between two charges by
-        applying equation 6 from Lacroix, 1998.
-
-        Args:
-            qi (float): Charge of the first residue.
-            qj (float): Charge of the second residue.
-            r (float): Distance between the residues in Ångströms.
-
-        Returns:
-            float: The interaction energy in kcal/mol.
-        """
-        r = r * 1e-10  # Convert distance from Ångströms to meters
-        coulomb_term = (self.e**2 * qi * qj) / (4 * math.pi * self.epsilon_0 * self.epsilon_r * r)
-        energy_joules = coulomb_term * math.exp(-self.kappa * r)
-        energy_kcal_mol = self.N_A * energy_joules / 4184
-        return energy_kcal_mol
+        return n_term_is_cap, c_term_is_cap 
 
     def _calculate_terminal_energy(self,
                 distance_r_angstrom: float, pKa_ref: float, residue_type: str, terminal: str
             ) -> float:
-                """
-                Calculate interaction energy for terminal residues with the helix dipole.
+        """
+        Calculate interaction energy for terminal residues with the helix dipole.
 
-                Args:
-                    distance_r_angstrom (float): Distance from terminal to helix.
-                    pKa_ref (float): Reference pKa value.
-                    residue_type (str): 'acidic' or 'basic'.
-                    terminal (str): 'N' or 'C'.
+        Args:
+            distance_r_angstrom (float): Distance from terminal to helix.
+            pKa_ref (float): Reference pKa value.
+            residue_type (str): 'acidic' or 'basic'.
+            terminal (str): 'N' or 'C'.
 
-                Returns:
-                    float: The calculated terminal energy.
-                """
-                # Convert distance to meters and compute screening factor
-                distance_r_meter = distance_r_angstrom * 1e-10
-                screening_factor = math.exp(-self.kappa * distance_r_meter)
+        Returns:
+            float: The calculated terminal energy.
+        """
+        # Convert distance to meters and compute screening factor
+        distance_r_meter = distance_r_angstrom * 1e-10
+        screening_factor = math.exp(-self.kappa * distance_r_meter)
 
-                # Calculate terminal interaction energy
-                B_kappa = 332.0  # in kcal Å / (mol e^2)
+        # Calculate terminal interaction energy
+        B_kappa = 332.0  # in kcal Å / (mol e^2)
 
-                # In the form of equation (10.62) from DOI 10.1007/978-1-4419-6351-2_10
-                coloumb_potential = self.mu_helix / (self.epsilon_r * distance_r_angstrom)
-                energy = B_kappa * screening_factor * coloumb_potential
+        # In the form of equation (10.62) from DOI 10.1007/978-1-4419-6351-2_10
+        coloumb_potential = self.mu_helix / (self.epsilon_r * distance_r_angstrom)
+        energy = B_kappa * screening_factor * coloumb_potential
 
-                # Adjust ionization state using precomputed pKa
-                if residue_type == "basic":
-                    q = basic_residue_ionization(self.pH, pKa_ref)
-                elif residue_type == "acidic":
-                    q = acidic_residue_ionization(self.pH, pKa_ref)
-                else:
-                    raise ValueError(f"Invalid residue type: {residue_type}")
+        # Adjust ionization state using precomputed pKa
+        if residue_type == "basic":
+            q = basic_residue_ionization(self.pH, pKa_ref)
+        elif residue_type == "acidic":
+            q = acidic_residue_ionization(self.pH, pKa_ref)
+        else:
+            raise ValueError(f"Invalid residue type: {residue_type}")
 
-                # Adjust energy by ionization state
-                if terminal == "C":
-                    energy *= -q  # C-terminal interaction is negative
-                else:
-                    energy *= q  # N-terminal interaction
+        # Adjust energy by ionization state
+        if terminal == "C":
+            energy *= -q  # C-terminal interaction is negative
+        else:
+            energy *= q  # N-terminal interaction
 
-                return energy
+        return energy
 
     def get_dG_Int(self, i: int, j: int) -> np.ndarray:
         """
@@ -1072,7 +1354,6 @@ class EnergyCalculator(PrecomputeParams):
                     N_position = f"N{dist}" if dist != 0 else "Ncap"
                     # print(f"N_position = {N_position}")
                     N_distance = self.table_7_ncap_lacroix.loc[aa, N_position]
-
                 elif dist < 0:
                     raise ValueError(f"Distance to N-terminal dipole is negative: {dist}")
 
@@ -1082,7 +1363,6 @@ class EnergyCalculator(PrecomputeParams):
                     C_position = f"C{dist}" if dist != 0 else "Ccap"
                     # print(f"C_position = {C_position}")
                     C_distance = self.table_7_ccap_lacroix.loc[aa, C_position]
-
                 elif dist < 0:
                     raise ValueError(f"Distance to C-terminal dipole is negative: {dist}")
 
@@ -1138,12 +1418,11 @@ class EnergyCalculator(PrecomputeParams):
             np.ndarray: n x n symmetric matrix of pairwise electrostatic free energy contributions,
                        with each interaction energy split between upper and lower triangles.
         """
-        helix = self.helix
-        charged_pairs = self._find_charged_pairs(helix, start_idx=i)  # Identify charged pairs
         energy_matrix = np.zeros((len(self.seq_list), len(self.seq_list)))
 
         # Iterate over all charged residue pairs
-        for pair, idx1, idx2 in charged_pairs:
+        for AA1, AA2, idx1, idx2 in self.charged_pairs:
+            pair = AA1 + AA2
             # Skip if not in upper triangle
             if idx2 - i <= idx1 - i:
                 continue
