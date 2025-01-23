@@ -3,7 +3,7 @@ from typing import Dict, Tuple
 import numpy as np
 
 from pyagadir.energies import EnergyCalculator
-from pyagadir.utils import is_valid_peptide_sequence
+from pyagadir.utils import is_valid_peptide_sequence, is_valid_ncap_ccap
 
 
 class ModelResult:
@@ -167,7 +167,7 @@ class AGADIR(object):
         for seq_idx, arr_idx in zip(range(i, i + j), range(j)):
             print(f"Helix: start= {i+1} end= {i+j}  length=  {j}")
             print(f"residue index = {seq_idx+1}")
-            print(f"residue = {self.result.seq[seq_idx]}")
+            print(f"residue = {self.seq_list[seq_idx]}")
             print(f"g N term = {dG_N_term[arr_idx]:.4f}")
             print(f"g C term = {dG_C_term[arr_idx]:.4f}")
             print(f"g capping =   {dG_nonH[arr_idx]:.4f}")
@@ -294,46 +294,65 @@ class AGADIR(object):
         Calculate partition function for helical segments
         by summing over all possible helices.
         """
-        # Special case for when there is a N-terminal modification (acetylation or succinylation)
-        # The helix starting at the first residue can be one residue shorter because the modification acts as a capping residue
-        # Get the energies for all helices starting at the first residue, allowing for a helix length of 1 residue shorter than the minimum length
-        if self.has_acetyl or self.has_succinyl:
-            for j in range(self.min_helix_length - 1, len(self.result.seq) + 1):
-                i = 0
-                dG_Hel = self._calc_dG_Hel(i=i, j=j)
-                K = self._calc_K(dG_Hel)
-                self.result.K_tot_array[i : i + j - 1] += K
-                self.result.K_tot += K
+        # # Special case for when there is a N-terminal modification (acetylation or succinylation)
+        # # The helix starting at the first residue can be one residue shorter because the modification acts as a capping residue
+        # # Get the energies for all helices starting at the first residue, allowing for a helix length of 1 residue shorter than the minimum length
+        # if self.has_acetyl or self.has_succinyl:
+        #     for j in range(self.min_helix_length - 1, len(self.result.seq) + 1):
+        #         i = 0
+        #         dG_Hel = self._calc_dG_Hel(i=i, j=j)
+        #         K = self._calc_K(dG_Hel)
+        #         self.result.K_tot_array[i : i + j - 1] += K
+        #         self.result.K_tot += K
 
-        # Special case for when there is a C-terminal modification (amidation)
-        # The helix ending at the last residue can be one residue shorter because the modification acts as a capping residue
-        # Get the energies for all helices ending at the last residue, allowing for a helix length of 1 residue shorter than the minimum length
-        if self.has_amide:
-            for j in range(self.min_helix_length - 1, len(self.result.seq) + 1):
-                i = len(self.result.seq) - j
-                dG_Hel = self._calc_dG_Hel(i=i, j=j)
-                K = self._calc_K(dG_Hel)
-                self.result.K_tot_array[i + 1 : i + j] += K
-                self.result.K_tot += K
+        # # Special case for when there is a C-terminal modification (amidation)
+        # # The helix ending at the last residue can be one residue shorter because the modification acts as a capping residue
+        # # Get the energies for all helices ending at the last residue, allowing for a helix length of 1 residue shorter than the minimum length
+        # if self.has_amide:
+        #     for j in range(self.min_helix_length - 1, len(self.result.seq) + 1):
+        #         i = len(self.result.seq) - j
+        #         dG_Hel = self._calc_dG_Hel(i=i, j=j)
+        #         K = self._calc_K(dG_Hel)
+        #         self.result.K_tot_array[i + 1 : i + j] += K
+        #         self.result.K_tot += K
 
-        # Special case for when there is both an N-terminal and C-terminal modification
-        # This helix can be two residues shorter than the minimum length
-        if (self.has_acetyl or self.has_succinyl) and self.has_amide:
-            j = len(self.result.seq)
-            i = 0
-            dG_Hel = self._calc_dG_Hel(i=i, j=j)
-            K = self._calc_K(dG_Hel)
-            self.result.K_tot_array[i : i + j] += K
-            self.result.K_tot += K
+        # # Special case for when there is both an N-terminal and C-terminal modification
+        # # This helix can be two residues shorter than the minimum length
+        # if (self.has_acetyl or self.has_succinyl) and self.has_amide:
+        #     j = len(self.result.seq)
+        #     i = 0
+        #     dG_Hel = self._calc_dG_Hel(i=i, j=j)
+        #     K = self._calc_K(dG_Hel)
+        #     self.result.K_tot_array[i : i + j] += K
+        #     self.result.K_tot += K
 
         # General case for all other helices
         # Here the first and last residues act as capping residues, these must be the minimum length of 6 residues
+        self.seq_list = list(self.result.seq)
+        if self.n_cap is not None:  
+            self.seq_list.insert(0, self.n_cap)
+        if self.c_cap is not None:
+            self.seq_list.append(self.c_cap)
+
+        self.seq_length = len(self.seq_list)
         for j in range(
-            self.min_helix_length, len(self.result.seq) + 1
+            self.min_helix_length, self.seq_length + 1
         ):  # helix lengths (including capping residues)
             for i in range(
-                0, len(self.result.seq) - j + 1
+                0, self.seq_length - j + 1
             ):  # helical segment positions
+
+                # create energy calculator instance
+                self.energy_calculator = EnergyCalculator(
+                    seq=self.result.seq,
+                    i=i,
+                    j=j,
+                    pH=self.pH,
+                    T=self.T_celsius,
+                    ionic_strength=self.molarity,
+                    ncap=self.n_cap,
+                    ccap=self.c_cap
+                )
 
                 # calculate dG_Hel and dG_dict
                 dG_Hel = self._calc_dG_Hel(i=i, j=j)
@@ -371,8 +390,8 @@ class AGADIR(object):
 
         Args:
             seq (str): Input sequence.
-            ncap (str): N-terminal capping modification (acetylation='Z', succinylation='X').
-            ccap (str): C-terminal capping modification (amidation='B').
+            ncap (str): N-terminal capping modification (acetylation='Ac', succinylation='Sc').
+            ccap (str): C-terminal capping modification (amidation='Am').
             debug (bool): Whether to print debug information.
 
         Returns:
@@ -386,28 +405,22 @@ class AGADIR(object):
             raise ValueError("Debug must be a boolean")
         self.debug = debug
 
-        # check for valid ncap
+        # check for valid ncap and ccap
+        is_valid_ncap_ccap(ncap, ccap)
+
+        # assign ncap
         if ncap is not None:
-            if ncap not in ["Z", "X"]:
-                raise ValueError(
-                    f"Invalid N-terminal capping modification: {ncap}, must be None,'Z' or 'X'"
-                )
-            elif ncap == "Z":
+            if ncap == "Ac":
                 self.has_acetyl = True
-                self.n_cap = "Z"
-            elif ncap == "X":
+                self.n_cap = "Ac"
+            elif ncap == "Sc":
                 self.has_succinyl = True
-                self.n_cap = "X"
+                self.n_cap = "Sc"
 
         # check for valid ccap
         if ccap is not None:
-            if ccap not in ["B"]:
-                raise ValueError(
-                    f"Invalid C-terminal capping modification: {ccap}, must be None or 'B'"
-                )
-            elif ccap == "B":
-                self.has_amide = True
-                self.c_cap = "B"
+            self.has_amide = True
+            self.c_cap = "Am"
 
         # check for valid sequence length
         if len(seq) < self.min_helix_length:
@@ -416,18 +429,6 @@ class AGADIR(object):
             )
         
         print(f"Predicting helical propensity for sequence: {seq}, method: {self._method}, T(C): {self.T_celsius}, M: {self.molarity}, pH: {self.pH}, ncap: {self.n_cap}, ccap: {self.c_cap}")
-
-        # create energy calculator instance
-        self.energy_calculator = EnergyCalculator(
-            seq,
-            pH=self.pH,
-            T=self.T_celsius,
-            ionic_strength=self.molarity,
-            min_helix_length=self.min_helix_length,
-            has_acetyl=self.has_acetyl,
-            has_succinyl=self.has_succinyl,
-            has_amide=self.has_amide,
-        )
 
         # initialize the result object
         self.result = ModelResult(seq)
