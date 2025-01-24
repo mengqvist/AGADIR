@@ -207,42 +207,42 @@ class AGADIR(object):
             float: The Helix free energy.
         """
         # Intrinsic energies for the helical segment, excluding N- and C-terminal capping residues
-        dG_Int = self.energy_calculator.get_dG_Int(i, j)
+        dG_Int = self.energy_calculator.get_dG_Int()
 
         # "non-hydrogen bond" capping energies, only for the first and last residues of the helix
         # TODO dG_nonH might need further adjustment, see page 175 in lacroix paper
-        dG_Ncap = self.energy_calculator.get_dG_Ncap(i, j)
-        dG_Ccap = self.energy_calculator.get_dG_Ccap(i, j)
+        dG_Ncap = self.energy_calculator.get_dG_Ncap()
+        dG_Ccap = self.energy_calculator.get_dG_Ccap()
         dG_nonH = dG_Ncap + dG_Ccap
 
         # get hydrophobic staple motif energies
-        dG_staple = self.energy_calculator.get_dG_staple(i, j)
+        dG_staple = self.energy_calculator.get_dG_staple()
 
         # get schellman motif energies
-        dG_schellman = self.energy_calculator.get_dG_schellman(i, j)
+        dG_schellman = self.energy_calculator.get_dG_schellman()
 
         # calculate hydrogen bond energies for the helical segment here
-        dG_Hbond = self.energy_calculator.get_dG_Hbond(i, j)
+        dG_Hbond = self.energy_calculator.get_dG_Hbond()
 
         # side-chain interactions, excluding N- and C-terminal capping residues
-        dG_i3_tot = self.energy_calculator.get_dG_i3(i, j)
-        dG_i4_tot = self.energy_calculator.get_dG_i4(i, j)
+        dG_i3_tot = self.energy_calculator.get_dG_i3()
+        dG_i4_tot = self.energy_calculator.get_dG_i4()
         dG_SD = dG_i3_tot + dG_i4_tot
 
         # get the interactions between N- and C-terminal backbone charges and the helix macrodipole
-        dG_N_term, dG_C_term = self.energy_calculator.get_dG_terminals_macrodipole(i, j)
+        dG_N_term, dG_C_term = self.energy_calculator.get_dG_terminals_macrodipole()
 
         # get the interaction between charged side chains and the helix macrodipole
-        dG_sidechain_dipole_N, dG_sidechain_dipole_C = self.energy_calculator.get_dG_sidechain_macrodipole(i, j)
+        dG_sidechain_dipole_N, dG_sidechain_dipole_C = self.energy_calculator.get_dG_sidechain_macrodipole()
         dG_sidechain_dipole = dG_sidechain_dipole_N + dG_sidechain_dipole_C
 
         # get electrostatic energies between N- and C-terminal backbone charges and charged side chains
         # TODO 
-        # dG_electrost_term_N, dG_electrost_term_C = self.energy_calculator.get_dG_terminals_sidechain_electrost(i, j)
+        # dG_electrost_term_N, dG_electrost_term_C = self.energy_calculator.get_dG_terminals_sidechain_electrost()
         # dG_electrost_term = dG_electrost_term_N + dG_electrost_term_C
 
         # get electrostatic energies between pairs of charged side chains
-        dG_electrost_sidechain = self.energy_calculator.get_dG_sidechain_sidechain_electrost(i, j)
+        dG_electrost_sidechain = self.energy_calculator.get_dG_sidechain_sidechain_electrost()
 
         # modify by ionic strength according to equation 12 of the paper
         alpha = 0.15
