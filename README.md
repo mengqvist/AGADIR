@@ -6,13 +6,26 @@ An open-source, Python implementation of Munoz & Serrano's AGADIR model of α-he
 
 The energy parameters used in this model were extracted from the supplementary material of Lacroix, E., Viguera, A. R., & Serrano, L. (1998). Elucidating the folding problem of α-helices: local motifs, long-range electrostatics, ionic-strength dependence and prediction of NMR parameters. Journal of molecular biology, 284(1), 173-191. https://doi.org/10.1006/jmbi.1998.2145
 
-The paper uses the terminology of Richardson & Richardson (1988) where STC (S, strand; T, turn; and C, coil) indicates a non-helical conformation and He is a helical residue. Python indexing starting from the Ncap is used to describe these positions in the model.
+The paper uses the terminology of Richardson & Richardson (1988) where STC (S, strand; T, turn; and C, coil) indicates a non-helical conformation and He is a helical residue. Python indexing starting from the Ncap is used to describe these positions in the model. The helical portion of the sequence are determined by providing a strating index i, and a helix length j. The first and last residues of the specified helical segments act as "capping" residues (Ncap and Ccap). 
+
+In the following example, the helical segment is specified by i=2 and j=13.
 ```text
-Sequence:   I    L    K    S    L    E    E    F    L    K    V    T    L    R    S    T    R    Q  
+Sequence:  I    L    K     S    L    E    E    F    L    K    V    T    L    R    S    T    R    Q  
 Name:      N''  N'   Ncap  N1   N2   N3   N4   N5.............C5   C4   C3   C2   C1   Ccap C'   C''  
 Structure: STC  STC  STC---He---He---He---He---He---He---He---He---He---He---He---He---STC  STC  STC
-Index:     -2   -1    0    1    2    3    4    5    6    7    8    9    10   11   12   13   14   15
+Index:     0    1    2     3    4    5    6    7    8    9    10   11   12   13   14   15   16   17
 ```
+
+The N- and C-terminal residues can optionally be modified with acylation, succinylation, or amidation. This is done to remove the influence of the terminal charges on the helical propensity. The model accounts for these modifications and treats them as indexable positions in the sequence. 
+
+In the following example, the sequence is acetylated at the N-terminal and amidated at the C-terminal, with the helical segment specified by i=1 and j=6.
+```text
+Sequence:  Ac   K     S    L    E    E    F    L    K    V    T    L    R    S    T    R    Am 
+Name:      N'   Ncap  N1   N2   C2   C1   Ccap C'   C''  
+Structure: STC  STC---He---He---He---He---STC  STC  STC  STC  STC  STC  STC  STC  STC  STC  STC
+Index:     0    1     2    3    4    5    6    7    8    9    10   11   12   13   14   15   16
+```
+
 
 ## Installation
 
