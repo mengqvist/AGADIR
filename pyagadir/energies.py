@@ -4,7 +4,7 @@ from importlib.resources import files
 import numpy as np
 import pandas as pd
 
-from pyagadir.chemistry import calculate_ionic_strength, adjust_pKa, acidic_residue_ionization, basic_residue_ionization, calculate_permittivity, debye_screening_length
+from pyagadir.chemistry import calculate_ionic_strength, adjust_pKa, acidic_residue_ionization, basic_residue_ionization, calculate_permittivity, debye_screening_kappa
 from pyagadir.utils import is_valid_index, is_valid_peptide_sequence, is_valid_ncap_ccap, is_valid_conditions
 import warnings
 import itertools
@@ -164,7 +164,7 @@ class PrecomputeParams:
         self.pos_charge_aa = ["K", "R", "H"] # residues that get a positive charge when protonated
 
         # assign some chemistry constants
-        self.kappa = debye_screening_length(self.ionic_strength, self.T_kelvin)
+        self.kappa = debye_screening_kappa(self.ionic_strength, self.T_kelvin)
         self.epsilon_r = calculate_permittivity(self.T_kelvin) # Relative permittivity of water
         self.epsilon_0 = 8.854e-12  # Permittivity of free space in C^2/(Nm^2)
         self.N_A = 6.022e23  # Avogadro's number in mol^-1
@@ -182,6 +182,9 @@ class PrecomputeParams:
         self.seq_ionization = None
         self.nterm_ionization = None
         self.cterm_ionization = None
+
+        self.terminal_macrodipole_distances_nterm = None
+        self.terminal_macrodipole_distances_cterm = None
 
         # modified ionization states    
         self.modified_seq_ionization_hel = None
@@ -202,6 +205,7 @@ class PrecomputeParams:
         self._assign_pka_values()
         self._assign_ionization_states()
         self._assign_sidechain_macrodipole_distances()
+        self._assign_terminal_macrodipole_distances()
         self._assign_charged_sidechain_distances()
         self._assign_modified_ionization_states()
 
@@ -225,7 +229,11 @@ class PrecomputeParams:
     def _calculate_r(self, N: int) -> float:
         """Function to calculate the distance r from the peptide terminal to the helix
         start, where N is the number of residues between the terminal and the helix.
-        p. 177 of Lacroix, 1998. Distances in Ångströms as 2.1, 4.1, 6.1...
+        p. 177 of Lacroix, 1998. Distances in Ångströms as 2.1, 4.1, 6.1... The function is 
+        needed because we ignore sidechains here. We only calculate distances between charged
+        termini (which are located on the backbone) and the helix macrodipole, which is located
+        at the N- and C-terminal capping residues. The capping residues are not included in the helix
+        macrodipole, so the distance can never be shorter than 2.1 Ångströms.
 
         Args:
             N (int): The number of residues between the peptide terminal and the helix start.
@@ -248,9 +256,10 @@ class PrecomputeParams:
         Returns:
             float: The interaction energy in kcal/mol.
         """
-        r = r * 1e-10  # Convert distance from Ångströms to meters
-        coulomb_term = (self.e**2 * qi * qj) / (4 * math.pi * self.epsilon_0 * self.epsilon_r * r)
-        energy_joules = coulomb_term * math.exp(-self.kappa * r)
+        distance_r_meter = r * 1e-10  # Convert distance from Ångströms to meters
+        screening_factor = math.exp(-self.kappa * distance_r_meter)
+        coulomb_term = (self.e**2 * qi * qj) / (4 * math.pi * self.epsilon_0 * self.epsilon_r * distance_r_meter)
+        energy_joules = coulomb_term * screening_factor
         energy_kcal_mol = self.N_A * energy_joules / 4184
         return energy_kcal_mol
 
@@ -431,6 +440,33 @@ class PrecomputeParams:
         print(f'{"cterm:".ljust(self.category_pad)} {"".join([f"{d:.1f}".ljust(self.value_pad) for d in self.sidechain_macrodipole_distances_cterm])}')
         print("")
 
+    def _assign_terminal_macrodipole_distances(self):
+        """
+        Assign the distance between the peptide terminal residues and the helix macrodipole.
+        """
+        self.terminal_macrodipole_distances_nterm = self._calculate_r(self.i)
+        self.terminal_macrodipole_distances_cterm = self._calculate_r(len(self.seq_list) - (self.i + self.j))
+
+    def get_terminal_macrodipole_distances(self) -> tuple[float, float]:
+        """
+        Get the distances for the peptide terminal residues and the helix macrodipole.
+        Only computes N-terminal distance to the N-terminal helix dipole and 
+        C-terminal distance to the C-terminal helix dipole.
+
+        Returns:
+            tuple[float, float]: Distances between the peptide N-terminal and C-terminal residues and the helix macrodipole
+        """
+        return self.terminal_macrodipole_distances_nterm, self.terminal_macrodipole_distances_cterm
+    
+    def show_terminal_macrodipole_distances(self):
+        """
+        Print out the distances for the peptide terminal residues and the helix macrodipole in a nicely formatted way.
+        """
+        print(self._make_box("Terminal macrodipole distances (Å)"))
+        print(f'{"nterm:".ljust(self.category_pad)} {self.terminal_macrodipole_distances_nterm:.1f}')
+        print(f'{"cterm:".ljust(self.category_pad)} {self.terminal_macrodipole_distances_cterm:.1f}')
+        print("")
+
     def _assign_charged_sidechain_distances(self):
         """
         Assign the distance between two charged sidechains.
@@ -460,7 +496,7 @@ class PrecomputeParams:
                 distance_angstrom = 99
             else:
                 pair = AA1 + AA2
-                if 'Y' in pair: # Handle Tyrosine special case
+                if ('Y' in pair) or ('C' in pair): # Handle Cysteine and Tyrosine special case
                     pair = 'RcoilRest'
                 distance_angstrom = self.table_6_coil_lacroix.loc[pair, distance_key]
 
@@ -479,7 +515,7 @@ class PrecomputeParams:
                 # Both residues in helix
                 if self.i <= idx1 < self.i + self.j and self.i <= idx2 < self.i + self.j:
                     pair = AA1 + AA2
-                    if 'Y' in pair: # Handle Tyrosine special case
+                    if ('Y' in pair) or ('C' in pair): # Handle Cysteine and Tyrosine special case
                         pair = 'HelixRest'
                     try:
                         distance_angstrom = self.table_6_helix_lacroix.loc[pair, distance_key]
@@ -489,7 +525,7 @@ class PrecomputeParams:
                 # Both residues in coil part of a peptide that (at a different position) contains the helix
                 elif (idx1 < self.i or idx1 >= self.i + self.j) and (idx2 < self.i or idx2 >= self.i + self.j):
                     pair = AA1 + AA2
-                    if 'Y' in pair: # Handle Tyrosine special case
+                    if ('Y' in pair) or ('C' in pair): # Handle Cysteine and Tyrosine special case
                         pair = 'RcoilRest'
                     try:
                         distance_angstrom = self.table_6_coil_lacroix.loc[pair, distance_key]
@@ -784,9 +820,8 @@ class EnergyCalculator(PrecomputeParams):
         screening_factor = math.exp(-self.kappa * distance_r_meter)
 
         # Calculate terminal interaction energy
-        B_kappa = 332.0  # in kcal Å / (mol e^2)
-
         # In the form of equation (10.62) from DOI 10.1007/978-1-4419-6351-2_10
+        B_kappa = 332.0  # in kcal Å / (mol e^2)
         coloumb_potential = self.mu_helix / (self.epsilon_r * distance_r_angstrom)
         energy = B_kappa * screening_factor * coloumb_potential
 
@@ -800,11 +835,11 @@ class EnergyCalculator(PrecomputeParams):
 
         # Adjust energy by ionization state
         if terminal == "C":
-            energy *= -q  # C-terminal interaction is negative
+            interaction_energy = -energy * q  # C-terminal macrodipole is negative
         else:
-            energy *= q  # N-terminal interaction
+            interaction_energy = energy * q  # N-terminal macrodipole is positive
 
-        return energy
+        return interaction_energy
     
     def get_dG_Int(self) -> np.ndarray:
         """
@@ -1097,33 +1132,29 @@ class EnergyCalculator(PrecomputeParams):
         """
         N_term = np.zeros(len(self.seq_list))
         C_term = np.zeros(len(self.seq_list))
+        distance_r_N = self.terminal_macrodipole_distances_nterm
+        distance_r_C = self.terminal_macrodipole_distances_cterm
 
         # N-terminal calculation, not capped by acetyl nor succinyl, so it is positively charged
-        if not self.has_acetyl and not self.has_succinyl:
-            pKa_Nterm = self.table_pka_values.loc["Nterm", "pKa"]
-            distance_r_N = self._calculate_r(self.i)
+        if not self.seq_list[0] in ["Ac", "Sc"]:
             N_term_energy = self._calculate_terminal_energy(
-                distance_r_N, pKa_Nterm, "basic", terminal="N"
+                distance_r_N, self.nterm_pka, "basic", terminal="N"
             )
             N_term[0] = N_term_energy
             
         # N-terminal calculation, here we account for the negative charge of succinyl, 
         # which is a special case since the N-terminal is normally positively charged
         # and CAN interact with the helix macrodipole (page 177 in Lacroix, 1998)
-        elif self.has_succinyl: 
-            pKa_Nterm = self.table_pka_values.loc["Succinyl", "pKa"]
-            distance_r_N = self._calculate_r(self.i)
+        elif self.seq_list[0] == "Sc": 
             N_term_energy = self._calculate_terminal_energy(
-                distance_r_N, pKa_Nterm, "acidic", terminal="N"
+                distance_r_N, self.nterm_pka, "acidic", terminal="N"
             )
             N_term[0] = N_term_energy
 
         # C-terminal calculation, only if not capped by amidation
-        if not self.has_amide:
-            pKa_Cterm = self.table_pka_values.loc["Cterm", "pKa"]
-            distance_r_C = self._calculate_r(len(self.seq) - (self.i + self.j))
+        if not self.seq_list[-1] == "Am":
             C_term_energy = self._calculate_terminal_energy(
-                distance_r_C, pKa_Cterm, "acidic", terminal="C"
+                distance_r_C, self.cterm_pka, "acidic", terminal="C"
             )
             C_term[-1] = C_term_energy
 
