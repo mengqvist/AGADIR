@@ -153,8 +153,9 @@ def debye_huckel_screening_parameter(ionic_strength: float, T: float) -> float:
     return kappa
 
 
-def debye_screening_length(ionic_strength: float, T: int) -> float:
-    """Calculate the Debye screening length in electrolyte.
+def debye_screening_kappa(ionic_strength: float, T: int) -> float:
+    """Calculate the inverse of the Debye screening length (kappa) in an electrolyte.
+    
     ISBN 978-0-444-63908-0
 
     Args:
@@ -162,7 +163,7 @@ def debye_screening_length(ionic_strength: float, T: int) -> float:
         T (int): Temperature in Kelvin.
 
     Returns:
-        float: The Debye length kappa.
+        float: The inverse of the Debye length (kappa) in m^-1.
     """
     # Constants
     epsilon_0 = 8.854e-12  # Permittivity of free space in C^2/(Nm^2)
@@ -173,6 +174,9 @@ def debye_screening_length(ionic_strength: float, T: int) -> float:
     N_A = 6.022e23  # Avogadro's number in mol^-1
     e = 1.602e-19  # Elementary charge in Coulombs
     k_B = 1.38e-23  # Boltzmann constant in J/K
+
+    # Set a minimum ionic strength to account for autoionization of water
+    ionic_strength = max(ionic_strength, 1e-7)  # mol/L
 
     # Convert ionic strength to mol/m**3
     ionic_strength = ionic_strength * 1000
