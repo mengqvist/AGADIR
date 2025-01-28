@@ -154,10 +154,30 @@ class PrecomputeParams:
         self.ncap = ncap
         self.ccap = ccap
 
+        # pre-compute indices for the helix and get some key residues
+        self.helix_indices = list(range(i, i+j))
+
+        self.ncap_idx = self.helix_indices[0]
+        self.Ncap_AA = self.seq_list[self.ncap_idx]
+        self.N1_AA = self.seq_list[self.ncap_idx + 1]
+        self.N3_AA = self.seq_list[self.ncap_idx + 3]
+        self.N4_AA = self.seq_list[self.ncap_idx + 4]
+
+        self.ccap_idx = self.helix_indices[-1]
+        self.cprime_idx = self.ccap_idx + 1
+        self.Ccap_AA = self.seq_list[self.ccap_idx]
+        if self.cprime_idx < len(self.seq_list):
+            self.Cprime_AA = self.seq_list[self.cprime_idx]
+        else:
+            self.Cprime_AA = None
+        self.C3_AA = self.seq_list[self.ccap_idx - 3]
+
+        # pre-compute some flags
         self.has_acetyl = True if ncap == "Ac" else False
         self.has_succinyl = True if ncap == "Sc" else False
         self.has_amide = True if ccap == "Am" else False
 
+        # assign some constants
         self.min_helix_length = 6
         self.mu_helix = 0.5
         self.neg_charge_aa = ["C", "D", "E", "Y"] # residues that get a negative charge when deprotonated
@@ -390,9 +410,9 @@ class PrecomputeParams:
                 continue
 
             # If amino acid is in the helical region
-            if self.i <= idx < self.i + self.j:
-                n_residues_N_separation = idx - self.i
-                n_residues_C_separation = (self.i + self.j - 1) - idx
+            if idx in self.helix_indices:
+                n_residues_N_separation = idx - self.ncap_idx
+                n_residues_C_separation = self.ccap_idx - idx
 
                 # Get the distance to the N-terminal dipole using table 7 from Lacroix, 1998
                 if n_residues_N_separation > 13:
@@ -410,10 +430,10 @@ class PrecomputeParams:
     
             # If amino acid is in the coil region, calculate the distance to the helix start and end
             else:
-                n_residues_N_separation = abs(self.i - idx) - 1  # Distance to helix start
+                n_residues_N_separation = abs(self.ncap_idx - idx)  # Distance to helix start
                 N_distance_angstrom = self._calculate_r(n_residues_N_separation)
 
-                n_residues_C_separation = abs(idx - (self.i + self.j - 1)) - 1  # Distance to helix end
+                n_residues_C_separation = abs(self.ccap_idx - idx)  # Distance to helix end
                 C_distance_angstrom = self._calculate_r(n_residues_C_separation)
 
             # Assign the distances to the arrays
@@ -444,8 +464,8 @@ class PrecomputeParams:
         """
         Assign the distance between the peptide terminal residues and the helix macrodipole.
         """
-        self.terminal_macrodipole_distances_nterm = self._calculate_r(self.i)
-        self.terminal_macrodipole_distances_cterm = self._calculate_r(len(self.seq_list) - (self.i + self.j))
+        self.terminal_macrodipole_distances_nterm = self._calculate_r(self.ncap_idx)
+        self.terminal_macrodipole_distances_cterm = self._calculate_r(len(self.seq_list) - 1 - self.ccap_idx)
 
     def get_terminal_macrodipole_distances(self) -> tuple[float, float]:
         """
@@ -513,7 +533,7 @@ class PrecomputeParams:
 
             else:
                 # Both residues in helix
-                if self.i <= idx1 < self.i + self.j and self.i <= idx2 < self.i + self.j:
+                if idx1 in self.helix_indices and idx2 in self.helix_indices:
                     pair = AA1 + AA2
                     if ('Y' in pair) or ('C' in pair): # Handle Cysteine and Tyrosine special case
                         pair = 'HelixRest'
@@ -523,7 +543,7 @@ class PrecomputeParams:
                         raise ValueError(f"Distance not found for pair {pair} at distance key {distance_key}")
                 
                 # Both residues in coil part of a peptide that (at a different position) contains the helix
-                elif (idx1 < self.i or idx1 >= self.i + self.j) and (idx2 < self.i or idx2 >= self.i + self.j):
+                elif idx1 not in self.helix_indices and idx2 not in self.helix_indices:
                     pair = AA1 + AA2
                     if ('Y' in pair) or ('C' in pair): # Handle Cysteine and Tyrosine special case
                         pair = 'RcoilRest'
@@ -535,7 +555,7 @@ class PrecomputeParams:
                 # One residue in helix, one in coil
                 else:
                     # Figure out which residue is in helix and which in coil
-                    if self.i <= idx1 < self.i + self.j:
+                    if idx1 in self.helix_indices:
                         helix_idx = idx1
                         coil_idx = idx2
                     else:
@@ -543,17 +563,17 @@ class PrecomputeParams:
                         coil_idx = idx1
                         
                     # Calculate distance through helix boundary
-                    if coil_idx < self.i:
+                    if coil_idx < self.ncap_idx:
                         # Coil residue is before helix
-                        coil_separation = self.i - coil_idx
-                        helix_separation = helix_idx - self.i
+                        coil_separation = self.ncap_idx - coil_idx
+                        helix_separation = helix_idx - self.ncap_idx
                         # print('coil, helix idx1 idx2', coil_separation, helix_separation, idx1, idx2)
                         d_coil = 0.0 if coil_separation == 0 else self.table_6_coil_lacroix.loc['RcoilRest', f"i+{coil_separation}"]  # Distance to helix start
                         d_helix = 0.0 if helix_separation == 0 else self.table_6_helix_lacroix.loc['HelixRest', f"i+{helix_separation}"]  # Distance from helix start to helix residue
                     else:
                         # Coil residue is after helix
-                        coil_separation = coil_idx - (self.i + self.j - 1)
-                        helix_separation = self.i + self.j - 1 - helix_idx
+                        coil_separation = coil_idx - self.ccap_idx
+                        helix_separation = self.ccap_idx - helix_idx
                         # print('coil, helix idx1 idx2', coil_separation, helix_separation, idx1, idx2)
                         d_coil = 0.0 if coil_separation == 0 else self.table_6_coil_lacroix.loc['RcoilRest', f"i+{coil_separation}"]  # Distance from helix end
                         d_helix = 0.0 if helix_separation == 0 else self.table_6_helix_lacroix.loc['HelixRest', f"i+{helix_separation}"]  # Distance from helix residue to helix end
@@ -901,44 +921,23 @@ class EnergyCalculator(PrecomputeParams):
         Returns:
             np.ndarray: The free energy contribution.
         """
-        helix = self.helix
-        res_is_ncap, res_is_ccap = self._are_terminal_residues_capping(helix, self.i, self.j)
-
-        # If it's the peptide N-terminal residue and it's not capping in the helical segment, 
-        # then change the name to match an N-terminal modification
-        Ncap_AA = helix[0]
-        if self.i == 0 and not res_is_ncap:
-            Ncap_AA = "Ac"
-
         energy = np.zeros(len(self.seq_list))
 
-        # Get the N1 and N3 residues, which are the first and third residues of the helical segment.
-        # If the helical segment is the peptide N-terminal residue, and it's not capping, then we have to shift the indices
-        if self.i == 0 and not res_is_ncap:
-            N1_AA = helix[0]
-        else:   
-            N1_AA = helix[1]
-
-        if self.i == 0 and not res_is_ncap:
-            N3_AA = helix[2]
-        else:
-            N3_AA = helix[3]
-
         # Nc-4 	N-cap values when there is a Pro at position N1 and Glu, Asp or Gln at position N3.
-        if N1_AA == "P" and N3_AA in ["E", "D", "Q"]:
-            energy[self.i] = self.table_1_lacroix.loc[Ncap_AA, "Nc-4"]
+        if self.N1_AA == "P" and self.N3_AA in ["E", "D", "Q"]:
+            energy[self.ncap_idx] = self.table_1_lacroix.loc[self.Ncap_AA, "Nc-4"]
 
         # Nc-3 	N-cap values when there is a Glu, Asp or Gln at position N3.
-        elif N3_AA in ["E", "D", "Q"]:
-            energy[self.i] = self.table_1_lacroix.loc[Ncap_AA, "Nc-3"]
+        elif self.N3_AA in ["E", "D", "Q"]:
+            energy[self.ncap_idx] = self.table_1_lacroix.loc[self.Ncap_AA, "Nc-3"]
 
         # Nc-2 	N-cap values when there is a Pro at position N1.
-        elif N1_AA == "P":
-            energy[self.i] = self.table_1_lacroix.loc[Ncap_AA, "Nc-2"]
+        elif self.N1_AA == "P":
+            energy[self.ncap_idx] = self.table_1_lacroix.loc[self.Ncap_AA, "Nc-2"]
 
         # Nc-1 	Normal N-cap values.
         else:
-            energy[self.i] = self.table_1_lacroix.loc[Ncap_AA, "Nc-1"]
+            energy[self.ncap_idx] = self.table_1_lacroix.loc[self.Ncap_AA, "Nc-1"]
 
         return energy
 
@@ -949,18 +948,15 @@ class EnergyCalculator(PrecomputeParams):
         Returns:
             np.ndarray: The free energy contribution.
         """
-        # get the C-terminal capping residue
-        Ccap_AA = self.seq_list[self.i + self.j - 1]
         energy = np.zeros(len(self.seq_list))
 
         # Cc-2 	C-cap values when there is a Pro residue at position C'
-        c_prime_idx = self.i + self.j
-        if (len(self.seq_list) > c_prime_idx) and (self.seq_list[c_prime_idx] == "P"):
-            energy[self.i + self.j - 1] = self.table_1_lacroix.loc[Ccap_AA, "Cc-2"]
+        if self.Cprime_AA == "P":
+            energy[self.ccap_idx] = self.table_1_lacroix.loc[self.Ccap_AA, "Cc-2"]
 
         # Cc-1 	Normal C-cap values
         else:
-            energy[self.i + self.j - 1] = self.table_1_lacroix.loc[Ccap_AA, "Cc-1"]
+            energy[self.ccap_idx] = self.table_1_lacroix.loc[self.Ccap_AA, "Cc-1"]
 
         return energy
 
@@ -974,34 +970,23 @@ class EnergyCalculator(PrecomputeParams):
         Returns:
             float: The free energy contribution.
         """
-        helix = self.helix
-        res_is_ncap, res_is_ccap = self._are_terminal_residues_capping(len(self.seq), self.i, self.j)
-
         # Staple motif requires the N' residue before the Ncap, so the first residue of the helix cannot be the first residue of the peptide
         # This should be true regardless of whether there is an N-terminal modification or not
         energy = 0.0
         if self.i == 0:
             return energy
 
-        # get the amino acids governing the staple motif, but account for any terminal modifications
-        Ncap_AA = helix[0]
-        N_prime_AA = self.seq[self.i - 1]
-        N3_AA = helix[3]
-        N4_AA = helix[4]
-
-        # TODO: verify that the code below is correct
-
         # The hydrophobic staple motif is only considered whenever the N-cap residue is Asn, Asp, Ser, Pro or Thr.
-        if Ncap_AA in ["N", "D", "S", "P", "T"]:
-            energy = self.table_2_lacroix.loc[N_prime_AA, N4_AA]
+        if self.Ncap_AA in ["N", "D", "S", "P", "T"]:
+            energy = self.table_2_lacroix.loc[self.Ncap_AA, self.N4_AA]
 
             # whenever the N-cap residue is Asn, Asp, Ser, or Thr and the N3 residue is Glu, Asp or Gln, multiply by 1.0
-            if Ncap_AA in ["N", "D", "S", "T"] and N3_AA in ["E", "D", "Q"]:
+            if self.Ncap_AA in ["N", "D", "S", "T"] and self.N3_AA in ["E", "D", "Q"]:
                 # print("staple case i")
                 energy *= 1.0
 
             # whenever the N-cap residue is Asp or Asn and the N3 residue is Ser or Thr
-            elif Ncap_AA in ["N", "D"] and N3_AA in ["S", "T"]:
+            elif self.Ncap_AA in ["N", "D"] and self.N3_AA in ["S", "T"]:
                 # print("staple case ii")
                 energy *= 1.0
 
@@ -1026,25 +1011,14 @@ class EnergyCalculator(PrecomputeParams):
         Returns:
             float: The free energy contribution.
         """
-        helix = self.helix
-        res_is_ncap, res_is_ccap = self._are_terminal_residues_capping(len(self.seq), self.i, self.j)
-
         # The Schellman motif is only considered whenever Gly is the C-cap residue,
         # and there has to be a C' residue after the helix
         energy = 0.0
-        if self.i + self.j == len(self.seq) and not res_is_ccap:
+        if self.Cprime_AA is None or self.Ccap_AA != "G":
             return energy
-        
-        C_cap_AA = helix[-1]
-        if C_cap_AA != "G":
-            return energy
-
-        # TODO verify that the code below is correct
-
+    
         # get the amino acids governing the Schellman motif and extract the energy
-        C_prime_AA = self.seq[self.i + self.j]
-        C3_AA = helix[-4]
-        energy = self.table_3_lacroix.loc[C3_AA, C_prime_AA] / 100
+        energy = self.table_3_lacroix.loc[self.C3_AA, self.Cprime_AA] / 100
 
         return energy
 
@@ -1073,9 +1047,9 @@ class EnergyCalculator(PrecomputeParams):
         energy = np.zeros(len(self.seq_list))
 
         # Get interaction free energies for charged residues
-        for idx in range(self.j - 3):
-            AAi = self.seq_list[self.i+idx]
-            AAi3 = self.seq_list[self.i+idx + 3]
+        for idx in self.helix_indices[:-3]:
+            AAi = self.seq_list[idx]
+            AAi3 = self.seq_list[idx + 3]
 
             # Skip if N- and C-terminal modifications
             if AAi in ["Ac", "Am", "Sc"] or AAi3 in ["Ac", "Am", "Sc"]:
@@ -1085,9 +1059,9 @@ class EnergyCalculator(PrecomputeParams):
 
             if AAi in self.pos_charge_aa + self.neg_charge_aa and AAi3 in self.neg_charge_aa + self.pos_charge_aa:
                 # Use precomputed ionization states for the helical state
-                q_i = self.modified_seq_ionization_hel[self.i + idx]
-                q_i3 = self.modified_seq_ionization_hel[self.i + idx + 3]
-                energy[idx] = base_energy * abs(q_i * q_i3)
+                q_i = self.modified_seq_ionization_hel[idx]
+                q_i3 = self.modified_seq_ionization_hel[idx + 3]
+                energy[idx] = base_energy * abs(q_i * q_i3) # abs because the base energy already has a sign, and I just want to scale by the ionization-dependent interaction
             else:
                 energy[idx] = base_energy
 
@@ -1103,9 +1077,9 @@ class EnergyCalculator(PrecomputeParams):
         energy = np.zeros(len(self.seq_list))
 
         # Get interaction free energies for charged residues
-        for idx in range(self.j - 4):
-            AAi = self.seq_list[self.i+idx]
-            AAi4 = self.seq_list[self.i+idx + 4]
+        for idx in self.helix_indices[:-4]:
+            AAi = self.seq_list[idx]
+            AAi4 = self.seq_list[idx + 4]
 
             # Skip if N- and C-terminal modifications
             if AAi in ["Ac", "Am", "Sc"] or AAi4 in ["Ac", "Am", "Sc"]:
@@ -1115,11 +1089,11 @@ class EnergyCalculator(PrecomputeParams):
 
             if AAi in self.pos_charge_aa + self.neg_charge_aa and AAi4 in self.pos_charge_aa + self.neg_charge_aa:
                 # Use precomputed ionization states for the helical state
-                q_i = self.modified_seq_ionization_hel[self.i + idx]
-                q_i4 = self.modified_seq_ionization_hel[self.i + idx + 4]
-                energy[self.i+idx] = base_energy * abs(q_i * q_i4)
+                q_i = self.modified_seq_ionization_hel[idx]
+                q_i4 = self.modified_seq_ionization_hel[idx + 4]
+                energy[idx] = base_energy * abs(q_i * q_i4) # abs because the base energy already has a sign, and I just want to scale by the ionization-dependent interaction
             else:
-                energy[self.i+idx] = base_energy
+                energy[idx] = base_energy
 
         return energy
 
@@ -1242,3 +1216,4 @@ class EnergyCalculator(PrecomputeParams):
             energy_matrix[idx2, idx1] = energy_diff  # Lower triangle
 
         return energy_matrix
+    
