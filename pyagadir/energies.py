@@ -783,43 +783,6 @@ class EnergyCalculator(PrecomputeParams):
         """
         super().__init__(seq, i, j, pH, T, ionic_strength, ncap, ccap)
 
-    def _are_terminal_residues_capping(self, pept_len: int, i: int, j: int) -> tuple[bool, bool]:
-        """
-        Determine whether the first and last residues of a helical segment should be treated as capping residues. 
-        
-        Without N- and C- terminal modifications, the first and last residues of the peptide are treated as capping residues.
-        With N- and C- terminal modifications, the first and last residues of the peptide are not treated as capping residues, 
-        since the modifactions are treated as capping residues.
-        For internal helical segments, the first and last residues are always capping residues since they are not
-        affected by N- and C- terminal modifications.
-
-        Args:
-            pept_len (int): The length of the entire peptide sequence, regardless of which helical segment is being considered.
-            i (int): Starting index of the helical segment
-            j (int): Length of the helical segment
-
-        Returns:
-            tuple[bool, bool]: (res_is_ncap, res_is_ccap) indicating whether the two terminal residues should be treated
-                            as N- and C- capping residues
-        """
-        # By default, every helical segment has capping residues
-        n_term_is_cap = True
-        c_term_is_cap = True
-
-        # Check if this segment includes the N-terminus of the peptide
-        if i == 0:
-            # If we have N-terminal modification, this segment doesn't have an N-cap
-            if self.has_acetyl or self.has_succinyl:
-                n_term_is_cap = False
-
-        # Check if this segment includes the C-terminus of the peptide
-        if i + j == pept_len:
-            # If we have C-terminal modification, this segment doesn't have a C-cap
-            if self.has_amide:
-                c_term_is_cap = False
-
-        return n_term_is_cap, c_term_is_cap 
-
     def _calculate_terminal_energy(self,
                 distance_r_angstrom: float, pKa_ref: float, residue_type: str, terminal: str
             ) -> float:
@@ -871,45 +834,37 @@ class EnergyCalculator(PrecomputeParams):
         Returns:
             np.ndarray: The intrinsic free energy contributions for each amino acid in the helical segment.
         """
-        helix = self.helix
-        res_is_ncap, res_is_ccap = self._are_terminal_residues_capping(len(self.seq), self.i, self.j)
-
         # Initialize energy array
         energy = np.zeros(len(self.seq_list))
 
         # Iterate over the helix and get the intrinsic energy for each residue, 
         # not including residues that are capping for the helical segment
-        for idx in range(self.j):
-            AA = self.seq_list[self.i + idx]
-
-            # Skip caps only if they exist for this segment
-            if (idx == 0 and res_is_ncap) or (idx == len(helix) - 1 and res_is_ccap):
+        for idx in self.helix_indices:
+            if idx == self.ncap_idx or idx == self.ccap_idx:
                 continue
 
-            # No energies for terminal modifications
-            if AA in ['Ac', 'Sc', 'Am']:
-                continue
+            AA = self.seq_list[idx]
 
             # Handle N-terminal region specially
-            if idx == 1 or (idx == 0 and not res_is_ncap):
-                energy[self.i + idx] = self.table_1_lacroix.loc[AA, "N1"]
-            elif idx == 2 or (idx == 1 and not res_is_ncap):
-                energy[self.i + idx] = self.table_1_lacroix.loc[AA, "N2"]
-            elif idx == 3 or (idx == 2 and not res_is_ncap):
-                energy[self.i + idx] = self.table_1_lacroix.loc[AA, "N3"]
-            elif idx == 4 or (idx == 3 and not res_is_ncap):
-                energy[self.i + idx] = self.table_1_lacroix.loc[AA, "N4"]
+            if idx == self.ncap_idx + 1:
+                energy[idx] = self.table_1_lacroix.loc[AA, "N1"]
+            elif idx == self.ncap_idx + 2:
+                energy[idx] = self.table_1_lacroix.loc[AA, "N2"]
+            elif idx == self.ncap_idx + 3:
+                energy[idx] = self.table_1_lacroix.loc[AA, "N3"]
+            elif idx == self.ncap_idx + 4:
+                energy[idx] = self.table_1_lacroix.loc[AA, "N4"]
             else:
-                energy[self.i + idx] = self.table_1_lacroix.loc[AA, "Ncen"]
+                energy[idx] = self.table_1_lacroix.loc[AA, "Ncen"]
 
             if AA in self.neg_charge_aa + self.pos_charge_aa:
                 # Charged residues: use precomputed ionization state and balance energy based on ionization state
                 # If they are completely ionized, use base value, if they are completely neutral, use Neutral, 
                 # if they are partially ionized, use a weighted average of base value and Neutral
-                q = self.modified_seq_ionization_hel[self.i + idx]
-                basic_energy = energy[self.i + idx]
+                q = self.modified_seq_ionization_hel[idx]
+                basic_energy = energy[idx]
                 basic_energy_neutral = self.table_1_lacroix.loc[AA, "Neutral"]
-                energy[self.i + idx] = q * basic_energy + (1 - q) * basic_energy_neutral
+                energy[idx] = q * basic_energy + (1 - q) * basic_energy_neutral
 
         return energy
     
