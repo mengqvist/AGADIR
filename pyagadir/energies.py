@@ -8,6 +8,7 @@ from pyagadir.chemistry import calculate_ionic_strength, adjust_pKa, acidic_resi
 from pyagadir.utils import is_valid_index, is_valid_peptide_sequence, is_valid_ncap_ccap, is_valid_conditions
 import warnings
 import itertools
+import copy
 
 
 
@@ -622,100 +623,132 @@ class PrecomputeParams:
         current_seq_ionization = self.seq_ionization.copy()
         current_nterm_ionization = self.nterm_ionization
         current_cterm_ionization = self.cterm_ionization
-        modified_seq_pka_hel = self.seq_pka.copy()
-
-        # print("Starting ionization state iteration...")
         
-        # Iterative solution
+        # Iterative solution for updating the ionization states
         for iteration in range(MAX_ITERATIONS):
             old_seq_ionization_hel = current_seq_ionization.copy()
-            old_nterm_ionization = current_nterm_ionization
-            old_cterm_ionization = current_cterm_ionization
+            old_nterm_ionization = copy.copy(current_nterm_ionization)
+            old_cterm_ionization = copy.copy(current_cterm_ionization)
 
             # For each residue
-            for idx1, AA1 in enumerate(self.seq_list):
-                if AA1 not in self.neg_charge_aa + self.pos_charge_aa:
-                    continue
-                    
-                # print(f"\nProcessing {AA1} at position {idx1}")
+            for idx1, AA1 in list(enumerate(self.seq_list)) + [(None, 'Nterm'), (None, 'Cterm')]:
                 deltaG_total = 0.0
 
-                # 1. Get helix macrodipole contribution using current charge
-                N_distance_angstrom = self.sidechain_macrodipole_distances_nterm[idx1]
-                C_distance_angstrom = self.sidechain_macrodipole_distances_cterm[idx1]
-                if np.isnan(N_distance_angstrom):
-                    raise ValueError(f"N_distance for sidechain_macrodipole_distances_nterm is nan, this should not happen")
-                if np.isnan(C_distance_angstrom):
-                    raise ValueError(f"C_distance for sidechain_macrodipole_distances_cterm is nan, this should not happen")
-                
-                # Use current ionization state
-                q = current_seq_ionization[idx1]
-                
-                # print(f"Current charge: {q}")
-                # print(f"Distances N, C: {N_distance}, {C_distance}")
-                
+                # 1. Get helix macrodipole contribution to the free energy using current charge
+                # Use pre-computed distances and current ionization state
+                if AA1 == 'Nterm':
+                    if self.seq_list[0] == 'Ac':
+                        continue
+                    N_distance_angstrom = self.terminal_macrodipole_distance_nterm
+                    C_distance_angstrom = 99
+                    q = current_nterm_ionization
+                    pKa_intrinsic = self.nterm_pka
+
+                elif AA1 == 'Cterm':
+                    if self.seq_list[-1] == 'Am':
+                        continue
+                    N_distance_angstrom = 99
+                    C_distance_angstrom = self.terminal_macrodipole_distance_cterm
+                    q = current_cterm_ionization
+                    pKa_intrinsic = self.cterm_pka
+
+                elif AA1 in self.neg_charge_aa + self.pos_charge_aa:     
+                    N_distance_angstrom = self.sidechain_macrodipole_distances_nterm[idx1]
+                    C_distance_angstrom = self.sidechain_macrodipole_distances_cterm[idx1]
+                    q = current_seq_ionization[idx1]
+                    pKa_intrinsic = self.seq_pka[idx1]
+
+                else:
+                    continue
+                   
                 # Calculate deltaG for N-terminal dipole, but only if the distance is small enough, don't waste compute on large distances
                 if N_distance_angstrom < 40:
                     deltaG_N = self._electrostatic_interaction_energy(
-                        qi=self.mu_helix, qj=q, r=N_distance_angstrom
+                        qi=self.mu_helix, 
+                        qj=q, 
+                        r=N_distance_angstrom
                     )
                     deltaG_total += deltaG_N
                 
                 # Calculate deltaG for C-terminal dipole, but only if the distance is small enough, don't waste compute on large distances
                 if C_distance_angstrom < 40:
                     deltaG_C = self._electrostatic_interaction_energy(
-                        qi=-self.mu_helix, qj=q, r=C_distance_angstrom
+                        qi=-self.mu_helix, 
+                        qj=q, 
+                        r=C_distance_angstrom
                     )
                     deltaG_total += deltaG_C
                 
                 # 2. Get charged sidechain interactions using current charges
-                for idx2, AA2 in enumerate(self.seq_list):
-                    if idx2 <= idx1 or AA2 not in self.neg_charge_aa + self.pos_charge_aa:
-                        continue
+                # Only consider interactions with other charged sidechains
+                if AA1 in self.neg_charge_aa + self.pos_charge_aa:
+                    for idx2, AA2 in enumerate(self.seq_list):
+                        if idx2 <= idx1 or AA2 not in self.neg_charge_aa + self.pos_charge_aa:
+                            continue
 
-                    sidechain_distance_angstrom = self.charged_sidechain_distances_hel[idx1, idx2]
-                    if np.isnan(sidechain_distance_angstrom):
-                        raise ValueError(f"Sidechain distance is nan, this should not happen")
-                        
-                    # Use current ionization states to calculate deltaG, but only 
-                    if sidechain_distance_angstrom < 40:
-                        q1 = current_seq_ionization[idx1]
-                        q2 = current_seq_ionization[idx2]
-                        deltaG = self._electrostatic_interaction_energy(qi=q1, qj=q2, r=sidechain_distance_angstrom)
-                        deltaG_total += deltaG
+                        sidechain_distance_angstrom = self.charged_sidechain_distances_hel[idx1, idx2]
+                            
+                        # Use current ionization states to calculate deltaG, but only 
+                        if sidechain_distance_angstrom < 40:
+                            q1 = current_seq_ionization[idx1]
+                            q2 = current_seq_ionization[idx2]
+                            deltaG = self._electrostatic_interaction_energy(qi=q1, 
+                                                                            qj=q2, 
+                                                                            r=sidechain_distance_angstrom)
+                            deltaG_total += deltaG
                
                 # 3. Calculate new pKa relative to intrinsic value
                 if np.isnan(deltaG_total):
-                    raise ValueError(f"deltaG_total is nan, this should not happen")
+                    raise ValueError(f"deltaG_total is nan, this should not happen. There was probably a problem retrieving precomed distances or ionization states")
                 
-                pKa_intrinsic = self.seq_pka[idx1]
-                modified_seq_pka_hel[idx1] = adjust_pKa(self.T_kelvin, pKa_intrinsic, deltaG_total)
-                # print(f"Modified pKa: {modified_seq_pka[idx1]} (from intrinsic {pKa_intrinsic})")
-                
-                # Calculate new ionization state for this residue
-                if AA1 in self.neg_charge_aa:
+                # Calculate new pKa relative to intrinsic value
+                modified_pKa = adjust_pKa(T=self.T_kelvin, 
+                                          pKa_ref=pKa_intrinsic, 
+                                          deltaG=deltaG_total)
+
+                if AA1 == 'Nterm':
+                    if self.seq_list[0] == 'Sc':
+                        current_nterm_ionization = acidic_residue_ionization(
+                            pH=self.pH, 
+                            pKa=modified_pKa
+                        )
+                    else:
+                        current_nterm_ionization = basic_residue_ionization(
+                            pH=self.pH, 
+                            pKa=modified_pKa
+                        )
+                elif AA1 == 'Cterm':
+                    current_cterm_ionization = acidic_residue_ionization(
+                        pH=self.pH, 
+                        pKa=modified_pKa
+                    )
+                elif AA1 in self.neg_charge_aa:
                     current_seq_ionization[idx1] = acidic_residue_ionization(
-                        self.pH, modified_seq_pka_hel[idx1]
+                        pH=self.pH, 
+                        pKa=modified_pKa
                     )
-                else:  # AA1 in self.pos_charge_aa
+                elif AA1 in self.pos_charge_aa:
                     current_seq_ionization[idx1] = basic_residue_ionization(
-                        self.pH, modified_seq_pka_hel[idx1]
-                    )
-                # print(f"New ionization state: {current_seq_ionization[idx1]}")
-            
+                        pH=self.pH, 
+                        pKa=modified_pKa
+                    )               
+          
             # Filter out nan values for convergence check
-            valid_old = old_seq_ionization_hel[~np.isnan(old_seq_ionization_hel)]
-            valid_current = current_seq_ionization[~np.isnan(current_seq_ionization)]
+            valid_old = np.concatenate([old_seq_ionization_hel[~np.isnan(old_seq_ionization_hel)], 
+                                        [old_nterm_ionization],
+                                        [old_cterm_ionization]])
+            valid_current = np.concatenate([current_seq_ionization[~np.isnan(current_seq_ionization)], 
+                                             [current_nterm_ionization],
+                                             [current_cterm_ionization]])
+            
             if len(valid_old) > 0 and len(valid_current) > 0:
                 max_change = np.max(np.abs(valid_current - valid_old))
-                # print(f"\nIteration {iteration+1}: max change in ionization = {max_change:.6f}")
                 
                 # Check for convergence
                 if max_change < CONVERGENCE_THRESHOLD:
-                    # print(f"Converged after {iteration+1} iterations")
                     break
-            # else:
-            #     print(f"\nIteration {iteration+1}: No valid ionization states to compare")
+            else:
+                raise ValueError("No valid ionization states to compare")
         
         # Save final converged values for helical state
         self.modified_seq_ionization_hel = current_seq_ionization
@@ -759,6 +792,7 @@ class PrecomputeParams:
         self.show_pka_values()
         self.show_ionization_states()
         self.show_modified_ionization_states()
+        self.show_terminal_macrodipole_distances()
         self.show_sidechain_macrodipole_distances()
         self.show_charged_sidechain_distances()
 
@@ -887,7 +921,7 @@ class EnergyCalculator(PrecomputeParams):
         # Staple motif requires the N' residue before the Ncap, so the first residue of the helix cannot be the first residue of the peptide
         # This should be true regardless of whether there is an N-terminal modification or not
         energy = 0.0
-        if self.i == 0:
+        if self.ncap_idx == 0:
             return energy
 
         # The hydrophobic staple motif is only considered whenever the N-cap residue is Asn, Asp, Ser, Pro or Thr.
@@ -1058,27 +1092,19 @@ class EnergyCalculator(PrecomputeParams):
             if aa not in self.neg_charge_aa + self.pos_charge_aa:
                 continue
 
-            N_distance = self.sidechain_macrodipole_distances_nterm[idx]
-            C_distance = self.sidechain_macrodipole_distances_cterm[idx]
-            if N_distance is np.nan:
-                warnings.warn(f"N_distance for sidechain_macrodipole_distances_nterm is nan, presumably because it is greater than 13: {N_distance}")
-            if C_distance is np.nan:
-                warnings.warn(f"C_distance for sidechain_macrodipole_distances_cterm is nan, presumably because it is greater than 13: {C_distance}")
-
-            # Fetch the precomputed ionization state
-            q_sidechain = self.modified_seq_ionization_hel[idx]
-
             # N-terminal interaction
-            if not np.isnan(N_distance):
-                energy_N[idx] += self._electrostatic_interaction_energy(
-                    qi=self.mu_helix, qj=q_sidechain, r=N_distance
-                )
+            energy_N[idx] += self._electrostatic_interaction_energy(
+                qi=self.mu_helix, 
+                qj=self.modified_seq_ionization_hel[idx], 
+                r=self.sidechain_macrodipole_distances_nterm[idx]
+            )
 
             # C-terminal interaction
-            if not np.isnan(C_distance):
-                energy_C[idx] += self._electrostatic_interaction_energy(
-                    qi=-self.mu_helix, qj=q_sidechain, r=C_distance
-                )
+            energy_C[idx] += self._electrostatic_interaction_energy(
+                qi=-self.mu_helix, 
+                qj=self.modified_seq_ionization_hel[idx], 
+                r=self.sidechain_macrodipole_distances_cterm[idx]
+            )
 
         return energy_N, energy_C
         
@@ -1113,7 +1139,7 @@ class EnergyCalculator(PrecomputeParams):
             G_hel = self._electrostatic_interaction_energy(qi=q1_hel, qj=q2_hel, r=helix_dist)
             G_rc = self._electrostatic_interaction_energy(qi=q1_rc, qj=q2_rc, r=coil_dist)
 
-            # Store half the energy difference in both triangles of the matrix
+            # Store half the energy difference in both triangles of the matrix (give half of the energy to each sidechain)
             energy_diff = (G_hel - G_rc) / 2
             energy_matrix[idx1, idx2] = energy_diff  # Upper triangle
             energy_matrix[idx2, idx1] = energy_diff  # Lower triangle
