@@ -134,13 +134,16 @@ class AGADIR(object):
         self.min_helix_length = 6  # default from Lacroix 1998
         self.debug = False
 
-    def _print_debug_info(self, dG_N_term: np.ndarray, 
-                          dG_C_term: np.ndarray, 
+    def _print_debug_info(self, 
                           dG_nonH: np.ndarray, 
-                          dG_Int: np.ndarray, 
+                          dG_Int: np.ndarray,
+                          dG_terminals_dipole_N: np.ndarray, 
+                          dG_terminals_dipole_C: np.ndarray, 
                           dG_sidechain_dipole_N: np.ndarray, 
                           dG_sidechain_dipole_C: np.ndarray, 
                           dG_sidechain_dipole: np.ndarray, 
+                          dG_electrost_term_N: np.ndarray,
+                          dG_electrost_term_C: np.ndarray,
                           dG_electrost_sidechain: np.ndarray,
                           dG_SD: np.ndarray, 
                           dG_staple: float, 
@@ -154,13 +157,15 @@ class AGADIR(object):
         Print debug information for a helical segment.
 
         Args:
-            dG_N_term (np.ndarray): The free energy for the N-terminal capping residue.
-            dG_C_term (np.ndarray): The free energy for the C-terminal capping residue.
+            dG_terminals_dipole_N (np.ndarray): The free energy for the N-terminal capping residue.
+            dG_terminals_dipole_C (np.ndarray): The free energy for the C-terminal capping residue.
             dG_nonH (np.ndarray): The free energy for the non-hydrogen bond capping residues.
             dG_Int (np.ndarray): The intrinsic free energy for the helical segment.
             dG_sidechain_dipole_N (np.ndarray): The free energy for the N-terminal side chain dipole.
             dG_sidechain_dipole_C (np.ndarray): The free energy for the C-terminal side chain dipole.
             dG_sidechain_dipole (np.ndarray): The total free energy for the side chain dipoles.
+            dG_electrost_term_N (np.ndarray): The free energy for the electrostatic interactions between N-terminal charges and side chains.
+            dG_electrost_term_C (np.ndarray): The free energy for the electrostatic interactions between C-terminal charges and side chains.
             dG_electrost_sidechain (np.ndarray): The free energy for the electrostatic interactions between charged side chains.
             dG_SD (np.ndarray): The free energy for the side chain-side chain interactions.
             dG_staple (float): The free energy for the hydrophobic staple motif.
@@ -176,20 +181,20 @@ class AGADIR(object):
             print(f"Helix: start= {i+1} end= {i+j}  length=  {j}")
             print(f"residue index = {seq_idx+1}")
             print(f"residue = {self.result.seq_list[seq_idx]}")
-            print(f"g N term = {dG_N_term[seq_idx]:.4f}")
-            print(f"g C term = {dG_C_term[seq_idx]:.4f}")
+            print(f"g dipole terminal N = {dG_terminals_dipole_N[seq_idx]}")
+            print(f"g dipole terminal C = {dG_terminals_dipole_C[seq_idx]}")
             print(f"g capping =   {dG_nonH[seq_idx]:.4f}")
             print(f"g intrinsic = {dG_Int[seq_idx]:.4f}")
-            print(f"g dipole N = {dG_sidechain_dipole_N[seq_idx]:.4f}")
-            print(f"g dipole C = {dG_sidechain_dipole_C[seq_idx]:.4f}")
-            print(f"g dipole total = {dG_sidechain_dipole[seq_idx]:.4f}")
-            print(f"gresidue = {dG_N_term[seq_idx] + dG_C_term[seq_idx] + dG_nonH[seq_idx] + dG_Int[seq_idx] + dG_sidechain_dipole[seq_idx]:.4f}")
+            print(f"g dipole sidechain N = {dG_sidechain_dipole_N[seq_idx]:.4f}")
+            print(f"g dipole sidechain C = {dG_sidechain_dipole_C[seq_idx]:.4f}")
+            print(f"g dipole sidechain total = {dG_sidechain_dipole[seq_idx]:.4f}")
+            print(f"gresidue = {dG_terminals_dipole_N[seq_idx] + dG_terminals_dipole_C[seq_idx] + dG_nonH[seq_idx] + dG_Int[seq_idx] + dG_sidechain_dipole[seq_idx]:.4f}")
             print("****************")
         print("Additional terms for helical segment")
         print(f"i,i+3 and i,i+4 side chain-side chain interaction = {sum(dG_SD):.4f}")
         print(f"g staple = {dG_staple:.4f}")
         print(f"g schellman = {dG_schellman:.4f}")
-        print(f"dG_electrost = {np.sum(dG_electrost_sidechain):.4f}")
+        print(f"dG_electrost = {(np.sum(dG_electrost_sidechain) + np.sum(dG_electrost_term_N) + np.sum(dG_electrost_term_C)):.4f}")
         print(f"main chain-main chain H-bonds = {dG_Hbond:.4f}")
         print(f"ionic strngth corr. from eq. 12 {dG_ionic:.4f}")
         print(f"total Helix free energy = {dG_Hel:.4f}")
@@ -230,16 +235,15 @@ class AGADIR(object):
         dG_SD = dG_i3_tot + dG_i4_tot
 
         # get the interactions between N- and C-terminal backbone charges and the helix macrodipole
-        dG_N_term, dG_C_term = self.energy_calculator.get_dG_terminals_macrodipole()
+        dG_terminals_dipole_N, dG_terminals_dipole_C = self.energy_calculator.get_dG_terminals_macrodipole()
 
         # get the interaction between charged side chains and the helix macrodipole
         dG_sidechain_dipole_N, dG_sidechain_dipole_C = self.energy_calculator.get_dG_sidechain_macrodipole()
         dG_sidechain_dipole = dG_sidechain_dipole_N + dG_sidechain_dipole_C
 
         # get electrostatic energies between N- and C-terminal backbone charges and charged side chains
-        # TODO 
-        # dG_electrost_term_N, dG_electrost_term_C = self.energy_calculator.get_dG_terminals_sidechain_electrost()
-        # dG_electrost_term = dG_electrost_term_N + dG_electrost_term_C
+        dG_electrost_term_N, dG_electrost_term_C = self.energy_calculator.get_dG_terminals_sidechain_electrost()
+        dG_electrost_term = dG_electrost_term_N + dG_electrost_term_C
 
         # get electrostatic energies between pairs of charged side chains
         dG_electrost_sidechain = self.energy_calculator.get_dG_sidechain_sidechain_electrost()
@@ -258,29 +262,33 @@ class AGADIR(object):
             + dG_schellman
             + dG_Hbond
             + dG_ionic
-            + sum(dG_N_term)
-            + sum(dG_C_term)
-            + np.sum(dG_electrost_sidechain)
+            + sum(dG_terminals_dipole_N)
+            + sum(dG_terminals_dipole_C)
             + np.sum(dG_sidechain_dipole)
+            + np.sum(dG_electrost_term)
+            + np.sum(dG_electrost_sidechain)
         )
 
         if self.debug:
-            self._print_debug_info(dG_N_term, 
-                                dG_C_term, 
-                                dG_nonH, 
-                                dG_Int, 
-                                dG_sidechain_dipole_N, 
-                                dG_sidechain_dipole_C, 
-                                dG_sidechain_dipole, 
-                                dG_electrost_sidechain, 
-                                dG_SD, 
-                                dG_staple, 
-                                dG_schellman, 
-                                dG_Hbond, 
-                                dG_ionic, 
-                                dG_Hel, 
-                                i, 
-                                j)
+            self._print_debug_info(
+                                dG_nonH=dG_nonH, 
+                                dG_Int=dG_Int, 
+                                dG_terminals_dipole_N=dG_terminals_dipole_N, 
+                                dG_terminals_dipole_C=dG_terminals_dipole_C, 
+                                dG_sidechain_dipole_N=dG_sidechain_dipole_N, 
+                                dG_sidechain_dipole_C=dG_sidechain_dipole_C, 
+                                dG_sidechain_dipole=dG_sidechain_dipole, 
+                                dG_electrost_term_N=dG_electrost_term_N,
+                                dG_electrost_term_C=dG_electrost_term_C,
+                                dG_electrost_sidechain=dG_electrost_sidechain, 
+                                dG_SD=dG_SD, 
+                                dG_staple=dG_staple, 
+                                dG_schellman=dG_schellman, 
+                                dG_Hbond=dG_Hbond, 
+                                dG_ionic=dG_ionic, 
+                                dG_Hel=dG_Hel, 
+                                i=i, 
+                                j=j)
 
         return dG_Hel
 

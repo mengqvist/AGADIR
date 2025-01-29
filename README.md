@@ -1,6 +1,9 @@
-# α-helix probability model (AGADIR)
+# α-helix probability model (pyAGADIR)
 
 **This repository is a work in progress and currently does not produce correct predictions**
+
+
+## Model Description
 
 An open-source, Python implementation of Munoz & Serrano's AGADIR model of α-helix formation. This model uses statistical mechanics and energy parameters trained on a database of over 400 peptides to predict the α-helical tendency (probability) per residue for a given peptide (see references).
 
@@ -25,6 +28,8 @@ Name:      N'   Ncap  N1   N2   C2   C1   Ccap C'   C''
 Structure: STC  STC---He---He---He---He---STC  STC  STC  STC  STC  STC  STC  STC  STC  STC  STC
 Index:     0    1     2    3    4    5    6    7    8    9    10   11   12   13   14   15   16
 ```
+
+For predicting the helical propensity of a sequence, the model uses the partition function, which is the sum of the probabilities of all possible helix conformations of the sequence; the model iterates over all possible i, j pairs and calculates the partition function for each. The helical propensity is then the probability of the helical conformation divided by the partition function.
 
 
 ## Installation
@@ -81,7 +86,7 @@ The most simple way to use this package is to import and invoke the `AGADIR` mod
 ```python
 # Initialize model with custom parameters
 model = AGADIR(
-    method='1s',    # Method for partition function: 'r' (residue) or '1s' (one-sequence)
+    method='1s',   # Method for partition function: 'r' (residue) or '1s' (one-sequence)
     T=4.0,         # Temperature in Celsius
     M=0.15,        # Ionic strength in mol/L
     pH=7.0         # pH of solution
@@ -121,7 +126,7 @@ result = model.predict(segment, ncap='Ac', ccap='Am')  # Add caps to simulate in
 
 ### Energy Calculations
 
-For detailed analysis, you can use the `EnergyCalculator` class directly to examine specific energy contributions:
+For detailed analysis, you can use the `EnergyCalculator` class directly to examine specific energy contributions. This class is used internally by the `AGADIR` model to calculate the partition function, but can also be used to calculate the energy contributions for a given sequence. It is important to note that the `EnergyCalculator` class only calculates the energy contributions for a single helix segment (a single i, j pair for a given sequence), and does not calculate the partition function.
 
 ```python
 from pyagadir.energies import EnergyCalculator
@@ -133,36 +138,30 @@ calc = EnergyCalculator(
     T=4.0,  # Temperature in Celsius
     ionic_strength=0.15,  # Ionic strength in mol/L
     min_helix_length=6,  # Minimum helix length, default 6 as in the paper
-    has_acetyl=False,  # N-terminal acetylation 
-    has_succinyl=False,  # N-terminal succinylation
-    has_amide=False  # C-terminal amidation
+    ncap='Ac',  # N-terminal acetylation 
+    ccap='Am'  # C-terminal amidation
 )
 
-# Calculate specific energy components
-helix_start = 0  # starting position
-helix_length = 6 # length of helical segment
-
 # Basic helix energies
-intrinsic_energy = calc.get_dG_Int(helix_start, helix_length)  # Returns: np.ndarray
-hbond_energy = calc.get_dG_Hbond(helix_start, helix_length)    # Returns: float
+intrinsic_energy = calc.get_dG_Int()  # Returns: np.ndarray
+hbond_energy = calc.get_dG_Hbond()    # Returns: float
 
 # Capping energies
-ncap_energy = calc.get_dG_Ncap(helix_start, helix_length)      # Returns: np.ndarray
-ccap_energy = calc.get_dG_Ccap(helix_start, helix_length)      # Returns: np.ndarray
+ncap_energy = calc.get_dG_Ncap()      # Returns: np.ndarray
+ccap_energy = calc.get_dG_Ccap()      # Returns: np.ndarray
 
 # Special motif energies
-staple_energy = calc.get_dG_staple(helix_start, helix_length)    # Returns: float
-schellman_energy = calc.get_dG_schellman(helix_start, helix_length)  # Returns: float
+staple_energy = calc.get_dG_staple()    # Returns: float
+schellman_energy = calc.get_dG_schellman()  # Returns: float
 
 # Side chain interactions
-i3_interactions = calc.get_dG_i3(helix_start, helix_length)    # Returns: np.ndarray
-i4_interactions = calc.get_dG_i4(helix_start, helix_length)    # Returns: np.ndarray
+i3_interactions = calc.get_dG_i3()    # Returns: np.ndarray
+i4_interactions = calc.get_dG_i4()    # Returns: np.ndarray
 
 # Electrostatic and dipole interactions
-electrostatic = calc.get_dG_electrost(helix_start, helix_length)  # Returns: np.ndarray
-n_term_macro, c_term_macro = calc.get_dG_terminals_macrodipole(helix_start, helix_length)  # Returns: tuple[np.ndarray, np.ndarray]
-dipole_n, dipole_c = calc.get_dG_sidechain_macrodipole(helix_start, helix_length)  # Returns: tuple[np.ndarray, np.ndarray]
-```
+electrostatic = calc.get_dG_electrost()  # Returns: np.ndarray
+n_term_macro, c_term_macro = calc.get_dG_terminals_macrodipole()  # Returns: tuple[np.ndarray, np.ndarray]
+dipole_n, dipole_c = calc.get_dG_sidechain_macrodipole()  # Returns: tuple[np.ndarray, np.ndarray]
 
 Each energy term represents a different contribution to helix stability:
 - Intrinsic energies: Base propensities for each residue

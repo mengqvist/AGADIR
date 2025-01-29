@@ -209,10 +209,10 @@ class PrecomputeParams:
 
         # modified ionization states    
         self.modified_seq_ionization_hel = None
-        self.modified_seq_ionization_rc = None
         self.modified_nterm_ionization_hel = None
-        self.modified_nterm_ionization_rc = None
         self.modified_cterm_ionization_hel = None
+        self.modified_seq_ionization_rc = None
+        self.modified_nterm_ionization_rc = None
         self.modified_cterm_ionization_rc = None
 
         # for printing
@@ -225,9 +225,10 @@ class PrecomputeParams:
         # assign pKa values, distances, and ionization states
         self._assign_pka_values()
         self._assign_ionization_states()
-        self._assign_sidechain_macrodipole_distances()
         self._assign_terminal_macrodipole_distances()
-        self._assign_charged_sidechain_distances()
+        self._assign_sidechain_macrodipole_distances()
+        self._assign_terminal_sidechain_distances()
+        self._assign_sidechain_sidechain_distances()
         self._assign_modified_ionization_states()
 
     def _find_charged_pairs(self) -> list[tuple[str, int, int]]:
@@ -461,6 +462,39 @@ class PrecomputeParams:
         print(f'{"cterm:".ljust(self.category_pad)} {"".join([f"{d:.1f}".ljust(self.value_pad) for d in self.sidechain_macrodipole_distances_cterm])}')
         print("")
 
+    def _assign_terminal_sidechain_distances(self):
+        """
+        Assign the distance between the peptide terminal residues and the charged sidechains.
+        """
+        self.terminal_sidechain_distances_nterm = np.full(len(self.seq_list), np.nan)
+        self.terminal_sidechain_distances_cterm = np.full(len(self.seq_list), np.nan)
+
+        for idx, AA in enumerate(self.seq_list):
+            if AA not in self.neg_charge_aa + self.pos_charge_aa:
+                continue
+
+            n_residues_separation = idx
+            c_residues_separation = len(self.seq_list) - 1 - idx
+            
+            self.terminal_sidechain_distances_nterm[idx] = self._calculate_r(n_residues_separation) # TODO: This is overly simplistic, since it does not account for the helix boundary, need a better solution
+            self.terminal_sidechain_distances_cterm[idx] = self._calculate_r(c_residues_separation) # TODO: This is overly simplistic, since it does not account for the helix boundary, need a better solution
+
+    def get_terminal_sidechain_distances(self):
+        """
+        Get the distances for the peptide terminal residues and the charged sidechains.
+        """
+        return self.terminal_sidechain_distances_nterm, self.terminal_sidechain_distances_cterm
+    
+    def show_terminal_sidechain_distances(self):
+        """
+        Print out the distances for the peptide terminal residues and the charged sidechains in a nicely formatted way.
+        """
+        print(self._make_box("Terminal sidechain distances (Å)"))
+        print(f'{"sequence:".ljust(self.category_pad)} {"".join([aa.ljust(self.value_pad) for aa in self.seq_list])}')
+        print(f'{"nterm:".ljust(self.category_pad)} {"".join([f"{d:.1f}".ljust(self.value_pad) for d in self.terminal_sidechain_distances_nterm])}')
+        print(f'{"cterm:".ljust(self.category_pad)} {"".join([f"{d:.1f}".ljust(self.value_pad) for d in self.terminal_sidechain_distances_cterm])}')
+        print("")
+
     def _assign_terminal_macrodipole_distances(self):
         """
         Assign the distance between the peptide terminal residues and the helix macrodipole.
@@ -488,7 +522,7 @@ class PrecomputeParams:
         print(f'{"cterm:".ljust(self.category_pad)} {self.terminal_macrodipole_distance_cterm:.1f}')
         print("")
 
-    def _assign_charged_sidechain_distances(self):
+    def _assign_sidechain_sidechain_distances(self):
         """
         Assign the distance between two charged sidechains.
 
@@ -503,9 +537,9 @@ class PrecomputeParams:
         1. Both residues in helix: use table 6 helix distances
         2. Both residues in coil: use table 6 coil distances 
         3. One in helix, one in coil: combine distances through the helix boundary
-        Special case: Use HelixRest for Tyrosine pairs since they're missing from table
+        Special case: Use HelixRest for pairs containing Tyrosine and Cysteine since they're missing from table
         """
-        self.charged_sidechain_distances_hel = np.full((len(self.seq_list), len(self.seq_list)), np.nan)
+        self.sidechain_sidechain_distances_hel = np.full((len(self.seq_list), len(self.seq_list)), np.nan)
         self.charged_sidechain_distances_rc = np.full((len(self.seq_list), len(self.seq_list)), np.nan)
 
         ### Assign distances to coil state ###
@@ -538,20 +572,15 @@ class PrecomputeParams:
                     pair = AA1 + AA2
                     if ('Y' in pair) or ('C' in pair): # Handle Cysteine and Tyrosine special case
                         pair = 'HelixRest'
-                    try:
-                        distance_angstrom = self.table_6_helix_lacroix.loc[pair, distance_key]
-                    except (KeyError, ValueError):
-                        raise ValueError(f"Distance not found for pair {pair} at distance key {distance_key}")
+                    distance_angstrom = self.table_6_helix_lacroix.loc[pair, distance_key]
                 
                 # Both residues in coil part of a peptide that (at a different position) contains the helix
+                # TODO: this is only correct if both are in the coil on the same side of the helix, not if they are on either side
                 elif idx1 not in self.helix_indices and idx2 not in self.helix_indices:
                     pair = AA1 + AA2
                     if ('Y' in pair) or ('C' in pair): # Handle Cysteine and Tyrosine special case
                         pair = 'RcoilRest'
-                    try:
                         distance_angstrom = self.table_6_coil_lacroix.loc[pair, distance_key]
-                    except (KeyError, ValueError):
-                        raise ValueError(f"Distance not found for pair {pair} at distance key {distance_key}")
                 
                 # One residue in helix, one in coil
                 else:
@@ -581,23 +610,23 @@ class PrecomputeParams:
                         
                     distance_angstrom = d_coil + d_helix
                 
-            self.charged_sidechain_distances_hel[idx1, idx2] = distance_angstrom
-            self.charged_sidechain_distances_hel[idx2, idx1] = distance_angstrom
+            self.sidechain_sidechain_distances_hel[idx1, idx2] = distance_angstrom
+            self.sidechain_sidechain_distances_hel[idx2, idx1] = distance_angstrom
 
-    def get_charged_sidechain_distances(self):
+    def get_sidechain_sidechain_distances(self):
         """
         Get the charged sidechain distances for the sequence, both for helical and random-coil states.
         """
-        return self.charged_sidechain_distances_hel, self.charged_sidechain_distances_rc
+        return self.sidechain_sidechain_distances_hel, self.charged_sidechain_distances_rc
 
-    def show_charged_sidechain_distances(self):
+    def show_sidechain_sidechain_distances(self):
         """
         Print out the charged sidechain distances for the sequence in a nicely formatted way.
         """
         print(self._make_box("Charged sidechain distances, helix (Å)"))
         print(f'{"".ljust(self.category_pad)}{"".join([aa.ljust(self.value_pad) for aa in self.seq_list])}')
         for i in range(len(self.seq_list)):
-            print(f'{self.seq_list[i].ljust(self.category_pad)}{"".join([f"{d:.1f}".ljust(self.value_pad) for d in self.charged_sidechain_distances_hel[i]])}')
+            print(f'{self.seq_list[i].ljust(self.category_pad)}{"".join([f"{d:.1f}".ljust(self.value_pad) for d in self.sidechain_sidechain_distances_hel[i]])}')
         print("")
 
         print(self._make_box("Charged sidechain distances, coil (Å)"))
@@ -631,7 +660,7 @@ class PrecomputeParams:
             old_cterm_ionization = copy.copy(current_cterm_ionization)
 
             # For each residue
-            for idx1, AA1 in list(enumerate(self.seq_list)) + [(None, 'Nterm'), (None, 'Cterm')]:
+            for idx1, AA1 in list(enumerate(self.seq_list)) + [(-1, 'Nterm'), (len(self.seq_list), 'Cterm')]:
                 deltaG_total = 0.0
 
                 # 1. Get helix macrodipole contribution to the free energy using current charge
@@ -641,7 +670,7 @@ class PrecomputeParams:
                         continue
                     N_distance_angstrom = self.terminal_macrodipole_distance_nterm
                     C_distance_angstrom = 99
-                    q = current_nterm_ionization
+                    q1 = current_nterm_ionization
                     pKa_intrinsic = self.nterm_pka
 
                 elif AA1 == 'Cterm':
@@ -649,13 +678,13 @@ class PrecomputeParams:
                         continue
                     N_distance_angstrom = 99
                     C_distance_angstrom = self.terminal_macrodipole_distance_cterm
-                    q = current_cterm_ionization
+                    q1 = current_cterm_ionization
                     pKa_intrinsic = self.cterm_pka
 
                 elif AA1 in self.neg_charge_aa + self.pos_charge_aa:     
                     N_distance_angstrom = self.sidechain_macrodipole_distances_nterm[idx1]
                     C_distance_angstrom = self.sidechain_macrodipole_distances_cterm[idx1]
-                    q = current_seq_ionization[idx1]
+                    q1 = current_seq_ionization[idx1]
                     pKa_intrinsic = self.seq_pka[idx1]
 
                 else:
@@ -665,7 +694,7 @@ class PrecomputeParams:
                 if N_distance_angstrom < 40:
                     deltaG_N = self._electrostatic_interaction_energy(
                         qi=self.mu_helix, 
-                        qj=q, 
+                        qj=q1, 
                         r=N_distance_angstrom
                     )
                     deltaG_total += deltaG_N
@@ -674,28 +703,36 @@ class PrecomputeParams:
                 if C_distance_angstrom < 40:
                     deltaG_C = self._electrostatic_interaction_energy(
                         qi=-self.mu_helix, 
-                        qj=q, 
+                        qj=q1, 
                         r=C_distance_angstrom
                     )
                     deltaG_total += deltaG_C
                 
                 # 2. Get charged sidechain interactions using current charges
                 # Only consider interactions with other charged sidechains
-                if AA1 in self.neg_charge_aa + self.pos_charge_aa:
-                    for idx2, AA2 in enumerate(self.seq_list):
-                        if idx2 <= idx1 or AA2 not in self.neg_charge_aa + self.pos_charge_aa:
-                            continue
+                for idx2, AA2 in list(enumerate(self.seq_list)) + [(-1, 'Nterm'), (len(self.seq_list), 'Cterm')]:
+                    if idx2 <= idx1 or AA2 not in self.neg_charge_aa + self.pos_charge_aa + ['Nterm', 'Cterm']:
+                        continue
 
-                        sidechain_distance_angstrom = self.charged_sidechain_distances_hel[idx1, idx2]
-                            
-                        # Use current ionization states to calculate deltaG, but only 
-                        if sidechain_distance_angstrom < 40:
-                            q1 = current_seq_ionization[idx1]
-                            q2 = current_seq_ionization[idx2]
-                            deltaG = self._electrostatic_interaction_energy(qi=q1, 
-                                                                            qj=q2, 
-                                                                            r=sidechain_distance_angstrom)
-                            deltaG_total += deltaG
+                    if AA1 == 'Nterm' and AA2 == 'Cterm':
+                        sidechain_distance_angstrom = 99
+                        q2 = current_cterm_ionization
+                    elif AA1 == 'Nterm' and AA2 in self.neg_charge_aa + self.pos_charge_aa:
+                        sidechain_distance_angstrom = self.terminal_sidechain_distances_nterm[idx2]
+                        q2 = current_seq_ionization[idx2]
+                    elif AA1 in self.neg_charge_aa + self.pos_charge_aa and AA2 == 'Cterm':
+                        sidechain_distance_angstrom = self.terminal_sidechain_distances_cterm[idx1]
+                        q2 = current_cterm_ionization
+                    else:
+                        sidechain_distance_angstrom = self.sidechain_sidechain_distances_hel[idx1, idx2]
+                        q2 = current_seq_ionization[idx2]
+                        
+                    # Use current ionization states to calculate deltaG, but only 
+                    if sidechain_distance_angstrom < 40:
+                        deltaG = self._electrostatic_interaction_energy(qi=q1, 
+                                                                        qj=q2, 
+                                                                        r=sidechain_distance_angstrom)
+                        deltaG_total += deltaG
                
                 # 3. Calculate new pKa relative to intrinsic value
                 if np.isnan(deltaG_total):
@@ -794,7 +831,8 @@ class PrecomputeParams:
         self.show_modified_ionization_states()
         self.show_terminal_macrodipole_distances()
         self.show_sidechain_macrodipole_distances()
-        self.show_charged_sidechain_distances()
+        self.show_terminal_sidechain_distances()
+        self.show_sidechain_sidechain_distances()
 
 
 class EnergyCalculator(PrecomputeParams):
@@ -1048,6 +1086,7 @@ class EnergyCalculator(PrecomputeParams):
     def get_dG_terminals_macrodipole(self) -> tuple[np.ndarray, np.ndarray]:
         """
         Calculate interaction energies between N- and C-terminal backbone charges and the helix macrodipole.
+        The energy is added to the residue carrying the macrodipole charge.
 
         Returns:
             tuple[np.ndarray, np.ndarray]: Interaction energies for N-terminal and C-terminal residues.
@@ -1056,16 +1095,16 @@ class EnergyCalculator(PrecomputeParams):
         C_term = np.zeros(len(self.seq_list))
 
         # Calculate the interaction energy between the N-terminal and the helix macrodipole
-        N_term[0] = self._electrostatic_interaction_energy(
+        N_term[self.ncap_idx] = self._electrostatic_interaction_energy(
             qi=self.mu_helix,
-            qj=self.nterm_ionization,
+            qj=self.modified_nterm_ionization_hel,
             r=self.terminal_macrodipole_distance_nterm
         )
 
         # Calculate the interaction energy between the C-terminal and the helix macrodipole
-        C_term[-1] = self._electrostatic_interaction_energy(
+        C_term[self.ccap_idx] = self._electrostatic_interaction_energy(
             qi=-self.mu_helix,
-            qj=self.cterm_ionization,
+            qj=self.modified_cterm_ionization_hel,
             r=self.terminal_macrodipole_distance_cterm
         )
 
@@ -1076,7 +1115,8 @@ class EnergyCalculator(PrecomputeParams):
         Calculate the interaction energy between charged side-chains and the helix macrodipole.
         The helix macrodipole is positively charged at the N-terminus and negatively charged at the C-terminus.
         The interaction could be either with side chains inside the helix or outside the helix.
-        The energy should be unaffected by N- and C-terminal modifications except for changing which residues are part of the helix.
+        The energy should be unaffected by N- and C-terminal modifications except for changing which 
+        residues are part of the helix. The energy is added to the residue carrying the macrodipole charge.
 
         Returns:
             tuple[np.ndarray, np.ndarray]: The free energy contribution for each residue in the helix, 
@@ -1093,14 +1133,14 @@ class EnergyCalculator(PrecomputeParams):
                 continue
 
             # N-terminal interaction
-            energy_N[idx] += self._electrostatic_interaction_energy(
+            energy_N[self.ncap_idx] += self._electrostatic_interaction_energy(
                 qi=self.mu_helix, 
                 qj=self.modified_seq_ionization_hel[idx], 
                 r=self.sidechain_macrodipole_distances_nterm[idx]
             )
 
             # C-terminal interaction
-            energy_C[idx] += self._electrostatic_interaction_energy(
+            energy_C[self.ccap_idx] += self._electrostatic_interaction_energy(
                 qi=-self.mu_helix, 
                 qj=self.modified_seq_ionization_hel[idx], 
                 r=self.sidechain_macrodipole_distances_cterm[idx]
@@ -1108,10 +1148,55 @@ class EnergyCalculator(PrecomputeParams):
 
         return energy_N, energy_C
         
+    def get_dG_terminals_sidechain_electrost(self) -> tuple[np.ndarray, np.ndarray]:
+        """
+        Calculate electrostatic interaction energies between terminal backbone charges
+        and charged sidechains in the sequence. The energy is added to the charged sidechain residue.
+
+        Returns:
+            tuple[np.ndarray, np.ndarray]: Arrays containing the interaction energies for 
+            N-terminal and C-terminal interactions respectively. The energy is added
+            to the charged sidechain residue.
+        """
+        energy_N = np.zeros(len(self.seq_list))
+        energy_C = np.zeros(len(self.seq_list))
+        
+        # Skip if terminals are uncharged
+        if self.seq_list[0] == 'Ac' and self.seq_list[-1] == "Am":
+            return energy_N, energy_C
+        
+        # Iterate through sequence checking for charged sidechains
+        for idx, AA1 in enumerate(self.seq_list):
+            if AA1 not in self.neg_charge_aa + self.pos_charge_aa:
+                continue
+                
+            # Get distance from N-terminal to this residue
+            n_distance = self.terminal_sidechain_distances_nterm[idx]
+            
+            # Get distance from C-terminal to this residue  
+            c_distance = self.terminal_sidechain_distances_cterm[idx]
+
+            # N-terminal interaction
+            energy_N[idx] = self._electrostatic_interaction_energy(
+                qi=self.modified_nterm_ionization_hel,
+                qj=self.modified_seq_ionization_hel[idx],
+                r=n_distance
+            )
+                
+            # C-terminal interaction
+            energy_C[idx] = self._electrostatic_interaction_energy(
+                qi=self.modified_cterm_ionization_hel,
+                qj=self.modified_seq_ionization_hel[idx],
+                r=c_distance
+            )
+
+        return energy_N, energy_C
+
     def get_dG_sidechain_sidechain_electrost(self) -> np.ndarray:
         """
         Calculate the electrostatic free energy contribution for charged residue sidechains
         inside and outside the helical segment, using Lacroix et al. (1998) equations.
+        Half of the energy is added to each of the charged sidechain residues.
 
         Returns:
             np.ndarray: n x n symmetric matrix of pairwise electrostatic free energy contributions,
@@ -1126,7 +1211,7 @@ class EnergyCalculator(PrecomputeParams):
                 continue
 
             # Get the distances between the charged sidechains
-            helix_dist = self.charged_sidechain_distances_hel[idx1, idx2]
+            helix_dist = self.sidechain_sidechain_distances_hel[idx1, idx2]
             coil_dist = self.charged_sidechain_distances_rc[idx2, idx1]
                 
             # Get the ionization states of the charged sidechains

@@ -231,25 +231,25 @@ def test_assign_terminal_macrodipole_distances(precompute_instance):
     instance1, instance2, instance3, instance4 = precompute_instance
 
     # Verify terminal distances are calculated
-    assert instance1.terminal_macrodipole_distances_nterm is not None
-    assert instance1.terminal_macrodipole_distances_cterm is not None
-    assert np.isclose(instance1.terminal_macrodipole_distances_nterm, 2.1, atol=0.001)
-    assert np.isclose(instance1.terminal_macrodipole_distances_cterm, 2.1, atol=0.001)
+    assert instance1.terminal_macrodipole_distance_nterm is not None
+    assert instance1.terminal_macrodipole_distance_cterm is not None
+    assert np.isclose(instance1.terminal_macrodipole_distance_nterm, 2.1, atol=0.001)
+    assert np.isclose(instance1.terminal_macrodipole_distance_cterm, 2.1, atol=0.001)
 
-    assert instance2.terminal_macrodipole_distances_nterm is not None
-    assert instance2.terminal_macrodipole_distances_cterm is not None
-    assert np.isclose(instance2.terminal_macrodipole_distances_nterm, 2.1, atol=0.001)
-    assert np.isclose(instance2.terminal_macrodipole_distances_cterm, 2.1, atol=0.001)
+    assert instance2.terminal_macrodipole_distance_nterm is not None
+    assert instance2.terminal_macrodipole_distance_cterm is not None
+    assert np.isclose(instance2.terminal_macrodipole_distance_nterm, 2.1, atol=0.001)
+    assert np.isclose(instance2.terminal_macrodipole_distance_cterm, 2.1, atol=0.001)
 
-    assert instance3.terminal_macrodipole_distances_nterm is not None
-    assert instance3.terminal_macrodipole_distances_cterm is not None
-    assert np.isclose(instance3.terminal_macrodipole_distances_nterm, 6.1, atol=0.001)
-    assert np.isclose(instance3.terminal_macrodipole_distances_cterm, 6.1, atol=0.001)
+    assert instance3.terminal_macrodipole_distance_nterm is not None
+    assert instance3.terminal_macrodipole_distance_cterm is not None
+    assert np.isclose(instance3.terminal_macrodipole_distance_nterm, 6.1, atol=0.001)
+    assert np.isclose(instance3.terminal_macrodipole_distance_cterm, 6.1, atol=0.001)
 
-    assert instance4.terminal_macrodipole_distances_nterm is not None
-    assert instance4.terminal_macrodipole_distances_cterm is not None
-    assert np.isclose(instance4.terminal_macrodipole_distances_nterm, 6.1, atol=0.001)
-    assert np.isclose(instance4.terminal_macrodipole_distances_cterm, 6.1, atol=0.001)
+    assert instance4.terminal_macrodipole_distance_nterm is not None
+    assert instance4.terminal_macrodipole_distance_cterm is not None
+    assert np.isclose(instance4.terminal_macrodipole_distance_nterm, 6.1, atol=0.001)
+    assert np.isclose(instance4.terminal_macrodipole_distance_cterm, 6.1, atol=0.001)
 
 # def test_assign_charged_sidechain_distances(precompute_instance):
 #     """Test the _assign_charged_sidechain_distances method."""

@@ -176,11 +176,11 @@ def reproduce_figure_4(method="1s"):
 
 def predict(method="1s"):
     agadir = AGADIR(method=method, pH=4.0, M=0.05, T=0.0)
-    result = agadir.predict("YGGSAAAAAAAKRAAA", ncap='Ac', ccap='Am', debug=True)
+    result = agadir.predict("YGGSAAAAAAAKRAAA", ncap=None, ccap='Am', debug=True)
     print(result.get_percent_helix())
 
 if __name__ == "__main__":
     method = "1s"
     reproduce_figure_3b(method=method)
     reproduce_figure_4(method=method)
-    # predict(method=method)
+    # predict(method=method) # I typically direct the output from this funcion to a file: python validation.py > output.txt
