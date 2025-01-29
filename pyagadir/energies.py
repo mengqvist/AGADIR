@@ -203,8 +203,8 @@ class PrecomputeParams:
         self.nterm_ionization = None
         self.cterm_ionization = None
 
-        self.terminal_macrodipole_distances_nterm = None
-        self.terminal_macrodipole_distances_cterm = None
+        self.terminal_macrodipole_distance_nterm = None
+        self.terminal_macrodipole_distance_cterm = None
 
         # modified ionization states    
         self.modified_seq_ionization_hel = None
@@ -464,8 +464,8 @@ class PrecomputeParams:
         """
         Assign the distance between the peptide terminal residues and the helix macrodipole.
         """
-        self.terminal_macrodipole_distances_nterm = self._calculate_r(self.ncap_idx)
-        self.terminal_macrodipole_distances_cterm = self._calculate_r(len(self.seq_list) - 1 - self.ccap_idx)
+        self.terminal_macrodipole_distance_nterm = self._calculate_r(self.ncap_idx)
+        self.terminal_macrodipole_distance_cterm = self._calculate_r(len(self.seq_list) - 1 - self.ccap_idx)
 
     def get_terminal_macrodipole_distances(self) -> tuple[float, float]:
         """
@@ -476,15 +476,15 @@ class PrecomputeParams:
         Returns:
             tuple[float, float]: Distances between the peptide N-terminal and C-terminal residues and the helix macrodipole
         """
-        return self.terminal_macrodipole_distances_nterm, self.terminal_macrodipole_distances_cterm
+        return self.terminal_macrodipole_distance_nterm, self.terminal_macrodipole_distance_cterm
     
     def show_terminal_macrodipole_distances(self):
         """
         Print out the distances for the peptide terminal residues and the helix macrodipole in a nicely formatted way.
         """
         print(self._make_box("Terminal macrodipole distances (Å)"))
-        print(f'{"nterm:".ljust(self.category_pad)} {self.terminal_macrodipole_distances_nterm:.1f}')
-        print(f'{"cterm:".ljust(self.category_pad)} {self.terminal_macrodipole_distances_cterm:.1f}')
+        print(f'{"nterm:".ljust(self.category_pad)} {self.terminal_macrodipole_distance_nterm:.1f}')
+        print(f'{"cterm:".ljust(self.category_pad)} {self.terminal_macrodipole_distance_cterm:.1f}')
         print("")
 
     def _assign_charged_sidechain_distances(self):
@@ -782,47 +782,6 @@ class EnergyCalculator(PrecomputeParams):
             ccap (str): C-terminal capping modification (amidation='Am').
         """
         super().__init__(seq, i, j, pH, T, ionic_strength, ncap, ccap)
-
-    def _calculate_terminal_energy(self,
-                distance_r_angstrom: float, pKa_ref: float, residue_type: str, terminal: str
-            ) -> float:
-        """
-        Calculate interaction energy for terminal residues with the helix dipole.
-
-        Args:
-            distance_r_angstrom (float): Distance from terminal to helix.
-            pKa_ref (float): Reference pKa value.
-            residue_type (str): 'acidic' or 'basic'.
-            terminal (str): 'N' or 'C'.
-
-        Returns:
-            float: The calculated terminal energy.
-        """
-        # Convert distance to meters and compute screening factor
-        distance_r_meter = distance_r_angstrom * 1e-10
-        screening_factor = math.exp(-self.kappa * distance_r_meter)
-
-        # Calculate terminal interaction energy
-        # In the form of equation (10.62) from DOI 10.1007/978-1-4419-6351-2_10
-        B_kappa = 332.0  # in kcal Å / (mol e^2)
-        coloumb_potential = self.mu_helix / (self.epsilon_r * distance_r_angstrom)
-        energy = B_kappa * screening_factor * coloumb_potential
-
-        # Adjust ionization state using precomputed pKa
-        if residue_type == "basic":
-            q = basic_residue_ionization(self.pH, pKa_ref)
-        elif residue_type == "acidic":
-            q = acidic_residue_ionization(self.pH, pKa_ref)
-        else:
-            raise ValueError(f"Invalid residue type: {residue_type}")
-
-        # Adjust energy by ionization state
-        if terminal == "C":
-            interaction_energy = -energy * q  # C-terminal macrodipole is negative
-        else:
-            interaction_energy = energy * q  # N-terminal macrodipole is positive
-
-        return interaction_energy
     
     def get_dG_Int(self) -> np.ndarray:
         """
@@ -861,7 +820,7 @@ class EnergyCalculator(PrecomputeParams):
                 # Charged residues: use precomputed ionization state and balance energy based on ionization state
                 # If they are completely ionized, use base value, if they are completely neutral, use Neutral, 
                 # if they are partially ionized, use a weighted average of base value and Neutral
-                q = self.modified_seq_ionization_hel[idx]
+                q = abs(self.modified_seq_ionization_hel[idx]) # abs because I only want to kno the fraction ionized, I don't care about the sign
                 basic_energy = energy[idx]
                 basic_energy_neutral = self.table_1_lacroix.loc[AA, "Neutral"]
                 energy[idx] = q * basic_energy + (1 - q) * basic_energy_neutral
@@ -1061,31 +1020,20 @@ class EnergyCalculator(PrecomputeParams):
         """
         N_term = np.zeros(len(self.seq_list))
         C_term = np.zeros(len(self.seq_list))
-        distance_r_N = self.terminal_macrodipole_distances_nterm
-        distance_r_C = self.terminal_macrodipole_distances_cterm
 
-        # N-terminal calculation, not capped by acetyl nor succinyl, so it is positively charged
-        if not self.seq_list[0] in ["Ac", "Sc"]:
-            N_term_energy = self._calculate_terminal_energy(
-                distance_r_N, self.nterm_pka, "basic", terminal="N"
-            )
-            N_term[0] = N_term_energy
-            
-        # N-terminal calculation, here we account for the negative charge of succinyl, 
-        # which is a special case since the N-terminal is normally positively charged
-        # and CAN interact with the helix macrodipole (page 177 in Lacroix, 1998)
-        elif self.seq_list[0] == "Sc": 
-            N_term_energy = self._calculate_terminal_energy(
-                distance_r_N, self.nterm_pka, "acidic", terminal="N"
-            )
-            N_term[0] = N_term_energy
+        # Calculate the interaction energy between the N-terminal and the helix macrodipole
+        N_term[0] = self._electrostatic_interaction_energy(
+            qi=self.mu_helix,
+            qj=self.nterm_ionization,
+            r=self.terminal_macrodipole_distance_nterm
+        )
 
-        # C-terminal calculation, only if not capped by amidation
-        if not self.seq_list[-1] == "Am":
-            C_term_energy = self._calculate_terminal_energy(
-                distance_r_C, self.cterm_pka, "acidic", terminal="C"
-            )
-            C_term[-1] = C_term_energy
+        # Calculate the interaction energy between the C-terminal and the helix macrodipole
+        C_term[-1] = self._electrostatic_interaction_energy(
+            qi=-self.mu_helix,
+            qj=self.cterm_ionization,
+            r=self.terminal_macrodipole_distance_cterm
+        )
 
         return N_term, C_term
 
