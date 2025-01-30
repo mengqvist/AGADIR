@@ -194,6 +194,12 @@ Below is a validation plot for Figure 4 with reference data extracted from the o
 
 <img src="pyagadir/data/figures/lacroix_figure_4.png" width="800" alt="Figure 4 Validation">
 
+Below is a validation plot for Figure 1A and 1B from Huygues-Despointes et al. (1995), showing peptides with Asp at different positions, at two pH values:
+
+<img src="pyagadir/data/figures/huygues_despointes_figure_1a.png" width="800" alt="Figure 1A Validation">
+
+
+
 ## Questions / To Do
 * Based on the validation plots, the model generally shows the correct trend, but some of the pH-dependent electrostatic energies look like they need work.
 * How to make ionization state consistent between the different energy terms?

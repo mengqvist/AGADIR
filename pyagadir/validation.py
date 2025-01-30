@@ -89,6 +89,64 @@ def plot_ph_helix_content(paper_measured_data_ph, paper_measured_data_helix,
     
     return fig, ax
 
+def plot_peptides_helix_content(paper_measured_data_helix,
+                                pyagadir_predicted_data_helix, 
+                                xvals, 
+                                title,
+                                xlabel,
+                                ncap, 
+                                ccap,
+                                ax=None, 
+                                fig=None):
+    """Create a plot of the helix content of a list of peptides at a given pH.
+    
+    Args:
+        paper_measured_data_helix: List of helix content values from paper measurements
+        pyagadir_predicted_data_helix: List of helix content values from PyAGADIR
+        xvals: List of x-values for the plot
+        title: Title of the plot
+        xlabel: Label of the x-axis
+        ncap: N-terminal capping
+        ccap: C-terminal capping
+        ax: Optional matplotlib axis to plot on. If None, creates new figure.
+        fig: Optional matplotlib figure to plot on. If None, creates new figure.
+
+    Returns:
+        matplotlib axis with the plot
+    """
+    if ax is None:
+        fig, ax = plt.subplots()
+        
+    ax.plot(
+        xvals,
+        paper_measured_data_helix,
+        "o",
+        color="black", 
+        markersize=5,
+        label="Paper measured",
+    )
+    ax.plot(
+        xvals,
+        pyagadir_predicted_data_helix,
+        "o",
+        color="orange",
+        markeredgecolor="black",
+        markeredgewidth=1,
+        markersize=5,
+        label="PyAGADIR",
+    )
+
+    # Configure plot
+    ax.set_xlim(min(xvals)-0.5, max(xvals)+0.5)
+    ax.set_ylim(0, 65)
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel("Helix content (%)")
+    ax.legend()
+    ax.set_title(title, fontsize=12)
+    
+    return fig, ax
+
+
 def reproduce_lacroix_figure_3b(method="1s"):
     """
     Reproduce figure 3b from the Lacroix et al. (1998) AGADIR paper.
@@ -175,6 +233,60 @@ def reproduce_lacroix_figure_4(method="1s"):
     fig.savefig(figures_dir / "lacroix_figure_4.png", dpi=300, bbox_inches='tight')
     plt.close(fig)
 
+def reproduce_huygues_despointes_figure_1(method="1s"):
+    """
+    Reproduce Figure 1A and 1B from the Huygues-Despointes et al. (1993) paper.
+    https://onlinelibrary.wiley.com/doi/10.1002/pro.5560021006
+    """
+        # Get paths
+    data_dir = get_package_data_dir()
+    validation_file = data_dir / 'validation' / 'huygues_despointes_figure_1_data.json'
+    figures_dir = ensure_figures_dir()
+
+    # Load validation data
+    with open(validation_file, "r") as f:
+        data = json.load(f)
+
+    # Create figure
+    fig, axs = plt.subplots(1, 2, figsize=(10, 4))
+    
+    # Adjust spacing between subplots
+    plt.subplots_adjust(hspace=0.4, wspace=0.3)
+
+    # Plot each figure
+    fig_data = data["figure1ab"]
+    for ph, ax in zip([2, 7], axs.flatten()):
+        
+        peptides = fig_data["peptides"]
+        xvals = fig_data["asp_pos"]
+        ncap = fig_data["ncap"]
+        ccap = fig_data["ccap"]
+        paper_measured_data = [val * 100 for val in fig_data["measured_ph_" + str(ph)]]
+
+        pyagadir_predicted_data_helix = []
+        for pept in peptides:
+            model = AGADIR(method=method, T=0.0, M=0.01, pH=ph)
+            result = model.predict(pept, ncap=ncap, ccap=ccap)
+            pyagadir_predicted_data_helix.append(result.get_percent_helix())
+            
+        title = "Peptides at pH " + str(ph)
+        xlabel = "Asp position"
+        _, ax = plot_peptides_helix_content(paper_measured_data,
+                                            pyagadir_predicted_data_helix, 
+                                            xvals,
+                                            title,
+                                            xlabel,
+                                            ncap, 
+                                            ccap,
+                                            ax=ax)
+
+
+    fig.savefig(figures_dir / "huygues_despointes_figure_1a.png", dpi=300, bbox_inches='tight')
+    plt.close(fig)
+
+
+
+
 def predict(method="1s"):
     agadir = AGADIR(method=method, pH=4.0, M=0.05, T=0.0)
     result = agadir.predict("YGGSAAAAAAAKRAAA", ncap=None, ccap='Am', debug=True)
@@ -184,4 +296,5 @@ if __name__ == "__main__":
     method = "1s"
     reproduce_lacroix_figure_3b(method=method)
     reproduce_lacroix_figure_4(method=method)
+    reproduce_huygues_despointes_figure_1(method=method)
     # predict(method=method) # I typically direct the output from this funcion to a file: python validation.py > output.txt
