@@ -137,8 +137,9 @@ def plot_peptides_helix_content(paper_measured_data_helix,
     )
 
     # Configure plot
-    ax.set_xlim(min(xvals)-0.5, max(xvals)+0.5)
-    ax.set_ylim(0, 65)
+    xval_range = max(xvals)-min(xvals)
+    ax.set_xlim(min(xvals)-0.1*xval_range, max(xvals)+0.1*xval_range)
+    ax.set_ylim(0, max(paper_measured_data_helix) + 10)
     ax.set_xlabel(xlabel)
     ax.set_ylabel("Helix content (%)")
     ax.legend()
@@ -185,6 +186,7 @@ def reproduce_lacroix_figure_3b(method="1s"):
     # Save figure
     fig.savefig(figures_dir / "lacroix_figure_3b.png", dpi=300, bbox_inches='tight')
     plt.close(fig)
+
 
 def reproduce_lacroix_figure_4(method="1s"):
     """
@@ -233,9 +235,11 @@ def reproduce_lacroix_figure_4(method="1s"):
     fig.savefig(figures_dir / "lacroix_figure_4.png", dpi=300, bbox_inches='tight')
     plt.close(fig)
 
+
 def reproduce_huygues_despointes_figure_1(method="1s"):
     """
     Reproduce Figure 1A and 1B from the Huygues-Despointes et al. (1993) paper.
+    10 mM NaCl, 0.0 C
     https://onlinelibrary.wiley.com/doi/10.1002/pro.5560021006
     """
         # Get paths
@@ -285,6 +289,56 @@ def reproduce_huygues_despointes_figure_1(method="1s"):
     plt.close(fig)
 
 
+def reproduce_munoz_1997_figure_4(method="1s"):
+    """
+    Reproduce Figure 4 from the Munoz et al. (1997) paper.
+    Original values from Scholtz et al. (1991) and Rohl et al. (1992).
+    https://doi.org/10.1002/(SICI)1097-0282(19970415)41:5%3C495::AID-BIP2%3E3.0.CO;2-H
+    """
+        # Get paths
+    data_dir = get_package_data_dir()
+    validation_file = data_dir / 'validation' / 'munoz_1997_figure_4_data.json'
+    figures_dir = ensure_figures_dir()
+
+    # Load validation data
+    with open(validation_file, "r") as f:
+        data = json.load(f)
+
+    # Create figure
+    fig, axs = plt.subplots(3, 1, figsize=(4, 12))
+    
+    # Adjust spacing between subplots
+    plt.subplots_adjust(hspace=0.4, wspace=0.3)
+
+    # Plot each figure
+    for figname, repeat, ax in zip(data.keys(), ['AAQAA', 'AAKAA', 'AEAAKA'], axs.flatten()):
+        fig_data = data[figname]
+        peptides = fig_data["peptides"]
+        xvals = [len(pept) for pept in peptides]
+        ncap = fig_data["ncap"]
+        ccap = fig_data["ccap"]
+        paper_measured_data = fig_data["helicity"]
+
+        pyagadir_predicted_data_helix = []
+        for pept in peptides:
+            model = AGADIR(method=method, T=0.0, M=0.1, pH=7.0)
+            result = model.predict(pept, ncap=ncap, ccap=ccap)
+            pyagadir_predicted_data_helix.append(result.get_percent_helix())
+            
+        title = f'{ncap}-Y[{repeat}](n)F-{ccap}'
+        xlabel = "Peptide length"
+        _, ax = plot_peptides_helix_content(paper_measured_data,
+                                            pyagadir_predicted_data_helix, 
+                                            xvals,
+                                            title,
+                                            xlabel,
+                                            ncap, 
+                                            ccap,
+                                            ax=ax)
+
+
+    fig.savefig(figures_dir / "munoz_1997_figure_4.png", dpi=300, bbox_inches='tight')
+    plt.close(fig)
 
 
 def predict(method="1s"):
@@ -292,9 +346,15 @@ def predict(method="1s"):
     result = agadir.predict("YGGSAAAAAAAKRAAA", ncap=None, ccap='Am', debug=True)
     print(result.get_percent_helix())
 
+
 if __name__ == "__main__":
     method = "1s"
-    reproduce_lacroix_figure_3b(method=method)
-    reproduce_lacroix_figure_4(method=method)
-    reproduce_huygues_despointes_figure_1(method=method)
+    # reproduce_lacroix_figure_3b(method=method)
+    # reproduce_lacroix_figure_4(method=method)
+    # reproduce_huygues_despointes_figure_1(method=method)
+    reproduce_munoz_1997_figure_4(method=method)
+
+
+
+
     # predict(method=method) # I typically direct the output from this funcion to a file: python validation.py > output.txt
