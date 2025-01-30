@@ -198,9 +198,9 @@ Below is a validation plot for Figure 1A and 1B from Huygues-Despointes et al. (
 
 <img src="pyagadir/data/figures/huygues_despointes_figure_1a.png" width="800" alt="Figure 1A Validation">
 
-Below is a validation plot for Figure 4A-C from Munoz & Serrano (1997), showing repeats of the peptides AAQAAY, AAKAA and AEAAKA:
+Below is a validation plot for Figure 4A-C from Munoz & Serrano (1997), showing repeats of the peptides AAQAA, AAKAA and AEAAKA:
 
-<img src="pyagadir/data/figures/munoz_1997_figure_4.png" width="800" alt="Figure 4 Validation">
+<img src="pyagadir/data/figures/munoz_1997_figure_4.png" width="400" alt="Figure 4 Validation">
 
 ## Questions / To Do
 * Based on the validation plots, the model generally shows the correct trend, but some of the pH-dependent electrostatic energies look like they need work.

@@ -139,7 +139,7 @@ def plot_peptides_helix_content(paper_measured_data_helix,
     # Configure plot
     xval_range = max(xvals)-min(xvals)
     ax.set_xlim(min(xvals)-0.1*xval_range, max(xvals)+0.1*xval_range)
-    ax.set_ylim(0, max(paper_measured_data_helix) + 10)
+    ax.set_ylim(0, max(max(paper_measured_data_helix), max(pyagadir_predicted_data_helix)) + 10)
     ax.set_xlabel(xlabel)
     ax.set_ylabel("Helix content (%)")
     ax.legend()
@@ -273,7 +273,7 @@ def reproduce_huygues_despointes_figure_1(method="1s"):
             result = model.predict(pept, ncap=ncap, ccap=ccap)
             pyagadir_predicted_data_helix.append(result.get_percent_helix())
             
-        title = "Peptides at pH " + str(ph)
+        title = f"Ac-DAQAAAAQAAAAQAAY-Am\nwith varying Asp positions, at pH " + str(ph)
         xlabel = "Asp position"
         _, ax = plot_peptides_helix_content(paper_measured_data,
                                             pyagadir_predicted_data_helix, 
@@ -351,7 +351,7 @@ if __name__ == "__main__":
     method = "1s"
     # reproduce_lacroix_figure_3b(method=method)
     # reproduce_lacroix_figure_4(method=method)
-    # reproduce_huygues_despointes_figure_1(method=method)
+    reproduce_huygues_despointes_figure_1(method=method)
     reproduce_munoz_1997_figure_4(method=method)
 
 
