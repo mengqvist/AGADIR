@@ -741,7 +741,8 @@ class PrecomputeParams:
                 # Calculate new pKa relative to intrinsic value
                 modified_pKa = adjust_pKa(T=self.T_kelvin, 
                                           pKa_ref=pKa_intrinsic, 
-                                          deltaG=deltaG_total)
+                                          deltaG=deltaG_total,
+                                          is_basic=True if AA1 in self.pos_charge_aa else False)
 
                 if AA1 == 'Nterm':
                     if self.seq_list[0] == 'Sc':

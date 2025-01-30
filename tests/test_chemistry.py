@@ -31,16 +31,42 @@ def test_calculate_ionic_strength():
 
 
 def test_adjust_pKa():
-    # Test no energy difference
-    assert adjust_pKa(T=298.15, pKa_ref=7.0, deltaG=0.0) == 7.0
+    T = 298.15
+    pKa_ref = 7.0
     
-    # Test positive energy difference
-    adjusted = adjust_pKa(T=298.15, pKa_ref=7.0, deltaG=1.0)
-    assert adjusted > 7.0
+    # 1) Acidic residue tests
+    # ------------------------------------------------
+    # 1a) No energy difference => pKa should be unchanged
+    adjusted = adjust_pKa(T=T, pKa_ref=pKa_ref, deltaG=0.0, is_basic=False)
+    assert adjusted == pytest.approx(pKa_ref, abs=1e-6), \
+        f"Acidic, ΔG=0. Expected {pKa_ref}, got {adjusted}"
     
-    # Test negative energy difference
-    adjusted = adjust_pKa(T=298.15, pKa_ref=7.0, deltaG=-1.0)
-    assert adjusted < 7.0
+    # 1b) Negative (favorable) ΔG => pKa should decrease (stabilizes deprotonated form)
+    adjusted = adjust_pKa(T=T, pKa_ref=pKa_ref, deltaG=-1.0, is_basic=False)
+    assert adjusted < pKa_ref, \
+        f"Acidic, ΔG<0. Expected pKa < {pKa_ref}, got {adjusted}"
+    
+    # 1c) Positive (unfavorable) ΔG => pKa should increase
+    adjusted = adjust_pKa(T=T, pKa_ref=pKa_ref, deltaG=1.0, is_basic=False)
+    assert adjusted > pKa_ref, \
+        f"Acidic, ΔG>0. Expected pKa > {pKa_ref}, got {adjusted}"
+    
+    # 2) Basic residue tests
+    # ------------------------------------------------
+    # 2a) No energy difference => pKa should be unchanged
+    adjusted = adjust_pKa(T=T, pKa_ref=pKa_ref, deltaG=0.0, is_basic=True)
+    assert adjusted == pytest.approx(pKa_ref, abs=1e-6), \
+        f"Basic, ΔG=0. Expected {pKa_ref}, got {adjusted}"
+    
+    # 2b) Negative (favorable) ΔG => pKa should increase (stabilizes protonated form)
+    adjusted = adjust_pKa(T=T, pKa_ref=pKa_ref, deltaG=-1.0, is_basic=True)
+    assert adjusted > pKa_ref, \
+        f"Basic, ΔG<0. Expected pKa > {pKa_ref}, got {adjusted}"
+    
+    # 2c) Positive (unfavorable) ΔG => pKa should decrease
+    adjusted = adjust_pKa(T=T, pKa_ref=pKa_ref, deltaG=1.0, is_basic=True)
+    assert adjusted < pKa_ref, \
+        f"Basic, ΔG>0. Expected pKa < {pKa_ref}, got {adjusted}"
 
 
 def test_acidic_residue_ionization():
