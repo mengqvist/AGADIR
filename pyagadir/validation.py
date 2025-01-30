@@ -89,13 +89,14 @@ def plot_ph_helix_content(paper_measured_data_ph, paper_measured_data_helix,
     
     return fig, ax
 
-def reproduce_figure_3b(method="1s"):
+def reproduce_lacroix_figure_3b(method="1s"):
     """
-    Reproduce figure 3b from the AGADIR paper.
+    Reproduce figure 3b from the Lacroix et al. (1998) AGADIR paper.
+    https://doi.org/10.1006/jmbi.1998.2145
     """
     # Get paths
     data_dir = get_package_data_dir()
-    validation_file = data_dir / 'validation' / 'figure_3_data.json'
+    validation_file = data_dir / 'validation' / 'lacroix_figure_3_data.json'
     figures_dir = ensure_figures_dir()
 
     # Load validation data
@@ -124,16 +125,16 @@ def reproduce_figure_3b(method="1s"):
                                     pyagadir_predicted_data_helix, peptide, ncap, ccap)
 
     # Save figure
-    fig.savefig(figures_dir / "figure_3b.png", dpi=300, bbox_inches='tight')
+    fig.savefig(figures_dir / "lacroix_figure_3b.png", dpi=300, bbox_inches='tight')
     plt.close(fig)
 
-def reproduce_figure_4(method="1s"):
+def reproduce_lacroix_figure_4(method="1s"):
     """
     Reproduce figure 4 from the AGADIR paper.
     """
     # Get paths
     data_dir = get_package_data_dir()
-    validation_file = data_dir / 'validation' / 'figure_4_data.json'
+    validation_file = data_dir / 'validation' / 'lacroix_figure_4_data.json'
     figures_dir = ensure_figures_dir()
 
     # Load validation data
@@ -171,7 +172,7 @@ def reproduce_figure_4(method="1s"):
                                         ax=ax)
 
 
-    fig.savefig(figures_dir / "figure_4.png", dpi=300, bbox_inches='tight')
+    fig.savefig(figures_dir / "lacroix_figure_4.png", dpi=300, bbox_inches='tight')
     plt.close(fig)
 
 def predict(method="1s"):
@@ -181,6 +182,6 @@ def predict(method="1s"):
 
 if __name__ == "__main__":
     method = "1s"
-    reproduce_figure_3b(method=method)
-    reproduce_figure_4(method=method)
+    reproduce_lacroix_figure_3b(method=method)
+    reproduce_lacroix_figure_4(method=method)
     # predict(method=method) # I typically direct the output from this funcion to a file: python validation.py > output.txt

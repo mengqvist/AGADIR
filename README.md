@@ -8,7 +8,7 @@ The energy parameters used in this model were extracted from the supplementary m
 
 The paper uses the terminology of Richardson & Richardson (1988) where STC (S, strand; T, turn; and C, coil) indicates a non-helical conformation and He is a helical residue. Python indexing starting from the Ncap is used to describe these positions in the model. The helical portion of the sequence are determined by providing a strating index i, and a helix length j. The first and last residues of the specified helical segments act as "capping" residues (Ncap and Ccap). 
 
-In the following example, the helical segment is specified by i=2 and j=13.
+In the following example, the helical segment is specified by i=2 and j=14.
 ```text
 Sequence:  I    L    K     S    L    E    E    F    L    K    V    T    L    R    S    T    R    Q  
 Name:      N''  N'   Ncap  N1   N2   N3   N4   N5.............C5   C4   C3   C2   C1   Ccap C'   C''  
@@ -89,12 +89,8 @@ model = AGADIR(
     pH=7.0         # pH of solution
 )
 
-# Predict with terminal modifications
-result = model.predict(
-    'ILKSLEEFLKVTLRSTRQT',
-    ncap='Ac',      # N-terminal acetylation ('Ac') or succinylation ('Sc')
-    ccap='Am'       # C-terminal amidation ('Am')
-)
+# Predict helical propensity
+result = model.predict('ILKSLEEFLKVTLRSTRQT')
 ```
 
 The result object provides several methods to access the predictions:
@@ -118,7 +114,10 @@ These modifications are particularly important when analyzing helices extracted 
 # Analyzing a helix segment from a protein structure
 segment = "ILKSLEEFLKVTLRSTRQT"
 model = AGADIR(method='1s', T=4.0, pH=7.0)
-result = model.predict(segment, ncap='Ac', ccap='Am')  # Add caps to simulate internal protein environment
+result = model.predict(segment, 
+                       ncap='Ac', 
+                       ccap='Am'
+                       )  # Add caps to simulate internal protein environment
 ```
 
 ### Energy Calculations
@@ -189,11 +188,11 @@ This will generate comparison plots in the `pyagadir/data/figures` directory.
 
 Below is a validation plot for Figure 3b with reference data extracted from the original paper (Lacroix et al., 1998, using WebPlotDigitizer), showing the pH dependence of helix content:
 
-<img src="pyagadir/data/figures/figure_3b.png" width="400" alt="Figure 3b Validation">
+<img src="pyagadir/data/figures/lacroix_figure_3b.png" width="400" alt="Figure 3b Validation">
 
 Below is a validation plot for Figure 4 with reference data extracted from the original paper (Lacroix et al., 1998, using WebPlotDigitizer), showing the pH dependence of helix content:
 
-<img src="pyagadir/data/figures/figure_4.png" width="800" alt="Figure 4 Validation">
+<img src="pyagadir/data/figures/lacroix_figure_4.png" width="800" alt="Figure 4 Validation">
 
 ## Questions / To Do
 * Based on the validation plots, the model generally shows the correct trend, but some of the pH-dependent electrostatic energies look like they need work.
