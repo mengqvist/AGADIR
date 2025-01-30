@@ -202,6 +202,11 @@ Below is a validation plot for Figure 4A-C from Munoz & Serrano (1997), showing 
 
 <img src="pyagadir/data/figures/munoz_1997_figure_4.png" width="400" alt="Figure 4 Validation">
 
+Below is a validation plot for Figure 3 from Munoz & Serrano (1995), showing peptide helicity at different temperatures:
+
+<img src="pyagadir/data/figures/munoz_1995_figure_3.png" width="800" alt="Figure 3 Validation">
+
+
 ## Questions / To Do
 * Based on the validation plots, the model generally shows the correct trend, but some of the pH-dependent electrostatic energies look like they need work.
 * Test correct functioning of staple term or schellman term.

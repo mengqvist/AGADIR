@@ -301,7 +301,7 @@ def reproduce_munoz_1997_figure_4(method="1s"):
     Original values from Scholtz et al. (1991) and Rohl et al. (1992).
     https://doi.org/10.1002/(SICI)1097-0282(19970415)41:5%3C495::AID-BIP2%3E3.0.CO;2-H
     """
-        # Get paths
+    # Get paths
     data_dir = get_package_data_dir()
     validation_file = data_dir / 'validation' / 'munoz_1997_figure_4_data.json'
     figures_dir = ensure_figures_dir()
@@ -342,8 +342,38 @@ def reproduce_munoz_1997_figure_4(method="1s"):
                                             ccap,
                                             ax=ax)
 
-
     fig.savefig(figures_dir / "munoz_1997_figure_4.png", dpi=300, bbox_inches='tight')
+    plt.close(fig)
+
+
+def reproduce_munoz_1995_figure_3(method="1s"):
+    """
+    Reproduce Figure 3 from the Munoz et al. (1995) paper.
+    Testing various peptides under different temperatures.
+    https://doi.org/10.1006/jmbi.1994.0024
+    """
+    # Get paths
+    data_dir = get_package_data_dir()
+    validation_file = data_dir / 'validation' / 'munoz_1995_figure_3.json'
+    figures_dir = ensure_figures_dir()
+
+    # Load validation data
+    with open(validation_file, "r") as f:
+        data = json.load(f)
+
+    # Create figure
+    fig, axs = plt.subplots(3, 2, figsize=(8, 12))
+    
+
+
+
+
+
+    # Adjust spacing between subplots
+    plt.subplots_adjust(hspace=0.4, wspace=0.3)
+
+
+    fig.savefig(figures_dir / "munoz_1995_figure_3.png", dpi=300, bbox_inches='tight')
     plt.close(fig)
 
 
@@ -359,8 +389,6 @@ if __name__ == "__main__":
     reproduce_lacroix_figure_4(method=method)
     reproduce_huygues_despointes_figure_1(method=method)
     reproduce_munoz_1997_figure_4(method=method)
-
-
-
+    reproduce_munoz_1995_figure_3(method=method)
 
     # predict(method=method) # I typically direct the output from this funcion to a file: python validation.py > output.txt
