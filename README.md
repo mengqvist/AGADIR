@@ -204,7 +204,6 @@ Below is a validation plot for Figure 4A-C from Munoz & Serrano (1997), showing 
 
 ## Questions / To Do
 * Based on the validation plots, the model generally shows the correct trend, but some of the pH-dependent electrostatic energies look like they need work.
-* How to make ionization state consistent between the different energy terms?
 * Test correct functioning of staple term or schellman term.
 * We need to locate a source for the N- and C-terminal pKa values for the individual amino acids. Currently using average value from Stryer.
 * Update pytests to test all the code.

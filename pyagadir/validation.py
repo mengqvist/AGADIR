@@ -4,6 +4,10 @@ import json
 from importlib import resources
 from pathlib import Path
 
+
+TITLE_FONT_SIZE = 10
+LEGEND_FONT_SIZE = 8
+
 def get_package_data_dir():
     """Get the path to the data directory in the installed package."""
     with resources.path('pyagadir', 'data') as data_path:
@@ -72,9 +76,10 @@ def plot_ph_helix_content(paper_measured_data_ph, paper_measured_data_helix,
     # Configure plot
     ax.set_xlim(2.8, 12)
     ax.set_ylim(0, 65)
-    ax.set_xlabel("pH")
-    ax.set_ylabel("Helix content (%)")
-    ax.legend()
+    ax.set_xlabel("pH", fontsize=LEGEND_FONT_SIZE)
+    ax.set_ylabel("Helix content (%)", fontsize=LEGEND_FONT_SIZE)
+    ax.legend(fontsize=LEGEND_FONT_SIZE)
+    ax.tick_params(axis='both', which='major', labelsize=LEGEND_FONT_SIZE)
 
     # Set title with caps
     title = ""
@@ -85,7 +90,7 @@ def plot_ph_helix_content(paper_measured_data_ph, paper_measured_data_helix,
     title += peptide
     if ccap == "Am":
         title += "-Am"
-    ax.set_title(title, fontsize=12)
+    ax.set_title(title, fontsize=TITLE_FONT_SIZE)
     
     return fig, ax
 
@@ -140,10 +145,11 @@ def plot_peptides_helix_content(paper_measured_data_helix,
     xval_range = max(xvals)-min(xvals)
     ax.set_xlim(min(xvals)-0.1*xval_range, max(xvals)+0.1*xval_range)
     ax.set_ylim(0, max(max(paper_measured_data_helix), max(pyagadir_predicted_data_helix)) + 10)
-    ax.set_xlabel(xlabel)
-    ax.set_ylabel("Helix content (%)")
-    ax.legend()
-    ax.set_title(title, fontsize=12)
+    ax.set_xlabel(xlabel, fontsize=LEGEND_FONT_SIZE)
+    ax.set_ylabel("Helix content (%)", fontsize=LEGEND_FONT_SIZE)
+    ax.legend(fontsize=LEGEND_FONT_SIZE)
+    ax.set_title(title, fontsize=TITLE_FONT_SIZE)
+    ax.tick_params(axis='both', which='major', labelsize=LEGEND_FONT_SIZE)
     
     return fig, ax
 
@@ -349,8 +355,8 @@ def predict(method="1s"):
 
 if __name__ == "__main__":
     method = "1s"
-    # reproduce_lacroix_figure_3b(method=method)
-    # reproduce_lacroix_figure_4(method=method)
+    reproduce_lacroix_figure_3b(method=method)
+    reproduce_lacroix_figure_4(method=method)
     reproduce_huygues_despointes_figure_1(method=method)
     reproduce_munoz_1997_figure_4(method=method)
 
