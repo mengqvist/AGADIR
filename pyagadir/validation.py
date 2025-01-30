@@ -78,12 +78,12 @@ def plot_ph_helix_content(paper_measured_data_ph, paper_measured_data_helix,
 
     # Set title with caps
     title = ""
-    if ncap == "Z":
+    if ncap == "Ac":
         title += "Ac-"
-    elif ncap == "X":
-        title += "Succ-"
+    elif ncap == "Sc":
+        title += "Sc-"
     title += peptide
-    if ccap == "B":
+    if ccap == "Am":
         title += "-Am"
     ax.set_title(title, fontsize=12)
     
@@ -174,7 +174,13 @@ def reproduce_figure_4(method="1s"):
     fig.savefig(figures_dir / "figure_4.png", dpi=300, bbox_inches='tight')
     plt.close(fig)
 
+def predict(method="1s"):
+    agadir = AGADIR(method=method, pH=4.0, M=0.05, T=0.0)
+    result = agadir.predict("YGGSAAAAAAAKRAAA", ncap=None, ccap='Am', debug=True)
+    print(result.get_percent_helix())
+
 if __name__ == "__main__":
-    method = "r"
+    method = "1s"
     reproduce_figure_3b(method=method)
     reproduce_figure_4(method=method)
+    # predict(method=method) # I typically direct the output from this funcion to a file: python validation.py > output.txt

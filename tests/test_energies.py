@@ -1,265 +1,263 @@
-from importlib.resources import files
-
-import numpy as np
-import pandas as pd
 import pytest
+import numpy as np
+from pyagadir.energies import PrecomputeParams
 
-from pyagadir.energies import (
-    get_dG_Ccap,
-    get_dG_dipole,
-    get_dG_Hbond,
-    get_dG_i1,
-    get_dG_i3,
-    get_dG_i4,
-    get_dG_Int,
-    get_dG_Ncap,
-)
-
-# get params
-datapath = files("pyagadir.data")
-
-# load energy contributions for intrinsic propensities, capping, etc.
-table2 = pd.read_csv(
-    datapath.joinpath("table2.csv"),
-    index_col="AA",
-).astype(float)
-
-# load energy contributions between amino acids and the helix macrodipole, focusing on the C-terminal
-table3a = pd.read_csv(
-    datapath.joinpath("table3a.csv"),
-    index_col="AA",
-).astype(float)
-table3a.columns = table3a.columns.astype(int)
-
-# load energy contributions between amino acids and the helix macrodipole, focusing on the N-terminal
-table3b = pd.read_csv(
-    datapath.joinpath("table3b.csv"),
-    index_col="AA",
-).astype(float)
-table3b.columns = table3b.columns.astype(int)
-
-# load energy contributions for interactions between i and i+3
-table4a = pd.read_csv(
-    datapath.joinpath("table4a.csv"),
-    index_col="index",
-).astype(float)
-
-# load energy contributions for interactions between i and i+4
-table4b = pd.read_csv(
-    datapath.joinpath("table4b.csv"),
-    index_col="index",
-).astype(float)
+@pytest.fixture
+def precompute_instance():
+    """Fixture to create an instance of PrecomputeParams with test inputs."""
+    seq = "ACDEFGHIKLMNPQRSTVWY"
+    return (PrecomputeParams(seq, i=0, j=20, pH=0.0, T=25.0, ionic_strength=0.1),
+           PrecomputeParams(seq, i=0, j=22, pH=14.0, T=25.0, ionic_strength=0.1, ncap="Ac", ccap="Am"),
+           PrecomputeParams(seq, i=2, j=16, pH=14.0, T=25.0, ionic_strength=0.1),
+           PrecomputeParams(seq, i=2, j=18, pH=14.0, T=25.0, ionic_strength=0.1, ncap="Sc", ccap="Am"),)
 
 
-def test_dG_Int():
-    """Test the intrinsic propensities."""
-    # ensure that the intrinsic propensities match those in Table2, case with single AA repeats
-    pep_len = 6
-    for aa in table2.index:
-        pept = aa * pep_len
-        int_array = get_dG_Int(pept)
-        assert int_array.shape[0] == len(pept)
-        assert int_array[0] == 0.0
-        assert int_array[-1] == 0.0
-        assert all(
-            [
-                (
-                    0.66
-                    if (i == 1 and aa == "P")
-                    else int_array[i] == table2.loc[aa, "Intrinsic"]
-                )
-                for i in range(1, pep_len - 1)
-            ]
-        )
+def test_seq_list(precompute_instance):
+    """Test the seq_list property."""
+    instance1, instance2, instance3, instance4 = precompute_instance
+    assert instance1.seq_list[0] == 'A'
+    assert instance1.seq_list[1] == 'C'
+    assert instance1.seq_list[2] == 'D'
+    assert instance1.seq_list[3] == 'E'
+    assert instance1.seq_list[4] == 'F'
+    assert instance1.seq_list[5] == 'G'
+    assert instance1.seq_list[6] == 'H'
+    assert instance1.seq_list[7] == 'I'
+    assert instance1.seq_list[8] == 'K'
+    assert instance1.seq_list[9] == 'L'
+    assert instance1.seq_list[10] == 'M'
+    assert instance1.seq_list[11] == 'N'
+    assert instance1.seq_list[12] == 'P'
+    assert instance1.seq_list[13] == 'Q'
+    assert instance1.seq_list[14] == 'R'
+    assert instance1.seq_list[15] == 'S'
+    assert instance1.seq_list[16] == 'T'
+    assert instance1.seq_list[17] == 'V'
+    assert instance1.seq_list[18] == 'W'
+    assert instance1.seq_list[19] == 'Y'
 
-    # ensure that the intrinsic propensities match those in Table2, case with the 20 AA
-    pept = "".join(table2.index)
-    int_array = get_dG_Int(pept)
-    assert all(
-        [
-            (
-                int_array[i] == 0.0
-                if (i == 0 or i == len(pept) - 1)
-                else int_array[i] == table2.loc[aa, "Intrinsic"]
-            )
-            for i, aa in enumerate(pept)
-        ]
-    )
-    assert int_array.shape[0] == 20
+    assert instance2.seq_list[0] == 'Ac'
+    assert instance2.seq_list[21] == 'Am'
+
+    assert instance3.seq_list[0] == 'A'
+    
+    assert instance4.seq_list[0] == 'Sc'
+
+def test_find_charged_pairs(precompute_instance):
+    """Test the _find_charged_pairs method."""
+    instance1, instance2, instance3, instance4 = precompute_instance
+    instance1._find_charged_pairs()
+    charged_pairs1 = instance1.charged_pairs
+    instance2._find_charged_pairs()
+    charged_pairs2 = instance2.charged_pairs
+    instance3._find_charged_pairs()
+    charged_pairs3 = instance3.charged_pairs
+    instance4._find_charged_pairs()
+    charged_pairs4 = instance4.charged_pairs
+
+    # Verify expected charged pairs are found
+    expected_pairs1 = [
+        ("D", "E", 2, 3),  # Example pair
+        ("H", "K", 6, 8),  # Example pair
+    ]
+    expected_pairs2 = [
+        ("D", "E", 3, 4),  # Example pair
+        ("H", "K", 7, 9),  # Example pair
+    ]
+    expected_pairs3 = [
+        ("D", "E", 2, 3),  # Example pair
+        ("H", "K", 6, 8),  # Example pair
+    ]
+    expected_pairs4 = [
+        ("D", "E", 3, 4),  # Example pair
+        ("H", "K", 7, 9),  # Example pair
+    ]
+    assert all(pair in charged_pairs1 for pair in expected_pairs1)
+    assert all(pair in charged_pairs2 for pair in expected_pairs2)
+    assert all(pair in charged_pairs3 for pair in expected_pairs3)
+    assert all(pair in charged_pairs4 for pair in expected_pairs4)
+
+def test_calculate_r(precompute_instance):
+    """Test the _calculate_r method."""
+    instance1, instance2, instance3, instance4 = precompute_instance
+
+    # Test for a range of inputs
+    assert np.isclose(instance1._calculate_r(0), 2.1)
+    assert np.isclose(instance1._calculate_r(1), 4.1)
+    assert np.isclose(instance1._calculate_r(2), 6.1)
+    assert np.isclose(instance1._calculate_r(10), 22.1)
+
+def test_electrostatic_interaction_energy(precompute_instance):
+    """Test the _electrostatic_interaction_energy method."""
+    instance1, instance2, instance3, instance4 = precompute_instance
+
+    # Input values
+    qi = 1.0
+    qj = -1.0
+    r = 5.0  # Ångströms
+
+    # Negative energy for opposite charges, i.e. attraction
+    energy = instance1._electrostatic_interaction_energy(qi, qj, r)
+    assert energy < 0
+    assert np.isclose(energy, -0.503, atol=0.001)
+    energy = instance1._electrostatic_interaction_energy(qj, qi, r)
+    assert energy < 0
+
+    # Positive energy for same charge, i.e. repulsion
+    energy = instance1._electrostatic_interaction_energy(qi, qi, r)
+    assert energy > 0
+    energy = instance1._electrostatic_interaction_energy(qj, qj, r)
+    assert energy > 0
+
+def test_assign_pka_values(precompute_instance):
+    """Test the _assign_pka_values method."""
+    instance1, instance2, instance3, instance4 = precompute_instance
+
+    # Verify pKa values are assigned correctly
+    assert instance1.seq_pka is not None
+    assert len(instance1.seq_pka) == len(instance1.seq_list)
+
+def test_assign_ionization_states(precompute_instance):
+    """Test the _assign_ionization_states method."""
+    instance1, instance2, instance3, instance4 = precompute_instance
+
+    # Verify ionization states are assigned correctly, pH = 0.0
+    assert instance1.seq_ionization is not None
+    assert len(instance1.seq_ionization) == len(instance1.seq_list)
+    assert np.isclose(instance1.seq_ionization[0], 0.0, atol=0.001) # A
+    assert np.isclose(instance1.seq_ionization[1], 0.0, atol=0.001) # C
+    assert np.isclose(instance1.seq_ionization[2], 0.0, atol=0.001) # D
+    assert np.isclose(instance1.seq_ionization[3], 0.0, atol=0.001) # E
+    assert np.isclose(instance1.seq_ionization[4], 0.0, atol=0.001) # F
+    assert np.isclose(instance1.seq_ionization[5], 0.0, atol=0.001) # G
+    assert np.isclose(instance1.seq_ionization[6], 1.0, atol=0.001) # H
+    assert np.isclose(instance1.seq_ionization[7], 0.0, atol=0.001) # I
+    assert np.isclose(instance1.seq_ionization[8], 1.0, atol=0.001) # K
+    assert np.isclose(instance1.seq_ionization[9], 0.0, atol=0.001) # L
+    assert np.isclose(instance1.seq_ionization[10], 0.0, atol=0.001) # M
+    assert np.isclose(instance1.seq_ionization[11], 0.0, atol=0.001) # N
+    assert np.isclose(instance1.seq_ionization[12], 0.0, atol=0.001) # P
+    assert np.isclose(instance1.seq_ionization[13], 0.0, atol=0.001) # Q
+    assert np.isclose(instance1.seq_ionization[14], 1.0, atol=0.001) # R
+    assert np.isclose(instance1.seq_ionization[15], 0.0, atol=0.001) # S
+    assert np.isclose(instance1.seq_ionization[16], 0.0, atol=0.001) # T
+    assert np.isclose(instance1.seq_ionization[17], 0.0, atol=0.001) # V
+    assert np.isclose(instance1.seq_ionization[18], 0.0, atol=0.001) # W
+    assert np.isclose(instance1.seq_ionization[19], 0.0, atol=0.001) # Y
+    assert np.isclose(instance1.nterm_ionization, 1.0, atol=0.001)
+    assert np.isclose(instance1.cterm_ionization, 0.0, atol=0.001)
+
+    # Verify ionization states are assigned correctly, pH = 14.0
+    assert instance2.seq_ionization is not None
+    assert len(instance2.seq_ionization) == len(instance2.seq_list)
+    assert np.isclose(instance2.seq_ionization[0], 0.0, atol=0.001) # Ac
+    assert np.isclose(instance2.seq_ionization[1], 0.0, atol=0.001) # A
+    assert np.isclose(instance2.seq_ionization[2], -1.0, atol=0.001) # C
+    assert np.isclose(instance2.seq_ionization[3], -1.0, atol=0.001) # D
+    assert np.isclose(instance2.seq_ionization[4], -1.0, atol=0.001) # E
+    assert np.isclose(instance2.seq_ionization[5], 0.0, atol=0.001) # F
+    assert np.isclose(instance2.seq_ionization[6], 0.0, atol=0.001) # G
+    assert np.isclose(instance2.seq_ionization[7], 0.0, atol=0.001) # H
+    assert np.isclose(instance2.seq_ionization[9], 0.0, atol=0.001) # K
+    assert np.isclose(instance2.seq_ionization[10], 0.0, atol=0.001) # L
+    assert np.isclose(instance2.seq_ionization[11], 0.0, atol=0.001) # M
+    assert np.isclose(instance2.seq_ionization[12], 0.0, atol=0.001) # N
+    assert np.isclose(instance2.seq_ionization[13], 0.0, atol=0.001) # P
+    assert np.isclose(instance2.seq_ionization[14], 0.0, atol=0.001) # Q
+    assert np.isclose(instance2.seq_ionization[15], 0.4, atol=0.1) # R
+    assert np.isclose(instance2.seq_ionization[16], 0.0, atol=0.001) # S
+    assert np.isclose(instance2.seq_ionization[17], 0.0, atol=0.001) # T
+    assert np.isclose(instance2.seq_ionization[18], 0.0, atol=0.001) # V
+    assert np.isclose(instance2.seq_ionization[19], 0.0, atol=0.001) # W
+    assert np.isclose(instance2.seq_ionization[20], -1.0, atol=0.001) # Y
+    assert np.isclose(instance2.seq_ionization[21], 0.0, atol=0.001) # Am
+    assert instance2.nterm_ionization == 0.0
+    assert instance2.cterm_ionization == 0.0
+
+    assert np.isclose(instance3.nterm_ionization, 0.0, atol=0.001)
+    assert np.isclose(instance3.cterm_ionization, -1.0, atol=0.001)
+
+    assert np.isclose(instance4.nterm_ionization, -1.0, atol=0.001) # Sc is acidic and charged!
+    assert np.isclose(instance4.cterm_ionization, 0.0, atol=0.001)
+
+def test_assign_modified_ionization_states(precompute_instance):
+    """Test the _assign_modified_ionization_states method."""
+    instance1, instance2, instance3, instance4 = precompute_instance
+
+    # Test instance 1
+    # Verify modified ionization states for instance1 (pH = 0.0)
+    assert instance1.modified_seq_ionization_hel is not None
+    assert len(instance1.modified_seq_ionization_hel) == len(instance1.seq_list)
+
+    # Modified ionization should reflect interaction with the helix macrodipole
+    # Specific residues should remain ionized at low pH
+    assert np.isclose(instance1.modified_seq_ionization_hel[2], 0.0, atol=0.1)  # D (Asp)
+    assert np.isclose(instance1.modified_seq_ionization_hel[6], 1.0, atol=0.1)  # H (His)
+    assert np.isclose(instance1.modified_seq_ionization_hel[8], 1.0, atol=0.1)  # K (Lys)
+
+    # Test instance 2 (pH = 14.0, Acetylated N-term and Amide C-term)
+    assert instance2.modified_seq_ionization_hel is not None
+    assert len(instance2.modified_seq_ionization_hel) == len(instance2.seq_list)
+
+    # Modified ionization states for highly basic pH
+    assert np.isclose(instance2.modified_seq_ionization_hel[2], -1.0, atol=0.1)  # C (Cys)
+    assert np.isclose(instance2.modified_seq_ionization_hel[3], -1.0, atol=0.1)  # D (Asp)
+    assert np.isclose(instance2.modified_seq_ionization_hel[4], -1.0, atol=0.1)  # E (Glu)
+    assert np.isclose(instance2.modified_seq_ionization_hel[15], 0.4, atol=0.1)  # R (Arg)
+
+    # Test instance 4 (N-term = Sc, acidic modification)
+    assert instance4.modified_seq_ionization_hel is not None
+    assert len(instance4.modified_seq_ionization_hel) == len(instance4.seq_list)
+
+    # Sc at N-term should be negatively charged
+    assert np.isclose(instance4.modified_nterm_ionization_hel, -1.0, atol=0.1)
+
+    # Ensure convergence of iterative modification
+    prev_states = instance1.modified_seq_ionization_hel
+    instance1._assign_modified_ionization_states()  # Recompute
+    assert np.allclose(instance1.modified_seq_ionization_hel, prev_states, atol=0.01)
+
+# def test_assign_sidechain_macrodipole_distances(precompute_instance):
+#     """Test the _assign_sidechain_macrodipole_distances method."""
+#     instance = precompute_instance
+#     instance._assign_sidechain_macrodipole_distances()
+
+#     # Verify distances are assigned
+#     assert instance.sidechain_macrodipole_distances_nterm is not None
+#     assert instance.sidechain_macrodipole_distances_cterm is not None
+
+def test_assign_terminal_macrodipole_distances(precompute_instance):
+    """Test the _assign_terminal_macrodipole_distances method."""
+    instance1, instance2, instance3, instance4 = precompute_instance
+
+    # Verify terminal distances are calculated
+    assert instance1.terminal_macrodipole_distance_nterm is not None
+    assert instance1.terminal_macrodipole_distance_cterm is not None
+    assert np.isclose(instance1.terminal_macrodipole_distance_nterm, 2.1, atol=0.001)
+    assert np.isclose(instance1.terminal_macrodipole_distance_cterm, 2.1, atol=0.001)
+
+    assert instance2.terminal_macrodipole_distance_nterm is not None
+    assert instance2.terminal_macrodipole_distance_cterm is not None
+    assert np.isclose(instance2.terminal_macrodipole_distance_nterm, 2.1, atol=0.001)
+    assert np.isclose(instance2.terminal_macrodipole_distance_cterm, 2.1, atol=0.001)
+
+    assert instance3.terminal_macrodipole_distance_nterm is not None
+    assert instance3.terminal_macrodipole_distance_cterm is not None
+    assert np.isclose(instance3.terminal_macrodipole_distance_nterm, 6.1, atol=0.001)
+    assert np.isclose(instance3.terminal_macrodipole_distance_cterm, 6.1, atol=0.001)
+
+    assert instance4.terminal_macrodipole_distance_nterm is not None
+    assert instance4.terminal_macrodipole_distance_cterm is not None
+    assert np.isclose(instance4.terminal_macrodipole_distance_nterm, 6.1, atol=0.001)
+    assert np.isclose(instance4.terminal_macrodipole_distance_cterm, 6.1, atol=0.001)
+
+# def test_assign_charged_sidechain_distances(precompute_instance):
+#     """Test the _assign_charged_sidechain_distances method."""
+#     instance = precompute_instance
+#     instance._assign_charged_sidechain_distances()
+
+#     # Verify charged sidechain distances are assigned
+#     assert instance.charged_sidechain_distances_hel is not None
+#     assert instance.charged_sidechain_distances_rc is not None
 
 
-def test_dG_SD():
-    """Test the side chain interactions."""
-    # no side chain interactions for the case of only Ala
-    pept = "AAAAAAAAAAAA"
-    i1_array = get_dG_i1(pept)
-    i3_array = get_dG_i3(pept)
-    i4_array = get_dG_i4(pept)
-    assert i1_array.shape[0] == len(pept)
-    assert i3_array.shape[0] == len(pept)
-    assert i4_array.shape[0] == len(pept)
-    assert all([i1_array[i] == 0.0 for i in range(len(pept))])
-    assert all([i3_array[i] == 0.0 for i in range(len(pept))])
-    assert all([i4_array[i] == 0.0 for i in range(len(pept))])
-
-    # C to S interaction
-    pept = "ACAACSAAAAAA"
-    i1_array = get_dG_i1(pept)
-    i3_array = get_dG_i3(pept)
-    i4_array = get_dG_i4(pept)
-    assert i3_array[1] == 0.2  # C to C interaction
-    assert i4_array[1] == 0.2  # C to S interaction
-    assert all([i1_array[i] == 0.0 for i in range(len(pept))])
-    assert all([i3_array[i] == 0.0 for i in range(len(pept)) if i != 1])
-    assert all([i4_array[i] == 0.0 for i in range(len(pept)) if i != 1])
-
-    # M to W,  M to F and W to M interaction
-    pept = "AMAAWFAMAAAA"
-    i1_array = get_dG_i1(pept)
-    i3_array = get_dG_i3(pept)
-    i4_array = get_dG_i4(pept)
-    assert i3_array[1] == -0.3  # M to W interaction
-    assert i4_array[1] == -0.2  # M to F interaction
-    assert i3_array[4] == -0.25  # W to M interaction
-    assert all([i1_array[i] == 0.0 for i in range(len(pept))])
-    assert all([i3_array[i] == 0.0 for i in range(len(pept)) if i not in [1, 4]])
-    assert all([i4_array[i] == 0.0 for i in range(len(pept)) if i not in [1, 4]])
-
-    # bad interaction with negative charge at position i + 1, 3, 4
-    pept = "ADAADDAAAAAA"
-    i1_array = get_dG_i1(pept)
-    i3_array = get_dG_i3(pept)
-    i4_array = get_dG_i4(pept)
-    assert i1_array[4] == 0.05
-    assert i3_array[1] == 0.1
-    assert i4_array[1] == 0.2
-    assert all([i1_array[i] == 0.0 for i in range(len(pept)) if i != 4])
-    assert all([i3_array[i] == 0.0 for i in range(len(pept)) if i != 1])
-    assert all([i4_array[i] == 0.0 for i in range(len(pept)) if i != 1])
-
-    # bad interaction with positive charge at position i + 1, 3, 4
-    pept = "AKAAKKAAAAAA"
-    i1_array = get_dG_i1(pept)
-    i3_array = get_dG_i3(pept)
-    i4_array = get_dG_i4(pept)
-    assert i1_array[4] == 0.05
-    assert i3_array[1] == 0.25
-    assert i4_array[1] == 0.2
-    assert all([i1_array[i] == 0.0 for i in range(len(pept)) if i != 4])
-    assert all([i3_array[i] == 0.0 for i in range(len(pept)) if i != 1])
-    assert all([i4_array[i] == 0.0 for i in range(len(pept)) if i != 1])
-
-    # good interaction with opposite charge at position i + 1, 3, 4
-    pept = "AKAAEAAAKDAA"
-    i1_array = get_dG_i1(pept)
-    i3_array = get_dG_i3(pept)
-    i4_array = get_dG_i4(pept)
-    assert i1_array[8] == -0.05
-    assert i3_array[1] == -0.1
-    assert i4_array[4] == -0.33
-    assert all([i1_array[i] == 0.0 for i in range(len(pept)) if i != 8])
-    assert all([i3_array[i] == 0.0 for i in range(len(pept)) if i != 1])
-    assert all([i4_array[i] == 0.0 for i in range(len(pept)) if i != 4])
-
-
-def test_dG_nonH():
-    """Test the capping interactions."""
-    ### N capping ###
-    # need to better understand the N capping interactions before writing additional tests
-
-    ### C capping ###
-    # Ala has no capping interactions
-    pept = "AAAAAAAAAAA"
-    c_cap = get_dG_Ccap(pept)
-    assert c_cap == 0.0
-
-    # there are 3 Cys, but only first should have C-capping interactions
-    pept = "CAAAACAAAAAC"
-    c_cap = get_dG_Ccap(pept)
-    assert c_cap == 0.08
-
-    # M does not have C-capping interactions)
-    pept = "MREWQAASAAHA"
-    c_cap = get_dG_Ccap(pept)
-    assert c_cap == 0.0
-
-
-def test_dG_dipole():
-    """Test the dipole moments."""
-    # Ala does not influence dipole moment, so use it as a base to test the effect of amino acids.
-    # The effect should be as described in Table3a and Table3b in the data folder.
-
-    # test the C-terminal
-    n_energy, c_energy = get_dG_dipole("AAAAAAAAAAH")
-    assert n_energy.shape[0] == len("AAAAAAAAAAH")
-    assert c_energy.shape[0] == len("AAAAAAAAAAH")
-    assert sum(n_energy) == 0.0 and sum(c_energy) == -0.44
-    assert c_energy[-1] == -0.44
-
-    n_energy, c_energy = get_dG_dipole("AAAAAAAAAHA")
-    assert sum(n_energy) == 0.23 and sum(c_energy) == -0.34
-
-    # test the N-terminal
-    n_energy, c_energy = get_dG_dipole("DAAAAAAAAAA")
-    assert sum(n_energy) == -0.34 and sum(c_energy) == 0.0
-    assert n_energy[0] == -0.34
-
-    n_energy, c_energy = get_dG_dipole("ADAAAAAAAAA")
-    assert sum(n_energy) == -0.51 and sum(c_energy) == 0.08
-
-    # check all values
-    n_energy, c_energy = get_dG_dipole("DDDDDDDDDDD")
-    assert np.all(
-        n_energy
-        == [-0.34, -0.51, -0.53, -0.42, -0.18, -0.15, -0.13, -0.12, -0.11, -0.09, 0.0]
-    )
-    assert np.all(
-        c_energy == [0.0, 0.08, 0.1, 0.13, 0.17, 0.18, 0.22, 0.26, 0.53, 0.9, 0.58]
-    )
-
-    n_energy, c_energy = get_dG_dipole("EEEEEEEEEEE")
-    assert np.all(
-        n_energy
-        == [-0.26, -0.39, -0.22, -0.19, -0.18, -0.15, -0.13, -0.12, -0.09, -0.08, 0.0]
-    )
-    assert np.all(
-        c_energy == [0.0, 0.07, 0.09, 0.1, 0.13, 0.15, 0.16, 0.2, 0.38, 0.46, 0.4]
-    )
-
-    n_energy, c_energy = get_dG_dipole("HHHHHHHHHHH")
-    assert np.all(
-        n_energy == [0.33, 1.4, 1.4, 0.52, 0.39, 0.36, 0.34, 0.32, 0.26, 0.23, 0.0]
-    )
-    assert np.all(
-        c_energy
-        == [0.0, -0.08, -0.09, -0.09, -0.09, -0.11, -0.13, -0.19, -0.23, -0.34, -0.44]
-    )
-
-    n_energy, c_energy = get_dG_dipole("KKKKKKKKKKK")
-    assert np.all(
-        n_energy == [0.43, 0.38, 0.64, 0.58, 0.48, 0.27, 0.24, 0.2, 0.18, 0.11, 0.0]
-    )
-    assert np.all(
-        c_energy
-        == [0.0, -0.08, -0.09, -0.1, -0.12, -0.13, -0.26, -0.32, -0.34, -0.36, -0.51]
-    )
-
-    n_energy, c_energy = get_dG_dipole("RRRRRRRRRRR")
-    assert np.all(
-        n_energy == [0.29, 0.33, 0.44, 0.4, 0.34, 0.21, 0.19, 0.16, 0.15, 0.09, 0.0]
-    )
-    assert np.all(
-        c_energy
-        == [0.0, -0.07, -0.07, -0.09, -0.09, -0.11, -0.25, -0.24, -0.26, -0.27, -0.36]
-    )
-
-
-def test_dG_Hbond():
-    """Test the hydrogen bonding interactions."""
-    pept = "AAAAAAAAAAH"
-    h_energy = get_dG_Hbond(pept)
-    assert h_energy == -0.775 * max((len(pept) - 6), 0)
-
-    pept = "AAHAAH"
-    h_energy = get_dG_Hbond(pept)
-    assert h_energy == 0.0
