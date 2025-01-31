@@ -1001,7 +1001,7 @@ class EnergyCalculator(PrecomputeParams):
         # The Schellman motif is only considered whenever Gly is the C-cap residue,
         # and there has to be a C' residue after the helix
         energy = 0.0
-        if self.Cprime_AA is None or self.Ccap_AA != "G":
+        if self.Cprime_AA in ["Am", None] or self.Ccap_AA != "G":
             return energy
     
         # get the amino acids governing the Schellman motif and extract the energy
