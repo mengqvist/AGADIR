@@ -862,12 +862,15 @@ class EnergyCalculator(PrecomputeParams):
         This accounts for the loss of entropy due to the helix formation.
         The first and last residues are considered to be caps unless they are
         the peptide terminal residues with modifications.
+        Equation (7) from Muñoz & Serrano (1995) is used to correct for temperature effects.
 
         Returns:
             np.ndarray: The intrinsic free energy contributions for each amino acid in the helical segment.
         """
         # Initialize energy array
         energy = np.zeros(len(self.seq_list))
+        Tref = 273.15  # 0°C reference temperature
+        dCp = 0.0015  # kcal/(mol*K)
 
         # Iterate over the helix and get the intrinsic energy for each residue, 
         # not including residues that are capping for the helical segment
@@ -898,8 +901,37 @@ class EnergyCalculator(PrecomputeParams):
                 basic_energy_neutral = self.table_1_lacroix.loc[AA, "Neutral"]
                 energy[idx] = q * basic_energy + (1 - q) * basic_energy_neutral
 
+        # # Apply Equation (7) correction
+        # energy += self.T_kelvin * (dCp * np.log(self.T_kelvin / Tref)) # TODO: This is not correct. How to implement this?
+
         return energy
     
+    def get_dG_Hbond(self) -> float:
+        """
+        Get the free energy contribution for hydrogen bonding for a sequence.
+
+        Capping residues, don't count toward hydrogen bonding, which gives 2.
+        Additionally, the first 4 helical amino acids are considered to have 
+        zero net enthalpy since they are nucleating residues. 
+        This gives a total of 6 residues that don't count toward hydrogen bonding.
+        Hbond value is -0.895 kcal/mol per residue, which is the value from the 
+        discussion section of the 1998 lacroix paper. Uses equation 6 from Munoz et al. 1994.
+        to adjust for temperature (https://doi.org/10.1006/jmbi.1994.0024).
+
+        Returns:
+            float: The total free energy contribution for hydrogen bonding in the sequence.
+        """
+        # Base number of H-bonds excluding caps and nucleating residues
+        n_hbonds = max((self.j - 6), 0)
+        
+        # Temperature correction
+        Tref = 273.15  # 0°C reference temperature
+        Href = -0.895  # kcal/mol
+        dCp = 0.0015  # kcal/(mol*K)
+        dG_per_hbond = Href + dCp * (self.T_kelvin - Tref) # uses equation 6 from Munoz et al. 1994
+
+        return dG_per_hbond * n_hbonds
+
     def get_dG_Ncap(self) -> np.ndarray:
         """
         Get the free energy contribution for N-terminal capping.
@@ -1009,21 +1041,6 @@ class EnergyCalculator(PrecomputeParams):
 
         return energy
 
-    def get_dG_Hbond(self) -> float:
-        """
-        Get the free energy contribution for hydrogen bonding for a sequence.
-
-        Capping residues, don't count toward hydrogen bonding, which gives 2.
-        Additionally, the first 4 helical amino acids are considered to have 
-        zero net enthalpy since they are nucleating residues. 
-        This gives a total of 6 residues that don't count toward hydrogen bonding.
-        Hbond value is -0.895 kcal/mol per residue, which is the value from the discussion section of the 1998 lacroix paper.
-
-        Returns:
-            float: The total free energy contribution for hydrogen bonding in the sequence.
-        """
-        return -0.895 * max((self.j - 6), 0) 
-
     def get_dG_i3(self) -> np.ndarray:
         """
         Get the free energy contribution for interaction between each AAi and AAi+3 in the sequence.
@@ -1048,7 +1065,7 @@ class EnergyCalculator(PrecomputeParams):
                 # Use precomputed ionization states for the helical state
                 q_i = self.modified_seq_ionization_hel[idx]
                 q_i3 = self.modified_seq_ionization_hel[idx + 3]
-                energy[idx] = base_energy * abs(q_i * q_i3) # abs because the base energy already has a sign, and I just want to scale by the ionization-dependent interaction
+                energy[idx] = base_energy * abs(q_i * q_i3) # TODO: This scaling is not correct, it should use the values from table 5
             else:
                 energy[idx] = base_energy
 
@@ -1078,7 +1095,7 @@ class EnergyCalculator(PrecomputeParams):
                 # Use precomputed ionization states for the helical state
                 q_i = self.modified_seq_ionization_hel[idx]
                 q_i4 = self.modified_seq_ionization_hel[idx + 4]
-                energy[idx] = base_energy * abs(q_i * q_i4) # abs because the base energy already has a sign, and I just want to scale by the ionization-dependent interaction
+                energy[idx] = base_energy * abs(q_i * q_i4) # TODO: This scaling is not correct, it should use the values from table 5
             else:
                 energy[idx] = base_energy
 

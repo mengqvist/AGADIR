@@ -202,19 +202,21 @@ Below is a validation plot for Figure 4A-C from Munoz & Serrano (1997), showing 
 
 <img src="pyagadir/data/figures/munoz_1997_figure_4.png" width="400" alt="Figure 4 Validation">
 
-Below is a validation plot for Figure 3 from Munoz & Serrano (1995), showing peptide helicity at different temperatures:
+Below is a validation plot for Figure 3 from Munoz & Serrano (1995), showing temperature dependence of peptide helicity:
 
 <img src="pyagadir/data/figures/munoz_1995_figure_3.png" width="800" alt="Figure 3 Validation">
 
 
 ## Questions / To Do
+* Temperature scaling of hydrogen bonds have been added, but what about the intrinsic energies (Munoz & Serrano, 1994)?
+* Do we need to add the hydrophobic term (Munoz & Serrano, 1994)?
 * Based on the validation plots, the model generally shows the correct trend, but some of the pH-dependent electrostatic energies look like they need work.
 * Test correct functioning of staple term or schellman term.
 * We need to locate a source for the N- and C-terminal pKa values for the individual amino acids. Currently using average value from Stryer.
 * Update pytests to test all the code.
 * Ionic strengths should probably be adjusted based on whether the ions are monovalent or divalent. Otherwise the screening correction may not be correct.
 * The original papers used to have an i-i+1 term, but it's not clear to me how this is accounted for in Lacroix et al. (1998), and consequently in this implementation.
-* The values in table 5 are not currently used in the implementation. Figure out where they are needed.
+* The values in table 5 are not currently used in the implementation. Figure out where they are needed. Probably in the i, i+3 and i, i+4 interaction terms.
 
 ## Citations
 
