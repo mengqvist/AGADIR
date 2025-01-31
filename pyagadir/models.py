@@ -110,8 +110,8 @@ class AGADIR(object):
         # check for valid temperature
         if not isinstance(T, (float, int)):
             raise ValueError("Temperature must be a number")
-        if T < -273.15:
-            raise ValueError("Temperature must be above absolute zero")
+        if T < 0.0:
+            raise ValueError("Temperature must be above zero degrees Celsius")
 
         # check for valid molarity
         if not isinstance(M, (float, int)):

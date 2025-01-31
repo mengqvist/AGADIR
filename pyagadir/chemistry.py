@@ -61,7 +61,7 @@ def calculate_ionic_strength(ion_concentrations: Dict[str, float]) -> float:
     return inoic_strength
 
 
-def adjust_pKa(T: float, pKa_ref: float, deltaG: float) -> float:
+def adjust_pKa(T: float, pKa_ref: float, deltaG: float, is_basic: bool) -> float:
     """
     Adjust the pKa of a residue based on its free energy difference.
     Eq. 8-9 in Lacroix 1998
@@ -70,12 +70,14 @@ def adjust_pKa(T: float, pKa_ref: float, deltaG: float) -> float:
         T (float): Temperature in Kelvin.
         pKa_ref (float): Reference pKa value.
         deltaG (float): Free energy difference (kcal/mol).
-
+        is_basic (bool): Whether the residue is basic.
+        
     Returns:
         float: Adjusted pKa value.
     """
-    R = 1.987e-3  # kcal/(mol K)
-    return pKa_ref + deltaG / (2.3 * R * T)
+    R = 1.9865e-3  # kcal/(mol K)
+    gamma = 1 if is_basic else -1
+    return pKa_ref - (gamma * deltaG / (2.303 * R * T))
 
 
 def acidic_residue_ionization(pH: float, pKa: float) -> float:
@@ -153,14 +155,14 @@ def debye_huckel_screening_parameter(ionic_strength: float, T: float) -> float:
     return kappa
 
 
-def debye_screening_kappa(ionic_strength: float, T: int) -> float:
+def debye_screening_kappa(ionic_strength: float, T: float) -> float:
     """Calculate the inverse of the Debye screening length (kappa) in an electrolyte.
     
     ISBN 978-0-444-63908-0
 
     Args:
         ionic_strength (float): Ionic strength of the solution in mol/L.
-        T (int): Temperature in Kelvin.
+        T (float): Temperature in Kelvin.
 
     Returns:
         float: The inverse of the Debye length (kappa) in m^-1.

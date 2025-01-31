@@ -1,0 +1,50 @@
+{
+    "figure_3a": {
+        "peptide": "GADAQGAMNKALELFRKDIAAKYKELG",
+        "temperatures": [0.0, 5.06, 11.37, 17.33, 22.09, 37.04, 77.10],
+        "helicity": [34.66, 28.52, 23.22, 19.41, 17.23, 11.40, 3.02],
+        "pH": 7.0,
+        "ncap": "Ac",
+        "ccap": "Am"
+    },
+    "figure_3b": {
+        "peptide": "KDESYEELLRKTKAELLHWTKELTEEEKKALAEEGKIT",
+        "temperatures": [2.84, 10.78, 20.92, 30.89, 41.03, 51.00, 60.97, 70.94, 81.24],
+        "helicity": [24.83, 19.77, 14.94, 12.36, 9.87, 7.83, 5.88, 3.92, 3.05],
+        "pH": 7.0,
+        "ncap": null,
+        "ccap": "Am"
+    },
+    "figure_3c": {
+        "peptide": "EDAVEALRKLQAGGY",
+        "temperatures": [5.90, 12.00, 22.07, 32.14, 41.95, 52.02, 62.10, 72.17],
+        "helicity": [41.08, 38.52, 33.38, 28.74, 24.95, 21.64, 17.60, 14.78],
+        "pH": 7.0,
+        "ncap": null,
+        "ccap": null
+    },
+    "figure_3d1": {
+        "peptide": "APAEDLARYYSALRHYINLITRQRY",
+        "temperatures": [9.55, 24.78, 36.72],
+        "helicity": [27.41, 23.42, 19.42],
+        "pH": 7.0,
+        "ncap": null,
+        "ccap": "Am"
+    },
+    "figure_3d2": {
+        "peptide": "TPAEDLARYYSALRHYINLITRQRY",
+        "temperatures": [9.85, 25.07, 36.72],
+        "helicity": [48.90, 40.91, 32.78],
+        "pH": 7.0,
+        "ncap": null,
+        "ccap": "Am"
+    },
+    "figure_3e": {
+        "peptide": "ETGTKAELLAKYEATH",
+        "temperatures": [5.01, 15.06, 24.84, 35.17, 45.21, 55.24],
+        "helicity": [29.07, 24.91, 19.07, 15.25, 11.82, 9.88],
+        "pH": 7.0,
+        "ncap": "Ac",
+        "ccap": "Am"
+    }
+}
