@@ -155,14 +155,14 @@ def debye_huckel_screening_parameter(ionic_strength: float, T: float) -> float:
     return kappa
 
 
-def debye_screening_kappa(ionic_strength: float, T: int) -> float:
+def debye_screening_kappa(ionic_strength: float, T: float) -> float:
     """Calculate the inverse of the Debye screening length (kappa) in an electrolyte.
     
     ISBN 978-0-444-63908-0
 
     Args:
         ionic_strength (float): Ionic strength of the solution in mol/L.
-        T (int): Temperature in Kelvin.
+        T (float): Temperature in Kelvin.
 
     Returns:
         float: The inverse of the Debye length (kappa) in m^-1.
