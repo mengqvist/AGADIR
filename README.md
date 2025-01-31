@@ -208,8 +208,8 @@ Below is a validation plot for Figure 3 from Munoz & Serrano (1995), showing tem
 
 
 ## Questions / To Do
-* Temperature scaling of hydrogen bonds have been added, but what about the intrinsic energies (Munoz & Serrano, 1994)?
-* Do we need to add the hydrophobic term (Munoz & Serrano, 1994)?
+* Temperature scaling of hydrogen bonds have been added, but what about the intrinsic energies (Munoz & Serrano, 1995, https://doi.org/10.1006/jmbi.1994.0024)?
+* Do we need to add the hydrophobic term (Munoz & Serrano, 1995, https://doi.org/10.1006/jmbi.1994.0024)?
 * Based on the validation plots, the model generally shows the correct trend, but some of the pH-dependent electrostatic energies look like they need work.
 * Test correct functioning of staple term or schellman term.
 * We need to locate a source for the N- and C-terminal pKa values for the individual amino acids. Currently using average value from Stryer.

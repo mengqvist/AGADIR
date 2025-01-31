@@ -5,7 +5,7 @@ from importlib import resources
 from pathlib import Path
 
 
-TITLE_FONT_SIZE = 10
+TITLE_FONT_SIZE = 8
 LEGEND_FONT_SIZE = 8
 
 def get_package_data_dir():
@@ -364,10 +364,34 @@ def reproduce_munoz_1995_figure_3(method="1s"):
     # Create figure
     fig, axs = plt.subplots(3, 2, figsize=(8, 12))
     
+    for figname, ax in zip(data.keys(), axs.flatten()):
+        fig_data = data[figname]
+        peptide = fig_data["peptide"]
+        xvals = fig_data["temperatures"]
+        paper_measured_data = fig_data["helicity"]
+        ncap = fig_data["ncap"]
+        ccap = fig_data["ccap"]
 
-
-
-
+        pyagadir_predicted_data_helix = []
+        for temp in xvals:
+            model = AGADIR(method=method, T=temp, M=0.025, pH=7.0)
+            result = model.predict(peptide, ncap=ncap, ccap=ccap)
+            pyagadir_predicted_data_helix.append(result.get_percent_helix())
+            
+        title = peptide
+        if ncap is not None:
+            title = f"{ncap}-{title}"
+        if ccap is not None:
+            title += f"-{ccap}"
+        xlabel = "Temperature (°C)"
+        _, ax = plot_peptides_helix_content(paper_measured_data,
+                                            pyagadir_predicted_data_helix, 
+                                            xvals,
+                                            title,
+                                            xlabel,
+                                            ncap, 
+                                            ccap,
+                                            ax=ax)
 
     # Adjust spacing between subplots
     plt.subplots_adjust(hspace=0.4, wspace=0.3)
