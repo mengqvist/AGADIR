@@ -1113,14 +1113,14 @@ class EnergyCalculator(PrecomputeParams):
         C_term = np.zeros(len(self.seq_list))
 
         # Calculate the interaction energy between the N-terminal and the helix macrodipole
-        N_term[self.ncap_idx] = self._electrostatic_interaction_energy(
+        N_term[0] = self._electrostatic_interaction_energy(
             qi=self.mu_helix,
             qj=self.modified_nterm_ionization_hel,
             r=self.terminal_macrodipole_distance_nterm
         )
 
         # Calculate the interaction energy between the C-terminal and the helix macrodipole
-        C_term[self.ccap_idx] = self._electrostatic_interaction_energy(
+        C_term[-1] = self._electrostatic_interaction_energy(
             qi=-self.mu_helix,
             qj=self.modified_cterm_ionization_hel,
             r=self.terminal_macrodipole_distance_cterm

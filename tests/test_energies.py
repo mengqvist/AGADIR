@@ -1,6 +1,6 @@
 import pytest
 import numpy as np
-from pyagadir.energies import PrecomputeParams
+from pyagadir.energies import PrecomputeParams, EnergyCalculator
 
 @pytest.fixture
 def precompute_instance():
@@ -11,9 +11,20 @@ def precompute_instance():
            PrecomputeParams(seq, i=2, j=16, pH=14.0, T=25.0, ionic_strength=0.1),
            PrecomputeParams(seq, i=2, j=18, pH=14.0, T=25.0, ionic_strength=0.1, ncap="Sc", ccap="Am"),)
 
+@pytest.fixture
+def precompute_energies_instance():
+    """Fixture to create an instance of PrecomputeEnergies with test inputs."""
+    seq = "ACDEFGHIKLMNPQRSTVWY"
+    return (EnergyCalculator(seq, i=0, j=20, pH=7.0, T=0.0, ionic_strength=0.05),
+            EnergyCalculator(seq, i=1, j=18, pH=7.0, T=0.0, ionic_strength=0.05),
+            EnergyCalculator(seq, i=2, j=16, pH=7.0, T=0.0, ionic_strength=0.05),
+            EnergyCalculator(seq, i=3, j=14, pH=7.0, T=0.0, ionic_strength=0.05))
+
+
 
 def test_seq_list(precompute_instance):
     """Test the seq_list property."""
+
     instance1, instance2, instance3, instance4 = precompute_instance
     assert instance1.seq_list[0] == 'A'
     assert instance1.seq_list[1] == 'C'
@@ -261,3 +272,48 @@ def test_assign_terminal_macrodipole_distances(precompute_instance):
 #     assert instance.charged_sidechain_distances_rc is not None
 
 
+#############################
+####### TEST ENERGIES #######
+#############################
+
+
+def test_terminal_macrodipole_energy(precompute_energies_instance):
+    """Test the _terminal_macrodipole_energy method.
+    Values from top of page 177 in the Lacroix et al. paper.
+    Putting the tolerance waaaay high because I adjust the pKa of the 
+    charged termini, I'm not sure they do in the paper.
+    """
+    # N-cap and C-cap
+    instance1, instance2, instance3, instance4 = precompute_energies_instance
+    n_term_energy, c_term_energy = instance1.get_dG_terminals_macrodipole()
+    assert n_term_energy is not None
+    assert c_term_energy is not None
+    assert np.isclose(n_term_energy[0], 0.81, atol=0.3)
+    assert np.isclose(c_term_energy[-1], 0.81, atol=0.3)
+
+    # N' and C'
+    n_term_energy, c_term_energy = instance2.get_dG_terminals_macrodipole()
+    assert n_term_energy is not None
+    assert c_term_energy is not None
+    assert np.isclose(n_term_energy[0], 0.36, atol=0.3)
+    assert np.isclose(c_term_energy[-1], 0.36, atol=0.3)
+
+    # N'' and C''
+    n_term_energy, c_term_energy = instance3.get_dG_terminals_macrodipole()
+    assert n_term_energy is not None
+    assert c_term_energy is not None
+    assert np.isclose(n_term_energy[0], 0.21, atol=0.3)
+    assert np.isclose(c_term_energy[-1], 0.21, atol=0.3)
+
+    # N''' and C'''
+    n_term_energy, c_term_energy = instance4.get_dG_terminals_macrodipole()
+    assert n_term_energy is not None
+    assert c_term_energy is not None
+    assert np.isclose(n_term_energy[0], 0.14, atol=0.3)
+    assert np.isclose(c_term_energy[-1], 0.14, atol=0.3)
+    
+    
+    
+    
+    
+    
