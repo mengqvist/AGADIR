@@ -77,15 +77,25 @@ def test_find_charged_pairs(precompute_instance):
     assert all(pair in charged_pairs3 for pair in expected_pairs3)
     assert all(pair in charged_pairs4 for pair in expected_pairs4)
 
-def test_calculate_r(precompute_instance):
-    """Test the _calculate_r method."""
+def test_calculate_r_backbone(precompute_instance):
+    """Test the _calculate_r_backbone method."""
     instance1, instance2, instance3, instance4 = precompute_instance
 
     # Test for a range of inputs
-    assert np.isclose(instance1._calculate_r(0), 2.1)
-    assert np.isclose(instance1._calculate_r(1), 4.1)
-    assert np.isclose(instance1._calculate_r(2), 6.1)
-    assert np.isclose(instance1._calculate_r(10), 22.1)
+    assert np.isclose(instance1._calculate_r_backbone(0), 2.1)
+    assert np.isclose(instance1._calculate_r_backbone(1), 4.1)
+    assert np.isclose(instance1._calculate_r_backbone(2), 6.1)
+    assert np.isclose(instance1._calculate_r_backbone(10), 22.1)
+
+def test_calculate_r_sidechain(precompute_instance):
+    """Test the _calculate_r_sidechain method."""
+    instance1, instance2, instance3, instance4 = precompute_instance
+
+    # Test for a range of inputs
+    assert np.isclose(instance1._calculate_r_sidechain(0), 3)
+    assert np.isclose(instance1._calculate_r_sidechain(1), 6)
+    assert np.isclose(instance1._calculate_r_sidechain(2), 9)
+    assert np.isclose(instance1._calculate_r_sidechain(10), 33)
 
 def test_electrostatic_interaction_energy(precompute_instance):
     """Test the _electrostatic_interaction_energy method."""

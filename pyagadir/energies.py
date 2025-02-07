@@ -485,8 +485,10 @@ class PrecomputeParams:
         """
         Assign the distance between the peptide terminal residues and the charged sidechains.
         """
-        self.terminal_sidechain_distances_nterm = np.full(len(self.seq_list), np.nan)
-        self.terminal_sidechain_distances_cterm = np.full(len(self.seq_list), np.nan)
+        self.terminal_sidechain_distances_nterm_hel = np.full(len(self.seq_list), np.nan)
+        self.terminal_sidechain_distances_cterm_hel = np.full(len(self.seq_list), np.nan)
+        self.terminal_sidechain_distances_nterm_rc = np.full(len(self.seq_list), np.nan)
+        self.terminal_sidechain_distances_cterm_rc = np.full(len(self.seq_list), np.nan)
 
         for idx, AA in enumerate(self.seq_list):
             if AA not in self.neg_charge_aa + self.pos_charge_aa:
@@ -495,24 +497,36 @@ class PrecomputeParams:
             n_residues_separation = idx
             c_residues_separation = len(self.seq_list) - 1 - idx
             
-            self.terminal_sidechain_distances_nterm[idx] = self._calculate_r_sidechain(n_residues_separation) # TODO: This is overly simplistic, since it does not account for the helix boundary, need a better solution
-            self.terminal_sidechain_distances_cterm[idx] = self._calculate_r_sidechain(c_residues_separation) # TODO: This is overly simplistic, since it does not account for the helix boundary, need a better solution
+            # Helical state
+            self.terminal_sidechain_distances_nterm_hel[idx] = self._calculate_r_sidechain(n_residues_separation) # TODO: This is overly simplistic, since it does not account for the helix boundary, need a better solution
+            self.terminal_sidechain_distances_cterm_hel[idx] = self._calculate_r_sidechain(c_residues_separation) # TODO: This is overly simplistic, since it does not account for the helix boundary, need a better solution
+
+            # Random-coil state
+            self.terminal_sidechain_distances_nterm_rc[idx] = self._calculate_r_sidechain(n_residues_separation) # TODO: Surely these distances should be different from that of the helix!?
+            self.terminal_sidechain_distances_cterm_rc[idx] = self._calculate_r_sidechain(c_residues_separation) # TODO: Surely these distances should be different from that of the helix!?
 
     def get_terminal_sidechain_distances(self):
         """
+
         Get the distances for the peptide terminal residues and the charged sidechains.
         """
-        return self.terminal_sidechain_distances_nterm, self.terminal_sidechain_distances_cterm
+        return self.terminal_sidechain_distances_nterm_hel, self.terminal_sidechain_distances_cterm_hel, self.terminal_sidechain_distances_nterm_rc, self.terminal_sidechain_distances_cterm_rc
     
     def show_terminal_sidechain_distances(self):
         """
         Print out the distances for the peptide terminal residues and the charged sidechains in a nicely formatted way.
         """
-        print(self._make_box("Terminal sidechain distances (Å)"))
+        print(self._make_box("Terminal sidechain distances for helical state (Å)"))
         print(f'{"sequence:".ljust(self.category_pad)} {"".join([aa.ljust(self.value_pad) for aa in self.seq_list])}')
-        print(f'{"nterm:".ljust(self.category_pad)} {"".join([f"{d:.1f}".ljust(self.value_pad) for d in self.terminal_sidechain_distances_nterm])}')
-        print(f'{"cterm:".ljust(self.category_pad)} {"".join([f"{d:.1f}".ljust(self.value_pad) for d in self.terminal_sidechain_distances_cterm])}')
+        print(f'{"nterm:".ljust(self.category_pad)} {"".join([f"{d:.1f}".ljust(self.value_pad) for d in self.terminal_sidechain_distances_nterm_hel])}')
+        print(f'{"cterm:".ljust(self.category_pad)} {"".join([f"{d:.1f}".ljust(self.value_pad) for d in self.terminal_sidechain_distances_cterm_hel])}')
         print("")
+        print(self._make_box("Terminal sidechain distances for random-coil state (Å)"))
+        print(f'{"sequence:".ljust(self.category_pad)} {"".join([aa.ljust(self.value_pad) for aa in self.seq_list])}')
+        print(f'{"nterm:".ljust(self.category_pad)} {"".join([f"{d:.1f}".ljust(self.value_pad) for d in self.terminal_sidechain_distances_nterm_rc])}')
+        print(f'{"cterm:".ljust(self.category_pad)} {"".join([f"{d:.1f}".ljust(self.value_pad) for d in self.terminal_sidechain_distances_cterm_rc])}')
+        print("")
+
 
     def _assign_terminal_macrodipole_distances(self):
         """
@@ -737,10 +751,10 @@ class PrecomputeParams:
                         sidechain_distance_angstrom = 99
                         q2 = current_cterm_ionization
                     elif AA1 == 'Nterm' and AA2 in self.neg_charge_aa + self.pos_charge_aa:
-                        sidechain_distance_angstrom = self.terminal_sidechain_distances_nterm[idx2]
+                        sidechain_distance_angstrom = self.terminal_sidechain_distances_nterm_hel[idx2]
                         q2 = current_seq_ionization[idx2]
                     elif AA1 in self.neg_charge_aa + self.pos_charge_aa and AA2 == 'Cterm':
-                        sidechain_distance_angstrom = self.terminal_sidechain_distances_cterm[idx1]
+                        sidechain_distance_angstrom = self.terminal_sidechain_distances_cterm_hel[idx1]
                         q2 = current_cterm_ionization
                     else:
                         sidechain_distance_angstrom = self.sidechain_sidechain_distances_hel[idx1, idx2]
@@ -1235,27 +1249,56 @@ class EnergyCalculator(PrecomputeParams):
             if AA1 not in self.neg_charge_aa + self.pos_charge_aa:
                 continue
                 
-            # Get distance from N-terminal to this residue
-            n_distance = self.terminal_sidechain_distances_nterm[idx]
-            
-            # Get distance from C-terminal to this residue  
-            c_distance = self.terminal_sidechain_distances_cterm[idx]
+            # Ignore residues that are not in the helix, since the whole premise of AGADIR is 
+            # to compare the energy differnece between helix and random coil states.
+            # Residues in the coil regions are thus irrelevant in this function becaus
+            # the energy will be the same.
+            if idx not in self.helix_indices:
+                continue
 
-            # N-terminal interaction
-            energy_N[idx] = self._electrostatic_interaction_energy(
+            # Get distance from N-terminal to this residue
+            n_distance_hel = self.terminal_sidechain_distances_nterm_hel[idx]
+            c_distance_hel = self.terminal_sidechain_distances_cterm_hel[idx]
+            n_distance_rc = self.terminal_sidechain_distances_nterm_rc[idx]
+            c_distance_rc = self.terminal_sidechain_distances_cterm_rc[idx]
+
+            # N-terminal interaction for the helixal peptide
+            G_hel_N = self._electrostatic_interaction_energy(
                 qi=self.modified_nterm_ionization_hel,
                 qj=self.modified_seq_ionization_hel[idx],
-                r=n_distance
-            )
-                
-            # C-terminal interaction
-            energy_C[idx] = self._electrostatic_interaction_energy(
-                qi=self.modified_cterm_ionization_hel,
-                qj=self.modified_seq_ionization_hel[idx],
-                r=c_distance
+                r=n_distance_hel
             )
 
+            # N-terminal interaction for the random-coil peptide
+            G_rc_N = self._electrostatic_interaction_energy(
+                qi=self.modified_nterm_ionization_rc,
+                qj=self.modified_seq_ionization_rc[idx],
+                r=n_distance_rc
+            )
+
+            # Assign the difference to the N-terminal interaction energy
+            energy_N[idx] = (G_hel_N - G_rc_N)
+                
+            # C-terminal interaction for the helical peptide
+            G_hel_C = self._electrostatic_interaction_energy(
+                qi=self.modified_cterm_ionization_hel,
+                qj=self.modified_seq_ionization_hel[idx],
+                r=c_distance_hel
+            )
+
+            # C-terminal interaction for the random-coil peptide
+            G_rc_C = self._electrostatic_interaction_energy(
+                qi=self.modified_cterm_ionization_rc,
+                qj=self.modified_seq_ionization_rc[idx],
+                r=c_distance_rc
+            )
+
+            # Assign the difference to the C-terminal interaction energy
+            energy_C[idx] = (G_hel_C - G_rc_C)
+
         return energy_N, energy_C
+
+
 
     def get_dG_sidechain_sidechain_electrost(self) -> np.ndarray:
         """
