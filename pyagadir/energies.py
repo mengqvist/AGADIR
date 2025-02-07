@@ -956,7 +956,25 @@ class EnergyCalculator(PrecomputeParams):
 
         # Nc-1 	Normal N-cap values.
         else:
-            energy[self.ncap_idx] = self.table_1_lacroix.loc[self.Ncap_AA, "Nc-1"]
+            # Another special case for when Asp is charged, then it gets the energy of Asn
+            # outlined on page 175 of the 1998 Lacroix paper
+            # Assign according to the ionization state of the residue
+            if self.Ncap_AA == "D":
+                q = abs(self.modified_seq_ionization_hel[self.ncap_idx])
+                energy[self.ncap_idx] = q * self.table_1_lacroix.loc["N", "Nc-1"] + (1 - q) * self.table_1_lacroix.loc["D", "Nc-1"]
+            else:
+                energy[self.ncap_idx] = self.table_1_lacroix.loc[self.Ncap_AA, "Nc-1"]
+
+        # Need to deal with charged Cys, His and Asp as outlined on page 175 of the 1998 Lacroix paper
+        # capping contribution of these two residues is 1 kcal/mol more favorable when Cys is charged or His is neutral
+        if self.Ncap_AA in ["C", "D"]:
+            # get ionization state and assign energy accordingly
+            q = abs(self.modified_seq_ionization_hel[self.ncap_idx])
+            if self.Ncap_AA == "C":
+                energy[self.ncap_idx] += q
+            else:
+
+                energy[self.ncap_idx] += (1 - q)
 
         return energy
 
