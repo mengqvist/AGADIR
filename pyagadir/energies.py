@@ -248,7 +248,7 @@ class PrecomputeParams:
                 result.append((AA1, AA2, idx1, idx2))  # Include global positions
         self.charged_pairs = result
 
-    def _calculate_r(self, N: int) -> float:
+    def _calculate_r_backbone(self, N: int) -> float:
         """Function to calculate the distance r from the peptide terminal to the helix
         start, where N is the number of residues between the terminal and the helix.
         p. 177 of Lacroix, 1998. Distances in Ångströms as 2.1, 4.1, 6.1... The function is 
@@ -266,6 +266,22 @@ class PrecomputeParams:
         r = 0.1 + (N + 1) * 2
         return r
 
+    def _calculate_r_sidechain(self, N: int) -> float:
+        """Function to calculate the distance r from the charged sidechains in the coil region
+        to the N- and C-terminal capping residues. p. 177 of Lacroix, 1998. Distances in 
+        Ångströms as 6, 9, 12, ... The function is needed for correct sidechain-macrodipole and
+        coil sidechain-helix sidechain interactions.We only calculate distances up to the helix 
+        N- and C-terminal capping residues.
+  
+        Args:
+            N (int): The number of residues between the charged sidechain and the helix start.
+
+        Returns:
+            float: The calculated distance r in Ångströms.
+        """
+        r = (N + 1) * 3
+        return r
+    
     def _electrostatic_interaction_energy(self, qi: float, qj: float, r: float) -> float:
         """Calculate the interaction energy between two charges by
         applying equation 6 from Lacroix, 1998.
@@ -401,7 +417,7 @@ class PrecomputeParams:
         13 residues apart, so distances greater than 13 are assigned a large distance (99 Å).
         The exact number for large distances does not matter much, since the effect will be screened
         by the solvent. Furthermore, for residues outside of the helix, the distances are calculated
-        using the function _calculate_r, which is based on the number of residues between the terminal
+        using the function _calculate_r)sidechain, which is based on the number of residues between the terminal
         and the helix start.
         """
         self.sidechain_macrodipole_distances_nterm = np.full((len(self.seq_list)), np.nan)
@@ -430,13 +446,16 @@ class PrecomputeParams:
                     C_key = f"C{n_residues_C_separation}" if n_residues_C_separation != 0 else "Ccap"
                     C_distance_angstrom = self.table_7_ccap_lacroix.loc[AA, C_key]
     
-            # If amino acid is in the coil region, calculate the distance to the helix start and end
-            else:
-                n_residues_N_separation = abs(self.ncap_idx - idx)  # Distance to helix start
-                N_distance_angstrom = self._calculate_r(n_residues_N_separation)
+            # If amino acid is in the coil region, calculate the distance from sidechain to the helix start and end
+            elif idx < self.ncap_idx:
+                n_residues_N_separation = self.ncap_idx - idx  # Distance to helix start
+                N_distance_angstrom = self._calculate_r_sidechain(n_residues_N_separation)
+                C_distance_angstrom = 99
 
-                n_residues_C_separation = abs(self.ccap_idx - idx)  # Distance to helix end
-                C_distance_angstrom = self._calculate_r(n_residues_C_separation)
+            elif idx > self.ccap_idx:
+                n_residues_C_separation = idx - self.ccap_idx  # Distance to helix end
+                C_distance_angstrom = self._calculate_r_sidechain(n_residues_C_separation)
+                N_distance_angstrom = 99
 
             # Assign the distances to the arrays
             self.sidechain_macrodipole_distances_nterm[idx] = N_distance_angstrom
@@ -476,8 +495,8 @@ class PrecomputeParams:
             n_residues_separation = idx
             c_residues_separation = len(self.seq_list) - 1 - idx
             
-            self.terminal_sidechain_distances_nterm[idx] = self._calculate_r(n_residues_separation) # TODO: This is overly simplistic, since it does not account for the helix boundary, need a better solution
-            self.terminal_sidechain_distances_cterm[idx] = self._calculate_r(c_residues_separation) # TODO: This is overly simplistic, since it does not account for the helix boundary, need a better solution
+            self.terminal_sidechain_distances_nterm[idx] = self._calculate_r_sidechain(n_residues_separation) # TODO: This is overly simplistic, since it does not account for the helix boundary, need a better solution
+            self.terminal_sidechain_distances_cterm[idx] = self._calculate_r_sidechain(c_residues_separation) # TODO: This is overly simplistic, since it does not account for the helix boundary, need a better solution
 
     def get_terminal_sidechain_distances(self):
         """
@@ -499,8 +518,8 @@ class PrecomputeParams:
         """
         Assign the distance between the peptide terminal residues and the helix macrodipole.
         """
-        self.terminal_macrodipole_distance_nterm = self._calculate_r(self.ncap_idx)
-        self.terminal_macrodipole_distance_cterm = self._calculate_r(len(self.seq_list) - 1 - self.ccap_idx)
+        self.terminal_macrodipole_distance_nterm = self._calculate_r_backbone(self.ncap_idx)
+        self.terminal_macrodipole_distance_cterm = self._calculate_r_backbone(len(self.seq_list) - 1 - self.ccap_idx)
 
     def get_terminal_macrodipole_distances(self) -> tuple[float, float]:
         """
@@ -1130,17 +1149,22 @@ class EnergyCalculator(PrecomputeParams):
         N_term = np.zeros(len(self.seq_list))
         C_term = np.zeros(len(self.seq_list))
 
+        if self.ncap_idx in self.helix_indices:
+            qj = self.modified_nterm_ionization_hel
+        else:
+            qj = self.modified_nterm_ionization_rc
+
         # Calculate the interaction energy between the N-terminal and the helix macrodipole
         N_term[self.ncap_idx] = self._electrostatic_interaction_energy(
             qi=self.mu_helix,
-            qj=self.modified_nterm_ionization_hel,
+            qj=qj,
             r=self.terminal_macrodipole_distance_nterm
         )
 
         # Calculate the interaction energy between the C-terminal and the helix macrodipole
         C_term[self.ccap_idx] = self._electrostatic_interaction_energy(
             qi=-self.mu_helix,
-            qj=self.modified_cterm_ionization_hel,
+            qj=self.modified_cterm_ionization_hel,  
             r=self.terminal_macrodipole_distance_cterm
         )
 
@@ -1168,19 +1192,24 @@ class EnergyCalculator(PrecomputeParams):
             if aa not in self.neg_charge_aa + self.pos_charge_aa:
                 continue
 
-            # N-terminal interaction
+            if idx in self.helix_indices:
+                qj = self.modified_seq_ionization_hel[idx]
+            else:
+                qj = self.modified_seq_ionization_rc[idx]
+
             energy_N[self.ncap_idx] += self._electrostatic_interaction_energy(
                 qi=self.mu_helix, 
-                qj=self.modified_seq_ionization_hel[idx], 
+                qj=qj, 
                 r=self.sidechain_macrodipole_distances_nterm[idx]
             )
 
             # C-terminal interaction
             energy_C[self.ccap_idx] += self._electrostatic_interaction_energy(
                 qi=-self.mu_helix, 
-                qj=self.modified_seq_ionization_hel[idx], 
+                qj=qj, 
                 r=self.sidechain_macrodipole_distances_cterm[idx]
             )
+
 
         return energy_N, energy_C
         
