@@ -1,0 +1,150 @@
+{
+    "helix_parameters": {
+        "rise_per_residue": 1.5,
+        "radius": 2.3,
+        "angle_per_residue": 100,
+        "bb_peptide_bond": 1.32,
+        "bb_ca_distance": 3.8
+    },
+    "coil_parameters": {
+        "bb_peptide_bond": 1.32,
+        "bb_ca_distance": 3.8,
+        "persistence_length": 7.0
+    },
+    "residue_parameters": {
+        "A": {
+            "extension": 1.5,
+            "volume": 88.6,
+            "flexibility": 0.5,
+            "hydrophobicity": 0.31
+        },
+        "C": {
+            "extension": 2.7,
+            "volume": 108.5,
+            "flexibility": 0.6,
+            "hydrophobicity": 1.54
+        },
+        "D": {
+            "extension": 3.1,
+            "volume": 111.1,
+            "flexibility": 0.7,
+            "hydrophobicity": -0.77
+        },
+        "E": {
+            "extension": 4.1,
+            "volume": 138.4,
+            "flexibility": 0.7,
+            "hydrophobicity": -0.64
+        },
+        "F": {
+            "extension": 4.3,
+            "volume": 189.9,
+            "flexibility": 0.4,
+            "hydrophobicity": 1.79
+        },
+        "G": {
+            "extension": 0.0,
+            "volume": 60.1,
+            "flexibility": 1.0,
+            "hydrophobicity": 0.00
+        },
+        "H": {
+            "extension": 4.0,
+            "volume": 153.2,
+            "flexibility": 0.6,
+            "hydrophobicity": 0.13
+        },
+        "I": {
+            "extension": 3.1,
+            "volume": 166.7,
+            "flexibility": 0.4,
+            "hydrophobicity": 1.80
+        },
+        "K": {
+            "extension": 4.7,
+            "volume": 168.6,
+            "flexibility": 0.8,
+            "hydrophobicity": -0.99
+        },
+        "L": {
+            "extension": 3.2,
+            "volume": 166.7,
+            "flexibility": 0.5,
+            "hydrophobicity": 1.70
+        },
+        "M": {
+            "extension": 3.8,
+            "volume": 162.9,
+            "flexibility": 0.6,
+            "hydrophobicity": 1.23
+        },
+        "N": {
+            "extension": 3.0,
+            "volume": 114.1,
+            "flexibility": 0.7,
+            "hydrophobicity": -0.60
+        },
+        "P": {
+            "extension": 2.1,
+            "volume": 112.7,
+            "flexibility": 0.3,
+            "hydrophobicity": 0.72
+        },
+        "Q": {
+            "extension": 3.9,
+            "volume": 143.8,
+            "flexibility": 0.7,
+            "hydrophobicity": -0.22
+        },
+        "R": {
+            "extension": 5.1,
+            "volume": 173.4,
+            "flexibility": 0.8,
+            "hydrophobicity": -1.01
+        },
+        "S": {
+            "extension": 2.2,
+            "volume": 89.0,
+            "flexibility": 0.7,
+            "hydrophobicity": -0.04
+        },
+        "T": {
+            "extension": 2.4,
+            "volume": 116.1,
+            "flexibility": 0.6,
+            "hydrophobicity": 0.26
+        },
+        "V": {
+            "extension": 2.5,
+            "volume": 140.0,
+            "flexibility": 0.4,
+            "hydrophobicity": 1.22
+        },
+        "W": {
+            "extension": 4.8,
+            "volume": 227.8,
+            "flexibility": 0.4,
+            "hydrophobicity": 2.25
+        },
+        "Y": {
+            "extension": 4.5,
+            "volume": 193.6,
+            "flexibility": 0.5,
+            "hydrophobicity": 0.96
+        }
+    },
+    "distance_parameters": {
+        "coil_scaling_factor": 1.2,
+        "helix_scaling_factor": 0.8,
+        "min_sidechain_distance": 2.1,
+        "min_backbone_distance": 2.1
+    },
+    "optimization_parameters": {
+        "extension_range": [0.0, 6.0],
+        "flexibility_range": [0.2, 1.0],
+        "coil_scaling_factor_range": [0.5, 2.0],
+        "helix_scaling_factor_range": [0.5, 2.0],
+        "coil_ca_distance_range": [0.5, 2.0],
+        "coil_persistence_length_range": [5.0, 10.0]
+    }
+}
