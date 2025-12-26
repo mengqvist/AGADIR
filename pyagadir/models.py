@@ -356,8 +356,14 @@ class AGADIR(object):
                 100 * self.result.K_tot_array / (1.0 + self.result.K_tot)
             )
 
-        # get overall percentage helix
-        self.result.percent_helix = np.round(np.mean(self.result.helical_propensity), 2)
+        # # get overall percentage helix
+        # self.result.percent_helix = np.round(np.mean(self.result.helical_propensity), 2)
+
+        # Exclude synthetic cap tokens ("Ac", "Am") from % helix averaging
+        start = 1 if self.result.ncap is not None else 0
+        end = -1 if self.result.ccap is not None else None
+        self.result.percent_helix = float(np.round(np.mean(self.result.helical_propensity[start:end]), 2))
+
 
     def predict(self, seq: str, ncap: str = None, ccap: str = None, debug: bool = False) -> ModelResult:
         """
