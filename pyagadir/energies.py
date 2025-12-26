@@ -856,6 +856,39 @@ class EnergyCalculator(PrecomputeParams):
         """
         super().__init__(seq, i, j, pH, T, ionic_strength, ncap, ccap)
     
+        self._AROMATIC = {"F", "Y", "W"}
+        self._ALIPHATIC = {"A", "V", "L", "I", "M"}  # you can expand if you want (e.g. C)
+
+    def _dCp_hydroph_kcal(self, aa1: str, aa2: str) -> float:
+        """
+        Hydrophobic heat capacity increment in kcal/(mol*K), helix-formation direction.
+        Implements the Muñoz & Serrano linear form (their Eq. 18) with a separate
+        aromatic-aromatic scale.
+        """
+        # Only apply to hydrophobic pairs
+        if not ((aa1 in self._ALIPHATIC or aa1 in self._AROMATIC) and (aa2 in self._ALIPHATIC or aa2 in self._AROMATIC)):
+            return 0.0
+
+        T = self.T_kelvin
+        Tref = 273.15
+
+        if aa1 in self._AROMATIC and aa2 in self._AROMATIC:
+            # aromatic-aromatic (smaller magnitude)
+            return (-4.0 + 0.025 * (T - Tref)) / 1000.0  # cal -> kcal
+        else:
+            # aliphatic-aliphatic or aromatic-aliphatic
+            return (-8.0 + 0.05 * (T - Tref)) / 1000.0  # cal -> kcal
+
+    def _entropic_cp_correct(self, dG_ref: float, dCp: float) -> float:
+        """
+        Eq. (10)-style entropic correction:
+        dG(T) = (T/Tref)*dG_ref - T*dCp*ln(T/Tref)
+        """
+        T = self.T_kelvin
+        Tref = 273.15
+        return (T / Tref) * dG_ref - T * dCp * np.log(T / Tref)
+
+
     def get_dG_Int(self) -> np.ndarray:
         """
         Get the intrinsic free energy contributions for a helical segment.
@@ -869,8 +902,9 @@ class EnergyCalculator(PrecomputeParams):
         """
         # Initialize energy array
         energy = np.zeros(len(self.seq_list))
+        T = self.T_kelvin
         Tref = 273.15  # 0°C reference temperature
-        dCp = 0.0015  # kcal/(mol*K)
+        dCp = -0.0015  # kcal/(mol*K)
 
         # Iterate over the helix and get the intrinsic energy for each residue, 
         # not including residues that are capping for the helical segment
@@ -901,8 +935,12 @@ class EnergyCalculator(PrecomputeParams):
                 basic_energy_neutral = self.table_1_lacroix.loc[AA, "Neutral"]
                 energy[idx] = q * basic_energy + (1 - q) * basic_energy_neutral
 
-        # # Apply Equation (7) correction
-        # energy += self.T_kelvin * (dCp * np.log(self.T_kelvin / Tref)) # TODO: This is not correct. How to implement this?
+        # Apply Muñoz & Serrano (1995) Eq. (9) temperature correction
+        # Interpret table_1 values as ΔG_ref at Tref (0°C).
+
+        # ΔG(T) = ΔG_ref  * (T/Tref)- T*dCp*ln(T/Tref)
+        energy = energy * (T / Tref) - T * dCp * np.log(T / Tref)
+
 
         return energy
     
@@ -1014,9 +1052,15 @@ class EnergyCalculator(PrecomputeParams):
                 # print("staple case iii")
                 energy *= 0.5
 
-        else:
-            pass
-            # print("no staple motif")
+        # Apply hydrophobic temperature correction to the N'–N4 interaction
+        # N' is the residue BEFORE Ncap
+        if energy != 0.0 and self.ncap_idx > 0:
+            Nprime = self.seq_list[self.ncap_idx - 1]
+            N4 = self.N4_AA
+
+            dCp_h = self._dCp_hydroph_kcal(Nprime, N4)
+            if dCp_h != 0.0:
+                energy = self._entropic_cp_correct(energy, dCp_h)
 
         return energy
 
@@ -1067,7 +1111,12 @@ class EnergyCalculator(PrecomputeParams):
                 q_i3 = self.modified_seq_ionization_hel[idx + 3]
                 energy[idx] = base_energy * abs(q_i * q_i3) # TODO: This scaling is not correct, it should use the values from table 5
             else:
-                energy[idx] = base_energy
+                # Hydrophobic pairs need Eq (10)/(18) temperature dependence
+                dCp_h = self._dCp_hydroph_kcal(AAi, AAi3)
+                if dCp_h != 0.0:
+                    energy[idx] = self._entropic_cp_correct(base_energy, dCp_h)
+                else:
+                    energy[idx] = base_energy
 
         return energy
     
@@ -1097,7 +1146,12 @@ class EnergyCalculator(PrecomputeParams):
                 q_i4 = self.modified_seq_ionization_hel[idx + 4]
                 energy[idx] = base_energy * abs(q_i * q_i4) # TODO: This scaling is not correct, it should use the values from table 5
             else:
-                energy[idx] = base_energy
+                # Hydrophobic pairs need Eq (10)/(18) temperature dependence
+                dCp_h = self._dCp_hydroph_kcal(AAi, AAi4)
+                if dCp_h != 0.0:
+                    energy[idx] = self._entropic_cp_correct(base_energy, dCp_h)
+                else:
+                    energy[idx] = base_energy
 
         return energy
 
