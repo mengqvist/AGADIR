@@ -900,12 +900,23 @@ class EnergyCalculator(PrecomputeParams):
 
     def _entropic_cp_correct(self, dG_ref: float, dCp: float) -> float:
         """
-        Eq. (10)-style entropic correction:
-        dG(T) = (T/Tref)*dG_ref - T*dCp*ln(T/Tref)
+        Corrects free energy for temperature dependence using Heat Capacity (dCp).
+        Assumes the reference value dG_ref is purely entropic at Tref (dH_ref ~ 0).
+        
+        Formula: dG(T) = dG_ref * (T/Tref) + dCp * [ (T - Tref) - T * ln(T/Tref) ]
         """
         T = self.T_kelvin
-        Tref = 273.15 # 0°C reference temperature
-        return (T / Tref) * dG_ref - T * dCp * np.log(T / Tref)
+        Tref = 273.15  # 0°C reference temperature
+        
+        # Linear scaling of the reference free energy (entropic scaling)
+        scaled_ref = dG_ref * (T / Tref)
+        
+        # Heat capacity contribution (Enthalpic + Entropic terms)
+        # Note: If dCp is negative (hydrophobic folding), this term adds a 
+        # positive (destabilizing) penalty as T diverges from Tref.
+        cp_term = dCp * ((T - Tref) - T * np.log(T / Tref))
+        
+        return scaled_ref + cp_term
 
 
     def get_dG_Int(self) -> np.ndarray:
