@@ -280,7 +280,7 @@ class PrecomputeParams:
         """
         distance_r_meter = r * 1e-10  # Convert distance from Ångströms to meters
         screening_factor = math.exp(-self.kappa * distance_r_meter)
-        coulomb_term = (self.e**2 * qi * qj) / (4 * math.pi * self.epsilon_0 * self.epsilon_r * distance_r_meter)
+        coulomb_term = (self.e**2 * qi * qj) / (3 * math.pi * self.epsilon_0 * self.epsilon_r * distance_r_meter) #  Yep, 3 is indeed correct. Seems to be some kind of parameter fitting. Lacroix, 1998.
         energy_joules = coulomb_term * screening_factor
         energy_kcal_mol = self.N_A * energy_joules / 4184
         return energy_kcal_mol
@@ -711,23 +711,41 @@ class PrecomputeParams:
                 # 2. Get charged sidechain interactions using current charges
                 # Only consider interactions with other charged sidechains
                 for idx2, AA2 in list(enumerate(self.seq_list)) + [(-1, 'Nterm'), (len(self.seq_list), 'Cterm')]:
-                    if idx2 <= idx1 or AA2 not in self.neg_charge_aa + self.pos_charge_aa + ['Nterm', 'Cterm']:
+                    
+                    # Skip self-interaction and non-charged neighbors
+                    if (idx1 == idx2 and AA1 == AA2) or AA2 not in self.neg_charge_aa + self.pos_charge_aa + ['Nterm', 'Cterm']:
                         continue
 
-                    if AA1 == 'Nterm' and AA2 == 'Cterm':
+                    # CASE 1: Terminal to Terminal
+                    if (AA1 == 'Nterm' and AA2 == 'Cterm') or (AA1 == 'Cterm' and AA2 == 'Nterm'):
                         sidechain_distance_angstrom = 99
-                        q2 = current_cterm_ionization
+                        q2 = current_cterm_ionization if AA2 == 'Cterm' else current_nterm_ionization
+
+                    # CASE 2: N-term to Sidechain (or vice versa)
+                    # Logic: If one is Nterm, use the OTHER's index to look up distance in nterm array
                     elif AA1 == 'Nterm' and AA2 in self.neg_charge_aa + self.pos_charge_aa:
                         sidechain_distance_angstrom = self.terminal_sidechain_distances_nterm[idx2]
                         q2 = current_seq_ionization[idx2]
-                    elif AA1 in self.neg_charge_aa + self.pos_charge_aa and AA2 == 'Cterm':
+                    elif AA2 == 'Nterm' and AA1 in self.neg_charge_aa + self.pos_charge_aa:
+                        sidechain_distance_angstrom = self.terminal_sidechain_distances_nterm[idx1]
+                        q2 = current_nterm_ionization
+
+                    # CASE 3: C-term to Sidechain (or vice versa)
+                    # Logic: If one is Cterm, use the OTHER's index to look up distance in cterm array
+                    elif AA1 == 'Cterm' and AA2 in self.neg_charge_aa + self.pos_charge_aa:
+                        sidechain_distance_angstrom = self.terminal_sidechain_distances_cterm[idx2]
+                        q2 = current_seq_ionization[idx2]
+                    elif AA2 == 'Cterm' and AA1 in self.neg_charge_aa + self.pos_charge_aa:
                         sidechain_distance_angstrom = self.terminal_sidechain_distances_cterm[idx1]
                         q2 = current_cterm_ionization
+
+                    # CASE 4: Sidechain to Sidechain 
                     else:
+                        # Both indices must be valid sequence indices (0 to len-1)
                         sidechain_distance_angstrom = self.sidechain_sidechain_distances_hel[idx1, idx2]
                         q2 = current_seq_ionization[idx2]
                         
-                    # Use current ionization states to calculate deltaG, but only 
+                    # Use current ionization states to calculate deltaG
                     if sidechain_distance_angstrom < 40:
                         deltaG = self._electrostatic_interaction_energy(qi=q1, 
                                                                         qj=q2, 
@@ -858,6 +876,7 @@ class EnergyCalculator(PrecomputeParams):
     
         self._AROMATIC = {"F", "Y", "W"}
         self._ALIPHATIC = {"A", "V", "L", "I", "M"}  # you can expand if you want (e.g. C)
+        self.dCp = -0.0015  # kcal/(mol*K)
 
     def _dCp_hydroph_kcal(self, aa1: str, aa2: str) -> float:
         """
@@ -904,7 +923,7 @@ class EnergyCalculator(PrecomputeParams):
         energy = np.zeros(len(self.seq_list))
         T = self.T_kelvin
         Tref = 273.15  # 0°C reference temperature
-        dCp = -0.0015  # kcal/(mol*K)
+        dCp = self.dCp
 
         # Iterate over the helix and get the intrinsic energy for each residue, 
         # not including residues that are capping for the helical segment
@@ -938,8 +957,8 @@ class EnergyCalculator(PrecomputeParams):
         # Apply Muñoz & Serrano (1995) Eq. (9) temperature correction
         # Interpret table_1 values as ΔG_ref at Tref (0°C).
 
-        # ΔG(T) = ΔG_ref  * (T/Tref)- T*dCp*ln(T/Tref)
-        energy = energy * (T / Tref) - T * dCp * np.log(T / Tref)
+        # ΔG(T) = ΔG_ref  * (T/Tref)
+        energy = energy * (T / Tref)
 
 
         return energy
@@ -965,10 +984,34 @@ class EnergyCalculator(PrecomputeParams):
         # Temperature correction
         Tref = 273.15  # 0°C reference temperature
         Href = -0.895  # kcal/mol
-        dCp = 0.0015  # kcal/(mol*K)
-        dG_per_hbond = Href + dCp * (self.T_kelvin - Tref) # uses equation 6 from Munoz et al. 1994
+
+        # dG = dH - T*dS, where dS includes the Cp ln(T/Tref) term
+        delta_H = Href + self.dCp * (self.T_kelvin - Tref)
+        delta_S_Cp = self.dCp * np.log(self.T_kelvin / Tref)
+        
+        # Assuming dS_ref is 0 for H-bonds as per Munoz 1995 III
+        dG_per_hbond = delta_H - (self.T_kelvin * delta_S_Cp)
 
         return dG_per_hbond * n_hbonds
+
+    def _apply_temp_correction_hbond_like(self, dG_ref_values: np.ndarray) -> np.ndarray:
+            """
+            Applies the Gibbs-Helmholtz heat capacity correction to energies
+            that are primarily enthalpic/H-bond based (like capping).
+            """
+            Tref = 273.15
+            
+            # Calculate the Enthalpy at temperature T
+            # Assuming the table value dG_ref is effectively dH_ref at Tref (since dS_ref ~ 0 for H-bonds)
+            delta_H = dG_ref_values + self.dCp * (self.T_kelvin - Tref)
+            
+            # Calculate the Entropic cost due to Heat Capacity
+            delta_S_Cp = self.dCp * np.log(self.T_kelvin / Tref)
+            
+            # Final dG = dH - T * dS_Cp
+            dG_corrected = delta_H - (self.T_kelvin * delta_S_Cp)
+            
+            return dG_corrected
 
     def get_dG_Ncap(self) -> np.ndarray:
         """
@@ -996,7 +1039,7 @@ class EnergyCalculator(PrecomputeParams):
         else:
             energy[self.ncap_idx] = self.table_1_lacroix.loc[self.Ncap_AA, "Nc-1"]
 
-        return energy
+        return self._apply_temp_correction_hbond_like(energy)
 
     def get_dG_Ccap(self) -> np.ndarray:
         """
@@ -1015,7 +1058,7 @@ class EnergyCalculator(PrecomputeParams):
         else:
             energy[self.ccap_idx] = self.table_1_lacroix.loc[self.Ccap_AA, "Cc-1"]
 
-        return energy
+        return self._apply_temp_correction_hbond_like(energy)
 
     def get_dG_staple(self) -> float:
         """
@@ -1094,28 +1137,33 @@ class EnergyCalculator(PrecomputeParams):
         at least one is not charged; scale by (1 - p_i * p_j).
         - No abs(q_i*q_j) scaling here; electrostatics handled elsewhere.
 
+        Side chain-side chain interaction between AAi and AAi+3 (Table IVa, non-charged term).
+        For pairs where BOTH residues are titratable, suppress the Table-IV contribution
+        in the both-charged microstate: multiply by (1 - p_i * p_j), where p = |q|.
+
         Returns:
             np.ndarray: The free energy contributions for each interaction.
         """
         energy = np.zeros(len(self.seq_list))
-        ionizable = set(self.pos_charge_aa + self.neg_charge_aa)
 
         for idx in self.helix_indices[:-3]:
             AAi = self.seq_list[idx]
             AAi3 = self.seq_list[idx + 3]
 
+            # Skip terminal modifications
             if AAi in ["Ac", "Am", "Sc"] or AAi3 in ["Ac", "Am", "Sc"]:
                 continue
 
-            e_iv = self.table_4a_lacroix.loc[AAi, AAi3] / 100.0  # kcal/mol
+            # Table IV values are "kcal/mol * 100" -> convert to kcal/mol
+            base = self.table_4a_lacroix.loc[AAi, AAi3] / 100.0
 
-            if (AAi in ionizable) and (AAi3 in ionizable):
-                # p ~= fraction charged; your array stores signed average charge, so abs() works.
-                p_i = min(1.0, max(0.0, abs(self.modified_seq_ionization_hel[idx])))
-                p_j = min(1.0, max(0.0, abs(self.modified_seq_ionization_hel[idx + 3])))
-                energy[idx] = e_iv * (1.0 - p_i * p_j)
-            else:
-                energy[idx] = e_iv
+            # If both are titratable, Table IV is intended for "not both charged" states.
+            if (AAi in (self.pos_charge_aa + self.neg_charge_aa)) and (AAi3 in (self.pos_charge_aa + self.neg_charge_aa)):
+                p_i = abs(self.modified_seq_ionization_hel[idx])
+                p_j = abs(self.modified_seq_ionization_hel[idx + 3])
+                base = base * (1.0 - p_i * p_j)
+
+            energy[idx] = base
 
         return energy
     
@@ -1132,50 +1180,60 @@ class EnergyCalculator(PrecomputeParams):
             at least one is not charged; scale by (1 - p_i * p_j).
         - Table V terms are ADDED when the relevant residue is charged (weighted by p).
         - No abs(q_i*q_j) scaling here; electrostatics handled elsewhere.
+
+        - Table IVb is a non-charged (or "not both charged") interaction term.
+        If BOTH residues are titratable: multiply by (1 - p_i * p_j).
+
+        - Table V: additional interaction energy to ADD when one residue becomes charged
+        (pH dependent, NOT affected by ionic strength). Scale by the population of the
+        charged form of the relevant residue.
         """
         energy = np.zeros(len(self.seq_list))
-        ionizable = set(self.pos_charge_aa + self.neg_charge_aa)
 
         for idx in self.helix_indices[:-4]:
             AAi = self.seq_list[idx]
             AAi4 = self.seq_list[idx + 4]
 
+            # Skip terminal modifications
             if AAi in ["Ac", "Am", "Sc"] or AAi4 in ["Ac", "Am", "Sc"]:
                 continue
 
-            e_iv = self.table_4b_lacroix.loc[AAi, AAi4] / 100.0  # kcal/mol
+            # Table IV values are "kcal/mol * 100" -> convert to kcal/mol
+            base = self.table_4b_lacroix.loc[AAi, AAi4] / 100.0
 
-            # charged fractions (proxy): abs(signed mean charge)
-            p_i = min(1.0, max(0.0, abs(self.modified_seq_ionization_hel[idx])))
-            p_j = min(1.0, max(0.0, abs(self.modified_seq_ionization_hel[idx + 4])))
+            # Suppress Table IV in the both-charged microstate if both residues are titratable
+            if (AAi in (self.pos_charge_aa + self.neg_charge_aa)) and (AAi4 in (self.pos_charge_aa + self.neg_charge_aa)):
+                p_i = abs(self.modified_seq_ionization_hel[idx])
+                p_j = abs(self.modified_seq_ionization_hel[idx + 4])
+                base = base * (1.0 - p_i * p_j)
 
-            # Table IV: suppress both-charged microstate for ionizable-ionizable pairs
-            if (AAi in ionizable) and (AAi4 in ionizable):
-                e = e_iv * (1.0 - p_i * p_j)
-            else:
-                e = e_iv
+            extra = 0.0
 
-            # Table V: add when residue is charged
-            # (1) Aromatic(i) - His+(i+4): -0.4 kcal/mol; /3 unless His at C1 or C-cap
-            if (AAi in ["F", "Y", "W"]) and (AAi4 == "H"):
-                his_idx = idx + 4
-                his_is_c1_or_ccap = (his_idx == self.ccap_idx) or (his_idx == (self.ccap_idx - 1))
-                scale = 1.0 if his_is_c1_or_ccap else (1.0 / 3.0)
-                e += p_j * (-0.4 * scale)
+            # --- Table V add-ons (orientation matters: position i -> position i+4) ---
+            # FYW (i) with His+ (i+4): -0.4 kcal/mol when His is at C1 or C-cap; otherwise divide by 3
+            if AAi in ["F", "Y", "W"] and AAi4 == "H":
+                p_his = abs(self.modified_seq_ionization_hel[idx + 4])  # population of His+
+                # His is "C1" if it is the residue just before C-cap; "C-cap" if it is C-cap itself
+                his_is_C1_or_Ccap = (idx + 4 == self.ccap_idx) or (idx + 4 == self.ccap_idx - 1)
+                val = -0.4 if his_is_C1_or_Ccap else (-0.4 / 3.0)
+                extra += p_his * val
 
-            # (2) Gln(i) - Asp-(i+4): -0.5 kcal/mol when Asp is charged
-            elif (AAi == "Q") and (AAi4 == "D"):
-                e += p_j * (-0.5)
+            # Gln (i) with Asp- (i+4): -0.5 kcal/mol
+            if AAi == "Q" and AAi4 == "D":
+                p_asp = abs(self.modified_seq_ionization_hel[idx + 4])  # population of Asp-
+                extra += p_asp * (-0.5)
 
-            # (3) Glu-(i) - Asn(i+4): -0.5 kcal/mol when Glu is charged
-            elif (AAi == "E") and (AAi4 == "N"):
-                e += p_i * (-0.5)
+            # Glu- (i) with Asn (i+4): -0.5 kcal/mol
+            if AAi == "E" and AAi4 == "N":
+                p_glu = abs(self.modified_seq_ionization_hel[idx])  # population of Glu-
+                extra += p_glu * (-0.5)
 
-            # (4) Gln(i) - Glu-(i+4): -0.1 kcal/mol when Glu is charged
-            elif (AAi == "Q") and (AAi4 == "E"):
-                e += p_j * (-0.1)
+            # Gln (i) with Glu- (i+4): -0.1 kcal/mol
+            if AAi == "Q" and AAi4 == "E":
+                p_glu = abs(self.modified_seq_ionization_hel[idx + 4])  # population of Glu-
+                extra += p_glu * (-0.1)
 
-            energy[idx] = e
+            energy[idx] = base + extra
 
         return energy
 
