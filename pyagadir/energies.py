@@ -885,7 +885,7 @@ class EnergyCalculator(PrecomputeParams):
         dG(T) = (T/Tref)*dG_ref - T*dCp*ln(T/Tref)
         """
         T = self.T_kelvin
-        Tref = 273.15
+        Tref = 273.15 # 0°C reference temperature
         return (T / Tref) * dG_ref - T * dCp * np.log(T / Tref)
 
 
@@ -1089,34 +1089,33 @@ class EnergyCalculator(PrecomputeParams):
         """
         Get the free energy contribution for interaction between each AAi and AAi+3 in the sequence.
 
+        - Table IV corresponds to non-charged interactions.
+        - If BOTH residues are ionizable, Table IV applies only to cases where
+        at least one is not charged; scale by (1 - p_i * p_j).
+        - No abs(q_i*q_j) scaling here; electrostatics handled elsewhere.
+
         Returns:
             np.ndarray: The free energy contributions for each interaction.
         """
         energy = np.zeros(len(self.seq_list))
+        ionizable = set(self.pos_charge_aa + self.neg_charge_aa)
 
-        # Get interaction free energies for charged residues
         for idx in self.helix_indices[:-3]:
             AAi = self.seq_list[idx]
             AAi3 = self.seq_list[idx + 3]
 
-            # Skip if N- and C-terminal modifications
             if AAi in ["Ac", "Am", "Sc"] or AAi3 in ["Ac", "Am", "Sc"]:
                 continue
 
-            base_energy = self.table_4a_lacroix.loc[AAi, AAi3] / 100
+            e_iv = self.table_4a_lacroix.loc[AAi, AAi3] / 100.0  # kcal/mol
 
-            if AAi in self.pos_charge_aa + self.neg_charge_aa and AAi3 in self.neg_charge_aa + self.pos_charge_aa:
-                # Use precomputed ionization states for the helical state
-                q_i = self.modified_seq_ionization_hel[idx]
-                q_i3 = self.modified_seq_ionization_hel[idx + 3]
-                energy[idx] = base_energy * abs(q_i * q_i3) # TODO: This scaling is not correct, it should use the values from table 5
+            if (AAi in ionizable) and (AAi3 in ionizable):
+                # p ~= fraction charged; your array stores signed average charge, so abs() works.
+                p_i = min(1.0, max(0.0, abs(self.modified_seq_ionization_hel[idx])))
+                p_j = min(1.0, max(0.0, abs(self.modified_seq_ionization_hel[idx + 3])))
+                energy[idx] = e_iv * (1.0 - p_i * p_j)
             else:
-                # Hydrophobic pairs need Eq (10)/(18) temperature dependence
-                dCp_h = self._dCp_hydroph_kcal(AAi, AAi3)
-                if dCp_h != 0.0:
-                    energy[idx] = self._entropic_cp_correct(base_energy, dCp_h)
-                else:
-                    energy[idx] = base_energy
+                energy[idx] = e_iv
 
         return energy
     
@@ -1124,34 +1123,59 @@ class EnergyCalculator(PrecomputeParams):
         """
         Get the free energy contribution for interaction between each AAi and AAi+4 in the sequence.
 
-        Returns:
-            np.ndarray: The free energy contributions for each interaction.
+        i,i+4 non-charged side chain interactions (Table IVb) + special pH-dependent,
+        salt-independent local motifs (Table V), Lacroix supplement.
+
+        Faithful interpretation:
+        - Table IV corresponds to non-charged interactions.
+        - If BOTH residues are ionizable, Table IV applies only to cases where
+            at least one is not charged; scale by (1 - p_i * p_j).
+        - Table V terms are ADDED when the relevant residue is charged (weighted by p).
+        - No abs(q_i*q_j) scaling here; electrostatics handled elsewhere.
         """
         energy = np.zeros(len(self.seq_list))
+        ionizable = set(self.pos_charge_aa + self.neg_charge_aa)
 
-        # Get interaction free energies for charged residues
         for idx in self.helix_indices[:-4]:
             AAi = self.seq_list[idx]
             AAi4 = self.seq_list[idx + 4]
 
-            # Skip if N- and C-terminal modifications
             if AAi in ["Ac", "Am", "Sc"] or AAi4 in ["Ac", "Am", "Sc"]:
                 continue
 
-            base_energy = self.table_4b_lacroix.loc[AAi, AAi4] / 100
+            e_iv = self.table_4b_lacroix.loc[AAi, AAi4] / 100.0  # kcal/mol
 
-            if AAi in self.pos_charge_aa + self.neg_charge_aa and AAi4 in self.pos_charge_aa + self.neg_charge_aa:
-                # Use precomputed ionization states for the helical state
-                q_i = self.modified_seq_ionization_hel[idx]
-                q_i4 = self.modified_seq_ionization_hel[idx + 4]
-                energy[idx] = base_energy * abs(q_i * q_i4) # TODO: This scaling is not correct, it should use the values from table 5
+            # charged fractions (proxy): abs(signed mean charge)
+            p_i = min(1.0, max(0.0, abs(self.modified_seq_ionization_hel[idx])))
+            p_j = min(1.0, max(0.0, abs(self.modified_seq_ionization_hel[idx + 4])))
+
+            # Table IV: suppress both-charged microstate for ionizable-ionizable pairs
+            if (AAi in ionizable) and (AAi4 in ionizable):
+                e = e_iv * (1.0 - p_i * p_j)
             else:
-                # Hydrophobic pairs need Eq (10)/(18) temperature dependence
-                dCp_h = self._dCp_hydroph_kcal(AAi, AAi4)
-                if dCp_h != 0.0:
-                    energy[idx] = self._entropic_cp_correct(base_energy, dCp_h)
-                else:
-                    energy[idx] = base_energy
+                e = e_iv
+
+            # Table V: add when residue is charged
+            # (1) Aromatic(i) - His+(i+4): -0.4 kcal/mol; /3 unless His at C1 or C-cap
+            if (AAi in ["F", "Y", "W"]) and (AAi4 == "H"):
+                his_idx = idx + 4
+                his_is_c1_or_ccap = (his_idx == self.ccap_idx) or (his_idx == (self.ccap_idx - 1))
+                scale = 1.0 if his_is_c1_or_ccap else (1.0 / 3.0)
+                e += p_j * (-0.4 * scale)
+
+            # (2) Gln(i) - Asp-(i+4): -0.5 kcal/mol when Asp is charged
+            elif (AAi == "Q") and (AAi4 == "D"):
+                e += p_j * (-0.5)
+
+            # (3) Glu-(i) - Asn(i+4): -0.5 kcal/mol when Glu is charged
+            elif (AAi == "E") and (AAi4 == "N"):
+                e += p_i * (-0.5)
+
+            # (4) Gln(i) - Glu-(i+4): -0.1 kcal/mol when Glu is charged
+            elif (AAi == "Q") and (AAi4 == "E"):
+                e += p_j * (-0.1)
+
+            energy[idx] = e
 
         return energy
 
