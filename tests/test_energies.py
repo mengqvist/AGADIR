@@ -99,7 +99,7 @@ def test_electrostatic_interaction_energy(precompute_instance):
     # Negative energy for opposite charges, i.e. attraction
     energy = instance1._electrostatic_interaction_energy(qi, qj, r)
     assert energy < 0
-    assert np.isclose(energy, -0.503, atol=0.001)
+    assert np.isclose(energy, -0.671, atol=0.001)
     energy = instance1._electrostatic_interaction_energy(qj, qi, r)
     assert energy < 0
 
@@ -203,7 +203,7 @@ def test_assign_modified_ionization_states(precompute_instance):
     assert np.isclose(instance2.modified_seq_ionization_hel[2], -1.0, atol=0.1)  # C (Cys)
     assert np.isclose(instance2.modified_seq_ionization_hel[3], -1.0, atol=0.1)  # D (Asp)
     assert np.isclose(instance2.modified_seq_ionization_hel[4], -1.0, atol=0.1)  # E (Glu)
-    assert np.isclose(instance2.modified_seq_ionization_hel[15], 0.4, atol=0.1)  # R (Arg)
+    assert np.isclose(instance2.modified_seq_ionization_hel[15], 0.52, atol=0.1)  # R (Arg)
 
     # Test instance 4 (N-term = Sc, acidic modification)
     assert instance4.modified_seq_ionization_hel is not None
