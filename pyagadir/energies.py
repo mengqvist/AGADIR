@@ -266,7 +266,7 @@ class PrecomputeParams:
         r = 0.1 + (N + 1) * 2
         return r
 
-    def _electrostatic_interaction_energy(self, qi: float, qj: float, r: float) -> float:
+    def _electrostatic_interaction_energy(self, qi: float, qj: float, r: float, factor_pi: float = 3.0) -> float:
         """Calculate the interaction energy between two charges by
         applying equation 6 from Lacroix, 1998.
 
@@ -274,13 +274,13 @@ class PrecomputeParams:
             qi (float): Charge of the first residue.
             qj (float): Charge of the second residue.
             r (float): Distance between the residues in Ångströms.
-
+            factor_pi (float): Factor to multiply the Coulomb term by. Default is 3.0, as indicated in Lacroix, 1998.
         Returns:
             float: The interaction energy in kcal/mol.
         """
         distance_r_meter = r * 1e-10  # Convert distance from Ångströms to meters
         screening_factor = math.exp(-self.kappa * distance_r_meter)
-        coulomb_term = (self.e**2 * qi * qj) / (3 * math.pi * self.epsilon_0 * self.epsilon_r * distance_r_meter) #  Yep, 3 is indeed correct. Seems to be some kind of parameter fitting. Lacroix, 1998.
+        coulomb_term = (self.e**2 * qi * qj) / (factor_pi * math.pi * self.epsilon_0 * self.epsilon_r * distance_r_meter) 
         energy_joules = coulomb_term * screening_factor
         energy_kcal_mol = self.N_A * energy_joules / 4184
         return energy_kcal_mol
@@ -499,7 +499,17 @@ class PrecomputeParams:
         """
         Assign the distance between the peptide terminal residues and the helix macrodipole.
         """
-        self.terminal_macrodipole_distance_nterm = self._calculate_r(self.ncap_idx)
+        # Calculate base geometric distance (approx 2.1 A for N=0)
+        dist_n = self._calculate_r(self.ncap_idx)
+
+        # N-Terminal Dipole Distance
+        if self.ncap == 'Sc':
+            self.terminal_macrodipole_distance_nterm = dist_n
+        else:
+            # Standard backbone amine distance
+            self.terminal_macrodipole_distance_nterm = dist_n
+
+        # C-Terminal Dipole Distance
         self.terminal_macrodipole_distance_cterm = self._calculate_r(len(self.seq_list) - 1 - self.ccap_idx)
 
     def get_terminal_macrodipole_distances(self) -> tuple[float, float]:
@@ -820,9 +830,9 @@ class PrecomputeParams:
                             C_dist = float(self.sidechain_macrodipole_distances_cterm[idx1])
 
                         if N_dist < 40.0:
-                            deltaG_total += self._electrostatic_interaction_energy(qi=self.mu_helix, qj=q1_full, r=N_dist)
+                            deltaG_total += self._electrostatic_interaction_energy(qi=self.mu_helix, qj=q1_full, r=N_dist, factor_pi=4.0)
                         if C_dist < 40.0:
-                            deltaG_total += self._electrostatic_interaction_energy(qi=-self.mu_helix, qj=q1_full, r=C_dist)
+                            deltaG_total += self._electrostatic_interaction_energy(qi=-self.mu_helix, qj=q1_full, r=C_dist, factor_pi=4.0)
 
                     # (2) interactions with all other charged groups (environment uses fractional charges)
                     for kind2, idx2 in sites:
@@ -1027,9 +1037,19 @@ class EnergyCalculator(PrecomputeParams):
         # Apply Muñoz & Serrano (1995) Eq. (9) temperature correction
         # Interpret table_1 values as ΔG_ref at Tref (0°C).
 
-        # ΔG(T) = ΔG_ref  * (T/Tref)
-        energy = energy * (T / Tref)
-
+        # Temperature correction (Entropic + Heat Capacity):
+        # derived from dG(T) = -T * (dS_ref + dCp * ln(T/Tref))
+        # where dG_ref = -Tref * dS_ref
+        
+        # 1. Scale reference energy (entropic part)
+        scaled_ref = energy * (T / Tref)
+        
+        # 2. Add Heat Capacity term: -T * dCp * ln(T/Tref)
+        # Note: dCp is negative (-0.0015), so this term is positive (destabilizing) at T > Tref
+        cp_term = - self.T_kelvin * self.dCp * np.log(self.T_kelvin / Tref)
+        
+        # Apply to all non-zero entries (avoid adding energy to caps/zeros)
+        energy = np.where(energy != 0, scaled_ref + cp_term, energy)
 
         return energy
     
@@ -1343,14 +1363,16 @@ class EnergyCalculator(PrecomputeParams):
         N_term[self.ncap_idx] = self._electrostatic_interaction_energy(
             qi=self.mu_helix,
             qj=self.modified_nterm_ionization_hel,
-            r=self.terminal_macrodipole_distance_nterm
+            r=self.terminal_macrodipole_distance_nterm,
+            factor_pi=4.0 
         )
 
         # Calculate the interaction energy between the C-terminal and the helix macrodipole
         C_term[self.ccap_idx] = self._electrostatic_interaction_energy(
             qi=-self.mu_helix,
             qj=self.modified_cterm_ionization_hel,
-            r=self.terminal_macrodipole_distance_cterm
+            r=self.terminal_macrodipole_distance_cterm,
+            factor_pi=4.0 
         )
 
         return N_term, C_term
@@ -1420,7 +1442,7 @@ class EnergyCalculator(PrecomputeParams):
             q1_hel = self.modified_nterm_ionization_hel
             q2_hel = self.modified_seq_ionization_hel[idx]
             dist_hel = self.terminal_sidechain_distances_nterm[idx]
-            G_hel = self._electrostatic_interaction_energy(qi=q1_hel, qj=q2_hel, r=dist_hel)
+            G_hel = self._electrostatic_interaction_energy(qi=q1_hel, qj=q2_hel, r=dist_hel, factor_pi=3.0)
 
             # 2. Random Coil State
             q1_rc = self.modified_nterm_ionization_rc
@@ -1428,7 +1450,7 @@ class EnergyCalculator(PrecomputeParams):
             # RC distance approx: linear separation from N-term (-1) to idx
             # separation = idx - (-1) = idx + 1
             dist_rc = self._calculate_r(abs(idx + 1)) 
-            G_rc = self._electrostatic_interaction_energy(qi=q1_rc, qj=q2_rc, r=dist_rc)
+            G_rc = self._electrostatic_interaction_energy(qi=q1_rc, qj=q2_rc, r=dist_rc, factor_pi=3.0)
 
             # 3. Delta G
             energy_N[idx] = G_hel - G_rc
@@ -1439,7 +1461,7 @@ class EnergyCalculator(PrecomputeParams):
             q1_hel = self.modified_cterm_ionization_hel
             q2_hel = self.modified_seq_ionization_hel[idx]
             dist_hel = self.terminal_sidechain_distances_cterm[idx]
-            G_hel = self._electrostatic_interaction_energy(qi=q1_hel, qj=q2_hel, r=dist_hel)
+            G_hel = self._electrostatic_interaction_energy(qi=q1_hel, qj=q2_hel, r=dist_hel, factor_pi=3.0)
 
             # 2. Random Coil State
             q1_rc = self.modified_cterm_ionization_rc
@@ -1447,7 +1469,7 @@ class EnergyCalculator(PrecomputeParams):
             # RC distance approx: linear separation from idx to C-term (len)
             # separation = len - idx
             dist_rc = self._calculate_r(abs(len(self.seq_list) - idx))
-            G_rc = self._electrostatic_interaction_energy(qi=q1_rc, qj=q2_rc, r=dist_rc)
+            G_rc = self._electrostatic_interaction_energy(qi=q1_rc, qj=q2_rc, r=dist_rc, factor_pi=3.0)
 
             # 3. Delta G
             energy_C[idx] = G_hel - G_rc

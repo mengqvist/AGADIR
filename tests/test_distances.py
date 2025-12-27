@@ -65,7 +65,39 @@ def calculator():
     )
     return calc
 
+@pytest.fixture
+def calculator_NN():
+    calc = MockEnergyCalculator(
+        seq="AAAAAA",
+        i=0, j=6,
+        pH=7.0, 
+        T=25.0, 
+        ionic_strength=0.1,
+        ncap=None,
+        ccap=None
+    )
+    return calc
+
+@pytest.fixture
+def calculator_AcAm():
+    calc = MockEnergyCalculator(
+        seq="AAAAAA",
+        i=0, j=8,
+        pH=7.0, 
+        T=25.0, 
+        ionic_strength=0.1,
+        ncap="Ac",
+        ccap="Am"
+    )
+    return calc
+
 # --- 2. TESTS ---
+
+def test_terminal_macrodipole_distances_NN(calculator_NN):
+    """Verify the terminal macrodipole distances for a free N-term and free C-term.
+    """
+    assert np.isclose(calculator_NN.terminal_macrodipole_distance_nterm, 2.1, atol=1e-6)
+    assert np.isclose(calculator_NN.terminal_macrodipole_distance_cterm, 2.1, atol=1e-6)
 
 def test_helix_state_distances(calculator):
     """
