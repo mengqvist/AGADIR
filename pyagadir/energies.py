@@ -567,48 +567,60 @@ class PrecomputeParams:
                 distance_angstrom = 99
 
             else:
-                # Both residues in helix
+                # (A) Both residues in helix
                 if idx1 in self.helix_indices and idx2 in self.helix_indices:
                     pair = AA1 + AA2
                     if ('Y' in pair) or ('C' in pair): # Handle Cysteine and Tyrosine special case
                         pair = 'HelixRest'
                     distance_angstrom = self.table_6_helix_lacroix.loc[pair, distance_key]
                 
-                # Both residues in coil part of a peptide that (at a different position) contains the helix
-                # TODO: this is only correct if both are in the coil on the same side of the helix, not if they are on either side
+                # (B) Both residues in coil part of a peptide that (at a different position) contains the helix
                 elif idx1 not in self.helix_indices and idx2 not in self.helix_indices:
-                    pair = AA1 + AA2
-                    if ('Y' in pair) or ('C' in pair): # Handle Cysteine and Tyrosine special case
-                        pair = 'RcoilRest'
-                        distance_angstrom = self.table_6_coil_lacroix.loc[pair, distance_key]
+                    straddles_helix = (idx1 < self.ncap_idx) and (idx2 > self.ccap_idx)
+
+                    if not straddles_helix:
+                        pair = AA1 + AA2
+                        if ("Y" in pair) or ("C" in pair):
+                            pair = "RcoilRest"
+                        distance_angstrom = float(self.table_6_coil_lacroix.loc[pair, distance_key])
+                    else:
+                        distance_angstrom = 99
                 
-                # One residue in helix, one in coil
+                # (C) One residue in helix, one in coil
                 else:
-                    # Figure out which residue is in helix and which in coil
-                    if idx1 in self.helix_indices:
-                        helix_idx = idx1
-                        coil_idx = idx2
+                    # Identify which is coil
+                    coil_idx = idx1 if idx1 not in self.helix_indices else idx2
+                    
+                    # [PATCH] Lacroix 1998 Restriction:
+                    # Only calculate distance if the coil residue is N' (ncap_idx - 1) or C' (ccap_idx + 1)
+                    # Otherwise, interaction is ignored (distance = 99)
+                    
+                    is_N_prime = (coil_idx == self.ncap_idx - 1)
+                    is_C_prime = (coil_idx == self.ccap_idx + 1)
+                    
+                    if not (is_N_prime or is_C_prime):
+                        distance_angstrom = 99
                     else:
-                        helix_idx = idx2
-                        coil_idx = idx1
-                        
-                    # Calculate distance through helix boundary
-                    if coil_idx < self.ncap_idx:
-                        # Coil residue is before helix
-                        coil_separation = self.ncap_idx - coil_idx
-                        helix_separation = helix_idx - self.ncap_idx
-                        # print('coil, helix idx1 idx2', coil_separation, helix_separation, idx1, idx2)
-                        d_coil = 0.0 if coil_separation == 0 else self.table_6_coil_lacroix.loc['RcoilRest', f"i+{coil_separation}"]  # Distance to helix start
-                        d_helix = 0.0 if helix_separation == 0 else self.table_6_helix_lacroix.loc['HelixRest', f"i+{helix_separation}"]  # Distance from helix start to helix residue
-                    else:
-                        # Coil residue is after helix
-                        coil_separation = coil_idx - self.ccap_idx
-                        helix_separation = self.ccap_idx - helix_idx
-                        # print('coil, helix idx1 idx2', coil_separation, helix_separation, idx1, idx2)
-                        d_coil = 0.0 if coil_separation == 0 else self.table_6_coil_lacroix.loc['RcoilRest', f"i+{coil_separation}"]  # Distance from helix end
-                        d_helix = 0.0 if helix_separation == 0 else self.table_6_helix_lacroix.loc['HelixRest', f"i+{helix_separation}"]  # Distance from helix residue to helix end
-                        
-                    distance_angstrom = d_coil + d_helix
+                        # If it is N' or C', use your existing logic (or simplified Table 6 Coil lookup)
+                        # Your existing logic for summing paths is acceptable specifically for N'/C'
+                        # because they are adjacent to the helix boundaries.
+                        if idx1 in self.helix_indices:
+                            helix_idx = idx1
+                        else:
+                            helix_idx = idx2
+                            
+                        if coil_idx < self.ncap_idx:
+                            coil_separation = self.ncap_idx - coil_idx
+                            helix_separation = helix_idx - self.ncap_idx
+                            d_coil = 0.0 if coil_separation == 0 else self.table_6_coil_lacroix.loc['RcoilRest', f"i+{coil_separation}"]
+                            d_helix = 0.0 if helix_separation == 0 else self.table_6_helix_lacroix.loc['HelixRest', f"i+{helix_separation}"]
+                        else:
+                            coil_separation = coil_idx - self.ccap_idx
+                            helix_separation = self.ccap_idx - helix_idx
+                            d_coil = 0.0 if coil_separation == 0 else self.table_6_coil_lacroix.loc['RcoilRest', f"i+{coil_separation}"]
+                            d_helix = 0.0 if helix_separation == 0 else self.table_6_helix_lacroix.loc['HelixRest', f"i+{helix_separation}"]
+                            
+                        distance_angstrom = d_coil + d_helix
                 
             self.sidechain_sidechain_distances_hel[idx1, idx2] = distance_angstrom
             self.sidechain_sidechain_distances_hel[idx2, idx1] = distance_angstrom
@@ -637,184 +649,231 @@ class PrecomputeParams:
 
     def _assign_modified_ionization_states(self):
         """
-        Assign modified ionization states for residues in the sequence.
+        Self-consistent mean-field ionization in BOTH helix and coil ensembles.
 
-        The actual ionization of a residue is not just determined by the 
-        pKa value and the pH of the solution. It is also affected by the 
-        electrostatic interactions with the helix macrodipole and the 
-        charged sidechains. This function accounts for these interactions
-        by iterating on the ionization states until they converge.
+        PATCHES:
+        1) Use a fully charged probe (±1) for the TITRATING site when computing deltaG_total
+            (environment charges remain fractional).
+        2) Include interactions with ALL other ionizable groups (not just idx2 > idx1).
+        3) Solve both states:
+            - helix: helix distances + macrodipole contributions
+            - coil : coil distances, NO macrodipole
+            (your previous code copied intrinsic for coil, which breaks ΔG_hel - ΔG_coil logic).
+        4) Robustness: treat missing/NaN distances as "far" (99 Å) instead of propagating NaNs.
         """
-        MAX_ITERATIONS = 10
-        CONVERGENCE_THRESHOLD = 0.01
-        
-        # Initialize arrays with unmodified values for iteration
-        current_seq_ionization = self.seq_ionization.copy()
-        current_nterm_ionization = self.nterm_ionization
-        current_cterm_ionization = self.cterm_ionization
-        
-        # Iterative solution for updating the ionization states
-        for iteration in range(MAX_ITERATIONS):
-            old_seq_ionization_hel = current_seq_ionization.copy()
-            old_nterm_ionization = copy.copy(current_nterm_ionization)
-            old_cterm_ionization = copy.copy(current_cterm_ionization)
+        MAX_ITERATIONS = 50
+        CONVERGENCE_THRESHOLD = 0.005
 
-            # For each residue
-            for idx1, AA1 in list(enumerate(self.seq_list)) + [(-1, 'Nterm'), (len(self.seq_list), 'Cterm')]:
-                deltaG_total = 0.0
+        ionizable_sidechains = set(self.neg_charge_aa + self.pos_charge_aa)
 
-                # 1. Get helix macrodipole contribution to the free energy using current charge
-                # Use pre-computed distances and current ionization state
-                if AA1 == 'Nterm':
-                    if self.seq_list[0] == 'Ac':
-                        continue
-                    N_distance_angstrom = self.terminal_macrodipole_distance_nterm
-                    C_distance_angstrom = 99
-                    q1 = current_nterm_ionization
-                    pKa_intrinsic = self.nterm_pka
+        def _nterm_present() -> bool:
+            return not (len(self.seq_list) > 0 and self.seq_list[0] == "Ac")
 
-                elif AA1 == 'Cterm':
-                    if self.seq_list[-1] == 'Am':
-                        continue
-                    N_distance_angstrom = 99
-                    C_distance_angstrom = self.terminal_macrodipole_distance_cterm
-                    q1 = current_cterm_ionization
-                    pKa_intrinsic = self.cterm_pka
+        def _cterm_present() -> bool:
+            return not (len(self.seq_list) > 0 and self.seq_list[-1] == "Am")
 
-                elif AA1 in self.neg_charge_aa + self.pos_charge_aa:     
-                    N_distance_angstrom = self.sidechain_macrodipole_distances_nterm[idx1]
-                    C_distance_angstrom = self.sidechain_macrodipole_distances_cterm[idx1]
-                    q1 = current_seq_ionization[idx1]
-                    pKa_intrinsic = self.seq_pka[idx1]
+        def _sites():
+            """List of titratable sites we solve for."""
+            sites = []
+            if _nterm_present():
+                sites.append(("Nterm", None))
+            for idx, AA in enumerate(self.seq_list):
+                if AA in ionizable_sidechains:
+                    sites.append(("SC", idx))
+            if _cterm_present():
+                sites.append(("Cterm", None))
+            return sites
 
-                else:
-                    continue
-                   
-                # Calculate deltaG for N-terminal dipole, but only if the distance is small enough, don't waste compute on large distances
-                if N_distance_angstrom < 40:
-                    deltaG_N = self._electrostatic_interaction_energy(
-                        qi=self.mu_helix, 
-                        qj=q1, 
-                        r=N_distance_angstrom
-                    )
-                    deltaG_total += deltaG_N
-                
-                # Calculate deltaG for C-terminal dipole, but only if the distance is small enough, don't waste compute on large distances
-                if C_distance_angstrom < 40:
-                    deltaG_C = self._electrostatic_interaction_energy(
-                        qi=-self.mu_helix, 
-                        qj=q1, 
-                        r=C_distance_angstrom
-                    )
-                    deltaG_total += deltaG_C
-                
-                # 2. Get charged sidechain interactions using current charges
-                # Only consider interactions with other charged sidechains
-                for idx2, AA2 in list(enumerate(self.seq_list)) + [(-1, 'Nterm'), (len(self.seq_list), 'Cterm')]:
-                    
-                    # Skip self-interaction and non-charged neighbors
-                    if (idx1 == idx2 and AA1 == AA2) or AA2 not in self.neg_charge_aa + self.pos_charge_aa + ['Nterm', 'Cterm']:
-                        continue
+        def _full_charge_for_site(kind, idx):
+            """Charge of the fully ionized state for the *titrating* site."""
+            if kind == "Nterm":
+                # Succinylated N-term behaves as an acid in your model
+                if len(self.seq_list) > 0 and self.seq_list[0] == "Sc":
+                    return -1.0
+                return +1.0
+            if kind == "Cterm":
+                return -1.0
+            # sidechain
+            AA = self.seq_list[idx]
+            if AA in self.neg_charge_aa:
+                return -1.0
+            if AA in self.pos_charge_aa:
+                return +1.0
+            raise ValueError(f"Unexpected non-ionizable site: {kind}, {idx}, {AA}")
 
-                    # CASE 1: Terminal to Terminal
-                    if (AA1 == 'Nterm' and AA2 == 'Cterm') or (AA1 == 'Cterm' and AA2 == 'Nterm'):
-                        sidechain_distance_angstrom = 99
-                        q2 = current_cterm_ionization if AA2 == 'Cterm' else current_nterm_ionization
+        def _pka_intrinsic(kind, idx):
+            if kind == "Nterm":
+                return self.nterm_pka
+            if kind == "Cterm":
+                return self.cterm_pka
+            return float(self.seq_pka[idx])
 
-                    # CASE 2: N-term to Sidechain (or vice versa)
-                    # Logic: If one is Nterm, use the OTHER's index to look up distance in nterm array
-                    elif AA1 == 'Nterm' and AA2 in self.neg_charge_aa + self.pos_charge_aa:
-                        sidechain_distance_angstrom = self.terminal_sidechain_distances_nterm[idx2]
-                        q2 = current_seq_ionization[idx2]
-                    elif AA2 == 'Nterm' and AA1 in self.neg_charge_aa + self.pos_charge_aa:
-                        sidechain_distance_angstrom = self.terminal_sidechain_distances_nterm[idx1]
-                        q2 = current_nterm_ionization
+        def _is_basic(kind, idx):
+            if kind == "Nterm":
+                # Sc is acidic; otherwise N-term is basic
+                return False if (len(self.seq_list) > 0 and self.seq_list[0] == "Sc") else True
+            if kind == "Cterm":
+                return False
+            AA = self.seq_list[idx]
+            return True if AA in self.pos_charge_aa else False
 
-                    # CASE 3: C-term to Sidechain (or vice versa)
-                    # Logic: If one is Cterm, use the OTHER's index to look up distance in cterm array
-                    elif AA1 == 'Cterm' and AA2 in self.neg_charge_aa + self.pos_charge_aa:
-                        sidechain_distance_angstrom = self.terminal_sidechain_distances_cterm[idx2]
-                        q2 = current_seq_ionization[idx2]
-                    elif AA2 == 'Cterm' and AA1 in self.neg_charge_aa + self.pos_charge_aa:
-                        sidechain_distance_angstrom = self.terminal_sidechain_distances_cterm[idx1]
-                        q2 = current_cterm_ionization
+        def _update_ionization_from_pka(kind, idx, pka):
+            """Return new fractional charge for this site."""
+            if kind == "Nterm":
+                if len(self.seq_list) > 0 and self.seq_list[0] == "Sc":
+                    return acidic_residue_ionization(self.pH, pka)
+                return basic_residue_ionization(self.pH, pka)
+            if kind == "Cterm":
+                return acidic_residue_ionization(self.pH, pka)
+            AA = self.seq_list[idx]
+            if AA in self.neg_charge_aa:
+                return acidic_residue_ionization(self.pH, pka)
+            return basic_residue_ionization(self.pH, pka)
 
-                    # CASE 4: Sidechain to Sidechain 
-                    else:
-                        # Both indices must be valid sequence indices (0 to len-1)
-                        sidechain_distance_angstrom = self.sidechain_sidechain_distances_hel[idx1, idx2]
-                        q2 = current_seq_ionization[idx2]
+        def _get_env_charge(kind, idx, seq_q, nterm_q, cterm_q):
+            if kind == "Nterm":
+                return nterm_q
+            if kind == "Cterm":
+                return cterm_q
+            return seq_q[idx]
+
+        def _pair_distance(kind1, idx1, kind2, idx2, use_helix_distances):
+                    """Distance between two ionizable sites for electrostatics (Å)."""
+                    # terminal-terminal: keep as far (matches your previous behavior)
+                    if kind1 in ("Nterm", "Cterm") and kind2 in ("Nterm", "Cterm"):
+                        return 99.0
+
+                    # --- Terminal-Sidechain Logic ---
+                    if (kind1 == "Nterm" and kind2 == "SC") or (kind2 == "Nterm" and kind1 == "SC"):
+                        sc_idx = idx2 if kind2 == "SC" else idx1
                         
-                    # Use current ionization states to calculate deltaG
-                    if sidechain_distance_angstrom < 40:
-                        deltaG = self._electrostatic_interaction_energy(qi=q1, 
-                                                                        qj=q2, 
-                                                                        r=sidechain_distance_angstrom)
-                        deltaG_total += deltaG
-               
-                # 3. Calculate new pKa relative to intrinsic value
-                if np.isnan(deltaG_total):
-                    raise ValueError(f"deltaG_total is nan, this should not happen. There was probably a problem retrieving precomed distances or ionization states")
-                
-                # Calculate new pKa relative to intrinsic value
-                modified_pKa = adjust_pKa(T=self.T_kelvin, 
-                                          pKa_ref=pKa_intrinsic, 
-                                          deltaG=deltaG_total,
-                                          is_basic=True if AA1 in self.pos_charge_aa else False)
+                        if use_helix_distances:
+                            # Use pre-computed HELIX distance
+                            return float(self.terminal_sidechain_distances_nterm[sc_idx])
+                        else:
+                            # Use LINEAR approximation for Random Coil
+                            # N = number of residues from N-term (0) to sc_idx
+                            # dist = 0.1 + (N + 1) * 2
+                            # N = sc_idx
+                            return self._calculate_r(sc_idx)
 
-                if AA1 == 'Nterm':
-                    if self.seq_list[0] == 'Sc':
-                        current_nterm_ionization = acidic_residue_ionization(
-                            pH=self.pH, 
-                            pKa=modified_pKa
-                        )
+                    if (kind1 == "Cterm" and kind2 == "SC") or (kind2 == "Cterm" and kind1 == "SC"):
+                        sc_idx = idx2 if kind2 == "SC" else idx1
+                        
+                        if use_helix_distances:
+                            # Use pre-computed HELIX distance
+                            return float(self.terminal_sidechain_distances_cterm[sc_idx])
+                        else:
+                            # Use LINEAR approximation for Random Coil
+                            # N = number of residues from sc_idx to C-term (len-1)
+                            # N = (len - 1) - sc_idx
+                            return self._calculate_r(len(self.seq_list) - 1 - sc_idx)
+
+                    # --- Sidechain-Sidechain Logic ---
+                    if kind1 == "SC" and kind2 == "SC":
+                        if use_helix_distances:
+                            d = self.sidechain_sidechain_distances_hel[idx1, idx2]
+                        else:
+                            d = self.charged_sidechain_distances_rc[idx1, idx2]
+                        if np.isnan(d):
+                            return 99.0
+                        return float(d)
+
+                    return 99.0
+
+        def _solve_state(include_dipole: bool, use_helix_distances: bool):
+            """Mean-field fixed point solve for one ensemble."""
+            seq_q = self.seq_ionization.copy()
+            nterm_q = self.nterm_ionization
+            cterm_q = self.cterm_ionization
+
+            # If termini are absent (Ac/Am), set them to 0 for safety
+            if not _nterm_present():
+                nterm_q = 0.0
+            if not _cterm_present():
+                cterm_q = 0.0
+
+            sites = _sites()
+
+            for _ in range(MAX_ITERATIONS):
+                old_seq = seq_q.copy()
+                old_n = float(nterm_q)
+                old_c = float(cterm_q)
+
+                for kind1, idx1 in sites:
+                    q1_full = _full_charge_for_site(kind1, idx1)
+                    pka0 = _pka_intrinsic(kind1, idx1)
+                    is_basic = _is_basic(kind1, idx1)
+
+                    deltaG_total = 0.0
+
+                    # (1) macrodipole contributions (helix ensemble only)
+                    if include_dipole:
+                        if kind1 == "Nterm":
+                            N_dist = float(self.terminal_macrodipole_distance_nterm)
+                            C_dist = 99.0
+                        elif kind1 == "Cterm":
+                            N_dist = 99.0
+                            C_dist = float(self.terminal_macrodipole_distance_cterm)
+                        else:
+                            N_dist = float(self.sidechain_macrodipole_distances_nterm[idx1])
+                            C_dist = float(self.sidechain_macrodipole_distances_cterm[idx1])
+
+                        if N_dist < 40.0:
+                            deltaG_total += self._electrostatic_interaction_energy(qi=self.mu_helix, qj=q1_full, r=N_dist)
+                        if C_dist < 40.0:
+                            deltaG_total += self._electrostatic_interaction_energy(qi=-self.mu_helix, qj=q1_full, r=C_dist)
+
+                    # (2) interactions with all other charged groups (environment uses fractional charges)
+                    for kind2, idx2 in sites:
+                        if kind2 == kind1 and idx2 == idx1:
+                            continue
+
+                        q2 = _get_env_charge(kind2, idx2, seq_q, nterm_q, cterm_q)
+                        r = _pair_distance(kind1, idx1, kind2, idx2, use_helix_distances)
+
+                        if r < 40.0:
+                            deltaG_total += self._electrostatic_interaction_energy(qi=q1_full, qj=q2, r=r)
+
+                    if np.isnan(deltaG_total):
+                        raise ValueError("deltaG_total became NaN; check distance tables / assignments.")
+
+                    pka_mod = adjust_pKa(
+                        T=self.T_kelvin,
+                        pKa_ref=pka0,
+                        deltaG=deltaG_total,
+                        is_basic=is_basic,
+                    )
+
+                    q_new = _update_ionization_from_pka(kind1, idx1, pka_mod)
+
+                    if kind1 == "Nterm":
+                        nterm_q = q_new
+                    elif kind1 == "Cterm":
+                        cterm_q = q_new
                     else:
-                        current_nterm_ionization = basic_residue_ionization(
-                            pH=self.pH, 
-                            pKa=modified_pKa
-                        )
-                elif AA1 == 'Cterm':
-                    current_cterm_ionization = acidic_residue_ionization(
-                        pH=self.pH, 
-                        pKa=modified_pKa
-                    )
-                elif AA1 in self.neg_charge_aa:
-                    current_seq_ionization[idx1] = acidic_residue_ionization(
-                        pH=self.pH, 
-                        pKa=modified_pKa
-                    )
-                elif AA1 in self.pos_charge_aa:
-                    current_seq_ionization[idx1] = basic_residue_ionization(
-                        pH=self.pH, 
-                        pKa=modified_pKa
-                    )               
-          
-            # Filter out nan values for convergence check
-            valid_old = np.concatenate([old_seq_ionization_hel[~np.isnan(old_seq_ionization_hel)], 
-                                        [old_nterm_ionization],
-                                        [old_cterm_ionization]])
-            valid_current = np.concatenate([current_seq_ionization[~np.isnan(current_seq_ionization)], 
-                                             [current_nterm_ionization],
-                                             [current_cterm_ionization]])
-            
-            if len(valid_old) > 0 and len(valid_current) > 0:
-                max_change = np.max(np.abs(valid_current - valid_old))
-                
-                # Check for convergence
+                        seq_q[idx1] = q_new
+
+                # convergence
+                vec_old = np.concatenate([old_seq[~np.isnan(old_seq)], [old_n], [old_c]])
+                vec_new = np.concatenate([seq_q[~np.isnan(seq_q)], [nterm_q], [cterm_q]])
+                max_change = float(np.max(np.abs(vec_new - vec_old)))
                 if max_change < CONVERGENCE_THRESHOLD:
                     break
-            else:
-                raise ValueError("No valid ionization states to compare")
-        
-        # Save final converged values for helical state
-        self.modified_seq_ionization_hel = current_seq_ionization
-        self.modified_nterm_ionization_hel = current_nterm_ionization
-        self.modified_cterm_ionization_hel = current_cterm_ionization
 
-        # Save final converged values for coil state  TODO: should I actually calculate these? instead of just copying
-        self.modified_seq_ionization_rc = self.seq_ionization.copy()
-        self.modified_nterm_ionization_rc = self.nterm_ionization
-        self.modified_cterm_ionization_rc = self.cterm_ionization
+            return seq_q, float(nterm_q), float(cterm_q)
+
+        # --- Solve helix and coil ensembles ---
+        hel_seq, hel_n, hel_c = _solve_state(include_dipole=True,  use_helix_distances=True)
+        rc_seq,  rc_n,  rc_c  = _solve_state(include_dipole=False, use_helix_distances=False)
+
+        self.modified_seq_ionization_hel = hel_seq
+        self.modified_nterm_ionization_hel = hel_n
+        self.modified_cterm_ionization_hel = hel_c
+
+        self.modified_seq_ionization_rc = rc_seq
+        self.modified_nterm_ionization_rc = rc_n
+        self.modified_cterm_ionization_rc = rc_c
 
     def get_modified_ionization_states(self):
         """
@@ -908,15 +967,15 @@ class EnergyCalculator(PrecomputeParams):
         T = self.T_kelvin
         Tref = 273.15  # 0°C reference temperature
         
-        # Linear scaling of the reference free energy (entropic scaling)
-        scaled_ref = dG_ref * (T / Tref)
+        # # Linear scaling of the reference free energy (entropic scaling)
+        # scaled_ref = dG_ref * (T / Tref)
         
         # Heat capacity contribution (Enthalpic + Entropic terms)
         # Note: If dCp is negative (hydrophobic folding), this term adds a 
         # positive (destabilizing) penalty as T diverges from Tref.
         cp_term = dCp * ((T - Tref) - T * np.log(T / Tref))
         
-        return scaled_ref + cp_term
+        return dG_ref + cp_term
 
 
     def get_dG_Int(self) -> np.ndarray:
@@ -1174,6 +1233,13 @@ class EnergyCalculator(PrecomputeParams):
                 p_j = abs(self.modified_seq_ionization_hel[idx + 3])
                 base = base * (1.0 - p_i * p_j)
 
+            # Calculate dCp for this pair (returns 0.0 if not hydrophobic)
+            dCp_val = self._dCp_hydroph_kcal(AAi, AAi3)
+            
+            # Apply correction if dCp is non-zero and base energy implies interaction exists
+            if dCp_val != 0.0 and base != 0.0:
+                base = self._entropic_cp_correct(base, dCp_val)
+
             energy[idx] = base
 
         return energy
@@ -1218,6 +1284,13 @@ class EnergyCalculator(PrecomputeParams):
                 p_j = abs(self.modified_seq_ionization_hel[idx + 4])
                 base = base * (1.0 - p_i * p_j)
 
+            # Calculate dCp for this pair (returns 0.0 if not hydrophobic)
+            dCp_val = self._dCp_hydroph_kcal(AAi, AAi4)
+            
+            # Apply correction if dCp is non-zero and base energy implies interaction exists
+            if dCp_val != 0.0 and base != 0.0:
+                base = self._entropic_cp_correct(base, dCp_val)
+
             extra = 0.0
 
             # --- Table V add-ons (orientation matters: position i -> position i+4) ---
@@ -1243,6 +1316,13 @@ class EnergyCalculator(PrecomputeParams):
             if AAi == "Q" and AAi4 == "E":
                 p_glu = abs(self.modified_seq_ionization_hel[idx + 4])  # population of Glu-
                 extra += p_glu * (-0.1)
+
+            # These are side-chain H-bonds/Salt bridges, they should weaken with T
+            if extra != 0.0:
+                Tref = 273.15
+                delta_H = extra + self.dCp * (self.T_kelvin - Tref)
+                delta_S_Cp = self.dCp * np.log(self.T_kelvin / Tref)
+                extra = delta_H - (self.T_kelvin * delta_S_Cp)
 
             energy[idx] = base + extra
 
@@ -1335,25 +1415,42 @@ class EnergyCalculator(PrecomputeParams):
             if AA1 not in self.neg_charge_aa + self.pos_charge_aa:
                 continue
                 
-            # Get distance from N-terminal to this residue
-            n_distance = self.terminal_sidechain_distances_nterm[idx]
-            
-            # Get distance from C-terminal to this residue  
-            c_distance = self.terminal_sidechain_distances_cterm[idx]
+            # --- N-Terminal Interaction ---
+            # 1. Helix State
+            q1_hel = self.modified_nterm_ionization_hel
+            q2_hel = self.modified_seq_ionization_hel[idx]
+            dist_hel = self.terminal_sidechain_distances_nterm[idx]
+            G_hel = self._electrostatic_interaction_energy(qi=q1_hel, qj=q2_hel, r=dist_hel)
 
-            # N-terminal interaction
-            energy_N[idx] = self._electrostatic_interaction_energy(
-                qi=self.modified_nterm_ionization_hel,
-                qj=self.modified_seq_ionization_hel[idx],
-                r=n_distance
-            )
-                
-            # C-terminal interaction
-            energy_C[idx] = self._electrostatic_interaction_energy(
-                qi=self.modified_cterm_ionization_hel,
-                qj=self.modified_seq_ionization_hel[idx],
-                r=c_distance
-            )
+            # 2. Random Coil State
+            q1_rc = self.modified_nterm_ionization_rc
+            q2_rc = self.modified_seq_ionization_rc[idx]
+            # RC distance approx: linear separation from N-term (-1) to idx
+            # separation = idx - (-1) = idx + 1
+            dist_rc = self._calculate_r(abs(idx + 1)) 
+            G_rc = self._electrostatic_interaction_energy(qi=q1_rc, qj=q2_rc, r=dist_rc)
+
+            # 3. Delta G
+            energy_N[idx] = G_hel - G_rc
+
+
+            # --- C-Terminal Interaction ---
+            # 1. Helix State
+            q1_hel = self.modified_cterm_ionization_hel
+            q2_hel = self.modified_seq_ionization_hel[idx]
+            dist_hel = self.terminal_sidechain_distances_cterm[idx]
+            G_hel = self._electrostatic_interaction_energy(qi=q1_hel, qj=q2_hel, r=dist_hel)
+
+            # 2. Random Coil State
+            q1_rc = self.modified_cterm_ionization_rc
+            q2_rc = self.modified_seq_ionization_rc[idx]
+            # RC distance approx: linear separation from idx to C-term (len)
+            # separation = len - idx
+            dist_rc = self._calculate_r(abs(len(self.seq_list) - idx))
+            G_rc = self._electrostatic_interaction_energy(qi=q1_rc, qj=q2_rc, r=dist_rc)
+
+            # 3. Delta G
+            energy_C[idx] = G_hel - G_rc
 
         return energy_N, energy_C
 
