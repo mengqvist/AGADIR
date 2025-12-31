@@ -987,6 +987,19 @@ class EnergyCalculator(PrecomputeParams):
         
         return dG_ref + cp_term
 
+    def _nterm_is_local(self) -> bool:
+        """
+        Check if the N-terminal is local to the helix.
+        """
+        # N-terminus is at index 0; helix starts at ncap_idx
+        return self.ncap_idx <= 1   # helix starts at 0 (terminal in helix) or 1 (terminal is N')
+
+    def _cterm_is_local(self) -> bool:
+        """
+        Check if the C-terminal is local to the helix.
+        """
+        # C-terminus is at index len-1; helix ends at ccap_idx
+        return self.ccap_idx >= (len(self.seq_list) - 2)  # helix ends at last or second-last (terminal is C')
 
     def get_dG_Int(self) -> np.ndarray:
         """
@@ -1425,11 +1438,21 @@ class EnergyCalculator(PrecomputeParams):
             N-terminal and C-terminal interactions respectively. The energy is added
             to the charged sidechain residue.
         """
-        energy_N = np.zeros(len(self.seq_list))
-        energy_C = np.zeros(len(self.seq_list))
+        n = len(self.seq_list)
+        energy_N = np.zeros(n, dtype=float)
+        energy_C = np.zeros(n, dtype=float)
         
-        # Skip if terminals are uncharged
-        if self.seq_list[0] == 'Ac' and self.seq_list[-1] == "Am":
+        # Presence (Ac/Am remove terminal charges in this model)
+        nterm_present = not (n > 0 and self.seq_list[0] == "Ac")
+        cterm_present = not (n > 0 and self.seq_list[-1] == "Am")
+
+        # Locality gate (AGADIR/Lacroix-style): only include terminal-sidechain terms
+        # when the terminal is in-helix or is the immediate neighbor (N' / C').
+        nterm_local = (self.ncap_idx <= 1)
+        cterm_local = (self.ccap_idx >= (n - 2))
+
+        # If neither terminal can contribute, bail early
+        if not (nterm_present and nterm_local) and not (cterm_present and cterm_local):
             return energy_N, energy_C
         
         # Iterate through sequence checking for charged sidechains
@@ -1437,42 +1460,50 @@ class EnergyCalculator(PrecomputeParams):
             if AA1 not in self.neg_charge_aa + self.pos_charge_aa:
                 continue
                 
-            # --- N-Terminal Interaction ---
-            # 1. Helix State
-            q1_hel = self.modified_nterm_ionization_hel
-            q2_hel = self.modified_seq_ionization_hel[idx]
-            dist_hel = self.terminal_sidechain_distances_nterm[idx]
-            G_hel = self._electrostatic_interaction_energy(qi=q1_hel, qj=q2_hel, r=dist_hel, factor_pi=3.0)
+            # --- N-Terminal Interaction (only if local/present) ---
+            if nterm_present and nterm_local:
+                q1_hel = float(self.modified_nterm_ionization_hel)
+                q2_hel = float(self.modified_seq_ionization_hel[idx])
+                dist_hel = float(self.terminal_sidechain_distances_nterm[idx])
+                if np.isnan(dist_hel):
+                    dist_hel = 99.0
+                G_hel = (
+                    self._electrostatic_interaction_energy(qi=q1_hel, qj=q2_hel, r=dist_hel, factor_pi=3.0)
+                    if dist_hel < 40.0 else 0.0
+                )
 
-            # 2. Random Coil State
-            q1_rc = self.modified_nterm_ionization_rc
-            q2_rc = self.modified_seq_ionization_rc[idx]
-            # RC distance approx: linear separation from N-term (-1) to idx
-            # separation = idx - (-1) = idx + 1
-            dist_rc = self._calculate_r(abs(idx + 1)) 
-            G_rc = self._electrostatic_interaction_energy(qi=q1_rc, qj=q2_rc, r=dist_rc, factor_pi=3.0)
+                q1_rc = float(self.modified_nterm_ionization_rc)
+                q2_rc = float(self.modified_seq_ionization_rc[idx])
+                # RC distance: N = idx residues between N-terminus and residue idx
+                dist_rc = float(self._calculate_r(idx))
+                G_rc = (
+                    self._electrostatic_interaction_energy(qi=q1_rc, qj=q2_rc, r=dist_rc, factor_pi=3.0)
+                    if dist_rc < 40.0 else 0.0
+                )
 
-            # 3. Delta G
-            energy_N[idx] = G_hel - G_rc
+                energy_N[idx] = G_hel - G_rc
 
+            # --- C-Terminal Interaction (only if local/present) ---
+            if cterm_present and cterm_local:
+                q1_hel = float(self.modified_cterm_ionization_hel)
+                q2_hel = float(self.modified_seq_ionization_hel[idx])
+                dist_hel = float(self.terminal_sidechain_distances_cterm[idx])
+                if np.isnan(dist_hel):
+                    dist_hel = 99.0
+                G_hel = (
+                    self._electrostatic_interaction_energy(qi=q1_hel, qj=q2_hel, r=dist_hel, factor_pi=3.0)
+                    if dist_hel < 40.0 else 0.0
+                )
 
-            # --- C-Terminal Interaction ---
-            # 1. Helix State
-            q1_hel = self.modified_cterm_ionization_hel
-            q2_hel = self.modified_seq_ionization_hel[idx]
-            dist_hel = self.terminal_sidechain_distances_cterm[idx]
-            G_hel = self._electrostatic_interaction_energy(qi=q1_hel, qj=q2_hel, r=dist_hel, factor_pi=3.0)
-
-            # 2. Random Coil State
-            q1_rc = self.modified_cterm_ionization_rc
-            q2_rc = self.modified_seq_ionization_rc[idx]
-            # RC distance approx: linear separation from idx to C-term (len)
-            # separation = len - idx
-            dist_rc = self._calculate_r(abs(len(self.seq_list) - idx))
-            G_rc = self._electrostatic_interaction_energy(qi=q1_rc, qj=q2_rc, r=dist_rc, factor_pi=3.0)
-
-            # 3. Delta G
-            energy_C[idx] = G_hel - G_rc
+                q1_rc = float(self.modified_cterm_ionization_rc)
+                q2_rc = float(self.modified_seq_ionization_rc[idx])
+                # RC distance: N = (n-1-idx) residues between residue idx and C-terminus
+                dist_rc = float(self._calculate_r((n - 1) - idx))
+                G_rc = (
+                    self._electrostatic_interaction_energy(qi=q1_rc, qj=q2_rc, r=dist_rc, factor_pi=3.0)
+                    if dist_rc < 40.0 else 0.0
+                )
+                energy_C[idx] = G_hel - G_rc
 
         return energy_N, energy_C
 
