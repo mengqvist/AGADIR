@@ -184,7 +184,15 @@ conda activate agadir-dev
 python ./pyagadir/validation.py
 ```
 
-This will generate comparison plots in the `pyagadir/data/figures` directory. 
+This will generate comparison plots in the `pyagadir/data/figures` directory.
+
+To get numerical scores instead of plots, run the scoring script:
+
+```bash
+python -m pyagadir.scoring --metric rmse
+```
+
+Available metrics are `mse`, `rmse`, `mae`, and `pearsonr`. The script prints one score per subplot, keyed by figure name. The individual `score_*` functions and `score_all()` in `pyagadir/scoring.py` accept a `metric=` argument and can be called directly from an optimiser.
 
 Below is a validation plot for Figure 3b with reference data extracted from the original paper (Lacroix et al., 1998, using WebPlotDigitizer), showing the pH dependence of helix content:
 
