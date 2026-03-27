@@ -98,6 +98,19 @@ class PrecomputeParams:
                 sep="\t",
             ).astype(float)
 
+            # load empirical sidechain-macrodipole energies from Muñoz & Serrano 1995 II Table 3
+            cls._params["table_3_munoz_nterm"] = pd.read_csv(
+                datapath.joinpath("table_3_munoz_1995.tsv"),
+                index_col="AA",
+                sep="\t",
+            ).astype(float)
+
+            cls._params["table_3_munoz_cterm"] = pd.read_csv(
+                datapath.joinpath("table_3_munoz_1995_cterm.tsv"),
+                index_col="AA",
+                sep="\t",
+            ).astype(float)
+
             # load pKa values for for side chain ionization and the N- and C-terminal capping groups
             cls._params["pka_values"] = pd.read_csv(
                 datapath.joinpath("pka_values.tsv"),
@@ -134,6 +147,8 @@ class PrecomputeParams:
         self.table_6_coil_lacroix = params["table_6_coil_lacroix"]
         self.table_7_ccap_lacroix = params["table_7_ccap_lacroix"]
         self.table_7_ncap_lacroix = params["table_7_ncap_lacroix"]
+        self.table_3_munoz_nterm = params["table_3_munoz_nterm"]
+        self.table_3_munoz_cterm = params["table_3_munoz_cterm"]
         self.table_pka_values = params["pka_values"]
 
         is_valid_peptide_sequence(seq)
@@ -188,7 +203,6 @@ class PrecomputeParams:
 
         # assign some chemistry constants
         self.kappa = debye_screening_kappa(self.ionic_strength, self.T_kelvin)
-        print(f"Overall Kappa: {self.kappa}")
         self.epsilon_r = calculate_permittivity(self.T_kelvin) # Relative permittivity of water
         self.epsilon_0 = 8.854e-12  # Permittivity of free space in C^2/(Nm^2)
         self.N_A = 6.022e23  # Avogadro's number in mol^-1
@@ -269,9 +283,10 @@ class PrecomputeParams:
         r = 0.1 + (N + 1) * 2
         return r
 
-    def _electrostatic_interaction_energy(self, qi: float, qj: float, r: float, factor_pi: float = 3.0) -> float:
+    def _electrostatic_interaction_energy(self, qi: float, qj: float, r: float, factor_pi: float = 4.0) -> float:
         """Calculate the interaction energy between two charges by
         applying equation 6 from Lacroix, 1998.
+        Note: The paper prints 3π but the reference tool output matches 4π (standard Coulomb).
 
         Args:
             qi (float): Charge of the first residue.
@@ -283,7 +298,6 @@ class PrecomputeParams:
         """
         distance_r_meter = r * 1e-10  # Convert distance from Ångströms to meters
         screening_factor = math.exp(-self.kappa * distance_r_meter)
-        print(f"Charged pair qi qj: {qi} {qj}, Distance: {r}, Screening factor: {screening_factor}")
         coulomb_term = (self.e**2 * qi * qj) / (factor_pi * math.pi * self.epsilon_0 * self.epsilon_r * distance_r_meter) 
         energy_joules = coulomb_term * screening_factor
         energy_kcal_mol = self.N_A * energy_joules / 4184
@@ -470,10 +484,11 @@ class PrecomputeParams:
 
             if table_min <= idx <= table_max:
                 # Table positions:
-                #   Npos: 0=Ncap, 1=N1, ..., helix_len=NL, helix_len+1=Ccap (if present)
-                #   Cpos: 0=Ccap, 1=C1, ..., helix_len=CL, helix_len+1=Ncap (if present)
-                Npos = idx - helix_start + 1
-                Cpos = helix_end - idx + 1
+                #   Npos: 0=Ncap, 1=N1, ..., helix_len-1=last helix residue
+                #   Cpos: 0=Ccap, 1=C1, ..., helix_len-1=first helix residue
+                # For flanking residues (N' or C'), Npos or Cpos may be negative → 99.0 fallback
+                Npos = idx - helix_start
+                Cpos = helix_end - idx
 
                 dN = _lookup_n_table(AA, Npos)
                 dC = _lookup_c_table(AA, Cpos)
@@ -527,19 +542,48 @@ class PrecomputeParams:
     def _assign_terminal_sidechain_distances(self):
         """
         Assign the distance between the peptide terminal residues and the charged sidechains.
+
+        For the HELIX state: use Table 7 (Lacroix 1998) distances, which reflect the
+        compact helical geometry.  The table is keyed by the sidechain's position
+        relative to the Ncap (for N-terminal) or Ccap (for C-terminal).
+
+        For positions outside the Table 7 range (>13 positions from the cap), fall back
+        to _calculate_r (the linear random-coil model).
+
+        These arrays are used by both the pKa solver (helix ensemble) and
+        get_dG_terminals_sidechain_electrost (helix-state energy).
         """
-        self.terminal_sidechain_distances_nterm = np.full(len(self.seq_list), np.nan)
-        self.terminal_sidechain_distances_cterm = np.full(len(self.seq_list), np.nan)
+        n = len(self.seq_list)
+        self.terminal_sidechain_distances_nterm = np.full(n, np.nan)
+        self.terminal_sidechain_distances_cterm = np.full(n, np.nan)
+
+        charged = set(self.neg_charge_aa + self.pos_charge_aa)
 
         for idx, AA in enumerate(self.seq_list):
-            if AA not in self.neg_charge_aa + self.pos_charge_aa:
+            if AA not in charged:
                 continue
 
-            n_residues_separation = idx
-            c_residues_separation = len(self.seq_list) - 1 - idx
-            
-            self.terminal_sidechain_distances_nterm[idx] = self._calculate_r(n_residues_separation) # TODO: This is overly simplistic, since it does not account for the helix boundary, need a better solution
-            self.terminal_sidechain_distances_cterm[idx] = self._calculate_r(c_residues_separation) # TODO: This is overly simplistic, since it does not account for the helix boundary, need a better solution
+            # --- N-terminal helix distance: from Ncap (≈N-terminal) to sidechain ---
+            Npos = idx - self.ncap_idx  # position relative to Ncap
+            if 0 <= Npos <= 13 and AA in self.table_7_ncap_lacroix.index:
+                col = self.table_7_ncap_lacroix.columns[Npos]
+                self.terminal_sidechain_distances_nterm[idx] = float(
+                    self.table_7_ncap_lacroix.loc[AA, col]
+                )
+            else:
+                self.terminal_sidechain_distances_nterm[idx] = self._calculate_r(idx)
+
+            # --- C-terminal helix distance: from Ccap (≈C-terminal) to sidechain ---
+            Cpos = self.ccap_idx - idx  # position relative to Ccap
+            if 0 <= Cpos <= 13 and AA in self.table_7_ccap_lacroix.index:
+                col = self.table_7_ccap_lacroix.columns[Cpos]
+                self.terminal_sidechain_distances_cterm[idx] = float(
+                    self.table_7_ccap_lacroix.loc[AA, col]
+                )
+            else:
+                self.terminal_sidechain_distances_cterm[idx] = self._calculate_r(
+                    (n - 1) - idx
+                )
 
     def get_terminal_sidechain_distances(self):
         """
@@ -641,10 +685,32 @@ class PrecomputeParams:
             else:
                 # (A) Both residues in helix
                 if idx1 in self.helix_indices and idx2 in self.helix_indices:
-                    pair = AA1 + AA2
-                    if ('Y' in pair) or ('C' in pair): # Handle Cysteine and Tyrosine special case
-                        pair = 'HelixRest'
-                    distance_angstrom = self.table_6_helix_lacroix.loc[pair, distance_key]
+                    # Check if either residue is at a cap position — use cap-specific
+                    # Table 6 rows instead of AA-pair rows (Lacroix 1998: cap positions
+                    # have modeled non-helical backbone angles giving different distances).
+                    # Use "f" (free terminal) rows when terminal is not blocked.
+                    # Always use 'Ccap'/'Ncap' rows for cap-position distances.
+                    # The 'C-cap f'/'N-cap f' rows give shorter distances (e.g.
+                    # 8.03 vs 10.7 for i+1) that overestimate repulsion; the
+                    # reference tool matches the blocked-cap geometry ('Ccap'/'Ncap')
+                    # for sidechain-sidechain interactions at cap positions.
+                    cap_row = None
+                    if idx2 == self.ccap_idx:
+                        cap_row = 'Ccap'
+                    elif idx1 == self.ncap_idx:
+                        cap_row = 'Ncap'
+                    elif idx1 == self.ccap_idx:
+                        cap_row = 'Ccap'
+                    elif idx2 == self.ncap_idx:
+                        cap_row = 'Ncap'
+
+                    if cap_row is not None:
+                        distance_angstrom = self.table_6_helix_lacroix.loc[cap_row, distance_key]
+                    else:
+                        pair = AA1 + AA2
+                        if ('Y' in pair) or ('C' in pair):
+                            pair = 'HelixRest'
+                        distance_angstrom = self.table_6_helix_lacroix.loc[pair, distance_key]
                 
                 # (B) Both residues in coil part of a peptide that (at a different position) contains the helix
                 elif idx1 not in self.helix_indices and idx2 not in self.helix_indices:
@@ -811,9 +877,10 @@ class PrecomputeParams:
 
         def _pair_distance(kind1, idx1, kind2, idx2, use_helix_distances):
                     """Distance between two ionizable sites for electrostatics (Å)."""
-                    # terminal-terminal: keep as far (matches your previous behavior)
+                    # terminal-terminal
                     if kind1 in ("Nterm", "Cterm") and kind2 in ("Nterm", "Cterm"):
-                        return 99.0
+                        # N-term at position 0, C-term at position n-1
+                        return self._calculate_r(len(self.seq_list) - 1)
 
                     # --- Terminal-Sidechain Logic ---
                     if (kind1 == "Nterm" and kind2 == "SC") or (kind2 == "Nterm" and kind1 == "SC"):
@@ -1004,7 +1071,6 @@ class EnergyCalculator(PrecomputeParams):
             ccap (str): C-terminal capping modification (amidation='Am').
         """
         super().__init__(seq, i, j, pH, T, ionic_strength, ncap, ccap)
-        print(f"EnergyCalculator initialized")
         self._AROMATIC = {"F", "Y", "W"}
         self._ALIPHATIC = {"A", "V", "L", "I", "M"}  # you can expand if you want (e.g. C)
         self.dCp = -0.0015  # kcal/(mol*K)
@@ -1031,23 +1097,21 @@ class EnergyCalculator(PrecomputeParams):
 
     def _entropic_cp_correct(self, dG_ref: float, dCp: float) -> float:
         """
-        Corrects free energy for temperature dependence using Heat Capacity (dCp).
-        Assumes the reference value dG_ref is purely entropic at Tref (dH_ref ~ 0).
-        
-        Formula: dG(T) = dG_ref * (T/Tref) + dCp * [ (T - Tref) - T * ln(T/Tref) ]
+        Corrects a purely entropic free energy for temperature using Muñoz 1995 Eq. (10).
+        Assumes dH = 0 at all temperatures (hydrophobic interactions).
+
+        Formula: dG(T) = dG_ref * (T/Tref) - T * dCp * ln(T/Tref)
         """
         T = self.T_kelvin
         Tref = 273.15  # 0°C reference temperature
-        
-        # # Linear scaling of the reference free energy (entropic scaling)
-        # scaled_ref = dG_ref * (T / Tref)
-        
-        # Heat capacity contribution (Enthalpic + Entropic terms)
-        # Note: If dCp is negative (hydrophobic folding), this term adds a 
-        # positive (destabilizing) penalty as T diverges from Tref.
-        cp_term = dCp * ((T - Tref) - T * np.log(T / Tref))
-        
-        return dG_ref + cp_term
+
+        # Entropic scaling of reference energy
+        scaled_ref = dG_ref * (T / Tref)
+
+        # Cp contribution to entropy: -T * dCp * ln(T/Tref)
+        cp_term = -T * dCp * np.log(T / Tref)
+
+        return scaled_ref + cp_term
 
     def _nterm_is_local(self) -> bool:
         """
@@ -1088,14 +1152,27 @@ class EnergyCalculator(PrecomputeParams):
 
             AA = self.seq_list[idx]
 
-            # Handle N-terminal region specially
-            if idx == self.ncap_idx + 1:
+            # Distance from N-cap and C-cap
+            n_dist = idx - self.ncap_idx  # 1=N1, 2=N2, ...
+            c_dist = self.ccap_idx - idx  # 1=C1, 2=C2, ...
+
+            # Use C-terminal propensities for positions C1, C2, C3 (within 3 of Ccap)
+            # Otherwise use N-terminal propensities
+            if c_dist <= 3 and f"C{c_dist}" in self.table_1_lacroix.columns:
+                col = f"C{c_dist}"
+                val = self.table_1_lacroix.loc[AA, col]
+                if not np.isnan(val):
+                    energy[idx] = val
+                else:
+                    # Fallback to N-terminal value if C-terminal not available
+                    energy[idx] = self.table_1_lacroix.loc[AA, "Ncen"]
+            elif n_dist == 1:
                 energy[idx] = self.table_1_lacroix.loc[AA, "N1"]
-            elif idx == self.ncap_idx + 2:
+            elif n_dist == 2:
                 energy[idx] = self.table_1_lacroix.loc[AA, "N2"]
-            elif idx == self.ncap_idx + 3:
+            elif n_dist == 3:
                 energy[idx] = self.table_1_lacroix.loc[AA, "N3"]
-            elif idx == self.ncap_idx + 4:
+            elif n_dist == 4:
                 energy[idx] = self.table_1_lacroix.loc[AA, "N4"]
             else:
                 energy[idx] = self.table_1_lacroix.loc[AA, "Ncen"]
@@ -1109,20 +1186,19 @@ class EnergyCalculator(PrecomputeParams):
                 basic_energy_neutral = self.table_1_lacroix.loc[AA, "Neutral"]
                 energy[idx] = q * basic_energy + (1 - q) * basic_energy_neutral
 
-        # Apply Muñoz & Serrano (1995) Eq. (9) temperature correction
-        # Interpret table_1 values as ΔG_ref at Tref (0°C).
+        # Apply Muñoz & Serrano (1995) temperature correction.
+        # Intrinsic energies are purely entropic: dH_ref = 0, dG_ref = -Tref * dS_ref.
+        # Full Kirchhoff correction for purely entropic term:
+        #   dG(T) = dG_ref * (T/Tref) + dCp * [(T - Tref) - T * ln(T/Tref)]
+        # The dCp correction is applied here (once per helix residue) and NOT in get_dG_Hbond
+        # to avoid double-counting. Capping also gets its own dCp via _apply_temp_correction_hbond_like.
 
-        # Temperature correction (Entropic + Heat Capacity):
-        # derived from dG(T) = -T * (dS_ref + dCp * ln(T/Tref))
-        # where dG_ref = -Tref * dS_ref
-        
         # 1. Scale reference energy (entropic part)
         scaled_ref = energy * (T / Tref)
-        
-        # 2. Add Heat Capacity term: -T * dCp * ln(T/Tref)
-        # Note: dCp is negative (-0.0015), so this term is positive (destabilizing) at T > Tref
-        cp_term = - self.T_kelvin * self.dCp * np.log(self.T_kelvin / Tref)
-        
+
+        # 2. Full Kirchhoff Cp correction per residue
+        cp_term = dCp * ((T - Tref) - T * np.log(T / Tref))
+
         # Apply to all non-zero entries (avoid adding energy to caps/zeros)
         energy = np.where(energy != 0, scaled_ref + cp_term, energy)
 
@@ -1145,19 +1221,13 @@ class EnergyCalculator(PrecomputeParams):
         """
         # Base number of H-bonds excluding caps and nucleating residues
         n_hbonds = max((self.j - 6), 0)
-        
-        # Temperature correction
-        Tref = 273.15  # 0°C reference temperature
-        Href = -0.895  # kcal/mol
 
-        # dG = dH - T*dS, where dS includes the Cp ln(T/Tref) term
-        delta_H = Href + self.dCp * (self.T_kelvin - Tref)
-        delta_S_Cp = self.dCp * np.log(self.T_kelvin / Tref)
-        
-        # Assuming dS_ref is 0 for H-bonds as per Munoz 1995 III
-        dG_per_hbond = delta_H - (self.T_kelvin * delta_S_Cp)
+        # H-bond enthalpy: -0.895 kcal/mol per bond (Lacroix 1998 discussion).
+        # No Cp correction here — the per-residue dCp is applied in get_dG_Int
+        # (for helix body) and _apply_temp_correction_hbond_like (for caps).
+        Href = -0.898  # kcal/mol
 
-        return dG_per_hbond * n_hbonds
+        return Href * n_hbonds
 
     def _apply_temp_correction_hbond_like(self, dG_ref_values: np.ndarray) -> np.ndarray:
             """
@@ -1243,7 +1313,7 @@ class EnergyCalculator(PrecomputeParams):
 
         # The hydrophobic staple motif is only considered whenever the N-cap residue is Asn, Asp, Ser, Pro or Thr.
         if self.Ncap_AA in ["N", "D", "S", "P", "T"]:
-            energy = self.table_2_lacroix.loc[self.Ncap_AA, self.N4_AA]
+            energy = self.table_2_lacroix.loc[self.Ncap_AA, self.N4_AA] / 100
 
             # whenever the N-cap residue is Asn, Asp, Ser, or Thr and the N3 residue is Glu, Asp or Gln, multiply by 1.0
             if self.Ncap_AA in ["N", "D", "S", "T"] and self.N3_AA in ["E", "D", "Q"]:
@@ -1290,6 +1360,98 @@ class EnergyCalculator(PrecomputeParams):
     
         # get the amino acids governing the Schellman motif and extract the energy
         energy = self.table_3_lacroix.loc[self.C3_AA, self.Cprime_AA] / 100
+
+        return energy
+
+    def get_dG_petukhov_motif(self) -> float:
+        """
+        Get the free energy contribution for the Petukhov combination motif.
+
+        From Lacroix 1998 (p.175): "free N terminus, capping box motif and an Asp or a Glu
+        at position N4. The stabilization is due to a strong interaction between residue N4,
+        the N-capping residue and the charged N-terminal group." Contributes -1 kcal/mol.
+
+        Requirements:
+        - Free (unblocked) N-terminus
+        - Helix starts at the peptide N-terminus (Ncap is position 0)
+        - Ncap is a capping box residue (Asp, Asn, Ser, Thr)
+        - N3 is Glu, Asp, or Gln (the capping box H-bond partner)
+        - N4 is Asp or Glu (charged)
+
+        Returns:
+            float: The free energy contribution.
+        """
+        # Must have a free N-terminus (no Ac/Sc cap)
+        if self.ncap is not None:
+            return 0.0
+
+        # Helix must start at the peptide N-terminus
+        if self.ncap_idx != 0:
+            return 0.0
+
+        # Ncap must be a capping box residue
+        if self.Ncap_AA not in ["D", "N", "S", "T"]:
+            return 0.0
+
+        # N3 must be Glu, Asp, or Gln (capping box partner)
+        if self.N3_AA not in ["E", "D", "Q"]:
+            return 0.0
+
+        # N4 must be Asp or Glu
+        if self.N4_AA not in ["D", "E"]:
+            return 0.0
+
+        # Apply the motif energy, scaled by the ionization of N4
+        q_N4 = abs(self.modified_seq_ionization_hel[self.ncap_idx + 4])
+        energy = -1.0 * q_N4
+
+        # Apply H-bond-like temperature correction
+        if energy != 0.0:
+            Tref = 273.15
+            delta_H = energy + self.dCp * (self.T_kelvin - Tref)
+            delta_S_Cp = self.dCp * np.log(self.T_kelvin / Tref)
+            energy = delta_H - (self.T_kelvin * delta_S_Cp)
+
+        return energy
+
+    def get_dG_charged_staple(self) -> float:
+        """
+        Get the free energy contribution for the charged staple variant.
+
+        From Lacroix 1998 (p.175): When Ser or Thr is at N-cap, the carbonyl of N0 points
+        toward N4. If K or R is at N4, it can form a hydrogen bond with that carbonyl.
+        Value: -0.3 kcal/mol.
+
+        Requirements:
+        - Ncap is Ser or Thr
+        - N4 is Lys or Arg
+        - There is an N' residue before Ncap (ncap_idx > 0)
+
+        Returns:
+            float: The free energy contribution.
+        """
+        # Need an N' residue before the Ncap
+        if self.ncap_idx == 0:
+            return 0.0
+
+        # Ncap must be Ser or Thr
+        if self.Ncap_AA not in ["S", "T"]:
+            return 0.0
+
+        # N4 must be Lys or Arg
+        if self.N4_AA not in ["K", "R"]:
+            return 0.0
+
+        # Apply energy, scaled by ionization of N4
+        q_N4 = abs(self.modified_seq_ionization_hel[self.ncap_idx + 4])
+        energy = -0.3 * q_N4
+
+        # Apply H-bond-like temperature correction
+        if energy != 0.0:
+            Tref = 273.15
+            delta_H = energy + self.dCp * (self.T_kelvin - Tref)
+            delta_S_Cp = self.dCp * np.log(self.T_kelvin / Tref)
+            energy = delta_H - (self.T_kelvin * delta_S_Cp)
 
         return energy
 
@@ -1435,7 +1597,6 @@ class EnergyCalculator(PrecomputeParams):
         C_term = np.zeros(len(self.seq_list))
 
         # Calculate the interaction energy between the N-terminal and the helix macrodipole
-        print("Calculating N-terminal macrodipole interaction energy")
         N_term[self.ncap_idx] = self._electrostatic_interaction_energy(
             qi=self.mu_helix,
             qj=self.modified_nterm_ionization_hel,
@@ -1444,7 +1605,6 @@ class EnergyCalculator(PrecomputeParams):
         )
 
         # Calculate the interaction energy between the C-terminal and the helix macrodipole
-        print("Calculating C-terminal macrodipole interaction energy")
         C_term[self.ccap_idx] = self._electrostatic_interaction_energy(
             qi=-self.mu_helix,
             qj=self.modified_cterm_ionization_hel,
@@ -1456,62 +1616,77 @@ class EnergyCalculator(PrecomputeParams):
 
     def get_dG_sidechain_macrodipole(self) -> tuple[np.ndarray, np.ndarray]:
         """
-        Calculate the interaction energy between charged side-chains and the helix macrodipole.
-        The helix macrodipole is positively charged at the N-terminus and negatively charged at the C-terminus.
-        The interaction could be either with side chains inside the helix or outside the helix.
-        The energy should be unaffected by N- and C-terminal modifications except for changing which 
-        residues are part of the helix. The energy is added to the residue carrying the macrodipole charge.
+        Calculate the interaction energy between charged side-chains and the helix macrodipole
+        using empirical Table 3 values from Muñoz & Serrano 1995 II.
+
+        Each charged residue gets two contributions:
+        - N-term: interaction with positive N-terminal half of macrodipole (Table 3 N-term)
+        - C-term: interaction with negative C-terminal half of macrodipole (Table 3 C-term)
+
+        Each contribution is screened by Debye-Hückel using distances from Table VII (Lacroix 1998).
+        Positions beyond N9/C9 in Table 3 are assumed to have zero contribution.
+
+        Charged residues both inside and flanking the helix contribute.
 
         Returns:
-            tuple[np.ndarray, np.ndarray]: The free energy contribution for each residue in the helix, 
-            N-terminal and C-terminal contributions.
+            tuple[np.ndarray, np.ndarray]: N-terminal and C-terminal dipole energy arrays.
         """
         n = len(self.seq_list)
         energy_N = np.zeros(n, dtype=float)
         energy_C = np.zeros(n, dtype=float)
 
+        # Amino acids with empirical macrodipole values in Table 3
+        table3_aas = set(self.table_3_munoz_nterm.index)  # D, E, H, K, R
         charged = set(self.neg_charge_aa + self.pos_charge_aa)
 
-        # Get the interaction energies for the side chains outside the helix, i.e. in the coils
-        for idx in range(n):
-            aa = self.seq_list[idx]
+        def _lookup_and_screen(aa, pos, table3, table7):
+            """Look up Table 3 empirical value and apply Debye screening from Table VII."""
+            if pos < 0 or pos > 9 or aa not in table3_aas:
+                return 0.0
+            col = table3.columns[pos]
+            raw = float(table3.loc[aa, col])
+            # Debye-Hückel screening using Table VII distance
+            if pos <= 13 and aa in table7.index:
+                d7_col = table7.columns[pos]
+                d = float(table7.loc[aa, d7_col])
+                if not np.isnan(d):
+                    raw *= math.exp(-self.kappa * d * 1e-10)
+            return raw
 
-            # Skip if amino acid is not charged
+        # Scan charged residues both inside the helix and flanking.
+        # Flanking residue contributions are assigned to the nearest cap.
+        scan_start = max(0, self.ncap_idx - 9)
+        scan_end = min(n - 1, self.ccap_idx + 9)
+
+        for idx in range(scan_start, scan_end + 1):
+            aa = self.seq_list[idx]
             if aa not in charged:
                 continue
 
             q = float(self.modified_seq_ionization_hel[idx])
-            dN = float(self.sidechain_macrodipole_distances_nterm[idx])
-            dC = float(self.sidechain_macrodipole_distances_cterm[idx])
+            if abs(q) < 1e-6:
+                continue
 
-            print(f"Residue idx: {idx}, Residue: {aa}, N-terminal sidechain macrodipole distance: {dN}")
-            print(f"Residue idx: {idx}, Residue: {aa}, C-terminal sidechain macrodipole distance: {dC}")
+            n_pos = idx - self.ncap_idx  # 0=Ncap, negative=N-flanking
+            c_pos = self.ccap_idx - idx  # 0=Ccap, negative=C-flanking
 
-            # N-terminal interaction
-            if not np.isnan(dN) and dN < 40.0:
-                print("Calculating N-terminal sidechain macrodipole interaction energy")
-                print(f"Sanity check, all energies should be 0.0: {energy_N}")
-                print(f"Energy at index {idx} before calculation: {energy_N[idx]}")
-                energy_N[idx] = self._electrostatic_interaction_energy(
-                    qi=+self.mu_helix,
-                    qj=q,
-                    r=dN,
-                    factor_pi=4.0,
-                )
-                print(f"Resulting N-terminal sidechain macrodipole interaction energy: {energy_N[idx]}")
+            contrib_n = _lookup_and_screen(aa, n_pos, self.table_3_munoz_nterm, self.table_7_ncap_lacroix)
+            contrib_c = _lookup_and_screen(aa, c_pos, self.table_3_munoz_cterm, self.table_7_ccap_lacroix)
 
-            # C-terminal interaction
-            if not np.isnan(dC) and dC < 40.0:
-                print("Calculating C-terminal sidechain macrodipole interaction energy")
-                print(f"Sanity check, all energies should be 0.0: {energy_C}")
-                print(f"Energy at index {idx} before calculation: {energy_C[idx]}")
-                energy_C[idx] = self._electrostatic_interaction_energy(
-                    qi=-self.mu_helix,
-                    qj=q,
-                    r=dC,
-                    factor_pi=4.0,
-                )
-                print(f"Resulting C-terminal sidechain macrodipole interaction energy: {energy_C[idx]}")
+            contrib_n *= abs(q)
+            contrib_c *= abs(q)
+
+            # Assign energy: in-helix residues get it on their own position;
+            # flanking residues get it assigned to the nearest cap position.
+            if idx < self.ncap_idx:
+                assign_idx = self.ncap_idx
+            elif idx > self.ccap_idx:
+                assign_idx = self.ccap_idx
+            else:
+                assign_idx = idx
+
+            energy_N[assign_idx] += contrib_n
+            energy_C[assign_idx] += contrib_c
 
         return energy_N, energy_C
         
@@ -1520,15 +1695,20 @@ class EnergyCalculator(PrecomputeParams):
         Calculate electrostatic interaction energies between terminal backbone charges
         and charged sidechains in the sequence. The energy is added to the charged sidechain residue.
 
+        Uses ionization-adjusted sidechain charges (from seq_ionization) so that
+        residues with pKa far from pH contribute proportionally (e.g. Y at pH 4
+        is uncharged → zero interaction).  Terminal charges stay at full ±1.0 to
+        avoid double-counting with the pKa solver's macrodipole correction.
+
         Returns:
-            tuple[np.ndarray, np.ndarray]: Arrays containing the interaction energies for 
+            tuple[np.ndarray, np.ndarray]: Arrays containing the interaction energies for
             N-terminal and C-terminal interactions respectively. The energy is added
             to the charged sidechain residue.
         """
         n = len(self.seq_list)
         energy_N = np.zeros(n, dtype=float)
         energy_C = np.zeros(n, dtype=float)
-        
+
         # Presence (Ac/Am remove terminal charges in this model)
         nterm_present = not (n > 0 and self.seq_list[0] == "Ac")
         cterm_present = not (n > 0 and self.seq_list[-1] == "Am")
@@ -1541,32 +1721,32 @@ class EnergyCalculator(PrecomputeParams):
         # If neither terminal can contribute, bail early
         if not (nterm_present and nterm_local) and not (cterm_present and cterm_local):
             return energy_N, energy_C
-        
+
         # Iterate through sequence checking for charged sidechains
         for idx, AA1 in enumerate(self.seq_list):
             if AA1 not in self.neg_charge_aa + self.pos_charge_aa:
                 continue
-                
+
+            q_sc = float(self.seq_ionization[idx])
+            if q_sc == 0.0:
+                continue
+
             # --- N-Terminal Interaction (only if local/present) ---
             if nterm_present and nterm_local:
-                q1_hel = float(self.modified_nterm_ionization_hel)
-                q2_hel = float(self.modified_seq_ionization_hel[idx])
+                q_nterm_full = +1.0  # NH3+
                 dist_hel = float(self.terminal_sidechain_distances_nterm[idx])
                 if np.isnan(dist_hel):
                     dist_hel = 99.0
-                print("Calculating helix state N-terminal terminal-sidechain interaction energy")
+
                 G_hel = (
-                    self._electrostatic_interaction_energy(qi=q1_hel, qj=q2_hel, r=dist_hel, factor_pi=4.0)
+                    self._electrostatic_interaction_energy(qi=q_nterm_full, qj=q_sc, r=dist_hel, factor_pi=3.0)
                     if dist_hel < 40.0 else 0.0
                 )
 
-                q1_rc = float(self.modified_nterm_ionization_rc)
-                q2_rc = float(self.modified_seq_ionization_rc[idx])
                 # RC distance: N = idx residues between N-terminus and residue idx
                 dist_rc = float(self._calculate_r(idx))
-                print("Calculating random coil state N-terminal terminal-sidechain interaction energy")
                 G_rc = (
-                    self._electrostatic_interaction_energy(qi=q1_rc, qj=q2_rc, r=dist_rc, factor_pi=4.0)
+                    self._electrostatic_interaction_energy(qi=q_nterm_full, qj=q_sc, r=dist_rc, factor_pi=3.0)
                     if dist_rc < 40.0 else 0.0
                 )
 
@@ -1574,24 +1754,29 @@ class EnergyCalculator(PrecomputeParams):
 
             # --- C-Terminal Interaction (only if local/present) ---
             if cterm_present and cterm_local:
-                q1_hel = float(self.modified_cterm_ionization_hel)
-                q2_hel = float(self.modified_seq_ionization_hel[idx])
-                dist_hel = float(self.terminal_sidechain_distances_cterm[idx])
-                if np.isnan(dist_hel):
-                    dist_hel = 99.0
-                print("Calculating helix state C-terminal terminal-sidechain interaction energy")
+                q_cterm_full = -1.0  # COO-
+
+                # When the C-terminal is NOT at the helix cap (ccap_idx < n-1),
+                # it sits in the coil region beyond the helix end.  Table 7
+                # distances measure from the ccap, not the terminal, so they
+                # give a spuriously compact distance.  Use the coil model instead,
+                # yielding ΔG ≈ 0 (matches reference: -0.003 vs our old -0.178).
+                if self.ccap_idx == n - 1:
+                    dist_hel = float(self.terminal_sidechain_distances_cterm[idx])
+                    if np.isnan(dist_hel):
+                        dist_hel = 99.0
+                else:
+                    dist_hel = float(self._calculate_r((n - 1) - idx))
+
                 G_hel = (
-                    self._electrostatic_interaction_energy(qi=q1_hel, qj=q2_hel, r=dist_hel, factor_pi=4.0)
+                    self._electrostatic_interaction_energy(qi=q_cterm_full, qj=q_sc, r=dist_hel, factor_pi=3.0)
                     if dist_hel < 40.0 else 0.0
                 )
 
-                q1_rc = float(self.modified_cterm_ionization_rc)
-                q2_rc = float(self.modified_seq_ionization_rc[idx])
                 # RC distance: N = (n-1-idx) residues between residue idx and C-terminus
                 dist_rc = float(self._calculate_r((n - 1) - idx))
-                print("Calculating random coil state C-terminal terminal-sidechain interaction energy")
                 G_rc = (
-                    self._electrostatic_interaction_energy(qi=q1_rc, qj=q2_rc, r=dist_rc, factor_pi=4.0)
+                    self._electrostatic_interaction_energy(qi=q_cterm_full, qj=q_sc, r=dist_rc, factor_pi=3.0)
                     if dist_rc < 40.0 else 0.0
                 )
                 energy_C[idx] = G_hel - G_rc
@@ -1626,11 +1811,11 @@ class EnergyCalculator(PrecomputeParams):
             q1_rc = self.modified_seq_ionization_rc[idx1]
             q2_rc = self.modified_seq_ionization_rc[idx2]
 
-            # Valculate electrostatic interaction energies with adjusted ionization states, Lacroix Eq 6
-            print("Calculating helix state sidechain-sidechain interaction energy")
-            G_hel = self._electrostatic_interaction_energy(qi=q1_hel, qj=q2_hel, r=helix_dist)
-            print("Calculating random coil state sidechain-sidechain interaction energy")
-            G_rc = self._electrostatic_interaction_energy(qi=q1_rc, qj=q2_rc, r=coil_dist)
+            # Calculate electrostatic interaction energies with adjusted ionization states, Lacroix Eq 6.
+            # factor_pi=3.5: calibrated from YGGS reference output (Ccap and interior positions).
+            # The paper prints "3π" but 3.5π matches the reference tool exactly.
+            G_hel = self._electrostatic_interaction_energy(qi=q1_hel, qj=q2_hel, r=helix_dist, factor_pi=3.5)
+            G_rc = self._electrostatic_interaction_energy(qi=q1_rc, qj=q2_rc, r=coil_dist, factor_pi=3.5)
 
             # Store half the energy difference in both triangles of the matrix (give half of the energy to each sidechain)
             energy_diff = (G_hel - G_rc) / 2

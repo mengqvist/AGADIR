@@ -226,6 +226,12 @@ class AGADIR(object):
         # get schellman motif energies
         dG_schellman = self.energy_calculator.get_dG_schellman()
 
+        # get Petukhov motif (free N-term + capping box + D/E at N4)
+        dG_petukhov = self.energy_calculator.get_dG_petukhov_motif()
+
+        # get charged staple variant (S/T at Ncap + K/R at N4)
+        dG_charged_staple = self.energy_calculator.get_dG_charged_staple()
+
         # calculate hydrogen bond energies for the helical segment here
         dG_Hbond = self.energy_calculator.get_dG_Hbond()
 
@@ -250,7 +256,7 @@ class AGADIR(object):
 
         # modify by ionic strength according to equation 12 of the paper
         alpha = 0.15
-        beta = 6.0
+        beta = 3.0
         dG_ionic = -alpha * (1 - np.exp(-beta * self.molarity))
 
         # sum all components
@@ -260,6 +266,8 @@ class AGADIR(object):
             + sum(dG_SD)
             + dG_staple
             + dG_schellman
+            + dG_petukhov
+            + dG_charged_staple
             + dG_Hbond
             + dG_ionic
             + sum(dG_terminals_dipole_N)
