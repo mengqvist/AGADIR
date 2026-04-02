@@ -367,7 +367,12 @@ class AGADIR(object):
         # # get overall percentage helix
         # self.result.percent_helix = np.round(np.mean(self.result.helical_propensity), 2)
 
-        # Exclude synthetic cap tokens ("Ac", "Am") from % helix averaging
+        # Exclude synthetic cap tokens ("Ac", "Am") from % helix averaging.
+        # Note: the official AGADIR reference tool ALSO excludes the free-terminal
+        # residues (dividing by n-1 or n-2), but CD measurements average over ALL
+        # residues.  We keep the CD-compatible convention (all real amino acids)
+        # for measured-data comparisons.  See tests/test_yggs_electrostatics.py for
+        # the reference-tool averaging adjustment.
         start = 1 if self.result.ncap is not None else 0
         end = -1 if self.result.ccap is not None else None
         self.result.percent_helix = float(np.round(np.mean(self.result.helical_propensity[start:end]), 2))
