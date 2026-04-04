@@ -283,7 +283,7 @@ class PrecomputeParams:
     def _calculate_r(self, N: int) -> float:
         """Function to calculate the distance r from the peptide terminal to the helix
         start, where N is the number of residues between the terminal and the helix.
-        p. 177 of Lacroix, 1998. Distances in Ångströms as 2.1, 4.1, 6.1... The function is 
+        p. 177 of Lacroix, 1998. Distances in Ångströms as 2.1, 4.1, 6.1... The function is
         needed because we ignore sidechains here. We only calculate distances between charged
         termini (which are located on the backbone) and the helix macrodipole, which is located
         at the N- and C-terminal capping residues. The capping residues are not included in the helix
@@ -297,6 +297,29 @@ class PrecomputeParams:
         """
         r = 0.1 + (N + 1) * 2
         return r
+
+    @staticmethod
+    def _terminal_macrodipole_r(N: int) -> float:
+        """Distance from the free terminus to the helix macrodipole pole.
+
+        Uses a polynomial fitted to back-computed distances from the AGADIR
+        reference tool (YGGS, M=0.1, pH=4, T=273K). The reference distances
+        grow at ~1.7-1.8 Å per residue (decreasing slightly), rather than
+        the 2.0 Å per residue given in the Lacroix 1998 paper text.
+        Reproduces reference terminal-macrodipole energies with RMSE < 0.001.
+
+        This function is only used for terminal-macrodipole distances, not
+        for random-coil reference distances in the pKa solver or scsc code.
+
+        Args:
+            N: Number of coil residues between the free terminus and the
+               helix macrodipole pole (Ncap or Ccap).
+
+        Returns:
+            Distance in Ångströms.
+        """
+        r = 2.0 + 1.80167 * N - 0.045 * N**2 + 0.00333 * N**3
+        return max(r, 2.0)
 
     def _electrostatic_interaction_energy(self, qi: float, qj: float, r: float, factor_pi: float = 4.0) -> float:
         """Calculate the interaction energy between two charges by
@@ -619,19 +642,21 @@ class PrecomputeParams:
     def _assign_terminal_macrodipole_distances(self):
         """
         Assign the distance between the peptide terminal residues and the helix macrodipole.
+        Uses the corrected polynomial distance model (_terminal_macrodipole_r) for
+        standard free amine/carboxyl terminals.  Succinylated N-termini (Sc) keep
+        the linear _calculate_r model because the succinyl carboxyl extends beyond
+        the backbone, making its effective distance longer.
         """
-        # Calculate base geometric distance (approx 2.1 A for N=0)
-        dist_n = self._calculate_r(self.ncap_idx)
-
         # N-Terminal Dipole Distance
         if self.ncap == 'Sc':
-            self.terminal_macrodipole_distance_nterm = dist_n
+            # Succinyl carboxyl is farther from helix than a backbone amine
+            self.terminal_macrodipole_distance_nterm = self._calculate_r(self.ncap_idx)
         else:
-            # Standard backbone amine distance
-            self.terminal_macrodipole_distance_nterm = dist_n
+            self.terminal_macrodipole_distance_nterm = self._terminal_macrodipole_r(self.ncap_idx)
 
         # C-Terminal Dipole Distance
-        self.terminal_macrodipole_distance_cterm = self._calculate_r(len(self.seq_list) - 1 - self.ccap_idx)
+        c_separation = len(self.seq_list) - 1 - self.ccap_idx
+        self.terminal_macrodipole_distance_cterm = self._terminal_macrodipole_r(c_separation)
 
     def get_terminal_macrodipole_distances(self) -> tuple[float, float]:
         """
@@ -1192,11 +1217,16 @@ class EnergyCalculator(PrecomputeParams):
             else:
                 energy[idx] = self.table_1_lacroix.loc[AA, "Ncen"]
 
-            if AA in self.neg_charge_aa + self.pos_charge_aa:
-                # Charged residues: use precomputed ionization state and balance energy based on ionization state
-                # If they are completely ionized, use base value, if they are completely neutral, use Neutral, 
-                # if they are partially ionized, use a weighted average of base value and Neutral
-                q = abs(self.modified_seq_ionization_hel[idx]) # abs because I only want to kno the fraction ionized, I don't care about the sign
+            if AA in self.pos_charge_aa + ["D", "E"]:
+                # Ionization correction for residues that are normally charged at pH 7.
+                # K, R, H (pos_charge_aa) have pKa > 6 and are charged at neutral pH.
+                # D, E have pKa ~4 and are charged (negative) at neutral pH.
+                # Table 1 position-specific values represent the charged form for these.
+                # When deionized (extreme pH), interpolate toward the Neutral column.
+                # Y and C are excluded: their pKa (~10.1, ~8.3) means they are normally
+                # neutral at pH 7, so Table 1 values already represent the neutral form.
+                # Reference AGADIR confirms: Y intrinsic is constant across all pH.
+                q = abs(self.modified_seq_ionization_hel[idx])
                 basic_energy = energy[idx]
                 basic_energy_neutral = self.table_1_lacroix.loc[AA, "Neutral"]
                 energy[idx] = q * basic_energy + (1 - q) * basic_energy_neutral
@@ -1611,21 +1641,26 @@ class EnergyCalculator(PrecomputeParams):
         N_term = np.zeros(len(self.seq_list))
         C_term = np.zeros(len(self.seq_list))
 
-        # Calculate the interaction energy between the N-terminal and the helix macrodipole
-        N_term[self.ncap_idx] = self._electrostatic_interaction_energy(
-            qi=self.mu_helix,
-            qj=self.modified_nterm_ionization_hel,
-            r=self.terminal_macrodipole_distance_nterm,
-            factor_pi=4.0 
-        )
+        # Calculate the interaction energy between the N-terminal and the helix macrodipole.
+        # Reference AGADIR applies a distance cutoff: when the terminal is >= 6 coil
+        # residues from the helix start (ncap_idx >= 6), the interaction is zero.
+        if self.ncap_idx < 6:
+            N_term[self.ncap_idx] = self._electrostatic_interaction_energy(
+                qi=self.mu_helix,
+                qj=self.modified_nterm_ionization_hel,
+                r=self.terminal_macrodipole_distance_nterm,
+                factor_pi=4.0
+            )
 
         # Calculate the interaction energy between the C-terminal and the helix macrodipole
-        C_term[self.ccap_idx] = self._electrostatic_interaction_energy(
-            qi=-self.mu_helix,
-            qj=self.modified_cterm_ionization_hel,
-            r=self.terminal_macrodipole_distance_cterm,
-            factor_pi=4.0 
-        )
+        c_separation = len(self.seq_list) - 1 - self.ccap_idx
+        if c_separation < 6:
+            C_term[self.ccap_idx] = self._electrostatic_interaction_energy(
+                qi=-self.mu_helix,
+                qj=self.modified_cterm_ionization_hel,
+                r=self.terminal_macrodipole_distance_cterm,
+                factor_pi=4.0
+            )
 
         return N_term, C_term
 

@@ -99,7 +99,7 @@ def test_electrostatic_interaction_energy(precompute_instance):
     # Negative energy for opposite charges, i.e. attraction
     energy = instance1._electrostatic_interaction_energy(qi, qj, r)
     assert energy < 0
-    assert np.isclose(energy, -0.671, atol=0.001)
+    assert np.isclose(energy, -0.503, atol=0.001)  # factor_pi=4.0 (standard Coulomb)
     energy = instance1._electrostatic_interaction_energy(qj, qi, r)
     assert energy < 0
 
@@ -233,23 +233,26 @@ def test_assign_terminal_macrodipole_distances(precompute_instance):
     # Verify terminal distances are calculated
     assert instance1.terminal_macrodipole_distance_nterm is not None
     assert instance1.terminal_macrodipole_distance_cterm is not None
-    assert np.isclose(instance1.terminal_macrodipole_distance_nterm, 2.1, atol=0.001)
-    assert np.isclose(instance1.terminal_macrodipole_distance_cterm, 2.1, atol=0.001)
+    assert np.isclose(instance1.terminal_macrodipole_distance_nterm, 2.0, atol=0.001)
+    assert np.isclose(instance1.terminal_macrodipole_distance_cterm, 2.0, atol=0.001)
 
     assert instance2.terminal_macrodipole_distance_nterm is not None
     assert instance2.terminal_macrodipole_distance_cterm is not None
-    assert np.isclose(instance2.terminal_macrodipole_distance_nterm, 2.1, atol=0.001)
-    assert np.isclose(instance2.terminal_macrodipole_distance_cterm, 2.1, atol=0.001)
+    assert np.isclose(instance2.terminal_macrodipole_distance_nterm, 2.0, atol=0.001)
+    assert np.isclose(instance2.terminal_macrodipole_distance_cterm, 2.0, atol=0.001)
 
     assert instance3.terminal_macrodipole_distance_nterm is not None
     assert instance3.terminal_macrodipole_distance_cterm is not None
-    assert np.isclose(instance3.terminal_macrodipole_distance_nterm, 6.1, atol=0.001)
-    assert np.isclose(instance3.terminal_macrodipole_distance_cterm, 6.1, atol=0.001)
+    # Corrected polynomial: _terminal_macrodipole_r(2) ≈ 5.45 Å
+    assert np.isclose(instance3.terminal_macrodipole_distance_nterm, 5.45, atol=0.01)
+    assert np.isclose(instance3.terminal_macrodipole_distance_cterm, 5.45, atol=0.01)
 
     assert instance4.terminal_macrodipole_distance_nterm is not None
     assert instance4.terminal_macrodipole_distance_cterm is not None
+    # Sc N-terminal keeps the old _calculate_r formula (6.1 Å)
     assert np.isclose(instance4.terminal_macrodipole_distance_nterm, 6.1, atol=0.001)
-    assert np.isclose(instance4.terminal_macrodipole_distance_cterm, 6.1, atol=0.001)
+    # C-terminal uses corrected polynomial: _terminal_macrodipole_r(2) ≈ 5.45 Å
+    assert np.isclose(instance4.terminal_macrodipole_distance_cterm, 5.45, atol=0.01)
 
 # def test_assign_charged_sidechain_distances(precompute_instance):
 #     """Test the _assign_charged_sidechain_distances method."""

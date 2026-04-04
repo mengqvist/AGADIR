@@ -20,3 +20,4 @@ dependencies:
   # Enhanced development experience
   - ipython
   - pre-commit>=3.5.0
+  - fitz>=0.3.0
