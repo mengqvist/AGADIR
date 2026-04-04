@@ -254,6 +254,9 @@ class AGADIR(object):
         # get electrostatic energies between pairs of charged side chains
         dG_electrost_sidechain = self.energy_calculator.get_dG_sidechain_sidechain_electrost()
 
+        # get electrostatic energy between N-terminal and C-terminal backbone charges
+        dG_electrost_term_term = self.energy_calculator.get_dG_terminal_terminal_electrost()
+
         # modify by ionic strength according to equation 12 of the paper
         alpha = 0.15
         beta = 3.0
@@ -275,6 +278,7 @@ class AGADIR(object):
             + np.sum(dG_sidechain_dipole)
             + np.sum(dG_electrost_term)
             + np.sum(dG_electrost_sidechain)
+            + dG_electrost_term_term
         )
 
         if self.debug:
