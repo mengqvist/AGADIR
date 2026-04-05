@@ -262,6 +262,13 @@ class AGADIR(object):
         beta = 3.0
         dG_ionic = -alpha * (1 - np.exp(-beta * self.molarity))
 
+        # Muñoz 1995 III eq. (12): electrostatic interactions scale with
+        # the temperature-dependent dielectric constant of water.
+        # ε(T) = ε(0°C) × exp(-0.004314×ΔT), so Coulomb energies scale
+        # as exp(+0.004314×ΔT) (stronger at higher T due to lower ε).
+        dT = self.T_kelvin - 273.15
+        elec_temp_factor = np.exp(0.004314 * dT)
+
         # sum all components
         dG_Hel = (
             sum(dG_Int)
@@ -273,12 +280,12 @@ class AGADIR(object):
             + dG_charged_staple
             + dG_Hbond
             + dG_ionic
-            + sum(dG_terminals_dipole_N)
-            + sum(dG_terminals_dipole_C)
-            + np.sum(dG_sidechain_dipole)
-            + np.sum(dG_electrost_term)
-            + np.sum(dG_electrost_sidechain)
-            + dG_electrost_term_term
+            + (sum(dG_terminals_dipole_N)
+               + sum(dG_terminals_dipole_C)
+               + np.sum(dG_sidechain_dipole)
+               + np.sum(dG_electrost_term)
+               + np.sum(dG_electrost_sidechain)
+               + dG_electrost_term_term) * elec_temp_factor
         )
 
         if self.debug:

@@ -1254,25 +1254,32 @@ class EnergyCalculator(PrecomputeParams):
         Get the free energy contribution for hydrogen bonding for a sequence.
 
         Capping residues, don't count toward hydrogen bonding, which gives 2.
-        Additionally, the first 4 helical amino acids are considered to have 
-        zero net enthalpy since they are nucleating residues. 
+        Additionally, the first 4 helical amino acids are considered to have
+        zero net enthalpy since they are nucleating residues.
         This gives a total of 6 residues that don't count toward hydrogen bonding.
-        Hbond value is -0.895 kcal/mol per residue, which is the value from the 
-        discussion section of the 1998 lacroix paper. Uses equation 6 from Munoz et al. 1994.
-        to adjust for temperature (https://doi.org/10.1006/jmbi.1994.0024).
+
+        The net H-bond ΔG at 0°C is -0.895 kcal/mol (Lacroix 1998).
+        Decomposed as ΔG = ΔH - T×ΔS where ΔH ≈ 0 and ΔS = +0.003277 kcal/(mol·K).
+        The near-zero enthalpy reflects cancellation between peptide H-bond
+        formation and water H-bond reorganisation; the positive ΔS reflects
+        release of ordered solvent from the backbone upon helix formation.
+        The per-residue ΔCp correction is applied separately in get_dG_Int
+        and _apply_temp_correction_hbond_like.
 
         Returns:
             float: The total free energy contribution for hydrogen bonding in the sequence.
         """
-        # Base number of H-bonds excluding caps and nucleating residues
         n_hbonds = max((self.j - 6), 0)
 
-        # H-bond enthalpy: -0.895 kcal/mol per bond (Lacroix 1998 discussion).
-        # No Cp correction here — the per-residue dCp is applied in get_dG_Int
-        # (for helix body) and _apply_temp_correction_hbond_like (for caps).
-        Href = -0.898  # kcal/mol
+        # ΔG_hb(T) = ΔH_hb - T × ΔS_hb
+        # Calibrated so that ΔG(273.15 K) = -0.898 kcal/mol.
+        # With eq.(12) dielectric correction for electrostatics,
+        # optimal ΔH = -0.15 from Muñoz 1995 Figure 3a calibration.
+        dH_hb = -0.15      # kcal/mol per bond
+        dS_hb = 0.002739   # kcal/(mol·K) per bond  (= (0.898-0.15) / 273.15)
 
-        return Href * n_hbonds
+        dG_per_bond = dH_hb - self.T_kelvin * dS_hb
+        return dG_per_bond * n_hbonds
 
     def _apply_temp_correction_hbond_like(self, dG_ref_values: np.ndarray) -> np.ndarray:
             """
