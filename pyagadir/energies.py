@@ -1603,28 +1603,39 @@ class EnergyCalculator(PrecomputeParams):
             extra = 0.0
 
             # --- Table V add-ons (orientation matters: position i -> position i+4) ---
+            # Table V values are G_helix for charged side-chain interactions.
+            # The same interaction exists (weaker) in the coil state. We subtract
+            # the coil contribution using 1/d Coulomb scaling with Table 6 distances:
+            #   ΔG = G_hel × (1 − d_hel / d_coil)
+            # Pairs with one uncharged residue use HelixRest/RcoilRest distances.
+            # Validated on Huyghues-Despointes 1993 Asp-scan: Q-D⁻ gives -0.227
+            # (optimal -0.225, vs paper raw -0.5 which over-stabilises by +8.9%).
+            d_hel_4 = float(self.table_6_helix_lacroix.loc['HelixRest', 'i+4'])
+            d_coil_4 = float(self.table_6_coil_lacroix.loc['RcoilRest', 'i+4'])
+            coil_corr_4 = 1.0 - d_hel_4 / d_coil_4  # ≈ 0.455
+
             # FYW (i) with His+ (i+4): -0.4 kcal/mol when His is at C1 or C-cap; otherwise divide by 3
             if AAi in ["F", "Y", "W"] and AAi4 == "H":
                 p_his = abs(self.modified_seq_ionization_hel[idx + 4])  # population of His+
                 # His is "C1" if it is the residue just before C-cap; "C-cap" if it is C-cap itself
                 his_is_C1_or_Ccap = (idx + 4 == self.ccap_idx) or (idx + 4 == self.ccap_idx - 1)
                 val = -0.4 if his_is_C1_or_Ccap else (-0.4 / 3.0)
-                extra += p_his * val
+                extra += p_his * val * coil_corr_4
 
-            # Gln (i) with Asp- (i+4): -0.5 kcal/mol
+            # Gln (i) with Asp- (i+4): -0.5 kcal/mol (paper Table V)
             if AAi == "Q" and AAi4 == "D":
                 p_asp = abs(self.modified_seq_ionization_hel[idx + 4])  # population of Asp-
-                extra += p_asp * (-0.5)
+                extra += p_asp * (-0.5) * coil_corr_4
 
             # Glu- (i) with Asn (i+4): -0.5 kcal/mol
             if AAi == "E" and AAi4 == "N":
                 p_glu = abs(self.modified_seq_ionization_hel[idx])  # population of Glu-
-                extra += p_glu * (-0.5)
+                extra += p_glu * (-0.5) * coil_corr_4
 
             # Gln (i) with Glu- (i+4): -0.1 kcal/mol
             if AAi == "Q" and AAi4 == "E":
                 p_glu = abs(self.modified_seq_ionization_hel[idx + 4])  # population of Glu-
-                extra += p_glu * (-0.1)
+                extra += p_glu * (-0.1) * coil_corr_4
 
             # These are side-chain H-bonds/Salt bridges, they should weaken with T
             if extra != 0.0:
