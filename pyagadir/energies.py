@@ -303,10 +303,20 @@ class PrecomputeParams:
         """Distance from the free terminus to the helix macrodipole pole.
 
         Uses a polynomial fitted to back-computed distances from the AGADIR
-        reference tool (YGGS, M=0.1, pH=4, T=273K). The reference distances
-        grow at ~1.7-1.8 Å per residue (decreasing slightly), rather than
-        the 2.0 Å per residue given in the Lacroix 1998 paper text.
-        Reproduces reference terminal-macrodipole energies with RMSE < 0.001.
+        reference tool (YGGS, M=0.1, pH=4, T=273K).
+
+        NOTE (cycle 59): this polynomial is WRONG, and the comment that used to
+        stand here -- that the reference grows at ~1.7-1.8 A per residue "rather
+        than the 2.0 A per residue given in the Lacroix 1998 paper text" -- had
+        the tool and the paper the wrong way round. Back-computing the distances
+        implied by the reference tool's own printed `g N term` energies gives
+        r = 2.099 + 2.012*N, i.e. the tool agrees with the paper. Replacing this
+        polynomial with r = 2.1 + 2.0*N cuts the error on this term from
+        RMSE 0.03454 to 0.00095 over the six N-cap positions of the YGGS runs.
+
+        It is NOT replaced here, because doing so alone makes end-to-end
+        agreement worse: another term is compensating for this error. See
+        reasoning/nodes/N045.md for the measurements and what to fix alongside it.
 
         This function is only used for terminal-macrodipole distances, not
         for random-coil reference distances in the pKa solver or scsc code.
@@ -1364,8 +1374,14 @@ class EnergyCalculator(PrecomputeParams):
             return energy
 
         # The hydrophobic staple motif is only considered whenever the N-cap residue is Asn, Asp, Ser, Pro or Thr.
-        if self.Ncap_AA in ["N", "D", "S", "P", "T"]:
-            energy = self.table_2_lacroix.loc[self.Ncap_AA, self.N4_AA] / 100
+        # Table II is indexed by N' (rows) x N4 (columns): "the interactions between
+        # different amino acids at positions N' (rows) and N4 (columns) in a hydrophobic
+        # staple motif" (Lacroix 1998, supplementary Table II caption), which is also what
+        # this method's docstring says.  This lookup previously used Ncap_AA, so the term
+        # read the wrong table row for every staple it fired on.
+        Nprime_AA = self.seq_list[self.ncap_idx - 1]
+        if self.Ncap_AA in ["N", "D", "S", "P", "T"] and Nprime_AA in self.table_2_lacroix.index:
+            energy = self.table_2_lacroix.loc[Nprime_AA, self.N4_AA] / 100
 
             # whenever the N-cap residue is Asn, Asp, Ser, or Thr and the N3 residue is Glu, Asp or Gln, multiply by 1.0
             if self.Ncap_AA in ["N", "D", "S", "T"] and self.N3_AA in ["E", "D", "Q"]:
@@ -1737,18 +1753,47 @@ class EnergyCalculator(PrecomputeParams):
         # Amino acids with empirical macrodipole values in Table 3
         table3_aas = set(self.table_3_munoz_nterm.index)
 
-        def _table3_screen(aa, pos, table3, table7):
-            """Look up Table 3 empirical value and apply Debye screening from Table VII."""
-            if pos < 0 or pos > 9 or aa not in table3_aas:
+        # Flanking (outside-helix) charged residues.
+        #
+        # Munoz 1995 II Table 3 lists empirical macrodipole free energies for Asp, Glu,
+        # His, Lys and Arg only.  Cys and Tyr have no row, so before this change they
+        # received EXACTLY ZERO flanking macrodipole energy -- although Lacroix 1998
+        # states "Cys and Tyr are now correctly treated as titratable amino acid
+        # residues" and its Table VII gives distances for all seven.
+        #
+        # For those two residues we therefore fall back to the same screened Coulomb form
+        # the interior branch uses, at the distance rule Lacroix 1998 states directly:
+        # "For residues N0 and C0, the distance is 6 A.  That separation distance
+        # increases by 3 A for every extra position after the N0 or C0 positions."  The
+        # reference tool applies this at flank positions 1 and 2 only and exactly zero
+        # beyond, which is reproduced here.
+        #
+        # Asp/Glu/His/Lys/Arg keep their Table 3 values unchanged: no reference run
+        # contains an acidic side chain, so nothing available can arbitrate a change
+        # there, and the benchmark already fits them.
+        _FLANK_D = [6.0, 9.0]
+        _FLANK_D_C = [6.0, 9.0]
+
+        def _table3_screen(aa, pos, table3, table7, q=1.0):
+            is_n = table3 is self.table_3_munoz_nterm
+            if aa in table3_aas:
+                if pos < 0 or pos > 9:
+                    return 0.0
+                col = table3.columns[pos]
+                raw = float(table3.loc[aa, col])
+                if pos <= 13 and aa in table7.index:
+                    d7_col = table7.columns[pos]
+                    d = float(table7.loc[aa, d7_col])
+                    if not np.isnan(d):
+                        raw *= math.exp(-self.kappa * d * 1e-10)
+                return raw
+            if pos < 1 or pos > 2:
                 return 0.0
-            col = table3.columns[pos]
-            raw = float(table3.loc[aa, col])
-            if pos <= 13 and aa in table7.index:
-                d7_col = table7.columns[pos]
-                d = float(table7.loc[aa, d7_col])
-                if not np.isnan(d):
-                    raw *= math.exp(-self.kappa * d * 1e-10)
-            return raw
+            d = (_FLANK_D if is_n else _FLANK_D_C)[pos - 1] * 10.0
+            sgn = 1.0 if q >= 0 else -1.0
+            if is_n:
+                return sgn * 0.5 * B_N / d * math.exp(-kappa_01A * d)
+            return -sgn * 0.5 * A_C / (d * d) * math.exp(-kappa_01A * d)
 
         # Helper: look up Coulomb distance from dedicated tables (Å)
         def _coulomb_dist_n(aa, n_pos):
@@ -1832,7 +1877,7 @@ class EnergyCalculator(PrecomputeParams):
                 if abs(q) < 1e-6:
                     continue
                 flank_pos = idx - ccap_i  # 1, 2, 3, ...
-                contrib_c = _table3_screen(aa, flank_pos, self.table_3_munoz_cterm, self.table_7_ccap_lacroix)
+                contrib_c = _table3_screen(aa, flank_pos, self.table_3_munoz_cterm, self.table_7_ccap_lacroix, q)
                 energy_C[ccap_i] += contrib_c * abs(q)
 
         # N-terminal flanking (before Ncap): only N-term contribution → Ncap position
@@ -1846,7 +1891,7 @@ class EnergyCalculator(PrecomputeParams):
                 if abs(q) < 1e-6:
                     continue
                 flank_pos = ncap_i - idx  # 1, 2, 3, ...
-                contrib_n = _table3_screen(aa, flank_pos, self.table_3_munoz_nterm, self.table_7_ncap_lacroix)
+                contrib_n = _table3_screen(aa, flank_pos, self.table_3_munoz_nterm, self.table_7_ncap_lacroix, q)
                 energy_N[ncap_i] += contrib_n * abs(q)
 
         return energy_N, energy_C
@@ -1881,7 +1926,11 @@ class EnergyCalculator(PrecomputeParams):
         # Locality gate (AGADIR/Lacroix-style): only include terminal-sidechain terms
         # when the terminal is in-helix or is the immediate neighbor (N' / C').
         nterm_local = (self.ncap_idx <= 1)
-        cterm_local = (self.ccap_idx >= (n - 2))
+        # The C-terminal gate is one residue, not two.  Measured against the reference
+        # tool: when the C-terminus IS the last helical residue it charges -0.157 for this
+        # interaction, and one residue further out it charges ~-0.003, i.e. nothing.  A
+        # two-residue window (>= n - 2) fires the term where the reference does not.
+        cterm_local = (self.ccap_idx >= (n - 1))
 
         # If neither terminal can contribute, bail early
         if not (nterm_present and nterm_local) and not (cterm_present and cterm_local):
@@ -1922,11 +1971,37 @@ class EnergyCalculator(PrecomputeParams):
                 energy_N[idx] = G_hel - G_rc
 
             # --- C-Terminal Interaction ---
-            # Disabled: the reference C-terminal sidechain contribution is
-            # very small (C_eff ≈ -0.003) and our Coulomb model with Table 7
-            # Ccap distances produces values 20x too large (-0.058). The
-            # correct distance model for C-terminal sidechain is unknown.
-            # Setting to zero introduces only ≈0.003 error per segment.
+            # --- C-Terminal Interaction ---
+            # Re-enabled.  This was commented out on the premise that "the reference
+            # C-terminal sidechain contribution is very small (C_eff ~ -0.003)".  That
+            # value is the case where the C-terminus sits one residue OUTSIDE the helix.
+            # When it is the last helical residue -- the case the gate above selects --
+            # the reference's value is -0.157, some 60x larger.
+            #
+            # Mirrors the N-terminal branch above: same gate, same charge source, same
+            # G_hel - G_rc difference.  See the note in get_dG_terminal_terminal_electrost
+            # on why this and that term had to be corrected together.
+            if cterm_present and cterm_local:
+                q_cterm_full = float(self.modified_cterm_ionization_hel)
+                # Table VII holds macrodipole distances; the C-terminal BACKBONE
+                # charge sits closer to the side chains.  Scale back-computed from the
+                # reference (cycle 36).  EMPIRICAL, one constant.
+                dist_hel_c = float(self.terminal_sidechain_distances_cterm[idx]) * 0.8323
+                if np.isnan(dist_hel_c):
+                    dist_hel_c = 99.0
+
+                G_hel_c = (
+                    self._electrostatic_interaction_energy(qi=q_cterm_full, qj=q_sc, r=dist_hel_c, factor_pi=4.0)
+                    if dist_hel_c < 40.0 else 0.0
+                )
+
+                dist_rc_c = float(self._calculate_r((n - 1) - idx))
+                G_rc_c = (
+                    self._electrostatic_interaction_energy(qi=q_cterm_full, qj=q_sc, r=dist_rc_c, factor_pi=4.0)
+                    if dist_rc_c < 40.0 else 0.0
+                )
+
+                energy_C[idx] = G_hel_c - G_rc_c
 
         return energy_N, energy_C
 
@@ -1955,6 +2030,19 @@ class EnergyCalculator(PrecomputeParams):
 
         if not nterm_present or not cterm_present:
             return 0.0
+
+        # The reference tool computes NO terminal-to-terminal interaction.  Measured on
+        # the one run that isolates the pair -- free/free poly-alanine, which has no charged
+        # side chains to confuse the comparison -- the reference's total charge
+        # electrostatics is exactly 0.00000 where this function returned -0.12952.
+        #
+        # This term and the C-terminal/side-chain term were a compensating pair: this one
+        # was spurious, that one was disabled, and on doubly-free peptides the first stood
+        # in for the second (-0.1487 against a required -0.1532 at pH 4).  Removing either
+        # alone made the fit worse.  Both are corrected together.
+        #
+        # Disabled rather than deleted so the derivation stays readable.
+        return 0.0
 
         q_nterm = float(self.modified_nterm_ionization_hel)
         q_cterm = float(self.modified_cterm_ionization_hel)

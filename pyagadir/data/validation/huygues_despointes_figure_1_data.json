@@ -1,19 +1,66 @@
 {
-    "figure1ab":{
-        "peptides": ["DAQAAAAQAAAAQAAY",
-                     "ADQAAAAQAAAAQAAY",
-                     "AAQDAAAQAAAAQAAY",
-                     "AAQAADAQAAAAQAAY",
-                     "AAQAAADQAAAAQAAY",
-                     "AAQAAAAQDAAAQAAY",
-                     "AAQAAAAQADAAQAAY",
-                     "AAQAAAAQAAADQAAY",
-                     "AAQAAAAQAAAAQDAY",
-                     "AAQAAAAQAAAAQADY"],
-        "ncap": "Ac",
-        "ccap": "Am",
-        "asp_pos": [1, 2, 4, 6, 7, 9, 10, 12, 14, 15],
-        "measured_ph_2": [0.41, 0.35, 0.35, 0.26, 0.34, 0.26, 0.26, 0.44, 0.39, 0.42],
-        "measured_ph_7": [0.52, 0.49, 0.44, 0.29, 0.48, 0.26, 0.20, 0.45, 0.27, 0.29]
-    }
+  "_provenance": {
+    "citation": "Huyghues-Despointes, B. M. P., Scholtz, J. M. & Baldwin, R. L. (1993) Protein Sci. 2, 1604-1611. ATTRIBUTION INFERRED: this is ref 19 of Munoz & Serrano (1997), which that paper's text ties to 'the interaction of Asp with the helix macrodipole' - matching this Asp-position scan. NOTE that the same three authors published a DIFFERENT 1993 paper in the same journal and volume: 'Helical peptides with three pairs of Asp-Arg and Glu-Arg residues in different orientations and spacings', Protein Sci. 2, 80-85, which Lacroix (1998) cites for different peptides. Confirm which before relying on this.",
+    "doi": null,
+    "doi_note": "No DOI in validation.py's docstring and the source paper is not under doc/. Left null rather than supplied from memory.",
+    "source_text": null,
+    "figure": "Figure 1A,B",
+    "conditions_verified_against_source": false,
+    "temperature_C": 0.0,
+    "temperature_source": "NOT VERIFIABLE. The source paper is not under doc/.",
+    "ionic_strength_M": 0.01,
+    "ionic_strength_source": "NOT VERIFIABLE. The source paper is not under doc/."
+  },
+  "figure1ab": {
+    "peptides": [
+      "DAQAAAAQAAAAQAAY",
+      "ADQAAAAQAAAAQAAY",
+      "AAQDAAAQAAAAQAAY",
+      "AAQAADAQAAAAQAAY",
+      "AAQAAADQAAAAQAAY",
+      "AAQAAAAQDAAAQAAY",
+      "AAQAAAAQADAAQAAY",
+      "AAQAAAAQAAADQAAY",
+      "AAQAAAAQAAAAQDAY",
+      "AAQAAAAQAAAAQADY"
+    ],
+    "ncap": "Ac",
+    "ccap": "Am",
+    "asp_pos": [
+      1,
+      2,
+      4,
+      6,
+      7,
+      9,
+      10,
+      12,
+      14,
+      15
+    ],
+    "measured_ph_2": [
+      0.41,
+      0.35,
+      0.35,
+      0.26,
+      0.34,
+      0.26,
+      0.26,
+      0.44,
+      0.39,
+      0.42
+    ],
+    "measured_ph_7": [
+      0.52,
+      0.49,
+      0.44,
+      0.29,
+      0.48,
+      0.26,
+      0.2,
+      0.45,
+      0.27,
+      0.29
+    ]
+  }
 }

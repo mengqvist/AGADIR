@@ -1,31 +1,66 @@
 {
-    "figure4A":{
-        "peptides": ["AAQAAY",
-                     "AAQAAAAQAAY",
-                     "AAQAAAAQAAAAQAAY",
-                     "AAQAAAAQAAAAQAAAAQAAY"],
-        "helicity": [0.33, 16.62, 41.14, 56.79],
-        "ncap": "Ac",
-        "ccap": "Am"
-    },
-    "figure4B":{
-        "peptides": ["AAKAAAAKAAAAKAAY",
-                     "AAKAAAAKAAAAKAAAAKAAY",
-                     "AAKAAAAKAAAAKAAAAKAAAAKAAY",
-                     "AAKAAAAKAAAAKAAAAKAAAAKAAAAKAAAAKAAAAKAAY",
-                     "AAKAAAAKAAAAKAAAAKAAAAKAAAAKAAAAKAAAAKAAAAKAAAAKAAY"],
-        "helicity": [59.08, 77.93, 85.09, 90.57, 92.11],
-        "ncap": "Ac",
-        "ccap": "Am"
-    },
-    "figure4C":{
-        "peptides": ["YAEAAKAAEAAKAAEAAKAF",
-                     "YAEAAKAAEAAKAAEAAKAAEAAKAF",
-                     "YAEAAKAAEAAKAAEAAKAAEAAKAAEAAKAF",
-                     "YAEAAKAAEAAKAAEAAKAAEAAKAAEAAKAAEAAKAAEAAKAAEAAKAF",
-                     "YAEAAKAAEAAKAAEAAKAAEAAKAAEAAKAAEAAKAAEAAKAAEAAKAAEAAKAAEAAKAF"],
-        "helicity": [38.97, 70.48, 82.89, 87.00, 91.51],
-        "ncap": "Ac",
-        "ccap": "Am"
-    }
+  "_provenance": {
+    "citation": "Munoz, V. & Serrano, L. (1997). Development of the multiple sequence approximation within the AGADIR model of alpha-helix formation: comparison with Zimm-Bragg and Lifson-Roig formalisms. Biopolymers. Volume and pages not legible in the copy under doc/.",
+    "doi": "10.1002/(SICI)1097-0282(19970415)41:5<495::AID-BIP2>3.0.CO;2-H",
+    "doi_note": "FROM validation.py's docstring, not printed in the copy under doc/. Internally consistent: it encodes Biopolymers vol. 41, issue 5, p. 495, 1997-04-15, and the paper's running text shows p. 505 and 'Received 16 April 1996'. Not independently confirmed.",
+    "source_text": "doc/1997_munoz_development-of-the-multiple-sequence-approximation-within-the-agadir-model-of-α-helix-formation.txt",
+    "figure": "Figure 4A-C",
+    "conditions_verified_against_source": false,
+    "temperature_C": 0.0,
+    "temperature_source": "NOT STATED in this paper. Figure 4 replots data from three external sources and gives no conditions.",
+    "ionic_strength_M": 0.1,
+    "ionic_strength_source": "NOT STATED. Figure 4 legend cites: (A) (AAQAA)n refs 12 and 30; (B) (AAKAA)n ref 21; (C) (AEAAKA)n ref 20. Ref 12 = Munoz & Serrano (1994) Nat. Struct. Biol. 1, 399-409. Ref 20 = Scholtz, M., Qian, H., York, E. J., Stewart, J. M. & Baldwin, R. L. (1991) Biopolymers 31, 1463-1470. Ref 21 = Rohl, C. A., Scholtz, J. M., York, E. J., Stewart, J. M. & Baldwin, R. L. (1992) Biochemistry 31, 1263-1269. Ref 30 is not present in the extracted reference list (it stops at 29). None of these papers is under doc/."
+  },
+  "figure4A": {
+    "peptides": [
+      "AAQAAY",
+      "AAQAAAAQAAY",
+      "AAQAAAAQAAAAQAAY",
+      "AAQAAAAQAAAAQAAAAQAAY"
+    ],
+    "helicity": [
+      0.33,
+      16.62,
+      41.14,
+      56.79
+    ],
+    "ncap": "Ac",
+    "ccap": "Am"
+  },
+  "figure4B": {
+    "peptides": [
+      "AAKAAAAKAAAAKAAY",
+      "AAKAAAAKAAAAKAAAAKAAY",
+      "AAKAAAAKAAAAKAAAAKAAAAKAAY",
+      "AAKAAAAKAAAAKAAAAKAAAAKAAAAKAAAAKAAAAKAAY",
+      "AAKAAAAKAAAAKAAAAKAAAAKAAAAKAAAAKAAAAKAAAAKAAAAKAAY"
+    ],
+    "helicity": [
+      59.08,
+      77.93,
+      85.09,
+      90.57,
+      92.11
+    ],
+    "ncap": "Ac",
+    "ccap": "Am"
+  },
+  "figure4C": {
+    "peptides": [
+      "YAEAAKAAEAAKAAEAAKAF",
+      "YAEAAKAAEAAKAAEAAKAAEAAKAF",
+      "YAEAAKAAEAAKAAEAAKAAEAAKAAEAAKAF",
+      "YAEAAKAAEAAKAAEAAKAAEAAKAAEAAKAAEAAKAAEAAKAAEAAKAF",
+      "YAEAAKAAEAAKAAEAAKAAEAAKAAEAAKAAEAAKAAEAAKAAEAAKAAEAAKAAEAAKAF"
+    ],
+    "helicity": [
+      38.97,
+      70.48,
+      82.89,
+      87.0,
+      91.51
+    ],
+    "ncap": "Ac",
+    "ccap": "Am"
+  }
 }
