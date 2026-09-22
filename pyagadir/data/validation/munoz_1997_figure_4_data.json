@@ -3,13 +3,67 @@
     "citation": "Munoz, V. & Serrano, L. (1997). Development of the multiple sequence approximation within the AGADIR model of alpha-helix formation: comparison with Zimm-Bragg and Lifson-Roig formalisms. Biopolymers. Volume and pages not legible in the copy under doc/.",
     "doi": "10.1002/(SICI)1097-0282(19970415)41:5<495::AID-BIP2>3.0.CO;2-H",
     "doi_note": "FROM validation.py's docstring, not printed in the copy under doc/. Internally consistent: it encodes Biopolymers vol. 41, issue 5, p. 495, 1997-04-15, and the paper's running text shows p. 505 and 'Received 16 April 1996'. Not independently confirmed.",
-    "source_text": "doc/1997_munoz_development-of-the-multiple-sequence-approximation-within-the-agadir-model-of-α-helix-formation.txt",
+    "source_text": "doc/1997_munoz_development-of-the-multiple-sequence-approximation-within-the-agadir-model-of-\u03b1-helix-formation.txt",
     "figure": "Figure 4A-C",
     "conditions_verified_against_source": false,
     "temperature_C": 0.0,
-    "temperature_source": "NOT STATED in this paper. Figure 4 replots data from three external sources and gives no conditions.",
+    "temperature_source": "SUPERSEDED by per_panel above (cycle 60). Previously: \"NOT STATED in this paper.\"",
     "ionic_strength_M": 0.1,
-    "ionic_strength_source": "NOT STATED. Figure 4 legend cites: (A) (AAQAA)n refs 12 and 30; (B) (AAKAA)n ref 21; (C) (AEAAKA)n ref 20. Ref 12 = Munoz & Serrano (1994) Nat. Struct. Biol. 1, 399-409. Ref 20 = Scholtz, M., Qian, H., York, E. J., Stewart, J. M. & Baldwin, R. L. (1991) Biopolymers 31, 1463-1470. Ref 21 = Rohl, C. A., Scholtz, J. M., York, E. J., Stewart, J. M. & Baldwin, R. L. (1992) Biochemistry 31, 1263-1269. Ref 30 is not present in the extracted reference list (it stops at 29). None of these papers is under doc/."
+    "ionic_strength_source": "SUPERSEDED by per_panel above (cycle 60). Previously: \"NOT STATED\", with the three cited refs listed as absent from doc/. Refs 20 and 21 are now present and both have been read; ref 12 and ref 30 are still absent.",
+    "conditions_note": "RESOLVED PER PANEL at cycle 60. Figure 4 states no conditions of its own; it replots three external series. Two of the three cited sources are now under doc/ and the third panel's peptide is traced to a fourth paper also under doc/. The panels do NOT share conditions -- 4B was measured at 1 M salt and 5 C, ten times the ionic strength of 4A and 4C. See per_panel below; the file-level temperature_C / ionic_strength_M are retained only as the fallback for a panel with no entry.",
+    "per_panel": {
+      "figure4A": {
+        "temperature_C": 0.0,
+        "ionic_strength_M": 0.1,
+        "pH": 7.0,
+        "conditions_verified_against_source": false,
+        "source": "PARTIALLY VERIFIED. Figure 4's legend cites refs 12 and 30 for (AAQAA)n. Ref 12 = Munoz & Serrano (1994) Nat. Struct. Biol. 1, 399-409; ref 30 is not in the extracted reference list (it stops at 29). Neither is under doc/. The peptide series originates with Scholtz, J.M., York, E.J., Stewart, J.M. & Baldwin, R.L. (1991) 'A Neutral, Water-Soluble, alpha-Helical Peptide: The Effect of Ionic Strength on the Helix-Coil Equilibrium', J. Am. Chem. Soc. 113, 5102-5104, which IS under doc/ and which measures Ac-(AAQAA)3Y-NH2 -- the third of this panel's four points. It states \"value of -[theta]222 at 0 C in 0.1 M NaCl\". That confirms 0 C / 0.1 M for one point of four and for the series' originating conditions, but not for the other three points, whose sources remain absent.",
+        "status": "0 C / 0.1 M retained. Corroborated for one point, inferred for three."
+      },
+      "figure4B": {
+        "temperature_C": 5.0,
+        "ionic_strength_M": 1.0,
+        "pH": 2.5,
+        "conditions_verified_against_source": true,
+        "source": "VERIFIED. Figure 4's legend: \"(B) (AAKAA)n.21 The experimental average helical contents of this set of peptides have been derived from the fractional occupancies of the amide protons measured by Rohl et al.21 using their equation 5.\" Ref 21 = Rohl, C.A., Scholtz, J.M., York, E.J., Stewart, J.M. & Baldwin, R.L. (1992) 'Kinetics of Amide Proton Exchange in Helical Peptides of Varying Chain Lengths', Biochemistry 31, 1263-1269 -- under doc/, and confirmed by its generic formula Ac-(AAKAA)nY-NH2 and chain lengths 6-51. The data are the NMR H/D-exchange experiment, NOT the CD experiment. Its conditions: \"At t = 0 min, the peptide was dissolved at 1-2 mM in 2H2O at 5 C containing 1 M NaCl and 5 mM sodium phosphate, pH* 2.50.\" Confirmed downstream: \"The average helix-coil constants determined for the peptides at 5 C are w = 1.58 and u2 = 0.0023.\"",
+        "ionic_strength_derivation": "1 M NaCl + 5 mM sodium phosphate; I = 1.005 M, coded 1.0. Not a derivation of the Lacroix kind -- the salt dominates by 200x and the buffer is negligible.",
+        "pH_note": "pH* 2.50 is the glass-electrode reading in 2H2O uncorrected for the isotope effect (the paper says so); true pD ~ 2.9. Coded 2.5. IMMATERIAL for this peptide by construction: Ac/NH2 caps leave only Lys (pKa ~10.5) and Tyr (pKa ~10) ionisable, and both are in the same state at pH 2.5 and at 7.0. Measured at cycle 60: changing pH alone 7.0 -> 2.5 moves this panel's predictions by <0.01 percentage points.",
+        "previous_coded_value": {
+          "temperature_C": 0.0,
+          "ionic_strength_M": 0.1,
+          "pH": 7.0,
+          "note": "WRONG. Ionic strength was low by 10x and temperature by 5 C. Superseded at cycle 60; see reasoning/nodes/N046.md for the measured effect."
+        }
+      },
+      "figure4C": {
+        "temperature_C": 0.0,
+        "ionic_strength_M": 0.1,
+        "pH": 7.0,
+        "conditions_verified_against_source": true,
+        "source": "VERIFIED. Figure 4's legend: \"(C) (AEAAKA)n.20\" Ref 20 = Scholtz, J.M., Qian, H., York, E.J., Stewart, J.M. & Baldwin, R.L. (1991) 'Parameters of Helix-Coil Transition Theory for Alanine-Based Peptides of Varying Chain Lengths in Water', Biopolymers 31, 1463-1470 -- under doc/, and confirmed by its generic formula Ac-Y(AEAAKA)kF-NH2, which matches this panel's peptides exactly. Its CD Measurements section: \"CD samples were prepared by diluting aqueous stock solutions of peptide with either a buffer consisting of 1 mM sodium citrate, 1 mM sodium phosphate, 1 mM sodium borate, and 0.10 M sodium chloride, or with 1 mM potassium phosphate containing 0.10 M potassium fluoride. In either case the pH was adjusted with HCl and KOH or NaOH to pH 7.0 at room temperature.\" Temperature: the paper reports thermal unfolding curves and quotes helix propagation as s(0 C); Figure 4C plots single helicities, taken as the 0 C end of those curves.",
+        "ionic_strength_derivation": "0.10 M NaCl (or KF) + 3 mM buffer salts; I ~ 0.105 M, coded 0.1. Within 5%.",
+        "status": "0 C / 0.1 M retained and now VERIFIED rather than inferred.",
+        "abscissa_corrected": "CORRECTED at cycle 64. The coded peptide lengths were 20, 26, 32, 50, 62 and are now 14, 20, 26, 32, 50 -- the same five helicity values shifted one peptide shorter. Two independent grounds. (1) A 62-residue peptide DOES NOT EXIST in the source: Scholtz 1991 Figure 1's legend reads \"CD spectra of all six peptides recorded at 0 C. The spectra correspond to chain lengths of 50, 38, 32, 26, 20, and 14 residues\". (2) Reading the 0 C intercepts off Scholtz's Figure 2 and converting with the paper's OWN equations (3) and (4) -- theta_H = -40000*(1 - x/n) + 100*T, theta_C = 640 - 45*T, x = 2.5 from its Table I -- gives 37.7 (n=14), 73.3 (20), 84.6 (26), 88.3 (32), 88.5 (38), 93.5 (50). Against Munoz's five plotted values the mean absolute deviation is 15.13 as coded and 1.84 shifted. Munoz plots five of the six peptides, omitting n=38, whose value is within 0.2 of n=32's.",
+        "abscissa_previous": {
+          "peptides": [
+            "YAEAAKAAEAAKAAEAAKAF",
+            "YAEAAKAAEAAKAAEAAKAAEAAKAF",
+            "YAEAAKAAEAAKAAEAAKAAEAAKAAEAAKAF",
+            "YAEAAKAAEAAKAAEAAKAAEAAKAAEAAKAAEAAKAAEAAKAAEAAKAF",
+            "YAEAAKAAEAAKAAEAAKAAEAAKAAEAAKAAEAAKAAEAAKAAEAAKAAEAAKAAEAAKAF"
+          ],
+          "lengths": [
+            20,
+            26,
+            32,
+            50,
+            62
+          ],
+          "note": "WRONG. Digitisation of Munoz Figure 4C read the abscissa one peptide too high."
+        },
+        "y_values_note": "The helicity values are UNCHANGED. They are Munoz's replotted values and the check above confirms them against the primary source to within 1.84 points, which is digitisation error on two figures. A direct re-digitisation of Scholtz Figure 2 would be one step closer to the source and is the next refinement, not a correction of these."
+      }
+    }
   },
   "figure4A": {
     "peptides": [
@@ -47,11 +101,11 @@
   },
   "figure4C": {
     "peptides": [
+      "YAEAAKAAEAAKAF",
       "YAEAAKAAEAAKAAEAAKAF",
       "YAEAAKAAEAAKAAEAAKAAEAAKAF",
       "YAEAAKAAEAAKAAEAAKAAEAAKAAEAAKAF",
-      "YAEAAKAAEAAKAAEAAKAAEAAKAAEAAKAAEAAKAAEAAKAAEAAKAF",
-      "YAEAAKAAEAAKAAEAAKAAEAAKAAEAAKAAEAAKAAEAAKAAEAAKAAEAAKAAEAAKAF"
+      "YAEAAKAAEAAKAAEAAKAAEAAKAAEAAKAAEAAKAAEAAKAAEAAKAF"
     ],
     "helicity": [
       38.97,
