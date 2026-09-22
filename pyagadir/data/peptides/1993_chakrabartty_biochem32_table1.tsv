@@ -1,0 +1,15 @@
+peptide_id	sequence	ncap	ccap	n_res	pH	T_C	ionic_strength_M	quantity	value	error	unit	source_table	flags
+yak	YKAAAAKAAAAKAAAAK	Ac	Am	17	7.0	0.0	1.0	minus_theta222	25100.0		deg cm2 dmol-1	Table I	col a;conc by UV absorbance, mean of five measurements
+yak	YKAAAAKAAAAKAAAAK	Ac	Am	17	7.0	0.0	1.0	minus_theta222	24700.0		deg cm2 dmol-1	Table I	col b;conc by ninhydrin assay
+aak	AKAAAAKAAAAKAAAAK	Ac	Am	17	7.0	0.0	1.0	minus_theta222	30700.0		deg cm2 dmol-1	Table I	col b;conc by ninhydrin assay
+wak	WKAAAAKAAAAKAAAAK	Ac	Am	17	7.0	0.0	1.0	minus_theta222	31500.0		deg cm2 dmol-1	Table I	col a;conc by UV absorbance, mean of five measurements
+wak	WKAAAAKAAAAKAAAAK	Ac	Am	17	7.0	0.0	1.0	minus_theta222	33000.0		deg cm2 dmol-1	Table I	col b;conc by ninhydrin assay
+fak	FKAAAAKAAAAKAAAAK	Ac	Am	17	7.0	0.0	1.0	minus_theta222	26600.0		deg cm2 dmol-1	Table I	col b;conc by ninhydrin assay
+aky	KAAAAKAAAAKAAAAKY	Ac	Am	17	7.0	0.0	1.0	minus_theta222	24600.0		deg cm2 dmol-1	Table I	col a;conc by UV absorbance, mean of five measurements
+yaky	YKAAAAKAAAAKAAAAKY	Ac	Am	18	7.0	0.0	1.0	minus_theta222	24600.0		deg cm2 dmol-1	Table I	col a;conc by UV absorbance, mean of five measurements
+ya-ak20	YAKAAAAKAAAAKAAAAKAA	Ac	Am	20	7.0	0.0	1.0	minus_theta222	30500.0		deg cm2 dmol-1	Table I	col a;conc by UV absorbance, mean of five measurements
+ya-ak20	YAKAAAAKAAAAKAAAAKAA	Ac	Am	20	7.0	0.0	1.0	minus_theta222	31300.0		deg cm2 dmol-1	Table I	col b;conc by ninhydrin assay
+ay-ak20	AAKAAAAKAAAAKAAAAKAY	Ac	Am	20	7.0	0.0	1.0	minus_theta222	29600.0		deg cm2 dmol-1	Table I	col a;conc by UV absorbance, mean of five measurements
+ay-ak20	AAKAAAAKAAAAKAAAAKAY	Ac	Am	20	7.0	0.0	1.0	minus_theta222	30500.0		deg cm2 dmol-1	Table I	col b;conc by ninhydrin assay
+aa-ak20	AAKAAAAKAAAAKAAAAKAA	Ac	Am	20	7.0	0.0	1.0	minus_theta222	34300.0		deg cm2 dmol-1	Table I	col b;conc by ninhydrin assay
+yy-ak20	YAKAAAAKAAAAKAAAAKAY	Ac	Am	20	7.0	0.0	1.0	minus_theta222	28300.0		deg cm2 dmol-1	Table I	col a;conc by UV absorbance, mean of five measurements

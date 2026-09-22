@@ -1,0 +1,61 @@
+peptide_id	sequence	ncap	ccap	n_res	pH	T_C	ionic_strength_M	quantity	value	error	unit	source_table
+FA1	AAAAAAAARAAARGGY		Am	16	10.0	5.0	0.005	minus_theta222	7300.0	220.0	deg cm2 dmol-1	Table 1
+FA1	AAAAAAAARAAARGGY		Am	16	10.0	5.0	0.005	helix_percent	22.3	1.0	percent	Table 1
+FI1	IAAAAAAARAAARGGY		Am	16	10.0	5.0	0.005	minus_theta222	7040.0	210.0	deg cm2 dmol-1	Table 1
+FI1	IAAAAAAARAAARGGY		Am	16	10.0	5.0	0.005	helix_percent	21.5	1.0	percent	Table 1
+FL1	LAAAAAAARAAARGGY		Am	16	10.0	5.0	0.005	minus_theta222	7800.0	240.0	deg cm2 dmol-1	Table 1
+FL1	LAAAAAAARAAARGGY		Am	16	10.0	5.0	0.005	helix_percent	23.9	1.0	percent	Table 1
+FM1	MAAAAAAARAAARGGY		Am	16	10.0	5.0	0.005	minus_theta222	6100.0	180.0	deg cm2 dmol-1	Table 1
+FM1	MAAAAAAARAAARGGY		Am	16	10.0	5.0	0.005	helix_percent	18.4	1.0	percent	Table 1
+FG1	GAAAAAAARAAARGGY		Am	16	10.0	5.0	0.005	minus_theta222	10200.0	300.0	deg cm2 dmol-1	Table 1
+FG1	GAAAAAAARAAARGGY		Am	16	10.0	5.0	0.005	helix_percent	31.2	1.0	percent	Table 1
+A1	AAAAAAAARAAARGGY	Ac	Am	16	7.0	5.0	0.005	minus_theta222	15500.0	470.0	deg cm2 dmol-1	Table 1
+A1	AAAAAAAARAAARGGY	Ac	Am	16	7.0	5.0	0.005	helix_percent	47.3	1.5	percent	Table 1
+I1	IAAAAAAARAAARGGY	Ac	Am	16	7.0	5.0	0.005	minus_theta222	12600.0	370.0	deg cm2 dmol-1	Table 1
+I1	IAAAAAAARAAARGGY	Ac	Am	16	7.0	5.0	0.005	helix_percent	38.6	1.2	percent	Table 1
+I2	AIAAAAAARAAARGGY	Ac	Am	16	7.0	5.0	0.005	minus_theta222	11200.0	330.0	deg cm2 dmol-1	Table 1
+I2	AIAAAAAARAAARGGY	Ac	Am	16	7.0	5.0	0.005	helix_percent	34.3	1.0	percent	Table 1
+I3	AAIAAAAARAAARGGY	Ac	Am	16	7.0	5.0	0.005	minus_theta222	10810.0	330.0	deg cm2 dmol-1	Table 1
+I3	AAIAAAAARAAARGGY	Ac	Am	16	7.0	5.0	0.005	helix_percent	33.0	1.0	percent	Table 1
+I4	AAAIAAAARAAARGGY	Ac	Am	16	7.0	5.0	0.005	minus_theta222	12170.0	360.0	deg cm2 dmol-1	Table 1
+I4	AAAIAAAARAAARGGY	Ac	Am	16	7.0	5.0	0.005	helix_percent	37.2	1.2	percent	Table 1
+I7	AAAAAAIARAAARGGY	Ac	Am	16	7.0	5.0	0.005	minus_theta222	10280.0	310.0	deg cm2 dmol-1	Table 1
+I7	AAAAAAIARAAARGGY	Ac	Am	16	7.0	5.0	0.005	helix_percent	31.4	1.0	percent	Table 1
+L1	LAAAAAAARAAARGGY	Ac	Am	16	7.0	5.0	0.005	minus_theta222	14080.0	420.0	deg cm2 dmol-1	Table 1
+L1	LAAAAAAARAAARGGY	Ac	Am	16	7.0	5.0	0.005	helix_percent	43.0	1.4	percent	Table 1
+L2	ALAAAAAARAAARGGY	Ac	Am	16	7.0	5.0	0.005	minus_theta222	11770.0	350.0	deg cm2 dmol-1	Table 1
+L2	ALAAAAAARAAARGGY	Ac	Am	16	7.0	5.0	0.005	helix_percent	36.0	1.1	percent	Table 1
+L3	AALAAAAARAAARGGY	Ac	Am	16	7.0	5.0	0.005	minus_theta222	12160.0	360.0	deg cm2 dmol-1	Table 1
+L3	AALAAAAARAAARGGY	Ac	Am	16	7.0	5.0	0.005	helix_percent	36.3	1.1	percent	Table 1
+L4	AAALAAAARAAARGGY	Ac	Am	16	7.0	5.0	0.005	minus_theta222	13560.0	420.0	deg cm2 dmol-1	Table 1
+L4	AAALAAAARAAARGGY	Ac	Am	16	7.0	5.0	0.005	helix_percent	41.5	1.4	percent	Table 1
+L7	AAAAAALARAAARGGY	Ac	Am	16	7.0	5.0	0.005	minus_theta222	13550.0	420.0	deg cm2 dmol-1	Table 1
+L7	AAAAAALARAAARGGY	Ac	Am	16	7.0	5.0	0.005	helix_percent	41.4	1.0	percent	Table 1
+M1	MAAAAAAARAAARGGY	Ac	Am	16	7.0	5.0	0.005	minus_theta222	15100.0	450.0	deg cm2 dmol-1	Table 1
+M1	MAAAAAAARAAARGGY	Ac	Am	16	7.0	5.0	0.005	helix_percent	45.5	1.5	percent	Table 1
+M2	AMAAAAAARAAARGGY	Ac	Am	16	7.0	5.0	0.005	minus_theta222	13180.0	410.0	deg cm2 dmol-1	Table 1
+M2	AMAAAAAARAAARGGY	Ac	Am	16	7.0	5.0	0.005	helix_percent	39.7	1.2	percent	Table 1
+M3	AAMAAAAARAAARGGY	Ac	Am	16	7.0	5.0	0.005	minus_theta222	11990.0	360.0	deg cm2 dmol-1	Table 1
+M3	AAMAAAAARAAARGGY	Ac	Am	16	7.0	5.0	0.005	helix_percent	35.8	1.0	percent	Table 1
+M4	AAAMAAAARAAARGGY	Ac	Am	16	7.0	5.0	0.005	minus_theta222	13790.0	430.0	deg cm2 dmol-1	Table 1
+M4	AAAMAAAARAAARGGY	Ac	Am	16	7.0	5.0	0.005	helix_percent	42.5	1.3	percent	Table 1
+M7	AAAAAAMARAAARGGY	Ac	Am	16	7.0	5.0	0.005	minus_theta222	13860.0	430.0	deg cm2 dmol-1	Table 1
+M7	AAAAAAMARAAARGGY	Ac	Am	16	7.0	5.0	0.005	helix_percent	42.2	1.5	percent	Table 1
+G1	GAAAAAAARAAARGGY	Ac	Am	16	7.0	5.0	0.005	minus_theta222	13200.0	400.0	deg cm2 dmol-1	Table 1
+G1	GAAAAAAARAAARGGY	Ac	Am	16	7.0	5.0	0.005	helix_percent	40.3	1.2	percent	Table 1
+G2	AGAAAAAARAAARGGY	Ac	Am	16	7.0	5.0	0.005	minus_theta222	13060.0	400.0	deg cm2 dmol-1	Table 1
+G2	AGAAAAAARAAARGGY	Ac	Am	16	7.0	5.0	0.005	helix_percent	39.4	1.2	percent	Table 1
+G3	AAGAAAAARAAARGGY	Ac	Am	16	7.0	5.0	0.005	minus_theta222	9670.0	300.0	deg cm2 dmol-1	Table 1
+G3	AAGAAAAARAAARGGY	Ac	Am	16	7.0	5.0	0.005	helix_percent	29.5	1.0	percent	Table 1
+G4	AAAGAAAARAAARGGY	Ac	Am	16	7.0	5.0	0.005	minus_theta222	7170.0	210.0	deg cm2 dmol-1	Table 1
+G4	AAAGAAAARAAARGGY	Ac	Am	16	7.0	5.0	0.005	helix_percent	21.5	1.0	percent	Table 1
+G7	AAAAAAGARAAARGGY	Ac	Am	16	7.0	5.0	0.005	minus_theta222	4360.0	130.0	deg cm2 dmol-1	Table 1
+G7	AAAAAAGARAAARGGY	Ac	Am	16	7.0	5.0	0.005	helix_percent	15.2	1.0	percent	Table 1
+V2	AVAAAAAARAAARGGY	Ac	Am	16	7.0	5.0	0.005	minus_theta222	12070.0	360.0	deg cm2 dmol-1	Table 1
+V2	AVAAAAAARAAARGGY	Ac	Am	16	7.0	5.0	0.005	helix_percent	36.9	1.1	percent	Table 1
+V3	AAVAAAAARAAARGGY	Ac	Am	16	7.0	5.0	0.005	minus_theta222	11210.0	330.0	deg cm2 dmol-1	Table 1
+V3	AAVAAAAARAAARGGY	Ac	Am	16	7.0	5.0	0.005	helix_percent	34.2	1.0	percent	Table 1
+V4	AAVAAAAARAAARGGY	Ac	Am	16	7.0	5.0	0.005	minus_theta222	10980.0	330.0	deg cm2 dmol-1	Table 1
+V4	AAVAAAAARAAARGGY	Ac	Am	16	7.0	5.0	0.005	helix_percent	33.6	1.0	percent	Table 1
+V7	AAAAAAVARAAARGGY	Ac	Am	16	7.0	5.0	0.005	minus_theta222	9980.0	300.0	deg cm2 dmol-1	Table 1
+V7	AAAAAAVARAAARGGY	Ac	Am	16	7.0	5.0	0.005	helix_percent	30.5	1.0	percent	Table 1

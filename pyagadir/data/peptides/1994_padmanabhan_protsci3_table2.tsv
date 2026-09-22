@@ -1,0 +1,17 @@
+peptide_id	sequence	ncap	ccap	n_res	pH	T_C	ionic_strength_M	quantity	value	error	unit	source_table	flags
+6X10L_X=L	YKAAALKAALAKAAAAK	Ac	Am	17	7.0	0.0	1.0	helix_percent	76.0	3.0	percent	Table 2	pair X-L spaced i,i+4;X at position 6;Leu at position 10
+6X10L_X=V	YKAAAVKAALAKAAAAK	Ac	Am	17	7.0	0.0	1.0	helix_percent	68.0	3.0	percent	Table 2	pair X-L spaced i,i+4;X at position 6;Leu at position 10
+6X10L_X=I	YKAAAIKAALAKAAAAK	Ac	Am	17	7.0	0.0	1.0	helix_percent	74.0	3.0	percent	Table 2	pair X-L spaced i,i+4;X at position 6;Leu at position 10
+6X10L_X=F	YKAAAFKAALAKAAAAK	Ac	Am	17	7.0	0.0	1.0	helix_percent	58.0	3.0	percent	Table 2	pair X-L spaced i,i+4;X at position 6;Leu at position 10
+6X9L_X=L	YKAAALKALAAKAAAAK	Ac	Am	17	7.0	0.0	1.0	helix_percent	68.0	3.0	percent	Table 2	pair X-L spaced i,i+3;X at position 6;Leu at position 9
+6X9L_X=V	YKAAAVKALAAKAAAAK	Ac	Am	17	7.0	0.0	1.0	helix_percent	52.0	3.0	percent	Table 2	pair X-L spaced i,i+3;X at position 6;Leu at position 9
+6X9L_X=I	YKAAAIKALAAKAAAAK	Ac	Am	17	7.0	0.0	1.0	helix_percent	61.0	3.0	percent	Table 2	pair X-L spaced i,i+3;X at position 6;Leu at position 9
+6X9L_X=F	YKAAAFKALAAKAAAAK	Ac	Am	17	7.0	0.0	1.0	helix_percent	44.0	3.0	percent	Table 2	pair X-L spaced i,i+3;X at position 6;Leu at position 9
+9L13X_X=L	YKAAAAKALAAKLAAAK	Ac	Am	17	7.0	0.0	1.0	helix_percent	84.0	3.0	percent	Table 2	pair L-X spaced i,i+4;X at position 13;Leu at position 9
+9L13X_X=V	YKAAAAKALAAKVAAAK	Ac	Am	17	7.0	0.0	1.0	helix_percent	71.0	3.0	percent	Table 2	pair L-X spaced i,i+4;X at position 13;Leu at position 9
+9L13X_X=I	YKAAAAKALAAKIAAAK	Ac	Am	17	7.0	0.0	1.0	helix_percent	84.0	3.0	percent	Table 2	pair L-X spaced i,i+4;X at position 13;Leu at position 9
+9L13X_X=F	YKAAAAKALAAKFAAAK	Ac	Am	17	7.0	0.0	1.0	helix_percent	62.0	3.0	percent	Table 2	pair L-X spaced i,i+4;X at position 13;Leu at position 9
+10L13X_X=L	YKAAAAKAALAKLAAAK	Ac	Am	17	7.0	0.0	1.0	helix_percent	72.0	3.0	percent	Table 2	pair L-X spaced i,i+3;X at position 13;Leu at position 10
+10L13X_X=V	YKAAAAKAALAKVAAAK	Ac	Am	17	7.0	0.0	1.0	helix_percent	54.0	3.0	percent	Table 2	pair L-X spaced i,i+3;X at position 13;Leu at position 10
+10L13X_X=I	YKAAAAKAALAKIAAAK	Ac	Am	17	7.0	0.0	1.0	helix_percent	71.0	3.0	percent	Table 2	pair L-X spaced i,i+3;X at position 13;Leu at position 10
+10L13X_X=F	YKAAAAKAALAKFAAAK	Ac	Am	17	7.0	0.0	1.0	helix_percent	50.0	3.0	percent	Table 2	pair L-X spaced i,i+3;X at position 13;Leu at position 10

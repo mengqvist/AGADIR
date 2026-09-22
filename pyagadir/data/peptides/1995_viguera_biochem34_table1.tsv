@@ -1,0 +1,49 @@
+peptide_id	sequence	ncap	ccap	n_res	pH	T_C	ionic_strength_M	quantity	value	error	unit	source_table	flags
+AA	YGGSAAEAAAKAAAR		Am	15	3.0	5.0	0.001	helix_percent_193nm	31.0	3.0	percent	Table 1	X(pos9)=A;Y(pos13)=A;capping box S4/E7
+AA	YGGSAAEAAAKAAAR		Am	15	3.0	5.0	0.001	helix_percent_222nm	30.0	3.0	percent	Table 1	X(pos9)=A;Y(pos13)=A;capping box S4/E7
+AA	YGGSAAEAAAKAAAR		Am	15	3.0	5.0	0.001	PREDICTION_agadir_orig	30.0		percent	Table 1	X(pos9)=A;Y(pos13)=A;capping box S4/E7;PREDICTION, not a measurement
+AA	YGGSAAEAAAKAAAR		Am	15	3.0	5.0	0.001	PREDICTION_agadir_refit	30.0		percent	Table 1	X(pos9)=A;Y(pos13)=A;capping box S4/E7;PREDICTION after refitting the interaction, not a measurement
+FA	YGGSAAEAFAKAAAR		Am	15	3.0	5.0	0.001	helix_percent_193nm	19.0	3.0	percent	Table 1	X(pos9)=F;Y(pos13)=A;capping box S4/E7
+FA	YGGSAAEAFAKAAAR		Am	15	3.0	5.0	0.001	helix_percent_222nm	13.0	3.0	percent	Table 1	X(pos9)=F;Y(pos13)=A;capping box S4/E7
+FA	YGGSAAEAFAKAAAR		Am	15	3.0	5.0	0.001	PREDICTION_agadir_orig	16.0		percent	Table 1	X(pos9)=F;Y(pos13)=A;capping box S4/E7;PREDICTION, not a measurement
+FA	YGGSAAEAFAKAAAR		Am	15	3.0	5.0	0.001	PREDICTION_agadir_refit	16.0		percent	Table 1	X(pos9)=F;Y(pos13)=A;capping box S4/E7;PREDICTION after refitting the interaction, not a measurement
+AF	YGGSAAEAAAKAFAR		Am	15	3.0	5.0	0.001	helix_percent_193nm	22.0	3.0	percent	Table 1	X(pos9)=A;Y(pos13)=F;capping box S4/E7
+AF	YGGSAAEAAAKAFAR		Am	15	3.0	5.0	0.001	helix_percent_222nm	19.0	3.0	percent	Table 1	X(pos9)=A;Y(pos13)=F;capping box S4/E7
+AF	YGGSAAEAAAKAFAR		Am	15	3.0	5.0	0.001	PREDICTION_agadir_orig	22.0		percent	Table 1	X(pos9)=A;Y(pos13)=F;capping box S4/E7;PREDICTION, not a measurement
+AF	YGGSAAEAAAKAFAR		Am	15	3.0	5.0	0.001	PREDICTION_agadir_refit	22.0		percent	Table 1	X(pos9)=A;Y(pos13)=F;capping box S4/E7;PREDICTION after refitting the interaction, not a measurement
+AM	YGGSAAEAAAKAMAR		Am	15	3.0	5.0	0.001	helix_percent_193nm	27.0	3.0	percent	Table 1	X(pos9)=A;Y(pos13)=M;capping box S4/E7
+AM	YGGSAAEAAAKAMAR		Am	15	3.0	5.0	0.001	helix_percent_222nm	26.0	3.0	percent	Table 1	X(pos9)=A;Y(pos13)=M;capping box S4/E7
+AM	YGGSAAEAAAKAMAR		Am	15	3.0	5.0	0.001	PREDICTION_agadir_orig	25.0		percent	Table 1	X(pos9)=A;Y(pos13)=M;capping box S4/E7;PREDICTION, not a measurement
+AM	YGGSAAEAAAKAMAR		Am	15	3.0	5.0	0.001	PREDICTION_agadir_refit	25.0		percent	Table 1	X(pos9)=A;Y(pos13)=M;capping box S4/E7;PREDICTION after refitting the interaction, not a measurement
+FM	YGGSAAEAFAKAMAR		Am	15	3.0	5.0	0.001	helix_percent_193nm	25.0	3.0	percent	Table 1	X(pos9)=F;Y(pos13)=M;capping box S4/E7
+FM	YGGSAAEAFAKAMAR		Am	15	3.0	5.0	0.001	helix_percent_222nm	20.0	3.0	percent	Table 1	X(pos9)=F;Y(pos13)=M;capping box S4/E7
+FM	YGGSAAEAFAKAMAR		Am	15	3.0	5.0	0.001	PREDICTION_agadir_orig	18.0		percent	Table 1	X(pos9)=F;Y(pos13)=M;capping box S4/E7;PREDICTION, not a measurement
+FM	YGGSAAEAFAKAMAR		Am	15	3.0	5.0	0.001	PREDICTION_agadir_refit	22.0		percent	Table 1	X(pos9)=F;Y(pos13)=M;capping box S4/E7;PREDICTION after refitting the interaction, not a measurement
+FM	YGGSAAEAFAKAMAR		Am	15	3.0	5.0	0.001	dG_interaction	-0.65	0.15	kcal mol-1	Table 1	X(pos9)=F;Y(pos13)=M;capping box S4/E7;DERIVED by the authors to reproduce column 2
+MA	YGGSAAEAMAKAAAR		Am	15	3.0	5.0	0.001	helix_percent_193nm	21.0	3.0	percent	Table 1	X(pos9)=M;Y(pos13)=A;capping box S4/E7
+MA	YGGSAAEAMAKAAAR		Am	15	3.0	5.0	0.001	helix_percent_222nm	21.0	3.0	percent	Table 1	X(pos9)=M;Y(pos13)=A;capping box S4/E7
+MA	YGGSAAEAMAKAAAR		Am	15	3.0	5.0	0.001	PREDICTION_agadir_orig	22.0		percent	Table 1	X(pos9)=M;Y(pos13)=A;capping box S4/E7;PREDICTION, not a measurement
+MA	YGGSAAEAMAKAAAR		Am	15	3.0	5.0	0.001	PREDICTION_agadir_refit	22.0		percent	Table 1	X(pos9)=M;Y(pos13)=A;capping box S4/E7;PREDICTION after refitting the interaction, not a measurement
+MF	YGGSAAEAMAKAFAR		Am	15	3.0	5.0	0.001	helix_percent_193nm	21.0	3.0	percent	Table 1	X(pos9)=M;Y(pos13)=F;capping box S4/E7
+MF	YGGSAAEAMAKAFAR		Am	15	3.0	5.0	0.001	helix_percent_222nm	15.0	3.0	percent	Table 1	X(pos9)=M;Y(pos13)=F;capping box S4/E7
+MF	YGGSAAEAMAKAFAR		Am	15	3.0	5.0	0.001	PREDICTION_agadir_orig	19.0		percent	Table 1	X(pos9)=M;Y(pos13)=F;capping box S4/E7;PREDICTION, not a measurement
+MF	YGGSAAEAMAKAFAR		Am	15	3.0	5.0	0.001	PREDICTION_agadir_refit	19.0		percent	Table 1	X(pos9)=M;Y(pos13)=F;capping box S4/E7;PREDICTION after refitting the interaction, not a measurement
+MF	YGGSAAEAMAKAFAR		Am	15	3.0	5.0	0.001	dG_interaction	-0.2	0.2	kcal mol-1	Table 1	X(pos9)=M;Y(pos13)=F;capping box S4/E7;DERIVED by the authors to reproduce column 2
+AC	YGGSAAEAAAKACAR		Am	15	3.0	5.0	0.001	helix_percent_193nm	19.0	3.0	percent	Table 1	X(pos9)=A;Y(pos13)=C;capping box S4/E7
+AC	YGGSAAEAAAKACAR		Am	15	3.0	5.0	0.001	helix_percent_222nm	18.0	3.0	percent	Table 1	X(pos9)=A;Y(pos13)=C;capping box S4/E7
+AC	YGGSAAEAAAKACAR		Am	15	3.0	5.0	0.001	PREDICTION_agadir_orig	20.0		percent	Table 1	X(pos9)=A;Y(pos13)=C;capping box S4/E7;PREDICTION, not a measurement
+AC	YGGSAAEAAAKACAR		Am	15	3.0	5.0	0.001	PREDICTION_agadir_refit	20.0		percent	Table 1	X(pos9)=A;Y(pos13)=C;capping box S4/E7;PREDICTION after refitting the interaction, not a measurement
+FC	YGGSAAEAFAKACAR		Am	15	3.0	5.0	0.001	helix_percent_193nm	21.0	3.0	percent	Table 1	X(pos9)=F;Y(pos13)=C;capping box S4/E7
+FC	YGGSAAEAFAKACAR		Am	15	3.0	5.0	0.001	helix_percent_222nm	16.0	3.0	percent	Table 1	X(pos9)=F;Y(pos13)=C;capping box S4/E7
+FC	YGGSAAEAFAKACAR		Am	15	3.0	5.0	0.001	PREDICTION_agadir_orig	12.0		percent	Table 1	X(pos9)=F;Y(pos13)=C;capping box S4/E7;PREDICTION, not a measurement
+FC	YGGSAAEAFAKACAR		Am	15	3.0	5.0	0.001	PREDICTION_agadir_refit	18.0		percent	Table 1	X(pos9)=F;Y(pos13)=C;capping box S4/E7;PREDICTION after refitting the interaction, not a measurement
+FC	YGGSAAEAFAKACAR		Am	15	3.0	5.0	0.001	dG_interaction	-2.0	0.4	kcal mol-1	Table 1	X(pos9)=F;Y(pos13)=C;capping box S4/E7;DERIVED by the authors to reproduce column 2
+CA	YGGSAAEACAKAAAR		Am	15	3.0	5.0	0.001	helix_percent_193nm	10.0	3.0	percent	Table 1	X(pos9)=C;Y(pos13)=A;capping box S4/E7
+CA	YGGSAAEACAKAAAR		Am	15	3.0	5.0	0.001	helix_percent_222nm	10.0	3.0	percent	Table 1	X(pos9)=C;Y(pos13)=A;capping box S4/E7
+CA	YGGSAAEACAKAAAR		Am	15	3.0	5.0	0.001	PREDICTION_agadir_orig	13.0		percent	Table 1	X(pos9)=C;Y(pos13)=A;capping box S4/E7;PREDICTION, not a measurement
+CA	YGGSAAEACAKAAAR		Am	15	3.0	5.0	0.001	PREDICTION_agadir_refit	13.0		percent	Table 1	X(pos9)=C;Y(pos13)=A;capping box S4/E7;PREDICTION after refitting the interaction, not a measurement
+CF	YGGSAAEACAKAFAR		Am	15	3.0	5.0	0.001	helix_percent_193nm	14.0	3.0	percent	Table 1	X(pos9)=C;Y(pos13)=F;capping box S4/E7
+CF	YGGSAAEACAKAFAR		Am	15	3.0	5.0	0.001	helix_percent_222nm	8.0	3.0	percent	Table 1	X(pos9)=C;Y(pos13)=F;capping box S4/E7
+CF	YGGSAAEACAKAFAR		Am	15	3.0	5.0	0.001	PREDICTION_agadir_orig	9.0		percent	Table 1	X(pos9)=C;Y(pos13)=F;capping box S4/E7;PREDICTION, not a measurement
+CF	YGGSAAEACAKAFAR		Am	15	3.0	5.0	0.001	PREDICTION_agadir_refit	11.0		percent	Table 1	X(pos9)=C;Y(pos13)=F;capping box S4/E7;PREDICTION after refitting the interaction, not a measurement
+CF	YGGSAAEACAKAFAR		Am	15	3.0	5.0	0.001	dG_interaction	-0.6	1.7	kcal mol-1	Table 1	X(pos9)=C;Y(pos13)=F;capping box S4/E7;DERIVED by the authors to reproduce column 2

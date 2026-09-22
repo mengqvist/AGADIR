@@ -1,0 +1,57 @@
+peptide_id	sequence	ncap	ccap	n_res	pH	T_C	ionic_strength_M	quantity	value	error	unit	source_table	flags
+D1	DAQAAAAQAAAAQAAY	Ac	Am	16	7.0	0.0	0.01	minus_theta222	17400.0		deg cm2 dmol-1	Table 2	host AQ;Asp at position 1
+D1	DAQAAAAQAAAAQAAY	Ac	Am	16	2.25	0.0	0.01	minus_theta222	13700.0		deg cm2 dmol-1	Table 2	host AQ;pH 2.0-2.5, coded 2.25;Asp at position 1
+D1	DAQAAAAQAAAAQAAY	Ac	Am	16	7.0	0.0	4.8	minus_theta222	10200.0		deg cm2 dmol-1	Table 2	host AQ;Asp at position 1
+D1	DAQAAAAQAAAAQAAY	Ac	Am	16	2.25	0.0	4.8	minus_theta222	9900.0		deg cm2 dmol-1	Table 2	host AQ;pH 2.0-2.5, coded 2.25;Asp at position 1
+D2	ADQAAAAQAAAAQAAY	Ac	Am	16	7.0	0.0	0.01	minus_theta222	16200.0		deg cm2 dmol-1	Table 2	host AQ;Asp at position 2
+D2	ADQAAAAQAAAAQAAY	Ac	Am	16	2.25	0.0	0.01	minus_theta222	11600.0		deg cm2 dmol-1	Table 2	host AQ;pH 2.0-2.5, coded 2.25;Asp at position 2
+D2	ADQAAAAQAAAAQAAY	Ac	Am	16	7.0	0.0	4.8	minus_theta222	9400.0		deg cm2 dmol-1	Table 2	host AQ;Asp at position 2
+D2	ADQAAAAQAAAAQAAY	Ac	Am	16	2.25	0.0	4.8	minus_theta222	8600.0		deg cm2 dmol-1	Table 2	host AQ;pH 2.0-2.5, coded 2.25;Asp at position 2
+D4	AAQDAAAQAAAAQAAY	Ac	Am	16	7.0	0.0	0.01	minus_theta222	14600.0		deg cm2 dmol-1	Table 2	host AQ;Asp at position 4
+D4	AAQDAAAQAAAAQAAY	Ac	Am	16	2.25	0.0	0.01	minus_theta222	11600.0		deg cm2 dmol-1	Table 2	host AQ;pH 2.0-2.5, coded 2.25;Asp at position 4
+D4	AAQDAAAQAAAAQAAY	Ac	Am	16	7.0	0.0	4.8	minus_theta222	8000.0		deg cm2 dmol-1	Table 2	host AQ;Asp at position 4
+D4	AAQDAAAQAAAAQAAY	Ac	Am	16	2.25	0.0	4.8	minus_theta222	7400.0		deg cm2 dmol-1	Table 2	host AQ;pH 2.0-2.5, coded 2.25;Asp at position 4
+D6	AAQAADAQAAAAQAAY	Ac	Am	16	7.0	0.0	0.01	minus_theta222	9200.0		deg cm2 dmol-1	Table 2	host AQ;Asp at position 6
+D6	AAQAADAQAAAAQAAY	Ac	Am	16	2.25	0.0	0.01	minus_theta222	8400.0		deg cm2 dmol-1	Table 2	host AQ;pH 2.0-2.5, coded 2.25;Asp at position 6
+D6	AAQAADAQAAAAQAAY	Ac	Am	16	7.0	0.0	4.8	minus_theta222	5900.0		deg cm2 dmol-1	Table 2	host AQ;Asp at position 6
+D6	AAQAADAQAAAAQAAY	Ac	Am	16	2.25	0.0	4.8	minus_theta222	5800.0		deg cm2 dmol-1	Table 2	host AQ;pH 2.0-2.5, coded 2.25;Asp at position 6
+D7	AAQAAADQAAAAQAAY	Ac	Am	16	7.0	0.0	0.01	minus_theta222	15900.0		deg cm2 dmol-1	Table 2	host AQ;Asp at position 7
+D7	AAQAAADQAAAAQAAY	Ac	Am	16	2.25	0.0	0.01	minus_theta222	11200.0		deg cm2 dmol-1	Table 2	host AQ;pH 2.0-2.5, coded 2.25;Asp at position 7
+D7	AAQAAADQAAAAQAAY	Ac	Am	16	7.0	0.0	4.8	minus_theta222	7500.0		deg cm2 dmol-1	Table 2	host AQ;Asp at position 7
+D7	AAQAAADQAAAAQAAY	Ac	Am	16	2.25	0.0	4.8	minus_theta222	6000.0		deg cm2 dmol-1	Table 2	host AQ;pH 2.0-2.5, coded 2.25;Asp at position 7
+D9	AAQAAAAQDAAAQAAY	Ac	Am	16	7.0	0.0	0.01	minus_theta222	8300.0		deg cm2 dmol-1	Table 2	host AQ;Asp at position 9
+D9	AAQAAAAQDAAAQAAY	Ac	Am	16	2.25	0.0	0.01	minus_theta222	8300.0		deg cm2 dmol-1	Table 2	host AQ;pH 2.0-2.5, coded 2.25;Asp at position 9
+D9	AAQAAAAQDAAAQAAY	Ac	Am	16	7.0	0.0	4.8	minus_theta222	5900.0		deg cm2 dmol-1	Table 2	host AQ;Asp at position 9
+D9	AAQAAAAQDAAAQAAY	Ac	Am	16	2.25	0.0	4.8	minus_theta222	6000.0		deg cm2 dmol-1	Table 2	host AQ;pH 2.0-2.5, coded 2.25;Asp at position 9
+D10	AAQAAAAQADAAQAAY	Ac	Am	16	7.0	0.0	0.01	minus_theta222	6100.0		deg cm2 dmol-1	Table 2	host AQ;Asp at position 10
+D10	AAQAAAAQADAAQAAY	Ac	Am	16	2.25	0.0	0.01	minus_theta222	7800.0		deg cm2 dmol-1	Table 2	host AQ;pH 2.0-2.5, coded 2.25;Asp at position 10
+D10	AAQAAAAQADAAQAAY	Ac	Am	16	7.0	0.0	4.8	minus_theta222	5600.0		deg cm2 dmol-1	Table 2	host AQ;Asp at position 10
+D10	AAQAAAAQADAAQAAY	Ac	Am	16	2.25	0.0	4.8	minus_theta222	6100.0		deg cm2 dmol-1	Table 2	host AQ;pH 2.0-2.5, coded 2.25;Asp at position 10
+D12	AAQAAAAQAAADQAAY	Ac	Am	16	7.0	0.0	0.01	minus_theta222	14900.0		deg cm2 dmol-1	Table 2	host AQ;Asp at position 12
+D12	AAQAAAAQAAADQAAY	Ac	Am	16	2.25	0.0	0.01	minus_theta222	14600.0		deg cm2 dmol-1	Table 2	host AQ;pH 2.0-2.5, coded 2.25;Asp at position 12
+D12	AAQAAAAQAAADQAAY	Ac	Am	16	7.0	0.0	4.8	minus_theta222	8000.0		deg cm2 dmol-1	Table 2	host AQ;Asp at position 12
+D12	AAQAAAAQAAADQAAY	Ac	Am	16	2.25	0.0	4.8	minus_theta222	7600.0		deg cm2 dmol-1	Table 2	host AQ;pH 2.0-2.5, coded 2.25;Asp at position 12
+D14	AAQAAAAQAAAAQDAY	Ac	Am	16	7.0	0.0	0.01	minus_theta222	8800.0		deg cm2 dmol-1	Table 2	host AQ;Asp at position 14
+D14	AAQAAAAQAAAAQDAY	Ac	Am	16	2.25	0.0	0.01	minus_theta222	12900.0		deg cm2 dmol-1	Table 2	host AQ;pH 2.0-2.5, coded 2.25;Asp at position 14
+D14	AAQAAAAQAAAAQDAY	Ac	Am	16	7.0	0.0	4.8	minus_theta222	8500.0		deg cm2 dmol-1	Table 2	host AQ;Asp at position 14
+D14	AAQAAAAQAAAAQDAY	Ac	Am	16	2.25	0.0	4.8	minus_theta222	9500.0		deg cm2 dmol-1	Table 2	host AQ;pH 2.0-2.5, coded 2.25;Asp at position 14
+D15	AAQAAAAQAAAAQADY	Ac	Am	16	7.0	0.0	0.01	minus_theta222	9200.0		deg cm2 dmol-1	Table 2	host AQ;Asp at position 15
+D15	AAQAAAAQAAAAQADY	Ac	Am	16	2.25	0.0	0.01	minus_theta222	13800.0		deg cm2 dmol-1	Table 2	host AQ;pH 2.0-2.5, coded 2.25;Asp at position 15
+D15	AAQAAAAQAAAAQADY	Ac	Am	16	7.0	0.0	4.8	minus_theta222	9100.0		deg cm2 dmol-1	Table 2	host AQ;Asp at position 15
+D15	AAQAAAAQAAAAQADY	Ac	Am	16	2.25	0.0	4.8	minus_theta222	10000.0		deg cm2 dmol-1	Table 2	host AQ;pH 2.0-2.5, coded 2.25;Asp at position 15
+D5*	AAQADAAAQAAAAQAY	Ac	Am	16	7.0	0.0	0.01	minus_theta222	13500.0		deg cm2 dmol-1	Table 2	host AQ*;Asp at position 5
+D5*	AAQADAAAQAAAAQAY	Ac	Am	16	2.25	0.0	0.01	minus_theta222	11500.0		deg cm2 dmol-1	Table 2	host AQ*;pH 2.0-2.5, coded 2.25;Asp at position 5
+D5*	AAQADAAAQAAAAQAY	Ac	Am	16	7.0	0.0	4.8	minus_theta222	7700.0		deg cm2 dmol-1	Table 2	host AQ*;Asp at position 5
+D5*	AAQADAAAQAAAAQAY	Ac	Am	16	2.25	0.0	4.8	minus_theta222	7600.0		deg cm2 dmol-1	Table 2	host AQ*;pH 2.0-2.5, coded 2.25;Asp at position 5
+D6*	AAQAADAAQAAAAQAY	Ac	Am	16	7.0	0.0	0.01	minus_theta222	9200.0		deg cm2 dmol-1	Table 2	host AQ*;Asp at position 6
+D6*	AAQAADAAQAAAAQAY	Ac	Am	16	2.25	0.0	0.01	minus_theta222	9300.0		deg cm2 dmol-1	Table 2	host AQ*;pH 2.0-2.5, coded 2.25;Asp at position 6
+D6*	AAQAADAAQAAAAQAY	Ac	Am	16	7.0	0.0	4.8	minus_theta222	5800.0		deg cm2 dmol-1	Table 2	host AQ*;Asp at position 6
+D6*	AAQAADAAQAAAAQAY	Ac	Am	16	2.25	0.0	4.8	minus_theta222	6600.0		deg cm2 dmol-1	Table 2	host AQ*;pH 2.0-2.5, coded 2.25;Asp at position 6
+D7*	AAQAAADAQAAAAQAY	Ac	Am	16	7.0	0.0	0.01	minus_theta222	16600.0		deg cm2 dmol-1	Table 2	host AQ*;Asp at position 7
+D7*	AAQAAADAQAAAAQAY	Ac	Am	16	2.25	0.0	0.01	minus_theta222	11600.0		deg cm2 dmol-1	Table 2	host AQ*;pH 2.0-2.5, coded 2.25;Asp at position 7
+D7*	AAQAAADAQAAAAQAY	Ac	Am	16	7.0	0.0	4.8	minus_theta222	8000.0		deg cm2 dmol-1	Table 2	host AQ*;Asp at position 7
+D7*	AAQAAADAQAAAAQAY	Ac	Am	16	2.25	0.0	4.8	minus_theta222	6600.0		deg cm2 dmol-1	Table 2	host AQ*;pH 2.0-2.5, coded 2.25;Asp at position 7
+D8*	AAQAAAADQAAAAQAY	Ac	Am	16	7.0	0.0	0.01	minus_theta222	7400.0		deg cm2 dmol-1	Table 2	host AQ*;Asp at position 8
+D8*	AAQAAAADQAAAAQAY	Ac	Am	16	2.25	0.0	0.01	minus_theta222	7400.0		deg cm2 dmol-1	Table 2	host AQ*;pH 2.0-2.5, coded 2.25;Asp at position 8
+D8*	AAQAAAADQAAAAQAY	Ac	Am	16	7.0	0.0	4.8	minus_theta222	5000.0		deg cm2 dmol-1	Table 2	host AQ*;Asp at position 8
+D8*	AAQAAAADQAAAAQAY	Ac	Am	16	2.25	0.0	4.8	minus_theta222	5100.0		deg cm2 dmol-1	Table 2	host AQ*;pH 2.0-2.5, coded 2.25;Asp at position 8
