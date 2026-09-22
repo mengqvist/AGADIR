@@ -381,10 +381,21 @@ def test_reference_helicity_per_residue_matches(run: GoldenRunY):
 
     assert got.shape == exp.shape, f"{key}: shape mismatch {got.shape} vs {exp.shape}"
 
-    # 6% absolute helicity tolerance: remaining over-prediction at K/R positions
-    # (max_diff ~5.5 for None_None pH4) is a known issue from sidechain macrodipole
-    # flanking and terminal-sidechain distance model discrepancies.
-    assert np.allclose(got, exp, atol=6.0), (
+    # 7% absolute helicity tolerance.  Raised from 6.0 when the P1 policy shipped
+    # (question.md v7, reasoning/nodes/N053.md): the model now deliberately holds the
+    # PUBLISHED Lacroix 1998 supplementary Table I values in the ten cells where they
+    # differ from what the reference binary prints, all of them Gly, Ser or Tyr.  This run
+    # is `YGGS...`, so three of its first four residues are affected and its diff rose
+    # 5.31 -> 6.67.  That is a deliberate departure, not a regression -- across all 14
+    # reference runs the same statistic IMPROVED, 20.74 -> 18.74, so the model became more
+    # like the binary overall and less like it on this one sequence.
+    #
+    # This test asserts fidelity to the binary on a SINGLE run (GOLDEN_RUNS has one entry).
+    # The broader statistic lives in reasoning/evidence/scripts/compensator_sweep.py, which
+    # covers all 14 runs and is the one to consult before changing this bound again.
+    # The residual is still dominated by sidechain-macrodipole flanking and
+    # terminal-sidechain distance discrepancies.
+    assert np.allclose(got, exp, atol=7.0), (
         f"{key}: per-residue helicity mismatch.\n"
         f"max_abs_diff={np.max(np.abs(got-exp)):.2f}"
     )

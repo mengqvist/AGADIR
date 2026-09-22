@@ -1,0 +1,211 @@
+start= 1 end= 6  length=  6
+residue index =     1
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)   -0.7000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =  -0.7000
+****************
+start= 1 end= 6  length=  6
+residue index =     2
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 1 end= 6  length=  6
+residue index =     3
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 1 end= 6  length=  6
+residue index =     4
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 1 end= 6  length=  6
+residue index =     5
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 1 end= 6  length=  6
+ccap[0] ccap[1] 0.500000 0.400000
+residue index =     6
+g N term      0.0000
+g C term      0.3404
+g capping (values different from publication)    0.5000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =   0.8404
+****************
+i,i+3 and i,i+4 side chain-side chain interaction   0.0000
+enerelectr    0.0000
+c-cap not gly   0.0000
+main chain-main chain H-bonds  -0.0000
+delta delta G hel (eq.12 )     -0.0389
+start= 1 end= 6  length=  6
+pH[cuentaventana].energy 0.00549459
+pH[cuentaventana].partition 2.82149
+==============================================
+start= 2 end= 7  length=  6
+residue index =     2
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.4000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =   0.4000
+****************
+start= 2 end= 7  length=  6
+residue index =     3
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 2 end= 7  length=  6
+residue index =     4
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 2 end= 7  length=  6
+residue index =     5
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 2 end= 7  length=  6
+residue index =     6
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 2 end= 7  length=  6
+ccap[0] ccap[1] 0.500000 0.400000
+residue index =     7
+g N term      0.0000
+g C term      0.7691
+g capping (values different from publication)    0.5000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =   1.2691
+****************
+i,i+3 and i,i+4 side chain-side chain interaction   0.0000
+enerelectr    0.0000
+c-cap not gly   0.0000
+main chain-main chain H-bonds  -0.0000
+delta delta G hel (eq.12 )     -0.0389
+start= 2 end= 7  length=  6
+pH[cuentaventana].energy 0.000327637
+pH[cuentaventana].partition 4.35022
+==============================================
+start= 1 end= 7  length=  7
+residue index =     1
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)   -0.7000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =  -0.7000
+****************
+start= 1 end= 7  length=  7
+residue index =     2
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 1 end= 7  length=  7
+residue index =     3
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 1 end= 7  length=  7
+residue index =     4
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 1 end= 7  length=  7
+residue index =     5
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 1 end= 7  length=  7
+residue index =     6
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 1 end= 7  length=  7
+ccap[0] ccap[1] 0.500000 0.400000
+residue index =     7
+g N term      0.0000
+g C term      0.7691
+g capping (values different from publication)    0.5000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =   1.2691
+****************
+i,i+3 and i,i+4 side chain-side chain interaction   0.0000
+enerelectr    0.0000
+c-cap not gly   0.0000
+main chain-main chain H-bonds  -0.8980
+delta delta G hel (eq.12 )     -0.0389
+start= 1 end= 7  length=  7
+pH[cuentaventana].energy 0.00372508
+pH[cuentaventana].partition 3.03222
+==============================================
+res,  aa,  Hel,  Ncap,  Ccap,Hstaple,Schellm, CaH,  13Ca, JaN
+0.017968
+00,   B,   0.0000,  0.9133,  0.0001,  0.0001,  0.0001,  0.0000,  0.0000,  0.0000
+01,   A,   0.9133,  0.0326,  0.0001,  0.0001,  0.0001, -0.0018,  0.0174,  5.6646
+02,   A,   0.9458,  0.0001,  0.0001,  0.0001,  0.0001, -0.0019,  0.0180,  5.6625
+03,   A,   0.9458,  0.0001,  0.0001,  0.0001,  0.0001, -0.0019,  0.0180,  5.6625
+04,   A,   0.9458,  0.0001,  0.0001,  0.0001,  0.0001, -0.0019,  0.0180,  5.6795
+05,   A,   0.4015,  0.0001,  0.5444,  0.0001,  0.0001,  0.0388,  0.0180,  5.7102
+06,   A,   0.0000,  0.0001,  0.4015,  0.0001,  0.0001, -0.1584,  0.0076,  5.6928
+Percentage helix	0.83

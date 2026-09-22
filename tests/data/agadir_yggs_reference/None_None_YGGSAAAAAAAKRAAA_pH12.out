@@ -1,0 +1,6773 @@
+start= 1 end= 6  length=  6
+Ndist 78
+Nter -0.272879
+Cdist 98
+Cter 0.168404
+residue index =     1
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.4000
+g intrinsic   0.0000
+g dipole     -0.0521
+gresidue  =   0.3479
+****************
+start= 1 end= 6  length=  6
+residue index =     2
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   1.5100
+g dipole      0.0000
+gresidue  =   1.5100
+****************
+start= 1 end= 6  length=  6
+residue index =     3
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   2.8300
+g dipole      0.0000
+gresidue  =   2.8300
+****************
+start= 1 end= 6  length=  6
+residue index =     4
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   1.3600
+g dipole      0.0000
+gresidue  =   1.3600
+****************
+start= 1 end= 6  length=  6
+residue index =     5
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 1 end= 6  length=  6
+ccap[0] ccap[1] 0.500000 0.400000
+residue index =     6
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.5000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =   0.5000
+****************
+i,i+3 and i,i+4 side chain-side chain interaction   0.0000
+enerelectr    0.0000
+c-cap not gly   0.0000
+main chain-main chain H-bonds  -0.0000
+delta delta G hel (eq.12 )     -0.0389
+start= 1 end= 6  length=  6
+pH[cuentaventana].energy 1.74367e-06
+pH[cuentaventana].partition 7.18902
+==============================================
+start= 2 end= 7  length=  6
+residue index =     2
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)   -0.4500
+g intrinsic   0.0000
+g dipole     -0.2154
+gresidue  =  -0.6653
+****************
+start= 2 end= 7  length=  6
+residue index =     3
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   1.5100
+g dipole      0.0000
+gresidue  =   1.5100
+****************
+start= 2 end= 7  length=  6
+residue index =     4
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   1.3800
+g dipole      0.0000
+gresidue  =   1.3800
+****************
+start= 2 end= 7  length=  6
+residue index =     5
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 2 end= 7  length=  6
+residue index =     6
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 2 end= 7  length=  6
+ccap[0] ccap[1] 0.500000 0.400000
+residue index =     7
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.5000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =   0.5000
+****************
+i,i+3 and i,i+4 side chain-side chain interaction   0.0000
+enerelectr    0.0000
+c-cap not gly   0.0000
+main chain-main chain H-bonds  -0.0000
+delta delta G hel (eq.12 )     -0.0389
+start= 2 end= 7  length=  6
+pH[cuentaventana].energy 0.000690817
+pH[cuentaventana].partition 3.94577
+==============================================
+start= 3 end= 8  length=  6
+residue index =     3
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)   -0.3500
+g intrinsic   0.0000
+g dipole     -0.1297
+gresidue  =  -0.4797
+****************
+start= 3 end= 8  length=  6
+residue index =     4
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   1.1000
+g dipole      0.0000
+gresidue  =   1.1000
+****************
+start= 3 end= 8  length=  6
+residue index =     5
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 3 end= 8  length=  6
+residue index =     6
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 3 end= 8  length=  6
+residue index =     7
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 3 end= 8  length=  6
+ccap[0] ccap[1] 0.500000 0.400000
+residue index =     8
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.5000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =   0.5000
+****************
+i,i+3 and i,i+4 side chain-side chain interaction   0.0000
+enerelectr    0.0000
+c-cap not gly   0.0000
+main chain-main chain H-bonds  -0.0000
+delta delta G hel (eq.12 )     -0.0389
+start= 3 end= 8  length=  6
+pH[cuentaventana].energy 0.00315999
+pH[cuentaventana].partition 3.12142
+==============================================
+start= 4 end= 9  length=  6
+residue index =     4
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)   -0.6000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =  -0.6000
+****************
+start= 4 end= 9  length=  6
+residue index =     5
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 4 end= 9  length=  6
+residue index =     6
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 4 end= 9  length=  6
+residue index =     7
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 4 end= 9  length=  6
+residue index =     8
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 4 end= 9  length=  6
+ccap[0] ccap[1] 0.500000 0.400000
+residue index =     9
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.5000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =   0.5000
+****************
+i,i+3 and i,i+4 side chain-side chain interaction   0.0000
+enerelectr    0.0000
+staple not printed. Cumbersome calculation.
+c-cap not gly   0.0000
+main chain-main chain H-bonds  -0.0000
+delta delta G hel (eq.12 )     -0.0389
+start= 4 end= 9  length=  6
+pH[cuentaventana].energy 0.00855996
+pH[cuentaventana].partition 2.58112
+==============================================
+start= 5 end= 10  length=  6
+residue index =     5
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.4000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =   0.4000
+****************
+start= 5 end= 10  length=  6
+residue index =     6
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 5 end= 10  length=  6
+residue index =     7
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 5 end= 10  length=  6
+residue index =     8
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 5 end= 10  length=  6
+residue index =     9
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 5 end= 10  length=  6
+ccap[0] ccap[1] 0.500000 0.400000
+residue index =    10
+g N term      0.0000
+g C term      0.0475
+g capping (values different from publication)    0.5000
+g intrinsic   0.0000
+g dipole     -0.0040
+gresidue  =   0.5436
+****************
+i,i+3 and i,i+4 side chain-side chain interaction   0.0000
+enerelectr    0.0000
+c-cap not gly   0.0000
+main chain-main chain H-bonds  -0.0000
+delta delta G hel (eq.12 )     -0.0389
+start= 5 end= 10  length=  6
+pH[cuentaventana].energy 0.00124894
+pH[cuentaventana].partition 3.62471
+==============================================
+start= 6 end= 11  length=  6
+residue index =     6
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.4000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =   0.4000
+****************
+start= 6 end= 11  length=  6
+residue index =     7
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 6 end= 11  length=  6
+residue index =     8
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 6 end= 11  length=  6
+residue index =     9
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 6 end= 11  length=  6
+residue index =    10
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 6 end= 11  length=  6
+ccap[0] ccap[1] 0.500000 0.400000
+residue index =    11
+g N term      0.0000
+g C term      0.0642
+g capping (values different from publication)    0.5000
+g intrinsic   0.0000
+g dipole     -0.0984
+gresidue  =   0.4657
+****************
+i,i+3 and i,i+4 side chain-side chain interaction   0.0000
+enerelectr    0.0000
+c-cap not gly   0.0000
+main chain-main chain H-bonds  -0.0000
+delta delta G hel (eq.12 )     -0.0389
+start= 6 end= 11  length=  6
+pH[cuentaventana].energy 0.00144181
+pH[cuentaventana].partition 3.54685
+==============================================
+start= 7 end= 12  length=  6
+residue index =     7
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.4000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =   0.4000
+****************
+start= 7 end= 12  length=  6
+residue index =     8
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 7 end= 12  length=  6
+residue index =     9
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 7 end= 12  length=  6
+residue index =    10
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 7 end= 12  length=  6
+residue index =    11
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 7 end= 12  length=  6
+Ndist 84
+Nter 0.242472
+Cdist 62
+Cter -0.547970
+ccap[0] ccap[1] 0.000000 0.000000
+residue index =    12
+g N term      0.0000
+g C term      0.0890
+g capping (values different from publication)    0.0000
+g intrinsic   0.0000
+g dipole     -0.1528
+gresidue  =  -0.0638
+****************
+i,i+3 and i,i+4 side chain-side chain interaction   0.0000
+enerelectr    0.0004
+c-cap not gly   0.0000
+main chain-main chain H-bonds  -0.0000
+delta delta G hel (eq.12 )     -0.0389
+start= 7 end= 12  length=  6
+pH[cuentaventana].energy 0.00382545
+pH[cuentaventana].partition 3.01781
+==============================================
+start= 8 end= 13  length=  6
+residue index =     8
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.2000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =   0.2000
+****************
+start= 8 end= 13  length=  6
+residue index =     9
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 8 end= 13  length=  6
+residue index =    10
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 8 end= 13  length=  6
+residue index =    11
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 8 end= 13  length=  6
+Ndist 69
+Nter 0.329533
+Cdist 89
+Cter -0.218127
+residue index =    12
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.8300
+g dipole      0.0021
+gresidue  =   0.8321
+****************
+start= 8 end= 13  length=  6
+Ndist 85
+Nter 0.237868
+Cdist 79
+Cter -0.297924
+ccap[0] ccap[1] 0.000000 0.000000
+residue index =    13
+g N term      0.0000
+g C term      0.1285
+g capping (values different from publication)    0.0000
+g intrinsic   0.0000
+g dipole     -0.0228
+gresidue  =   0.1057
+****************
+i,i+3 and i,i+4 side chain-side chain interaction   0.0000
+enerelectr    0.0004
+c-cap not gly   0.0000
+main chain-main chain H-bonds  -0.0000
+delta delta G hel (eq.12 )     -0.0389
+start= 8 end= 13  length=  6
+pH[cuentaventana].energy 0.00305688
+pH[cuentaventana].partition 3.13941
+==============================================
+start= 9 end= 14  length=  6
+residue index =     9
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.2000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =   0.2000
+****************
+start= 9 end= 14  length=  6
+residue index =    10
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 9 end= 14  length=  6
+residue index =    11
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 9 end= 14  length=  6
+Ndist 74
+Nter 0.296197
+Cdist 89
+Cter -0.218127
+residue index =    12
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.8300
+g dipole      0.0015
+gresidue  =   0.8315
+****************
+start= 9 end= 14  length=  6
+Ndist 68
+Nter 0.336842
+Cdist 90
+Cter -0.211747
+residue index =    13
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.7400
+g dipole      0.0475
+gresidue  =   0.7875
+****************
+start= 9 end= 14  length=  6
+ccap[0] ccap[1] 0.500000 0.400000
+residue index =    14
+g N term      0.0000
+g C term      0.1976
+g capping (values different from publication)    0.5000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =   0.6976
+****************
+i,i+3 and i,i+4 side chain-side chain interaction   0.0000
+enerelectr    0.0010
+c-cap not gly   0.0000
+main chain-main chain H-bonds  -0.0000
+delta delta G hel (eq.12 )     -0.0389
+start= 9 end= 14  length=  6
+pH[cuentaventana].energy 0.000841475
+pH[cuentaventana].partition 3.83881
+==============================================
+start= 10 end= 15  length=  6
+residue index =    10
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.4000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =   0.4000
+****************
+start= 10 end= 15  length=  6
+residue index =    11
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 10 end= 15  length=  6
+Ndist 75
+Nter 0.290111
+Cdist 100
+Cter -0.159379
+residue index =    12
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.8300
+g dipole      0.0025
+gresidue  =   0.8325
+****************
+start= 10 end= 15  length=  6
+Ndist 77
+Nter 0.278458
+Cdist 96
+Cter -0.178089
+residue index =    13
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.7400
+g dipole      0.0381
+gresidue  =   0.7781
+****************
+start= 10 end= 15  length=  6
+residue index =    14
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 10 end= 15  length=  6
+ccap[0] ccap[1] 0.500000 0.400000
+residue index =    15
+g N term      0.0000
+g C term      0.3405
+g capping (values different from publication)    0.5000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =   0.8405
+****************
+i,i+3 and i,i+4 side chain-side chain interaction   0.0000
+enerelectr    0.0009
+c-cap not gly   0.0000
+main chain-main chain H-bonds  -0.0000
+delta delta G hel (eq.12 )     -0.0389
+start= 10 end= 15  length=  6
+pH[cuentaventana].energy 0.000454164
+pH[cuentaventana].partition 4.17317
+==============================================
+start= 11 end= 16  length=  6
+residue index =    11
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.4000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =   0.4000
+****************
+start= 11 end= 16  length=  6
+Ndist 70
+Nter 0.322450
+Cdist 84
+Cter -0.254019
+residue index =    12
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.8300
+g dipole      0.0013
+gresidue  =   0.8313
+****************
+start= 11 end= 16  length=  6
+Ndist 77
+Nter 0.278458
+Cdist 105
+Cter -0.139353
+residue index =    13
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.7400
+g dipole      0.0528
+gresidue  =   0.7928
+****************
+start= 11 end= 16  length=  6
+residue index =    14
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 11 end= 16  length=  6
+residue index =    15
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 11 end= 16  length=  6
+ccap[0] ccap[1] 0.500000 0.400000
+residue index =    16
+g N term      0.0000
+g C term      0.7700
+g capping (values different from publication)    0.5000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =   1.2700
+****************
+i,i+3 and i,i+4 side chain-side chain interaction   0.0000
+enerelectr   -0.0609
+c-cap not gly   0.0000
+main chain-main chain H-bonds  -0.0000
+delta delta G hel (eq.12 )     -0.0389
+start= 11 end= 16  length=  6
+pH[cuentaventana].energy 0.000224857
+pH[cuentaventana].partition 4.55432
+==============================================
+start= 1 end= 7  length=  7
+Ndist 78
+Nter -0.272879
+Cdist 100
+Cter 0.159379
+residue index =     1
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.4000
+g intrinsic   0.0000
+g dipole     -0.0566
+gresidue  =   0.3434
+****************
+start= 1 end= 7  length=  7
+residue index =     2
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   1.5100
+g dipole      0.0000
+gresidue  =   1.5100
+****************
+start= 1 end= 7  length=  7
+residue index =     3
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   1.0300
+g dipole      0.0000
+gresidue  =   1.0300
+****************
+start= 1 end= 7  length=  7
+residue index =     4
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   1.3800
+g dipole      0.0000
+gresidue  =   1.3800
+****************
+start= 1 end= 7  length=  7
+residue index =     5
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 1 end= 7  length=  7
+residue index =     6
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 1 end= 7  length=  7
+ccap[0] ccap[1] 0.500000 0.400000
+residue index =     7
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.5000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =   0.5000
+****************
+i,i+3 and i,i+4 side chain-side chain interaction   0.0000
+enerelectr    0.0000
+c-cap not gly   0.0000
+main chain-main chain H-bonds  -0.8980
+delta delta G hel (eq.12 )     -0.0389
+start= 1 end= 7  length=  7
+pH[cuentaventana].energy 7.00654e-05
+pH[cuentaventana].partition 5.18652
+==============================================
+start= 2 end= 8  length=  7
+residue index =     2
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)   -0.4500
+g intrinsic   0.0000
+g dipole     -0.2154
+gresidue  =  -0.6653
+****************
+start= 2 end= 8  length=  7
+residue index =     3
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   1.5100
+g dipole      0.0000
+gresidue  =   1.5100
+****************
+start= 2 end= 8  length=  7
+residue index =     4
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   1.2300
+g dipole      0.0000
+gresidue  =   1.2300
+****************
+start= 2 end= 8  length=  7
+residue index =     5
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 2 end= 8  length=  7
+residue index =     6
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 2 end= 8  length=  7
+residue index =     7
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 2 end= 8  length=  7
+ccap[0] ccap[1] 0.500000 0.400000
+residue index =     8
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.5000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =   0.5000
+****************
+i,i+3 and i,i+4 side chain-side chain interaction   0.0000
+enerelectr    0.0000
+c-cap not gly   0.0000
+main chain-main chain H-bonds  -0.8980
+delta delta G hel (eq.12 )     -0.0389
+start= 2 end= 8  length=  7
+pH[cuentaventana].energy 0.00136188
+pH[cuentaventana].partition 3.57777
+==============================================
+start= 3 end= 9  length=  7
+residue index =     3
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)   -0.3500
+g intrinsic   0.0000
+g dipole     -0.1297
+gresidue  =  -0.4797
+****************
+start= 3 end= 9  length=  7
+residue index =     4
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   1.1000
+g dipole      0.0000
+gresidue  =   1.1000
+****************
+start= 3 end= 9  length=  7
+residue index =     5
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 3 end= 9  length=  7
+residue index =     6
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 3 end= 9  length=  7
+residue index =     7
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 3 end= 9  length=  7
+residue index =     8
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 3 end= 9  length=  7
+ccap[0] ccap[1] 0.500000 0.400000
+residue index =     9
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.5000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =   0.5000
+****************
+i,i+3 and i,i+4 side chain-side chain interaction   0.0000
+enerelectr    0.0000
+c-cap not gly   0.0000
+main chain-main chain H-bonds  -0.8980
+delta delta G hel (eq.12 )     -0.0389
+start= 3 end= 9  length=  7
+pH[cuentaventana].energy 0.00472397
+pH[cuentaventana].partition 2.90342
+==============================================
+start= 4 end= 10  length=  7
+residue index =     4
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)   -0.6000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =  -0.6000
+****************
+start= 4 end= 10  length=  7
+residue index =     5
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 4 end= 10  length=  7
+residue index =     6
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 4 end= 10  length=  7
+residue index =     7
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 4 end= 10  length=  7
+residue index =     8
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 4 end= 10  length=  7
+residue index =     9
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 4 end= 10  length=  7
+ccap[0] ccap[1] 0.500000 0.400000
+residue index =    10
+g N term      0.0000
+g C term      0.0475
+g capping (values different from publication)    0.5000
+g intrinsic   0.0000
+g dipole     -0.0040
+gresidue  =   0.5436
+****************
+i,i+3 and i,i+4 side chain-side chain interaction   0.0000
+enerelectr    0.0000
+staple not printed. Cumbersome calculation.
+c-cap not gly   0.0000
+main chain-main chain H-bonds  -0.8980
+delta delta G hel (eq.12 )     -0.0389
+start= 4 end= 10  length=  7
+pH[cuentaventana].energy 0.0118081
+pH[cuentaventana].partition 2.40671
+==============================================
+start= 5 end= 11  length=  7
+residue index =     5
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.4000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =   0.4000
+****************
+start= 5 end= 11  length=  7
+residue index =     6
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 5 end= 11  length=  7
+residue index =     7
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 5 end= 11  length=  7
+residue index =     8
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 5 end= 11  length=  7
+residue index =     9
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 5 end= 11  length=  7
+residue index =    10
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 5 end= 11  length=  7
+ccap[0] ccap[1] 0.500000 0.400000
+residue index =    11
+g N term      0.0000
+g C term      0.0642
+g capping (values different from publication)    0.5000
+g intrinsic   0.0000
+g dipole     -0.0984
+gresidue  =   0.4657
+****************
+i,i+3 and i,i+4 side chain-side chain interaction   0.0000
+enerelectr    0.0000
+c-cap not gly   0.0000
+main chain-main chain H-bonds  -0.8980
+delta delta G hel (eq.12 )     -0.0389
+start= 5 end= 11  length=  7
+pH[cuentaventana].energy 0.00215541
+pH[cuentaventana].partition 3.32885
+==============================================
+start= 6 end= 12  length=  7
+residue index =     6
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.4000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =   0.4000
+****************
+start= 6 end= 12  length=  7
+residue index =     7
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 6 end= 12  length=  7
+residue index =     8
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 6 end= 12  length=  7
+residue index =     9
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 6 end= 12  length=  7
+residue index =    10
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 6 end= 12  length=  7
+residue index =    11
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 6 end= 12  length=  7
+Ndist 97
+Nter 0.190870
+Cdist 62
+Cter -0.547970
+ccap[0] ccap[1] 0.000000 0.000000
+residue index =    12
+g N term      0.0000
+g C term      0.0890
+g capping (values different from publication)    0.0000
+g intrinsic   0.0000
+g dipole     -0.1537
+gresidue  =  -0.0647
+****************
+i,i+3 and i,i+4 side chain-side chain interaction   0.0000
+enerelectr    0.0004
+c-cap not gly   0.0000
+main chain-main chain H-bonds  -0.8980
+delta delta G hel (eq.12 )     -0.0389
+start= 6 end= 12  length=  7
+pH[cuentaventana].energy 0.00572922
+pH[cuentaventana].partition 2.79882
+==============================================
+start= 7 end= 13  length=  7
+residue index =     7
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.4000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =   0.4000
+****************
+start= 7 end= 13  length=  7
+residue index =     8
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 7 end= 13  length=  7
+residue index =     9
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 7 end= 13  length=  7
+residue index =    10
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 7 end= 13  length=  7
+residue index =    11
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 7 end= 13  length=  7
+Ndist 84
+Nter 0.242472
+Cdist 89
+Cter -0.218127
+residue index =    12
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.8300
+g dipole      0.0005
+gresidue  =   0.8305
+****************
+start= 7 end= 13  length=  7
+Ndist 90
+Nter 0.216559
+Cdist 79
+Cter -0.297924
+ccap[0] ccap[1] 0.000000 0.000000
+residue index =    13
+g N term      0.0000
+g C term      0.1285
+g capping (values different from publication)    0.0000
+g intrinsic   0.0000
+g dipole     -0.0309
+gresidue  =   0.0976
+****************
+i,i+3 and i,i+4 side chain-side chain interaction   0.0000
+enerelectr    0.0004
+c-cap not gly   0.0000
+main chain-main chain H-bonds  -0.8980
+delta delta G hel (eq.12 )     -0.0389
+start= 7 end= 13  length=  7
+pH[cuentaventana].energy 0.00321748
+pH[cuentaventana].partition 3.11164
+==============================================
+start= 8 end= 14  length=  7
+residue index =     8
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.2000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =   0.2000
+****************
+start= 8 end= 14  length=  7
+residue index =     9
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 8 end= 14  length=  7
+residue index =    10
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 8 end= 14  length=  7
+residue index =    11
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 8 end= 14  length=  7
+Ndist 69
+Nter 0.329533
+Cdist 89
+Cter -0.218127
+residue index =    12
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.8300
+g dipole      0.0021
+gresidue  =   0.8321
+****************
+start= 8 end= 14  length=  7
+Ndist 85
+Nter 0.237868
+Cdist 90
+Cter -0.211747
+residue index =    13
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.7400
+g dipole      0.0099
+gresidue  =   0.7499
+****************
+start= 8 end= 14  length=  7
+ccap[0] ccap[1] 0.500000 0.400000
+residue index =    14
+g N term      0.0000
+g C term      0.1976
+g capping (values different from publication)    0.5000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =   0.6976
+****************
+i,i+3 and i,i+4 side chain-side chain interaction   0.0000
+enerelectr    0.0010
+c-cap not gly   0.0000
+main chain-main chain H-bonds  -0.8980
+delta delta G hel (eq.12 )     -0.0389
+start= 8 end= 14  length=  7
+pH[cuentaventana].energy 0.00134669
+pH[cuentaventana].partition 3.58385
+==============================================
+start= 9 end= 15  length=  7
+residue index =     9
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.2000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =   0.2000
+****************
+start= 9 end= 15  length=  7
+residue index =    10
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 9 end= 15  length=  7
+residue index =    11
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 9 end= 15  length=  7
+Ndist 74
+Nter 0.296197
+Cdist 100
+Cter -0.159379
+residue index =    12
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.8300
+g dipole      0.0026
+gresidue  =   0.8326
+****************
+start= 9 end= 15  length=  7
+Ndist 68
+Nter 0.336842
+Cdist 96
+Cter -0.178089
+residue index =    13
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.7400
+g dipole      0.0603
+gresidue  =   0.8003
+****************
+start= 9 end= 15  length=  7
+residue index =    14
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 9 end= 15  length=  7
+ccap[0] ccap[1] 0.500000 0.400000
+residue index =    15
+g N term      0.0000
+g C term      0.3405
+g capping (values different from publication)    0.5000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =   0.8405
+****************
+i,i+3 and i,i+4 side chain-side chain interaction   0.0000
+enerelectr    0.0009
+c-cap not gly   0.0000
+main chain-main chain H-bonds  -0.8980
+delta delta G hel (eq.12 )     -0.0389
+start= 9 end= 15  length=  7
+pH[cuentaventana].energy 0.000942279
+pH[cuentaventana].partition 3.77747
+==============================================
+start= 10 end= 16  length=  7
+residue index =    10
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.4000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =   0.4000
+****************
+start= 10 end= 16  length=  7
+residue index =    11
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 10 end= 16  length=  7
+Ndist 75
+Nter 0.290111
+Cdist 84
+Cter -0.254019
+residue index =    12
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.8300
+g dipole      0.0007
+gresidue  =   0.8307
+****************
+start= 10 end= 16  length=  7
+Ndist 77
+Nter 0.278458
+Cdist 105
+Cter -0.139353
+residue index =    13
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.7400
+g dipole      0.0528
+gresidue  =   0.7928
+****************
+start= 10 end= 16  length=  7
+residue index =    14
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 10 end= 16  length=  7
+residue index =    15
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 10 end= 16  length=  7
+ccap[0] ccap[1] 0.500000 0.400000
+residue index =    16
+g N term      0.0000
+g C term      0.7700
+g capping (values different from publication)    0.5000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =   1.2700
+****************
+i,i+3 and i,i+4 side chain-side chain interaction   0.0000
+enerelectr   -0.0609
+c-cap not gly   0.0000
+main chain-main chain H-bonds  -0.8980
+delta delta G hel (eq.12 )     -0.0389
+start= 10 end= 16  length=  7
+pH[cuentaventana].energy 0.00033653
+pH[cuentaventana].partition 4.3357
+==============================================
+start= 1 end= 8  length=  8
+Ndist 78
+Nter -0.272879
+Cdist 129
+Cter 0.077415
+residue index =     1
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.4000
+g intrinsic   0.0000
+g dipole     -0.0975
+gresidue  =   0.3025
+****************
+start= 1 end= 8  length=  8
+residue index =     2
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   1.5100
+g dipole      0.0000
+gresidue  =   1.5100
+****************
+start= 1 end= 8  length=  8
+residue index =     3
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   1.0300
+g dipole      0.0000
+gresidue  =   1.0300
+****************
+start= 1 end= 8  length=  8
+residue index =     4
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   1.3300
+g dipole      0.0000
+gresidue  =   1.3300
+****************
+start= 1 end= 8  length=  8
+residue index =     5
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 1 end= 8  length=  8
+residue index =     6
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 1 end= 8  length=  8
+residue index =     7
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 1 end= 8  length=  8
+ccap[0] ccap[1] 0.500000 0.400000
+residue index =     8
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.5000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =   0.5000
+****************
+i,i+3 and i,i+4 side chain-side chain interaction   0.0000
+enerelectr    0.0000
+c-cap not gly   0.0000
+main chain-main chain H-bonds  -1.7960
+delta delta G hel (eq.12 )     -0.0389
+start= 1 end= 8  length=  8
+pH[cuentaventana].energy 0.000123857
+pH[cuentaventana].partition 4.87764
+==============================================
+start= 2 end= 9  length=  8
+residue index =     2
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)   -0.4500
+g intrinsic   0.0000
+g dipole     -0.2154
+gresidue  =  -0.6653
+****************
+start= 2 end= 9  length=  8
+residue index =     3
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   1.5100
+g dipole      0.0000
+gresidue  =   1.5100
+****************
+start= 2 end= 9  length=  8
+residue index =     4
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   1.2300
+g dipole      0.0000
+gresidue  =   1.2300
+****************
+start= 2 end= 9  length=  8
+residue index =     5
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 2 end= 9  length=  8
+residue index =     6
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 2 end= 9  length=  8
+residue index =     7
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 2 end= 9  length=  8
+residue index =     8
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 2 end= 9  length=  8
+ccap[0] ccap[1] 0.500000 0.400000
+residue index =     9
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.5000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =   0.5000
+****************
+i,i+3 and i,i+4 side chain-side chain interaction   0.0000
+enerelectr    0.0000
+c-cap not gly   0.0000
+main chain-main chain H-bonds  -1.7960
+delta delta G hel (eq.12 )     -0.0389
+start= 2 end= 9  length=  8
+pH[cuentaventana].energy 0.00203592
+pH[cuentaventana].partition 3.35977
+==============================================
+start= 3 end= 10  length=  8
+residue index =     3
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)   -0.3500
+g intrinsic   0.0000
+g dipole     -0.1297
+gresidue  =  -0.4797
+****************
+start= 3 end= 10  length=  8
+residue index =     4
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   1.1000
+g dipole      0.0000
+gresidue  =   1.1000
+****************
+start= 3 end= 10  length=  8
+residue index =     5
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 3 end= 10  length=  8
+residue index =     6
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 3 end= 10  length=  8
+residue index =     7
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 3 end= 10  length=  8
+residue index =     8
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 3 end= 10  length=  8
+residue index =     9
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 3 end= 10  length=  8
+ccap[0] ccap[1] 0.500000 0.400000
+residue index =    10
+g N term      0.0000
+g C term      0.0475
+g capping (values different from publication)    0.5000
+g intrinsic   0.0000
+g dipole     -0.0040
+gresidue  =   0.5436
+****************
+i,i+3 and i,i+4 side chain-side chain interaction   0.0000
+enerelectr    0.0000
+c-cap not gly   0.0000
+main chain-main chain H-bonds  -1.7960
+delta delta G hel (eq.12 )     -0.0389
+start= 3 end= 10  length=  8
+pH[cuentaventana].energy 0.00651652
+pH[cuentaventana].partition 2.72901
+==============================================
+start= 4 end= 11  length=  8
+residue index =     4
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)   -0.6000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =  -0.6000
+****************
+start= 4 end= 11  length=  8
+residue index =     5
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 4 end= 11  length=  8
+residue index =     6
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 4 end= 11  length=  8
+residue index =     7
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 4 end= 11  length=  8
+residue index =     8
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 4 end= 11  length=  8
+residue index =     9
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 4 end= 11  length=  8
+residue index =    10
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 4 end= 11  length=  8
+ccap[0] ccap[1] 0.500000 0.400000
+residue index =    11
+g N term      0.0000
+g C term      0.0642
+g capping (values different from publication)    0.5000
+g intrinsic   0.0000
+g dipole     -0.0984
+gresidue  =   0.4657
+****************
+i,i+3 and i,i+4 side chain-side chain interaction   0.0000
+enerelectr    0.0000
+staple not printed. Cumbersome calculation.
+c-cap not gly   0.0000
+main chain-main chain H-bonds  -1.7960
+delta delta G hel (eq.12 )     -0.0389
+start= 4 end= 11  length=  8
+pH[cuentaventana].energy 0.0203784
+pH[cuentaventana].partition 2.11085
+==============================================
+start= 5 end= 12  length=  8
+residue index =     5
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.4000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =   0.4000
+****************
+start= 5 end= 12  length=  8
+residue index =     6
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 5 end= 12  length=  8
+residue index =     7
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 5 end= 12  length=  8
+residue index =     8
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 5 end= 12  length=  8
+residue index =     9
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 5 end= 12  length=  8
+residue index =    10
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 5 end= 12  length=  8
+residue index =    11
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 5 end= 12  length=  8
+Ndist 103
+Nter 0.172008
+Cdist 62
+Cter -0.547970
+ccap[0] ccap[1] 0.000000 0.000000
+residue index =    12
+g N term      0.0000
+g C term      0.0890
+g capping (values different from publication)    0.0000
+g intrinsic   0.0000
+g dipole     -0.1541
+gresidue  =  -0.0651
+****************
+i,i+3 and i,i+4 side chain-side chain interaction   0.0000
+enerelectr    0.0004
+c-cap not gly   0.0000
+main chain-main chain H-bonds  -1.7960
+delta delta G hel (eq.12 )     -0.0389
+start= 5 end= 12  length=  8
+pH[cuentaventana].energy 0.0085705
+pH[cuentaventana].partition 2.58046
+==============================================
+start= 6 end= 13  length=  8
+residue index =     6
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.4000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =   0.4000
+****************
+start= 6 end= 13  length=  8
+residue index =     7
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 6 end= 13  length=  8
+residue index =     8
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 6 end= 13  length=  8
+residue index =     9
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 6 end= 13  length=  8
+residue index =    10
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 6 end= 13  length=  8
+residue index =    11
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 6 end= 13  length=  8
+Ndist 97
+Nter 0.190870
+Cdist 89
+Cter -0.218127
+residue index =    12
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.8300
+g dipole     -0.0005
+gresidue  =   0.8295
+****************
+start= 6 end= 13  length=  8
+Ndist 100
+Nter 0.181112
+Cdist 79
+Cter -0.297924
+ccap[0] ccap[1] 0.000000 0.000000
+residue index =    13
+g N term      0.0000
+g C term      0.1285
+g capping (values different from publication)    0.0000
+g intrinsic   0.0000
+g dipole     -0.0444
+gresidue  =   0.0842
+****************
+i,i+3 and i,i+4 side chain-side chain interaction   0.0000
+enerelectr    0.0004
+c-cap not gly   0.0000
+main chain-main chain H-bonds  -1.7960
+delta delta G hel (eq.12 )     -0.0389
+start= 6 end= 13  length=  8
+pH[cuentaventana].energy 0.00493985
+pH[cuentaventana].partition 2.87919
+==============================================
+start= 7 end= 14  length=  8
+residue index =     7
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.4000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =   0.4000
+****************
+start= 7 end= 14  length=  8
+residue index =     8
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 7 end= 14  length=  8
+residue index =     9
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 7 end= 14  length=  8
+residue index =    10
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 7 end= 14  length=  8
+residue index =    11
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 7 end= 14  length=  8
+Ndist 84
+Nter 0.242472
+Cdist 89
+Cter -0.218127
+residue index =    12
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.8300
+g dipole      0.0005
+gresidue  =   0.8305
+****************
+start= 7 end= 14  length=  8
+Ndist 90
+Nter 0.216559
+Cdist 90
+Cter -0.211747
+residue index =    13
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.7400
+g dipole      0.0018
+gresidue  =   0.7418
+****************
+start= 7 end= 14  length=  8
+ccap[0] ccap[1] 0.500000 0.400000
+residue index =    14
+g N term      0.0000
+g C term      0.1976
+g capping (values different from publication)    0.5000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =   0.6976
+****************
+i,i+3 and i,i+4 side chain-side chain interaction   0.0000
+enerelectr    0.0010
+c-cap not gly   0.0000
+main chain-main chain H-bonds  -1.7960
+delta delta G hel (eq.12 )     -0.0389
+start= 7 end= 14  length=  8
+pH[cuentaventana].energy 0.00141744
+pH[cuentaventana].partition 3.55609
+==============================================
+start= 8 end= 15  length=  8
+residue index =     8
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.2000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =   0.2000
+****************
+start= 8 end= 15  length=  8
+residue index =     9
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 8 end= 15  length=  8
+residue index =    10
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 8 end= 15  length=  8
+residue index =    11
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 8 end= 15  length=  8
+Ndist 69
+Nter 0.329533
+Cdist 100
+Cter -0.159379
+residue index =    12
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.8300
+g dipole      0.0033
+gresidue  =   0.8333
+****************
+start= 8 end= 15  length=  8
+Ndist 85
+Nter 0.237868
+Cdist 96
+Cter -0.178089
+residue index =    13
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.7400
+g dipole      0.0227
+gresidue  =   0.7627
+****************
+start= 8 end= 15  length=  8
+residue index =    14
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 8 end= 15  length=  8
+ccap[0] ccap[1] 0.500000 0.400000
+residue index =    15
+g N term      0.0000
+g C term      0.3405
+g capping (values different from publication)    0.5000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =   0.8405
+****************
+i,i+3 and i,i+4 side chain-side chain interaction   0.0000
+enerelectr    0.0009
+c-cap not gly   0.0000
+main chain-main chain H-bonds  -1.7960
+delta delta G hel (eq.12 )     -0.0389
+start= 8 end= 15  length=  8
+pH[cuentaventana].energy 0.00150802
+pH[cuentaventana].partition 3.52251
+==============================================
+start= 9 end= 16  length=  8
+residue index =     9
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.2000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =   0.2000
+****************
+start= 9 end= 16  length=  8
+residue index =    10
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 9 end= 16  length=  8
+residue index =    11
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 9 end= 16  length=  8
+Ndist 74
+Nter 0.296197
+Cdist 84
+Cter -0.254019
+residue index =    12
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.8300
+g dipole      0.0008
+gresidue  =   0.8308
+****************
+start= 9 end= 16  length=  8
+Ndist 68
+Nter 0.336842
+Cdist 105
+Cter -0.139353
+residue index =    13
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.7400
+g dipole      0.0750
+gresidue  =   0.8150
+****************
+start= 9 end= 16  length=  8
+residue index =    14
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 9 end= 16  length=  8
+residue index =    15
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 9 end= 16  length=  8
+ccap[0] ccap[1] 0.500000 0.400000
+residue index =    16
+g N term      0.0000
+g C term      0.7700
+g capping (values different from publication)    0.5000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =   1.2700
+****************
+i,i+3 and i,i+4 side chain-side chain interaction   0.0000
+enerelectr   -0.0609
+c-cap not gly   0.0000
+main chain-main chain H-bonds  -1.7960
+delta delta G hel (eq.12 )     -0.0389
+start= 9 end= 16  length=  8
+pH[cuentaventana].energy 0.000698218
+pH[cuentaventana].partition 3.94
+==============================================
+start= 1 end= 9  length=  9
+Ndist 78
+Nter -0.272879
+Cdist 140
+Cter 0.060631
+residue index =     1
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.4000
+g intrinsic   0.0000
+g dipole     -0.1059
+gresidue  =   0.2941
+****************
+start= 1 end= 9  length=  9
+residue index =     2
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   1.5100
+g dipole      0.0000
+gresidue  =   1.5100
+****************
+start= 1 end= 9  length=  9
+residue index =     3
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   1.0300
+g dipole      0.0000
+gresidue  =   1.0300
+****************
+start= 1 end= 9  length=  9
+residue index =     4
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   1.3300
+g dipole      0.0000
+gresidue  =   1.3300
+****************
+start= 1 end= 9  length=  9
+residue index =     5
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 1 end= 9  length=  9
+residue index =     6
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 1 end= 9  length=  9
+residue index =     7
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 1 end= 9  length=  9
+residue index =     8
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 1 end= 9  length=  9
+ccap[0] ccap[1] 0.500000 0.400000
+residue index =     9
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.5000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =   0.5000
+****************
+i,i+3 and i,i+4 side chain-side chain interaction   0.0000
+enerelectr    0.0000
+c-cap not gly   0.0000
+main chain-main chain H-bonds  -2.6940
+delta delta G hel (eq.12 )     -0.0389
+start= 1 end= 9  length=  9
+pH[cuentaventana].energy 0.00018804
+pH[cuentaventana].partition 4.65127
+==============================================
+start= 2 end= 10  length=  9
+residue index =     2
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)   -0.4500
+g intrinsic   0.0000
+g dipole     -0.2154
+gresidue  =  -0.6653
+****************
+start= 2 end= 10  length=  9
+residue index =     3
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   1.5100
+g dipole      0.0000
+gresidue  =   1.5100
+****************
+start= 2 end= 10  length=  9
+residue index =     4
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   1.2300
+g dipole      0.0000
+gresidue  =   1.2300
+****************
+start= 2 end= 10  length=  9
+residue index =     5
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 2 end= 10  length=  9
+residue index =     6
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 2 end= 10  length=  9
+residue index =     7
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 2 end= 10  length=  9
+residue index =     8
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 2 end= 10  length=  9
+residue index =     9
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 2 end= 10  length=  9
+ccap[0] ccap[1] 0.500000 0.400000
+residue index =    10
+g N term      0.0000
+g C term      0.0475
+g capping (values different from publication)    0.5000
+g intrinsic   0.0000
+g dipole     -0.0040
+gresidue  =   0.5436
+****************
+i,i+3 and i,i+4 side chain-side chain interaction   0.0000
+enerelectr    0.0000
+c-cap not gly   0.0000
+main chain-main chain H-bonds  -2.6940
+delta delta G hel (eq.12 )     -0.0389
+start= 2 end= 10  length=  9
+pH[cuentaventana].energy 0.00280846
+pH[cuentaventana].partition 3.18536
+==============================================
+start= 3 end= 11  length=  9
+residue index =     3
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)   -0.3500
+g intrinsic   0.0000
+g dipole     -0.1297
+gresidue  =  -0.4797
+****************
+start= 3 end= 11  length=  9
+residue index =     4
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   1.1000
+g dipole      0.0000
+gresidue  =   1.1000
+****************
+start= 3 end= 11  length=  9
+residue index =     5
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 3 end= 11  length=  9
+residue index =     6
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 3 end= 11  length=  9
+residue index =     7
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 3 end= 11  length=  9
+residue index =     8
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 3 end= 11  length=  9
+residue index =     9
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 3 end= 11  length=  9
+residue index =    10
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 3 end= 11  length=  9
+ccap[0] ccap[1] 0.500000 0.400000
+residue index =    11
+g N term      0.0000
+g C term      0.0642
+g capping (values different from publication)    0.5000
+g intrinsic   0.0000
+g dipole     -0.0984
+gresidue  =   0.4657
+****************
+i,i+3 and i,i+4 side chain-side chain interaction   0.0000
+enerelectr    0.0000
+c-cap not gly   0.0000
+main chain-main chain H-bonds  -2.6940
+delta delta G hel (eq.12 )     -0.0389
+start= 3 end= 11  length=  9
+pH[cuentaventana].energy 0.0112462
+pH[cuentaventana].partition 2.43314
+==============================================
+start= 4 end= 12  length=  9
+residue index =     4
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)   -0.6000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =  -0.6000
+****************
+start= 4 end= 12  length=  9
+residue index =     5
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 4 end= 12  length=  9
+residue index =     6
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 4 end= 12  length=  9
+residue index =     7
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 4 end= 12  length=  9
+residue index =     8
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 4 end= 12  length=  9
+residue index =     9
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 4 end= 12  length=  9
+residue index =    10
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 4 end= 12  length=  9
+residue index =    11
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 4 end= 12  length=  9
+Ndist 139
+Nter 0.097867
+Cdist 62
+Cter -0.547970
+ccap[0] ccap[1] 0.000000 0.000000
+residue index =    12
+g N term      0.0000
+g C term      0.0890
+g capping (values different from publication)    0.0000
+g intrinsic   0.0000
+g dipole     -0.1555
+gresidue  =  -0.0665
+****************
+i,i+3 and i,i+4 side chain-side chain interaction   0.0000
+enerelectr    0.0004
+staple not printed. Cumbersome calculation.
+c-cap not gly   0.0000
+main chain-main chain H-bonds  -2.6940
+delta delta G hel (eq.12 )     -0.0389
+start= 4 end= 12  length=  9
+pH[cuentaventana].energy 0.0812424
+pH[cuentaventana].partition 1.36104
+==============================================
+start= 5 end= 13  length=  9
+residue index =     5
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.4000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =   0.4000
+****************
+start= 5 end= 13  length=  9
+residue index =     6
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 5 end= 13  length=  9
+residue index =     7
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 5 end= 13  length=  9
+residue index =     8
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 5 end= 13  length=  9
+residue index =     9
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 5 end= 13  length=  9
+residue index =    10
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 5 end= 13  length=  9
+residue index =    11
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 5 end= 13  length=  9
+Ndist 103
+Nter 0.172008
+Cdist 89
+Cter -0.218127
+residue index =    12
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.8300
+g dipole     -0.0009
+gresidue  =   0.8291
+****************
+start= 5 end= 13  length=  9
+Ndist 139
+Nter 0.097867
+Cdist 79
+Cter -0.297924
+ccap[0] ccap[1] 0.000000 0.000000
+residue index =    13
+g N term      0.0000
+g C term      0.1285
+g capping (values different from publication)    0.0000
+g intrinsic   0.0000
+g dipole     -0.0760
+gresidue  =   0.0525
+****************
+i,i+3 and i,i+4 side chain-side chain interaction   0.0000
+enerelectr    0.0004
+c-cap not gly   0.0000
+main chain-main chain H-bonds  -2.6940
+delta delta G hel (eq.12 )     -0.0389
+start= 5 end= 13  length=  9
+pH[cuentaventana].energy 0.00783349
+pH[cuentaventana].partition 2.62921
+==============================================
+start= 6 end= 14  length=  9
+residue index =     6
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.4000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =   0.4000
+****************
+start= 6 end= 14  length=  9
+residue index =     7
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 6 end= 14  length=  9
+residue index =     8
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 6 end= 14  length=  9
+residue index =     9
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 6 end= 14  length=  9
+residue index =    10
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 6 end= 14  length=  9
+residue index =    11
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 6 end= 14  length=  9
+Ndist 97
+Nter 0.190870
+Cdist 89
+Cter -0.218127
+residue index =    12
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.8300
+g dipole     -0.0005
+gresidue  =   0.8295
+****************
+start= 6 end= 14  length=  9
+Ndist 100
+Nter 0.181112
+Cdist 90
+Cter -0.211747
+residue index =    13
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.7400
+g dipole     -0.0116
+gresidue  =   0.7284
+****************
+start= 6 end= 14  length=  9
+ccap[0] ccap[1] 0.500000 0.400000
+residue index =    14
+g N term      0.0000
+g C term      0.1976
+g capping (values different from publication)    0.5000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =   0.6976
+****************
+i,i+3 and i,i+4 side chain-side chain interaction   0.0000
+enerelectr    0.0010
+c-cap not gly   0.0000
+main chain-main chain H-bonds  -2.6940
+delta delta G hel (eq.12 )     -0.0389
+start= 6 end= 14  length=  9
+pH[cuentaventana].energy 0.00217622
+pH[cuentaventana].partition 3.32364
+==============================================
+start= 7 end= 15  length=  9
+residue index =     7
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.4000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =   0.4000
+****************
+start= 7 end= 15  length=  9
+residue index =     8
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 7 end= 15  length=  9
+residue index =     9
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 7 end= 15  length=  9
+residue index =    10
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 7 end= 15  length=  9
+residue index =    11
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 7 end= 15  length=  9
+Ndist 84
+Nter 0.242472
+Cdist 100
+Cter -0.159379
+residue index =    12
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.8300
+g dipole      0.0016
+gresidue  =   0.8316
+****************
+start= 7 end= 15  length=  9
+Ndist 90
+Nter 0.216559
+Cdist 96
+Cter -0.178089
+residue index =    13
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.7400
+g dipole      0.0146
+gresidue  =   0.7546
+****************
+start= 7 end= 15  length=  9
+residue index =    14
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 7 end= 15  length=  9
+ccap[0] ccap[1] 0.500000 0.400000
+residue index =    15
+g N term      0.0000
+g C term      0.3405
+g capping (values different from publication)    0.5000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =   0.8405
+****************
+i,i+3 and i,i+4 side chain-side chain interaction   0.0000
+enerelectr    0.0009
+c-cap not gly   0.0000
+main chain-main chain H-bonds  -2.6940
+delta delta G hel (eq.12 )     -0.0389
+start= 7 end= 15  length=  9
+pH[cuentaventana].energy 0.00158725
+pH[cuentaventana].partition 3.49475
+==============================================
+start= 8 end= 16  length=  9
+residue index =     8
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.2000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =   0.2000
+****************
+start= 8 end= 16  length=  9
+residue index =     9
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 8 end= 16  length=  9
+residue index =    10
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 8 end= 16  length=  9
+residue index =    11
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 8 end= 16  length=  9
+Ndist 69
+Nter 0.329533
+Cdist 84
+Cter -0.254019
+residue index =    12
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.8300
+g dipole      0.0014
+gresidue  =   0.8314
+****************
+start= 8 end= 16  length=  9
+Ndist 85
+Nter 0.237868
+Cdist 105
+Cter -0.139353
+residue index =    13
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.7400
+g dipole      0.0374
+gresidue  =   0.7774
+****************
+start= 8 end= 16  length=  9
+residue index =    14
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 8 end= 16  length=  9
+residue index =    15
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 8 end= 16  length=  9
+ccap[0] ccap[1] 0.500000 0.400000
+residue index =    16
+g N term      0.0000
+g C term      0.7700
+g capping (values different from publication)    0.5000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =   1.2700
+****************
+i,i+3 and i,i+4 side chain-side chain interaction   0.0000
+enerelectr   -0.0609
+c-cap not gly   0.0000
+main chain-main chain H-bonds  -2.6940
+delta delta G hel (eq.12 )     -0.0389
+start= 8 end= 16  length=  9
+pH[cuentaventana].energy 0.00111742
+pH[cuentaventana].partition 3.68504
+==============================================
+start= 1 end= 10  length=  10
+Ndist 78
+Nter -0.272879
+Cdist 149
+Cter 0.050106
+residue index =     1
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.4000
+g intrinsic   0.0000
+g dipole     -0.1111
+gresidue  =   0.2889
+****************
+start= 1 end= 10  length=  10
+residue index =     2
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   1.5100
+g dipole      0.0000
+gresidue  =   1.5100
+****************
+start= 1 end= 10  length=  10
+residue index =     3
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   1.0300
+g dipole      0.0000
+gresidue  =   1.0300
+****************
+start= 1 end= 10  length=  10
+residue index =     4
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   1.3300
+g dipole      0.0000
+gresidue  =   1.3300
+****************
+start= 1 end= 10  length=  10
+residue index =     5
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 1 end= 10  length=  10
+suma 2 0.000000
+sumarc 2 0.000000
+residue index =     6
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 1 end= 10  length=  10
+residue index =     7
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 1 end= 10  length=  10
+residue index =     8
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 1 end= 10  length=  10
+residue index =     9
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 1 end= 10  length=  10
+ccap[0] ccap[1] 0.500000 0.400000
+residue index =    10
+g N term      0.0000
+g C term      0.0475
+g capping (values different from publication)    0.5000
+g intrinsic   0.0000
+g dipole     -0.0040
+gresidue  =   0.5436
+****************
+i,i+3 and i,i+4 side chain-side chain interaction   0.0000
+enerelectr    0.0000
+c-cap not gly   0.0000
+main chain-main chain H-bonds  -3.5920
+delta delta G hel (eq.12 )     -0.0389
+start= 1 end= 10  length=  10
+pH[cuentaventana].energy 0.000261917
+pH[cuentaventana].partition 4.4716
+==============================================
+start= 2 end= 11  length=  10
+residue index =     2
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)   -0.4500
+g intrinsic   0.0000
+g dipole     -0.2154
+gresidue  =  -0.6653
+****************
+start= 2 end= 11  length=  10
+residue index =     3
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   1.5100
+g dipole      0.0000
+gresidue  =   1.5100
+****************
+start= 2 end= 11  length=  10
+residue index =     4
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   1.2300
+g dipole      0.0000
+gresidue  =   1.2300
+****************
+start= 2 end= 11  length=  10
+residue index =     5
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 2 end= 11  length=  10
+residue index =     6
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 2 end= 11  length=  10
+suma 2 0.000000
+sumarc 2 0.000000
+residue index =     7
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 2 end= 11  length=  10
+residue index =     8
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 2 end= 11  length=  10
+residue index =     9
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 2 end= 11  length=  10
+residue index =    10
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 2 end= 11  length=  10
+ccap[0] ccap[1] 0.500000 0.400000
+residue index =    11
+g N term      0.0000
+g C term      0.0642
+g capping (values different from publication)    0.5000
+g intrinsic   0.0000
+g dipole     -0.0984
+gresidue  =   0.4657
+****************
+i,i+3 and i,i+4 side chain-side chain interaction   0.0000
+enerelectr    0.0000
+c-cap not gly   0.0000
+main chain-main chain H-bonds  -3.5920
+delta delta G hel (eq.12 )     -0.0389
+start= 2 end= 11  length=  10
+pH[cuentaventana].energy 0.00484684
+pH[cuentaventana].partition 2.8895
+==============================================
+start= 3 end= 12  length=  10
+residue index =     3
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)   -0.3500
+g intrinsic   0.0000
+g dipole     -0.1297
+gresidue  =  -0.4797
+****************
+start= 3 end= 12  length=  10
+residue index =     4
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   1.1000
+g dipole      0.0000
+gresidue  =   1.1000
+****************
+start= 3 end= 12  length=  10
+residue index =     5
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 3 end= 12  length=  10
+residue index =     6
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 3 end= 12  length=  10
+residue index =     7
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 3 end= 12  length=  10
+suma 2 0.000000
+sumarc 2 0.000000
+residue index =     8
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 3 end= 12  length=  10
+residue index =     9
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 3 end= 12  length=  10
+residue index =    10
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 3 end= 12  length=  10
+residue index =    11
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 3 end= 12  length=  10
+Ndist 144
+Nter 0.091066
+Cdist 62
+Cter -0.547970
+ccap[0] ccap[1] 0.000000 0.000000
+residue index =    12
+g N term      0.0000
+g C term      0.0890
+g capping (values different from publication)    0.0000
+g intrinsic   0.0000
+g dipole     -0.1557
+gresidue  =  -0.0667
+****************
+i,i+3 and i,i+4 side chain-side chain interaction   0.0000
+enerelectr    0.0004
+c-cap not gly   0.0000
+main chain-main chain H-bonds  -3.5920
+delta delta G hel (eq.12 )     -0.0389
+start= 3 end= 12  length=  10
+pH[cuentaventana].energy 0.0448459
+pH[cuentaventana].partition 1.6832
+==============================================
+start= 4 end= 13  length=  10
+residue index =     4
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)   -0.6000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =  -0.6000
+****************
+start= 4 end= 13  length=  10
+residue index =     5
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 4 end= 13  length=  10
+residue index =     6
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 4 end= 13  length=  10
+residue index =     7
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 4 end= 13  length=  10
+residue index =     8
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 4 end= 13  length=  10
+suma 2 0.000000
+sumarc 2 0.000000
+residue index =     9
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 4 end= 13  length=  10
+residue index =    10
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 4 end= 13  length=  10
+residue index =    11
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 4 end= 13  length=  10
+Ndist 139
+Nter 0.097867
+Cdist 89
+Cter -0.218127
+residue index =    12
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.8300
+g dipole     -0.0023
+gresidue  =   0.8277
+****************
+start= 4 end= 13  length=  10
+Ndist 144
+Nter 0.091066
+Cdist 79
+Cter -0.297924
+ccap[0] ccap[1] 0.000000 0.000000
+residue index =    13
+g N term      0.0000
+g C term      0.1285
+g capping (values different from publication)    0.0000
+g intrinsic   0.0000
+g dipole     -0.0786
+gresidue  =   0.0499
+****************
+i,i+3 and i,i+4 side chain-side chain interaction   0.0000
+enerelectr    0.0004
+staple not printed. Cumbersome calculation.
+c-cap not gly   0.0000
+main chain-main chain H-bonds  -3.5920
+delta delta G hel (eq.12 )     -0.0389
+start= 4 end= 13  length=  10
+pH[cuentaventana].energy 0.0746108
+pH[cuentaventana].partition 1.40721
+==============================================
+start= 5 end= 14  length=  10
+residue index =     5
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.4000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =   0.4000
+****************
+start= 5 end= 14  length=  10
+residue index =     6
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 5 end= 14  length=  10
+residue index =     7
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 5 end= 14  length=  10
+residue index =     8
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 5 end= 14  length=  10
+residue index =     9
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 5 end= 14  length=  10
+suma 2 0.000000
+sumarc 2 0.000000
+residue index =    10
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 5 end= 14  length=  10
+residue index =    11
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 5 end= 14  length=  10
+Ndist 103
+Nter 0.172008
+Cdist 89
+Cter -0.218127
+residue index =    12
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.8300
+g dipole     -0.0009
+gresidue  =   0.8291
+****************
+start= 5 end= 14  length=  10
+Ndist 139
+Nter 0.097867
+Cdist 90
+Cter -0.211747
+residue index =    13
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.7400
+g dipole     -0.0433
+gresidue  =   0.6967
+****************
+start= 5 end= 14  length=  10
+ccap[0] ccap[1] 0.500000 0.400000
+residue index =    14
+g N term      0.0000
+g C term      0.1976
+g capping (values different from publication)    0.5000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =   0.6976
+****************
+i,i+3 and i,i+4 side chain-side chain interaction   0.0000
+enerelectr    0.0010
+c-cap not gly   0.0000
+main chain-main chain H-bonds  -3.5920
+delta delta G hel (eq.12 )     -0.0389
+start= 5 end= 14  length=  10
+pH[cuentaventana].energy 0.003451
+pH[cuentaventana].partition 3.07366
+==============================================
+start= 6 end= 15  length=  10
+residue index =     6
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.4000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =   0.4000
+****************
+start= 6 end= 15  length=  10
+residue index =     7
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 6 end= 15  length=  10
+residue index =     8
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 6 end= 15  length=  10
+residue index =     9
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 6 end= 15  length=  10
+residue index =    10
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 6 end= 15  length=  10
+suma 2 0.000000
+sumarc 2 0.000000
+residue index =    11
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 6 end= 15  length=  10
+Ndist 97
+Nter 0.190870
+Cdist 100
+Cter -0.159379
+residue index =    12
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.8300
+g dipole      0.0006
+gresidue  =   0.8306
+****************
+start= 6 end= 15  length=  10
+Ndist 100
+Nter 0.181112
+Cdist 96
+Cter -0.178089
+residue index =    13
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.7400
+g dipole      0.0011
+gresidue  =   0.7411
+****************
+start= 6 end= 15  length=  10
+residue index =    14
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 6 end= 15  length=  10
+ccap[0] ccap[1] 0.500000 0.400000
+residue index =    15
+g N term      0.0000
+g C term      0.3405
+g capping (values different from publication)    0.5000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =   0.8405
+****************
+i,i+3 and i,i+4 side chain-side chain interaction   0.0000
+enerelectr    0.0009
+c-cap not gly   0.0000
+main chain-main chain H-bonds  -3.5920
+delta delta G hel (eq.12 )     -0.0389
+start= 6 end= 15  length=  10
+pH[cuentaventana].energy 0.00243693
+pH[cuentaventana].partition 3.26229
+==============================================
+start= 7 end= 16  length=  10
+residue index =     7
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.4000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =   0.4000
+****************
+start= 7 end= 16  length=  10
+residue index =     8
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 7 end= 16  length=  10
+residue index =     9
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 7 end= 16  length=  10
+residue index =    10
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 7 end= 16  length=  10
+residue index =    11
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 7 end= 16  length=  10
+Ndist 84
+Nter 0.242472
+Cdist 84
+Cter -0.254019
+suma 2 0.653965
+sumarc 2 0.000000
+residue index =    12
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6857
+g dipole     -0.0002
+gresidue  =   0.6855
+****************
+start= 7 end= 16  length=  10
+Ndist 90
+Nter 0.216559
+Cdist 105
+Cter -0.139353
+residue index =    13
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.7400
+g dipole      0.0293
+gresidue  =   0.7693
+****************
+start= 7 end= 16  length=  10
+residue index =    14
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 7 end= 16  length=  10
+residue index =    15
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 7 end= 16  length=  10
+ccap[0] ccap[1] 0.500000 0.400000
+residue index =    16
+g N term      0.0000
+g C term      0.7700
+g capping (values different from publication)    0.5000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =   1.2700
+****************
+i,i+3 and i,i+4 side chain-side chain interaction   0.0000
+enerelectr   -0.0609
+c-cap not gly   0.0000
+main chain-main chain H-bonds  -3.5920
+delta delta G hel (eq.12 )     -0.0389
+start= 7 end= 16  length=  10
+pH[cuentaventana].energy 0.00153465
+pH[cuentaventana].partition 3.51302
+==============================================
+start= 1 end= 11  length=  11
+Ndist 78
+Nter -0.272879
+Cdist 167
+Cter 0.034951
+residue index =     1
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.4000
+g intrinsic   0.0000
+g dipole     -0.1187
+gresidue  =   0.2813
+****************
+start= 1 end= 11  length=  11
+residue index =     2
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   1.5100
+g dipole      0.0000
+gresidue  =   1.5100
+****************
+start= 1 end= 11  length=  11
+residue index =     3
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   1.0300
+g dipole      0.0000
+gresidue  =   1.0300
+****************
+start= 1 end= 11  length=  11
+residue index =     4
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   1.3300
+g dipole      0.0000
+gresidue  =   1.3300
+****************
+start= 1 end= 11  length=  11
+residue index =     5
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 1 end= 11  length=  11
+suma 2 0.000000
+sumarc 2 0.000000
+residue index =     6
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 1 end= 11  length=  11
+suma 2 0.000000
+sumarc 2 0.000000
+residue index =     7
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 1 end= 11  length=  11
+residue index =     8
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 1 end= 11  length=  11
+residue index =     9
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 1 end= 11  length=  11
+residue index =    10
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 1 end= 11  length=  11
+ccap[0] ccap[1] 0.500000 0.400000
+residue index =    11
+g N term      0.0000
+g C term      0.0642
+g capping (values different from publication)    0.5000
+g intrinsic   0.0000
+g dipole     -0.0984
+gresidue  =   0.4657
+****************
+i,i+3 and i,i+4 side chain-side chain interaction   0.0000
+enerelectr    0.0000
+c-cap not gly   0.0000
+main chain-main chain H-bonds  -4.4900
+delta delta G hel (eq.12 )     -0.0389
+start= 1 end= 11  length=  11
+pH[cuentaventana].energy 0.000458361
+pH[cuentaventana].partition 4.16819
+==============================================
+start= 2 end= 12  length=  11
+residue index =     2
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)   -0.4500
+g intrinsic   0.0000
+g dipole     -0.2154
+gresidue  =  -0.6653
+****************
+start= 2 end= 12  length=  11
+residue index =     3
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   1.5100
+g dipole      0.0000
+gresidue  =   1.5100
+****************
+start= 2 end= 12  length=  11
+residue index =     4
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   1.2300
+g dipole      0.0000
+gresidue  =   1.2300
+****************
+start= 2 end= 12  length=  11
+residue index =     5
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 2 end= 12  length=  11
+residue index =     6
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 2 end= 12  length=  11
+suma 2 0.000000
+sumarc 2 0.000000
+residue index =     7
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 2 end= 12  length=  11
+suma 2 0.000000
+sumarc 2 0.000000
+residue index =     8
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 2 end= 12  length=  11
+residue index =     9
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 2 end= 12  length=  11
+residue index =    10
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 2 end= 12  length=  11
+residue index =    11
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 2 end= 12  length=  11
+Ndist 155
+Nter 0.078042
+Cdist 62
+Cter -0.547970
+ccap[0] ccap[1] 0.000000 0.000000
+residue index =    12
+g N term      0.0000
+g C term      0.0890
+g capping (values different from publication)    0.0000
+g intrinsic   0.0000
+g dipole     -0.1559
+gresidue  =  -0.0669
+****************
+i,i+3 and i,i+4 side chain-side chain interaction   0.0000
+enerelectr    0.0004
+c-cap not gly   0.0000
+main chain-main chain H-bonds  -4.4900
+delta delta G hel (eq.12 )     -0.0389
+start= 2 end= 12  length=  11
+pH[cuentaventana].energy 0.0193364
+pH[cuentaventana].partition 2.13931
+==============================================
+start= 3 end= 13  length=  11
+residue index =     3
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)   -0.3500
+g intrinsic   0.0000
+g dipole     -0.1297
+gresidue  =  -0.4797
+****************
+start= 3 end= 13  length=  11
+residue index =     4
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   1.1000
+g dipole      0.0000
+gresidue  =   1.1000
+****************
+start= 3 end= 13  length=  11
+residue index =     5
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 3 end= 13  length=  11
+residue index =     6
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 3 end= 13  length=  11
+residue index =     7
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 3 end= 13  length=  11
+suma 2 0.000000
+sumarc 2 0.000000
+residue index =     8
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 3 end= 13  length=  11
+suma 2 0.000000
+sumarc 2 0.000000
+residue index =     9
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 3 end= 13  length=  11
+residue index =    10
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 3 end= 13  length=  11
+residue index =    11
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 3 end= 13  length=  11
+Ndist 144
+Nter 0.091066
+Cdist 89
+Cter -0.218127
+residue index =    12
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.8300
+g dipole     -0.0024
+gresidue  =   0.8276
+****************
+start= 3 end= 13  length=  11
+Ndist 155
+Nter 0.078042
+Cdist 79
+Cter -0.297924
+ccap[0] ccap[1] 0.000000 0.000000
+residue index =    13
+g N term      0.0000
+g C term      0.1285
+g capping (values different from publication)    0.0000
+g intrinsic   0.0000
+g dipole     -0.0835
+gresidue  =   0.0450
+****************
+i,i+3 and i,i+4 side chain-side chain interaction   0.0000
+enerelectr    0.0004
+c-cap not gly   0.0000
+main chain-main chain H-bonds  -4.4900
+delta delta G hel (eq.12 )     -0.0389
+start= 3 end= 13  length=  11
+pH[cuentaventana].energy 0.0415628
+pH[cuentaventana].partition 1.72442
+==============================================
+start= 4 end= 14  length=  11
+residue index =     4
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)   -0.6000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =  -0.6000
+****************
+start= 4 end= 14  length=  11
+residue index =     5
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 4 end= 14  length=  11
+residue index =     6
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 4 end= 14  length=  11
+residue index =     7
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 4 end= 14  length=  11
+residue index =     8
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 4 end= 14  length=  11
+suma 2 0.000000
+sumarc 2 0.000000
+residue index =     9
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 4 end= 14  length=  11
+suma 2 0.000000
+sumarc 2 0.000000
+residue index =    10
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 4 end= 14  length=  11
+residue index =    11
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 4 end= 14  length=  11
+Ndist 139
+Nter 0.097867
+Cdist 89
+Cter -0.218127
+residue index =    12
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.8300
+g dipole     -0.0023
+gresidue  =   0.8277
+****************
+start= 4 end= 14  length=  11
+Ndist 144
+Nter 0.091066
+Cdist 90
+Cter -0.211747
+residue index =    13
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.7400
+g dipole     -0.0458
+gresidue  =   0.6942
+****************
+start= 4 end= 14  length=  11
+ccap[0] ccap[1] 0.500000 0.400000
+residue index =    14
+g N term      0.0000
+g C term      0.1976
+g capping (values different from publication)    0.5000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =   0.6976
+****************
+i,i+3 and i,i+4 side chain-side chain interaction   0.0000
+enerelectr    0.0010
+staple not printed. Cumbersome calculation.
+c-cap not gly   0.0000
+main chain-main chain H-bonds  -4.4900
+delta delta G hel (eq.12 )     -0.0389
+start= 4 end= 14  length=  11
+pH[cuentaventana].energy 0.0328694
+pH[cuentaventana].partition 1.85165
+==============================================
+start= 5 end= 15  length=  11
+residue index =     5
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.4000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =   0.4000
+****************
+start= 5 end= 15  length=  11
+residue index =     6
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 5 end= 15  length=  11
+residue index =     7
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 5 end= 15  length=  11
+residue index =     8
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 5 end= 15  length=  11
+residue index =     9
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 5 end= 15  length=  11
+suma 2 0.000000
+sumarc 2 0.000000
+residue index =    10
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 5 end= 15  length=  11
+suma 2 0.000000
+sumarc 2 0.000000
+residue index =    11
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 5 end= 15  length=  11
+Ndist 103
+Nter 0.172008
+Cdist 100
+Cter -0.159379
+residue index =    12
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.8300
+g dipole      0.0002
+gresidue  =   0.8302
+****************
+start= 5 end= 15  length=  11
+Ndist 139
+Nter 0.097867
+Cdist 96
+Cter -0.178089
+residue index =    13
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.7400
+g dipole     -0.0305
+gresidue  =   0.7095
+****************
+start= 5 end= 15  length=  11
+residue index =    14
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 5 end= 15  length=  11
+ccap[0] ccap[1] 0.500000 0.400000
+residue index =    15
+g N term      0.0000
+g C term      0.3405
+g capping (values different from publication)    0.5000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =   0.8405
+****************
+i,i+3 and i,i+4 side chain-side chain interaction   0.0000
+enerelectr    0.0009
+c-cap not gly   0.0000
+main chain-main chain H-bonds  -4.4900
+delta delta G hel (eq.12 )     -0.0389
+start= 5 end= 15  length=  11
+pH[cuentaventana].energy 0.00386441
+pH[cuentaventana].partition 3.01231
+==============================================
+start= 6 end= 16  length=  11
+residue index =     6
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.4000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =   0.4000
+****************
+start= 6 end= 16  length=  11
+residue index =     7
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 6 end= 16  length=  11
+residue index =     8
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 6 end= 16  length=  11
+residue index =     9
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 6 end= 16  length=  11
+residue index =    10
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 6 end= 16  length=  11
+suma 2 0.000000
+sumarc 2 0.000000
+residue index =    11
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 6 end= 16  length=  11
+Ndist 97
+Nter 0.190870
+Cdist 84
+Cter -0.254019
+suma 2 0.653965
+sumarc 2 0.000000
+residue index =    12
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6857
+g dipole     -0.0012
+gresidue  =   0.6845
+****************
+start= 6 end= 16  length=  11
+Ndist 100
+Nter 0.181112
+Cdist 105
+Cter -0.139353
+residue index =    13
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.7400
+g dipole      0.0159
+gresidue  =   0.7559
+****************
+start= 6 end= 16  length=  11
+residue index =    14
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 6 end= 16  length=  11
+residue index =    15
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 6 end= 16  length=  11
+ccap[0] ccap[1] 0.500000 0.400000
+residue index =    16
+g N term      0.0000
+g C term      0.7700
+g capping (values different from publication)    0.5000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =   1.2700
+****************
+i,i+3 and i,i+4 side chain-side chain interaction   0.0000
+enerelectr   -0.0609
+c-cap not gly   0.0000
+main chain-main chain H-bonds  -4.4900
+delta delta G hel (eq.12 )     -0.0389
+start= 6 end= 16  length=  11
+pH[cuentaventana].energy 0.00235617
+pH[cuentaventana].partition 3.28057
+==============================================
+start= 1 end= 12  length=  12
+Ndist 78
+Nter -0.272879
+Cdist 179
+Cter 0.027858
+residue index =     1
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.4000
+g intrinsic   0.0000
+g dipole     -0.1222
+gresidue  =   0.2778
+****************
+start= 1 end= 12  length=  12
+residue index =     2
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   1.5100
+g dipole      0.0000
+gresidue  =   1.5100
+****************
+start= 1 end= 12  length=  12
+residue index =     3
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   1.0300
+g dipole      0.0000
+gresidue  =   1.0300
+****************
+start= 1 end= 12  length=  12
+residue index =     4
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   1.3300
+g dipole      0.0000
+gresidue  =   1.3300
+****************
+start= 1 end= 12  length=  12
+residue index =     5
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 1 end= 12  length=  12
+suma 2 0.000000
+sumarc 2 0.000000
+residue index =     6
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 1 end= 12  length=  12
+suma 2 0.000000
+sumarc 2 0.000000
+residue index =     7
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 1 end= 12  length=  12
+suma 2 0.000000
+sumarc 2 0.000000
+residue index =     8
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 1 end= 12  length=  12
+residue index =     9
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 1 end= 12  length=  12
+residue index =    10
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 1 end= 12  length=  12
+residue index =    11
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 1 end= 12  length=  12
+Ndist 160
+Nter 0.072879
+Cdist 62
+Cter -0.547970
+ccap[0] ccap[1] 0.000000 0.000000
+residue index =    12
+g N term      0.0000
+g C term      0.0890
+g capping (values different from publication)    0.0000
+g intrinsic   0.0000
+g dipole     -0.1560
+gresidue  =  -0.0670
+****************
+i,i+3 and i,i+4 side chain-side chain interaction   0.0000
+enerelectr    0.0004
+c-cap not gly   0.0000
+main chain-main chain H-bonds  -5.3880
+delta delta G hel (eq.12 )     -0.0389
+start= 1 end= 12  length=  12
+pH[cuentaventana].energy 0.00184093
+pH[cuentaventana].partition 3.41436
+==============================================
+start= 2 end= 13  length=  12
+residue index =     2
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)   -0.4500
+g intrinsic   0.0000
+g dipole     -0.2154
+gresidue  =  -0.6653
+****************
+start= 2 end= 13  length=  12
+residue index =     3
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   1.5100
+g dipole      0.0000
+gresidue  =   1.5100
+****************
+start= 2 end= 13  length=  12
+residue index =     4
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   1.2300
+g dipole      0.0000
+gresidue  =   1.2300
+****************
+start= 2 end= 13  length=  12
+residue index =     5
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 2 end= 13  length=  12
+residue index =     6
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 2 end= 13  length=  12
+suma 2 0.000000
+sumarc 2 0.000000
+residue index =     7
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 2 end= 13  length=  12
+suma 2 0.000000
+sumarc 2 0.000000
+residue index =     8
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 2 end= 13  length=  12
+suma 2 0.000000
+sumarc 2 0.000000
+residue index =     9
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 2 end= 13  length=  12
+residue index =    10
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 2 end= 13  length=  12
+residue index =    11
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 2 end= 13  length=  12
+Ndist 155
+Nter 0.078042
+Cdist 89
+Cter -0.218127
+residue index =    12
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.8300
+g dipole     -0.0027
+gresidue  =   0.8273
+****************
+start= 2 end= 13  length=  12
+Ndist 160
+Nter 0.072879
+Cdist 79
+Cter -0.297924
+ccap[0] ccap[1] 0.000000 0.000000
+residue index =    13
+g N term      0.0000
+g C term      0.1285
+g capping (values different from publication)    0.0000
+g intrinsic   0.0000
+g dipole     -0.0855
+gresidue  =   0.0430
+****************
+i,i+3 and i,i+4 side chain-side chain interaction   0.0000
+enerelectr   -0.0030
+c-cap not gly   0.0000
+main chain-main chain H-bonds  -5.3880
+delta delta G hel (eq.12 )     -0.0389
+start= 2 end= 13  length=  12
+pH[cuentaventana].energy 0.0180986
+pH[cuentaventana].partition 2.17518
+==============================================
+start= 3 end= 14  length=  12
+residue index =     3
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)   -0.3500
+g intrinsic   0.0000
+g dipole     -0.1297
+gresidue  =  -0.4797
+****************
+start= 3 end= 14  length=  12
+residue index =     4
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   1.1000
+g dipole      0.0000
+gresidue  =   1.1000
+****************
+start= 3 end= 14  length=  12
+residue index =     5
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 3 end= 14  length=  12
+residue index =     6
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 3 end= 14  length=  12
+residue index =     7
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 3 end= 14  length=  12
+suma 2 0.000000
+sumarc 2 0.000000
+residue index =     8
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 3 end= 14  length=  12
+suma 2 0.000000
+sumarc 2 0.000000
+residue index =     9
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 3 end= 14  length=  12
+suma 2 0.000000
+sumarc 2 0.000000
+residue index =    10
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 3 end= 14  length=  12
+residue index =    11
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 3 end= 14  length=  12
+Ndist 144
+Nter 0.091066
+Cdist 89
+Cter -0.218127
+residue index =    12
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.8300
+g dipole     -0.0024
+gresidue  =   0.8276
+****************
+start= 3 end= 14  length=  12
+Ndist 155
+Nter 0.078042
+Cdist 90
+Cter -0.211747
+residue index =    13
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.7400
+g dipole     -0.0508
+gresidue  =   0.6892
+****************
+start= 3 end= 14  length=  12
+ccap[0] ccap[1] 0.500000 0.400000
+residue index =    14
+g N term      0.0000
+g C term      0.1976
+g capping (values different from publication)    0.5000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =   0.6976
+****************
+i,i+3 and i,i+4 side chain-side chain interaction   0.0000
+enerelectr    0.0010
+c-cap not gly   0.0000
+main chain-main chain H-bonds  -5.3880
+delta delta G hel (eq.12 )     -0.0389
+start= 3 end= 14  length=  12
+pH[cuentaventana].energy 0.0183103
+pH[cuentaventana].partition 2.16887
+==============================================
+start= 4 end= 15  length=  12
+residue index =     4
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)   -0.6000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =  -0.6000
+****************
+start= 4 end= 15  length=  12
+residue index =     5
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 4 end= 15  length=  12
+residue index =     6
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 4 end= 15  length=  12
+residue index =     7
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 4 end= 15  length=  12
+residue index =     8
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 4 end= 15  length=  12
+suma 2 0.000000
+sumarc 2 0.000000
+residue index =     9
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 4 end= 15  length=  12
+suma 2 0.000000
+sumarc 2 0.000000
+residue index =    10
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 4 end= 15  length=  12
+suma 2 0.000000
+sumarc 2 0.000000
+residue index =    11
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 4 end= 15  length=  12
+Ndist 139
+Nter 0.097867
+Cdist 100
+Cter -0.159379
+residue index =    12
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.8300
+g dipole     -0.0012
+gresidue  =   0.8288
+****************
+start= 4 end= 15  length=  12
+Ndist 144
+Nter 0.091066
+Cdist 96
+Cter -0.178089
+residue index =    13
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.7400
+g dipole     -0.0331
+gresidue  =   0.7069
+****************
+start= 4 end= 15  length=  12
+residue index =    14
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 4 end= 15  length=  12
+ccap[0] ccap[1] 0.500000 0.400000
+residue index =    15
+g N term      0.0000
+g C term      0.3405
+g capping (values different from publication)    0.5000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =   0.8405
+****************
+i,i+3 and i,i+4 side chain-side chain interaction   0.0000
+enerelectr    0.0009
+staple not printed. Cumbersome calculation.
+c-cap not gly   0.0000
+main chain-main chain H-bonds  -5.3880
+delta delta G hel (eq.12 )     -0.0389
+start= 4 end= 15  length=  12
+pH[cuentaventana].energy 0.0368069
+pH[cuentaventana].partition 1.79031
+==============================================
+start= 5 end= 16  length=  12
+residue index =     5
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.4000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =   0.4000
+****************
+start= 5 end= 16  length=  12
+residue index =     6
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 5 end= 16  length=  12
+residue index =     7
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 5 end= 16  length=  12
+residue index =     8
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 5 end= 16  length=  12
+residue index =     9
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 5 end= 16  length=  12
+suma 2 0.000000
+sumarc 2 0.000000
+residue index =    10
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 5 end= 16  length=  12
+suma 2 0.000000
+sumarc 2 0.000000
+residue index =    11
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 5 end= 16  length=  12
+Ndist 103
+Nter 0.172008
+Cdist 84
+Cter -0.254019
+suma 2 0.653965
+sumarc 2 0.000000
+residue index =    12
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6857
+g dipole     -0.0016
+gresidue  =   0.6842
+****************
+start= 5 end= 16  length=  12
+Ndist 139
+Nter 0.097867
+Cdist 105
+Cter -0.139353
+residue index =    13
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.7400
+g dipole     -0.0158
+gresidue  =   0.7242
+****************
+start= 5 end= 16  length=  12
+residue index =    14
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 5 end= 16  length=  12
+residue index =    15
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 5 end= 16  length=  12
+ccap[0] ccap[1] 0.500000 0.400000
+residue index =    16
+g N term      0.0000
+g C term      0.7700
+g capping (values different from publication)    0.5000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =   1.2700
+****************
+i,i+3 and i,i+4 side chain-side chain interaction   0.0000
+enerelectr   -0.0609
+c-cap not gly   0.0000
+main chain-main chain H-bonds  -5.3880
+delta delta G hel (eq.12 )     -0.0389
+start= 5 end= 16  length=  12
+pH[cuentaventana].energy 0.00373635
+pH[cuentaventana].partition 3.03058
+==============================================
+start= 1 end= 13  length=  13
+Ndist 78
+Nter -0.272879
+Cdist 193
+Cter 0.021623
+residue index =     1
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.4000
+g intrinsic   0.0000
+g dipole     -0.1253
+gresidue  =   0.2747
+****************
+start= 1 end= 13  length=  13
+residue index =     2
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   1.5100
+g dipole      0.0000
+gresidue  =   1.5100
+****************
+start= 1 end= 13  length=  13
+residue index =     3
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   1.0300
+g dipole      0.0000
+gresidue  =   1.0300
+****************
+start= 1 end= 13  length=  13
+residue index =     4
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   1.3300
+g dipole      0.0000
+gresidue  =   1.3300
+****************
+start= 1 end= 13  length=  13
+residue index =     5
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 1 end= 13  length=  13
+suma 2 0.000000
+sumarc 2 0.000000
+residue index =     6
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 1 end= 13  length=  13
+suma 2 0.000000
+sumarc 2 0.000000
+residue index =     7
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 1 end= 13  length=  13
+suma 2 0.000000
+sumarc 2 0.000000
+residue index =     8
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 1 end= 13  length=  13
+suma 2 0.000000
+sumarc 2 0.000000
+residue index =     9
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 1 end= 13  length=  13
+residue index =    10
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 1 end= 13  length=  13
+residue index =    11
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 1 end= 13  length=  13
+Ndist 160
+Nter 0.072879
+Cdist 89
+Cter -0.218127
+residue index =    12
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.8300
+g dipole     -0.0028
+gresidue  =   0.8272
+****************
+start= 1 end= 13  length=  13
+Ndist 175
+Nter 0.059687
+Cdist 79
+Cter -0.297924
+ccap[0] ccap[1] 0.000000 0.000000
+residue index =    13
+g N term      0.0000
+g C term      0.1285
+g capping (values different from publication)    0.0000
+g intrinsic   0.0000
+g dipole     -0.0905
+gresidue  =   0.0380
+****************
+i,i+3 and i,i+4 side chain-side chain interaction   0.0000
+enerelectr   -0.0008
+c-cap not gly   0.0000
+main chain-main chain H-bonds  -6.2860
+delta delta G hel (eq.12 )     -0.0389
+start= 1 end= 13  length=  13
+pH[cuentaventana].energy 0.0017423
+pH[cuentaventana].partition 3.44421
+==============================================
+start= 2 end= 14  length=  13
+residue index =     2
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)   -0.4500
+g intrinsic   0.0000
+g dipole     -0.2154
+gresidue  =  -0.6653
+****************
+start= 2 end= 14  length=  13
+residue index =     3
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   1.5100
+g dipole      0.0000
+gresidue  =   1.5100
+****************
+start= 2 end= 14  length=  13
+residue index =     4
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   1.2300
+g dipole      0.0000
+gresidue  =   1.2300
+****************
+start= 2 end= 14  length=  13
+residue index =     5
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 2 end= 14  length=  13
+residue index =     6
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 2 end= 14  length=  13
+suma 2 0.000000
+sumarc 2 0.000000
+residue index =     7
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 2 end= 14  length=  13
+suma 2 0.000000
+sumarc 2 0.000000
+residue index =     8
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 2 end= 14  length=  13
+suma 2 0.000000
+sumarc 2 0.000000
+residue index =     9
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 2 end= 14  length=  13
+suma 2 0.000000
+sumarc 2 0.000000
+residue index =    10
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 2 end= 14  length=  13
+residue index =    11
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 2 end= 14  length=  13
+Ndist 155
+Nter 0.078042
+Cdist 89
+Cter -0.218127
+residue index =    12
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.8300
+g dipole     -0.0027
+gresidue  =   0.8273
+****************
+start= 2 end= 14  length=  13
+Ndist 160
+Nter 0.072879
+Cdist 90
+Cter -0.211747
+residue index =    13
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.7400
+g dipole     -0.0528
+gresidue  =   0.6872
+****************
+start= 2 end= 14  length=  13
+ccap[0] ccap[1] 0.500000 0.400000
+residue index =    14
+g N term      0.0000
+g C term      0.1976
+g capping (values different from publication)    0.5000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =   0.6976
+****************
+i,i+3 and i,i+4 side chain-side chain interaction   0.0000
+enerelectr   -0.0768
+c-cap not gly   0.0000
+main chain-main chain H-bonds  -6.2860
+delta delta G hel (eq.12 )     -0.0389
+start= 2 end= 14  length=  13
+pH[cuentaventana].energy 0.00914681
+pH[cuentaventana].partition 2.54517
+==============================================
+start= 3 end= 15  length=  13
+residue index =     3
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)   -0.3500
+g intrinsic   0.0000
+g dipole     -0.1297
+gresidue  =  -0.4797
+****************
+start= 3 end= 15  length=  13
+residue index =     4
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   1.1000
+g dipole      0.0000
+gresidue  =   1.1000
+****************
+start= 3 end= 15  length=  13
+residue index =     5
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 3 end= 15  length=  13
+residue index =     6
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 3 end= 15  length=  13
+residue index =     7
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 3 end= 15  length=  13
+suma 2 0.000000
+sumarc 2 0.000000
+residue index =     8
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 3 end= 15  length=  13
+suma 2 0.000000
+sumarc 2 0.000000
+residue index =     9
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 3 end= 15  length=  13
+suma 2 0.000000
+sumarc 2 0.000000
+residue index =    10
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 3 end= 15  length=  13
+suma 2 0.000000
+sumarc 2 0.000000
+residue index =    11
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 3 end= 15  length=  13
+Ndist 144
+Nter 0.091066
+Cdist 100
+Cter -0.159379
+residue index =    12
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.8300
+g dipole     -0.0013
+gresidue  =   0.8287
+****************
+start= 3 end= 15  length=  13
+Ndist 155
+Nter 0.078042
+Cdist 96
+Cter -0.178089
+residue index =    13
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.7400
+g dipole     -0.0380
+gresidue  =   0.7020
+****************
+start= 3 end= 15  length=  13
+residue index =    14
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 3 end= 15  length=  13
+ccap[0] ccap[1] 0.500000 0.400000
+residue index =    15
+g N term      0.0000
+g C term      0.3405
+g capping (values different from publication)    0.5000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =   0.8405
+****************
+i,i+3 and i,i+4 side chain-side chain interaction   0.0000
+enerelectr    0.0009
+c-cap not gly   0.0000
+main chain-main chain H-bonds  -6.2860
+delta delta G hel (eq.12 )     -0.0389
+start= 3 end= 15  length=  13
+pH[cuentaventana].energy 0.0205037
+pH[cuentaventana].partition 2.10753
+==============================================
+start= 4 end= 16  length=  13
+residue index =     4
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)   -0.6000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =  -0.6000
+****************
+start= 4 end= 16  length=  13
+residue index =     5
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 4 end= 16  length=  13
+residue index =     6
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 4 end= 16  length=  13
+residue index =     7
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 4 end= 16  length=  13
+residue index =     8
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 4 end= 16  length=  13
+suma 2 0.000000
+sumarc 2 0.000000
+residue index =     9
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 4 end= 16  length=  13
+suma 2 0.000000
+sumarc 2 0.000000
+residue index =    10
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 4 end= 16  length=  13
+suma 2 0.000000
+sumarc 2 0.000000
+residue index =    11
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 4 end= 16  length=  13
+Ndist 139
+Nter 0.097867
+Cdist 84
+Cter -0.254019
+suma 2 0.653965
+sumarc 2 0.000000
+residue index =    12
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6857
+g dipole     -0.0030
+gresidue  =   0.6828
+****************
+start= 4 end= 16  length=  13
+Ndist 144
+Nter 0.091066
+Cdist 105
+Cter -0.139353
+residue index =    13
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.7400
+g dipole     -0.0183
+gresidue  =   0.7217
+****************
+start= 4 end= 16  length=  13
+residue index =    14
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 4 end= 16  length=  13
+residue index =    15
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 4 end= 16  length=  13
+ccap[0] ccap[1] 0.500000 0.400000
+residue index =    16
+g N term      0.0000
+g C term      0.7700
+g capping (values different from publication)    0.5000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =   1.2700
+****************
+i,i+3 and i,i+4 side chain-side chain interaction   0.0000
+enerelectr   -0.0609
+staple not printed. Cumbersome calculation.
+c-cap not gly   0.0000
+main chain-main chain H-bonds  -6.2860
+delta delta G hel (eq.12 )     -0.0389
+start= 4 end= 16  length=  13
+pH[cuentaventana].energy 0.0355873
+pH[cuentaventana].partition 1.80858
+==============================================
+start= 1 end= 14  length=  14
+Ndist 78
+Nter -0.272879
+Cdist 200
+Cter 0.019128
+residue index =     1
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.4000
+g intrinsic   0.0000
+g dipole     -0.1266
+gresidue  =   0.2734
+****************
+start= 1 end= 14  length=  14
+residue index =     2
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   1.5100
+g dipole      0.0000
+gresidue  =   1.5100
+****************
+start= 1 end= 14  length=  14
+residue index =     3
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   1.0300
+g dipole      0.0000
+gresidue  =   1.0300
+****************
+start= 1 end= 14  length=  14
+residue index =     4
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   1.3300
+g dipole      0.0000
+gresidue  =   1.3300
+****************
+start= 1 end= 14  length=  14
+residue index =     5
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 1 end= 14  length=  14
+suma 2 0.000000
+sumarc 2 0.000000
+residue index =     6
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 1 end= 14  length=  14
+suma 2 0.000000
+sumarc 2 0.000000
+residue index =     7
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 1 end= 14  length=  14
+suma 2 0.000000
+sumarc 2 0.000000
+residue index =     8
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 1 end= 14  length=  14
+suma 2 0.000000
+sumarc 2 0.000000
+residue index =     9
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 1 end= 14  length=  14
+suma 2 0.000000
+sumarc 2 0.000000
+residue index =    10
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 1 end= 14  length=  14
+residue index =    11
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 1 end= 14  length=  14
+Ndist 160
+Nter 0.072879
+Cdist 89
+Cter -0.218127
+residue index =    12
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.8300
+g dipole     -0.0028
+gresidue  =   0.8272
+****************
+start= 1 end= 14  length=  14
+Ndist 175
+Nter 0.059687
+Cdist 90
+Cter -0.211747
+residue index =    13
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.7400
+g dipole     -0.0578
+gresidue  =   0.6822
+****************
+start= 1 end= 14  length=  14
+ccap[0] ccap[1] 0.500000 0.400000
+residue index =    14
+g N term      0.0000
+g C term      0.1976
+g capping (values different from publication)    0.5000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =   0.6976
+****************
+i,i+3 and i,i+4 side chain-side chain interaction   0.0000
+enerelectr   -0.0003
+c-cap not gly   0.0000
+main chain-main chain H-bonds  -7.1840
+delta delta G hel (eq.12 )     -0.0389
+start= 1 end= 14  length=  14
+pH[cuentaventana].energy 0.000769323
+pH[cuentaventana].partition 3.88742
+==============================================
+start= 2 end= 15  length=  14
+residue index =     2
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)   -0.4500
+g intrinsic   0.0000
+g dipole     -0.2154
+gresidue  =  -0.6653
+****************
+start= 2 end= 15  length=  14
+residue index =     3
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   1.5100
+g dipole      0.0000
+gresidue  =   1.5100
+****************
+start= 2 end= 15  length=  14
+residue index =     4
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   1.2300
+g dipole      0.0000
+gresidue  =   1.2300
+****************
+start= 2 end= 15  length=  14
+residue index =     5
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 2 end= 15  length=  14
+residue index =     6
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 2 end= 15  length=  14
+suma 2 0.000000
+sumarc 2 0.000000
+residue index =     7
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 2 end= 15  length=  14
+suma 2 0.000000
+sumarc 2 0.000000
+residue index =     8
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 2 end= 15  length=  14
+suma 2 0.000000
+sumarc 2 0.000000
+residue index =     9
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 2 end= 15  length=  14
+suma 2 0.000000
+sumarc 2 0.000000
+residue index =    10
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 2 end= 15  length=  14
+suma 2 0.000000
+sumarc 2 0.000000
+residue index =    11
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 2 end= 15  length=  14
+Ndist 155
+Nter 0.078042
+Cdist 100
+Cter -0.159379
+residue index =    12
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.8300
+g dipole     -0.0016
+gresidue  =   0.8284
+****************
+start= 2 end= 15  length=  14
+Ndist 160
+Nter 0.072879
+Cdist 96
+Cter -0.178089
+residue index =    13
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.7400
+g dipole     -0.0400
+gresidue  =   0.7000
+****************
+start= 2 end= 15  length=  14
+residue index =    14
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 2 end= 15  length=  14
+ccap[0] ccap[1] 0.500000 0.400000
+residue index =    15
+g N term      0.0000
+g C term      0.3405
+g capping (values different from publication)    0.5000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =   0.8405
+****************
+i,i+3 and i,i+4 side chain-side chain interaction   0.0000
+enerelectr   -0.0770
+c-cap not gly   0.0000
+main chain-main chain H-bonds  -7.1840
+delta delta G hel (eq.12 )     -0.0389
+start= 2 end= 15  length=  14
+pH[cuentaventana].energy 0.0102425
+pH[cuentaventana].partition 2.48383
+==============================================
+start= 3 end= 16  length=  14
+residue index =     3
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)   -0.3500
+g intrinsic   0.0000
+g dipole     -0.1297
+gresidue  =  -0.4797
+****************
+start= 3 end= 16  length=  14
+residue index =     4
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   1.1000
+g dipole      0.0000
+gresidue  =   1.1000
+****************
+start= 3 end= 16  length=  14
+residue index =     5
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 3 end= 16  length=  14
+residue index =     6
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 3 end= 16  length=  14
+residue index =     7
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 3 end= 16  length=  14
+suma 2 0.000000
+sumarc 2 0.000000
+residue index =     8
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 3 end= 16  length=  14
+suma 2 0.000000
+sumarc 2 0.000000
+residue index =     9
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 3 end= 16  length=  14
+suma 2 0.000000
+sumarc 2 0.000000
+residue index =    10
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 3 end= 16  length=  14
+suma 2 0.000000
+sumarc 2 0.000000
+residue index =    11
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 3 end= 16  length=  14
+Ndist 144
+Nter 0.091066
+Cdist 84
+Cter -0.254019
+suma 2 0.653965
+sumarc 2 0.000000
+residue index =    12
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6857
+g dipole     -0.0031
+gresidue  =   0.6826
+****************
+start= 3 end= 16  length=  14
+Ndist 155
+Nter 0.078042
+Cdist 105
+Cter -0.139353
+residue index =    13
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.7400
+g dipole     -0.0233
+gresidue  =   0.7167
+****************
+start= 3 end= 16  length=  14
+residue index =    14
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 3 end= 16  length=  14
+residue index =    15
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 3 end= 16  length=  14
+ccap[0] ccap[1] 0.500000 0.400000
+residue index =    16
+g N term      0.0000
+g C term      0.7700
+g capping (values different from publication)    0.5000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =   1.2700
+****************
+i,i+3 and i,i+4 side chain-side chain interaction   0.0000
+enerelectr   -0.0609
+c-cap not gly   0.0000
+main chain-main chain H-bonds  -7.1840
+delta delta G hel (eq.12 )     -0.0389
+start= 3 end= 16  length=  14
+pH[cuentaventana].energy 0.0198243
+pH[cuentaventana].partition 2.1258
+==============================================
+start= 1 end= 15  length=  15
+Ndist 78
+Nter -0.272879
+Cter 0.000000
+residue index =     1
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.4000
+g intrinsic   0.0000
+g dipole     -0.1361
+gresidue  =   0.2639
+****************
+start= 1 end= 15  length=  15
+residue index =     2
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   1.5100
+g dipole      0.0000
+gresidue  =   1.5100
+****************
+start= 1 end= 15  length=  15
+residue index =     3
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   1.0300
+g dipole      0.0000
+gresidue  =   1.0300
+****************
+start= 1 end= 15  length=  15
+residue index =     4
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   1.3300
+g dipole      0.0000
+gresidue  =   1.3300
+****************
+start= 1 end= 15  length=  15
+residue index =     5
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 1 end= 15  length=  15
+suma 2 0.000000
+sumarc 2 0.000000
+residue index =     6
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 1 end= 15  length=  15
+suma 2 0.000000
+sumarc 2 0.000000
+residue index =     7
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 1 end= 15  length=  15
+suma 2 0.000000
+sumarc 2 0.000000
+residue index =     8
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 1 end= 15  length=  15
+suma 2 0.000000
+sumarc 2 0.000000
+residue index =     9
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 1 end= 15  length=  15
+suma 2 0.000000
+sumarc 2 0.000000
+residue index =    10
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 1 end= 15  length=  15
+suma 2 0.000000
+sumarc 2 0.000000
+residue index =    11
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 1 end= 15  length=  15
+Ndist 160
+Nter 0.072879
+Cdist 100
+Cter -0.159379
+residue index =    12
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.8300
+g dipole     -0.0017
+gresidue  =   0.8283
+****************
+start= 1 end= 15  length=  15
+Ndist 175
+Nter 0.059687
+Cdist 96
+Cter -0.178089
+residue index =    13
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.7400
+g dipole     -0.0450
+gresidue  =   0.6950
+****************
+start= 1 end= 15  length=  15
+residue index =    14
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 1 end= 15  length=  15
+ccap[0] ccap[1] 0.500000 0.400000
+residue index =    15
+g N term      0.0000
+g C term      0.3405
+g capping (values different from publication)    0.5000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =   0.8405
+****************
+i,i+3 and i,i+4 side chain-side chain interaction   0.0000
+enerelectr   -0.0004
+c-cap not gly   0.0000
+main chain-main chain H-bonds  -8.0820
+delta delta G hel (eq.12 )     -0.0389
+start= 1 end= 15  length=  15
+pH[cuentaventana].energy 0.000876773
+pH[cuentaventana].partition 3.81653
+==============================================
+start= 2 end= 16  length=  15
+residue index =     2
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)   -0.4500
+g intrinsic   0.0000
+g dipole     -0.2154
+gresidue  =  -0.6653
+****************
+start= 2 end= 16  length=  15
+residue index =     3
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   1.5100
+g dipole      0.0000
+gresidue  =   1.5100
+****************
+start= 2 end= 16  length=  15
+residue index =     4
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   1.2300
+g dipole      0.0000
+gresidue  =   1.2300
+****************
+start= 2 end= 16  length=  15
+residue index =     5
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 2 end= 16  length=  15
+residue index =     6
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 2 end= 16  length=  15
+suma 2 0.000000
+sumarc 2 0.000000
+residue index =     7
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 2 end= 16  length=  15
+suma 2 0.000000
+sumarc 2 0.000000
+residue index =     8
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 2 end= 16  length=  15
+suma 2 0.000000
+sumarc 2 0.000000
+residue index =     9
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 2 end= 16  length=  15
+suma 2 0.000000
+sumarc 2 0.000000
+residue index =    10
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 2 end= 16  length=  15
+suma 2 0.000000
+sumarc 2 0.000000
+residue index =    11
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 2 end= 16  length=  15
+Ndist 155
+Nter 0.078042
+Cdist 84
+Cter -0.254019
+suma 2 0.653965
+sumarc 2 0.000000
+residue index =    12
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6857
+g dipole     -0.0034
+gresidue  =   0.6824
+****************
+start= 2 end= 16  length=  15
+Ndist 160
+Nter 0.072879
+Cdist 105
+Cter -0.139353
+residue index =    13
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.7400
+g dipole     -0.0253
+gresidue  =   0.7147
+****************
+start= 2 end= 16  length=  15
+residue index =    14
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 2 end= 16  length=  15
+residue index =    15
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 2 end= 16  length=  15
+ccap[0] ccap[1] 0.500000 0.400000
+residue index =    16
+g N term      0.0000
+g C term      0.7700
+g capping (values different from publication)    0.5000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =   1.2700
+****************
+i,i+3 and i,i+4 side chain-side chain interaction   0.0000
+enerelectr   -0.1388
+c-cap not gly   0.0000
+main chain-main chain H-bonds  -8.0820
+delta delta G hel (eq.12 )     -0.0389
+start= 2 end= 16  length=  15
+pH[cuentaventana].energy 0.00990312
+pH[cuentaventana].partition 2.5021
+==============================================
+start= 1 end= 16  length=  16
+Ndist 78
+Nter -0.272879
+Cter 0.000000
+residue index =     1
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.4000
+g intrinsic   0.0000
+g dipole     -0.1361
+gresidue  =   0.2639
+****************
+start= 1 end= 16  length=  16
+residue index =     2
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   1.5100
+g dipole      0.0000
+gresidue  =   1.5100
+****************
+start= 1 end= 16  length=  16
+residue index =     3
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   1.0300
+g dipole      0.0000
+gresidue  =   1.0300
+****************
+start= 1 end= 16  length=  16
+residue index =     4
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   1.3300
+g dipole      0.0000
+gresidue  =   1.3300
+****************
+start= 1 end= 16  length=  16
+residue index =     5
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 1 end= 16  length=  16
+suma 2 0.000000
+sumarc 2 0.000000
+residue index =     6
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 1 end= 16  length=  16
+suma 2 0.000000
+sumarc 2 0.000000
+residue index =     7
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 1 end= 16  length=  16
+suma 2 0.000000
+sumarc 2 0.000000
+residue index =     8
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 1 end= 16  length=  16
+suma 2 0.000000
+sumarc 2 0.000000
+residue index =     9
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 1 end= 16  length=  16
+suma 2 0.000000
+sumarc 2 0.000000
+residue index =    10
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 1 end= 16  length=  16
+suma 2 0.000000
+sumarc 2 0.000000
+residue index =    11
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 1 end= 16  length=  16
+Ndist 160
+Nter 0.072879
+Cdist 84
+Cter -0.254019
+suma 2 0.653965
+sumarc 2 0.000000
+residue index =    12
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6857
+g dipole     -0.0035
+gresidue  =   0.6823
+****************
+start= 1 end= 16  length=  16
+Ndist 175
+Nter 0.059687
+Cdist 105
+Cter -0.139353
+residue index =    13
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.7400
+g dipole     -0.0303
+gresidue  =   0.7097
+****************
+start= 1 end= 16  length=  16
+residue index =    14
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 1 end= 16  length=  16
+residue index =    15
+g N term      0.0000
+g C term      0.0000
+g capping (values different from publication)    0.0000
+g intrinsic   0.6800
+g dipole      0.0000
+gresidue  =   0.6800
+****************
+start= 1 end= 16  length=  16
+ccap[0] ccap[1] 0.500000 0.400000
+residue index =    16
+g N term      0.0000
+g C term      0.7700
+g capping (values different from publication)    0.5000
+g intrinsic   0.0000
+g dipole      0.0000
+gresidue  =   1.2700
+****************
+i,i+3 and i,i+4 side chain-side chain interaction   0.0000
+enerelectr   -0.0622
+c-cap not gly   0.0000
+main chain-main chain H-bonds  -8.9800
+delta delta G hel (eq.12 )     -0.0389
+start= 1 end= 16  length=  16
+pH[cuentaventana].energy 0.000847717
+pH[cuentaventana].partition 3.8348
+==============================================
+res,  aa,  Hel,  Ncap,  Ccap,Hstaple,Schellm, CaH,  13Ca, JaN
+0.089317
+01,   Y,   0.0000,  0.4405,  0.0001,  0.0001,  0.0001, -0.0000,  0.0000,  7.2116
+02,   G,   0.4405,  4.8135,  0.0001,  0.0001,  0.0001, -0.1007,  0.0075,  5.7411
+03,   G,   5.2540, 10.4704,  0.0001,  0.0001,  0.0001, -0.0516,  0.0893,  6.0222
+04,   S,  15.7243, 18.5163,  0.0001,  0.0001,  0.0001, -0.0285,  0.0542,  6.6768
+05,   A,  34.2406,  1.8930,  0.0001,  0.0001,  0.0001, -0.0685,  0.6506,  5.5068
+06,   A,  36.1334,  1.1704,  0.0002,  0.0001,  0.0001, -0.0723,  0.6865,  5.4524
+07,   A,  37.2572,  0.7105,  0.0467,  0.0001,  0.0001, -0.0745,  0.7088,  5.4275
+08,   A,  37.6827,  0.4312,  0.2850,  0.0001,  0.0001, -0.0754,  0.7214,  5.4426
+09,   A,  37.1626,  0.1523,  0.9513,  0.0001,  0.0001, -0.0743,  0.7242,  5.4823
+10,   A,  35.9258,  0.0486,  1.3890,  0.0001,  0.0001, -0.0719,  0.7090,  5.5452
+11,   A,  33.4884,  0.0139,  2.4860,  0.0001,  0.0001, -0.0670,  0.6835,  5.8637
+12,   K,  23.3571,  0.0001, 10.1451,  0.0001,  0.0001, -0.0747,  0.7705,  6.9997
+13,   R,  13.8456,  0.0001,  9.5116,  0.0001,  0.0001, -0.0443,  0.7007,  6.9903
+14,   A,   9.5317,  0.0001,  4.3140,  0.0001,  0.0001, -0.0191,  0.2631,  5.9909
+15,   A,   4.6721,  0.0001,  4.8596,  0.0001,  0.0001,  0.0268,  0.1811,  6.0544
+16,   A,   0.0000,  0.0001,  4.6721,  0.0001,  0.0001, -0.1447,  0.0888,  5.9349
+Percentage helix	23.19

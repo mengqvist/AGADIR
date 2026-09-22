@@ -1,15 +1,22 @@
 {
   "_provenance": {
-    "citation": "Huyghues-Despointes, B. M. P., Scholtz, J. M. & Baldwin, R. L. (1993) Protein Sci. 2, 1604-1611. ATTRIBUTION INFERRED: this is ref 19 of Munoz & Serrano (1997), which that paper's text ties to 'the interaction of Asp with the helix macrodipole' - matching this Asp-position scan. NOTE that the same three authors published a DIFFERENT 1993 paper in the same journal and volume: 'Helical peptides with three pairs of Asp-Arg and Glu-Arg residues in different orientations and spacings', Protein Sci. 2, 80-85, which Lacroix (1998) cites for different peptides. Confirm which before relying on this.",
+    "citation": "Huyghues-Despointes, B.M.P., Scholtz, J.M. & Baldwin, R.L. (1993). Effect of a single aspartate on helix stability at different positions in a neutral alanine-based peptide. Protein Sci. 2, 1604-1611.",
     "doi": null,
-    "doi_note": "No DOI in validation.py's docstring and the source paper is not under doc/. Left null rather than supplied from memory.",
-    "source_text": null,
-    "figure": "Figure 1A,B",
-    "conditions_verified_against_source": false,
+    "doi_note": "No DOI printed in the copy under doc/ (Cambridge University Press, 1993). Left null rather than supplied from memory. The citation itself is now VERIFIED: the paper's own first page prints 'Protein Science (1993), 2, 1604-1611'.",
+    "source_text": "doc/1993_huyghues-despointes_Effect-of-a-single-aspartate-on-helix-stability-at-different-positions-in-a-neutral-alanine-based-peptide.txt",
+    "attribution_resolved": "RESOLVED at cycle 60. The provenance block previously warned that a DIFFERENT Huyghues-Despointes/Scholtz/Baldwin 1993 Protein Sci. paper ('Helical peptides with three pairs of Asp-Arg and Glu-Arg residues in different orientations and spacings', 2, 80-85) might be the real source. Both papers are now under doc/. This one is correct: its reference peptide is Ac-(AAQAA)3Y-NH2 and its Figure 1 is a scan of a single Asp over positions 1-16, which is exactly this dataset. The Asp-Arg/Glu-Arg paper contains no such scan.",
+    "figure": "Figure 1A (pH 2) and Figure 1B (pH 7.0)",
+    "conditions_verified_against_source": true,
     "temperature_C": 0.0,
-    "temperature_source": "NOT VERIFIABLE. The source paper is not under doc/.",
+    "temperature_source": "\"A: Dependence of helix content on position of Asp0 at pH 2 in 10 mM NaCl at 0 \u00b0C. ... B: Dependence of helix content on position of Asp- at pH 7.0 in 10 mM NaCl at 0 \u00b0C.\" (legend to Figure 1). Also Methods: \"The degree of helical structure in each peptide was determined by monitoring the ellipticity at 222 nm at 0 \u00b0C.\" The previously coded 0.0 was correct.",
     "ionic_strength_M": 0.01,
-    "ionic_strength_source": "NOT VERIFIABLE. The source paper is not under doc/."
+    "ionic_strength_source": "\"...at pH 2 in 10 mM NaCl at 0 \u00b0C\" / \"...at pH 7.0 in 10 mM NaCl at 0 \u00b0C\" (legend to Figure 1). The previously coded 0.01 was correct as the stated salt.",
+    "ionic_strength_derivation": "The stated 10 mM NaCl is coded exactly. It is a LOWER BOUND on the true I: Methods add buffer -- \"prepared by diluting aqueous stock solutions into 10 mM NaCl buffered with 1 mM sodium citrate, 1 mM sodium phosphate, and 1 mM sodium borate (CD buffer)\" -- and the pH was set per sample. At pH 7 the citrate (pKa3 6.4) is largely trivalent and contributes ~5 mM to I on its own; at pH 2 the ~10 mM HCl needed to reach that pH contributes ~10 mM. Estimated true I is ~17 mM at pH 7 and ~22 mM at pH 2, i.e. 1.7-2.2x the coded value, and pH-dependent in the same way Lacroix's is. Coding the stated salt keeps the value traceable to a quote; the sensitivity of the model to the difference was measured at cycle 60 (see reasoning/nodes/N046.md) and found to be small for this dataset.",
+    "previous_coded_value": {
+      "temperature_C": 0.0,
+      "ionic_strength_M": 0.01,
+      "note": "UNCHANGED. Both inferred values turned out to be right. Recorded so that 'verified' is not confused with 'changed'."
+    }
   },
   "figure1ab": {
     "peptides": [
