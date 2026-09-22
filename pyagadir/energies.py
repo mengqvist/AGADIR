@@ -1777,7 +1777,17 @@ class EnergyCalculator(PrecomputeParams):
         def _table3_screen(aa, pos, table3, table7, q=1.0):
             is_n = table3 is self.table_3_munoz_nterm
             if aa in table3_aas:
-                if pos < 0 or pos > 9:
+                # F2K: the flank cutoff below (positions 1-2 only) belongs to this branch
+                # too.  The reference tool gives exactly 0.0000 for Lys at flank position
+                # >= 3 and -0.1301 at position 2 -- measured on the YGGS pH 4 run, N048 --
+                # but the `return 0.0` enforcing it sat after this branch's return, so the
+                # Table-3 residues kept firing out to position 9.
+                # Restricted to {K,R}: those are the only Table-3 residues that appear in
+                # any reference run, so they are the only ones the reference can arbitrate.
+                # D/E/H keep their old range pending evidence -- the same reasoning Y3 used,
+                # and cycle 62 measured that extending it to Asp unaided costs residual
+                # structure on the Huygues-Despointes Asp scan.
+                if aa in ("K", "R") and (pos < 1 or pos > 2):
                     return 0.0
                 col = table3.columns[pos]
                 raw = float(table3.loc[aa, col])
