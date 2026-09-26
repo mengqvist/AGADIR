@@ -13,6 +13,34 @@ import copy
 
 
 
+class ParamTable:
+    """
+    Read-only, dict-backed copy of a parameter DataFrame.
+
+    Scalar DataFrame.loc lookups cost ~10 µs each, and a prediction makes tens of
+    thousands of them (one EnergyCalculator per helical segment), which made them
+    ~70% of the run time. This keeps the same spelling -- table.loc[row, col],
+    table.loc[row][col], `row in table.index`, table.columns[k] -- at dict speed.
+
+    It is a snapshot: edits to the source DataFrame are only seen after rebuilding.
+    """
+
+    def __init__(self, df: pd.DataFrame):
+        self._rows = df.to_dict(orient="index")
+        self.index = tuple(df.index)
+        self.columns = tuple(df.columns)
+
+    @property
+    def loc(self):
+        return self
+
+    def __getitem__(self, key):
+        if isinstance(key, tuple):
+            row, col = key
+            return self._rows[row][col]
+        return self._rows[key]
+
+
 class PrecomputeParams:
     """
     Class to load parameters for the AGADIR model and
@@ -133,7 +161,16 @@ class PrecomputeParams:
 
         return cls._params
 
-    def __init__(self, seq: str, i: int, j: int, pH: float, T: float, ionic_strength: float, ncap: str = None, ccap: str = None, debug: bool = False):
+    @classmethod
+    def snapshot_params(cls) -> dict:
+        """
+        Fast ParamTable copies of load_params(), for passing as params= to many
+        instances. Rebuilt on every call (~10 ms), so take one per prediction:
+        edits made to the _params DataFrames between predictions are then honoured.
+        """
+        return {name: ParamTable(df) for name, df in cls.load_params().items()}
+
+    def __init__(self, seq: str, i: int, j: int, pH: float, T: float, ionic_strength: float, ncap: str = None, ccap: str = None, debug: bool = False, params: dict = None):
         """
         Initialize the PrecomputedParams for a peptide sequence.
 
@@ -146,11 +183,13 @@ class PrecomputeParams:
             ionic_strength (float): Ionic strength of the solution in mol/L.
             ncap (str): N-terminal capping modification (acetylation='Ac', succinylation='Sc').
             ccap (str): C-terminal capping modification (amidation='Am').
+            params (dict): Parameter tables from snapshot_params(). If None, load_params() is used.
         """
         self.debug = debug
-        
+
         # load params
-        params = self.load_params()
+        if params is None:
+            params = self.load_params()
         self.table_1_lacroix = params["table_1_lacroix"]
         self.table_2_lacroix = params["table_2_lacroix"]
         self.table_3_lacroix = params["table_3_lacroix"]
@@ -269,16 +308,13 @@ class PrecomputeParams:
         """
         charged_amino_acids = self.neg_charge_aa + self.pos_charge_aa
 
-        # Iterate over all pairs of charged residues
-        result = []
-        for idx1 in range(len(self.seq_list)):
-            for idx2 in range(idx1 + 1, len(self.seq_list)):
-                AA1 = self.seq_list[idx1]
-                AA2 = self.seq_list[idx2]
-                if not all(aa in charged_amino_acids for aa in (AA1, AA2)):
-                    continue
-                result.append((AA1, AA2, idx1, idx2))  # Include global positions
-        self.charged_pairs = result
+        # Iterate over all pairs of charged residues (pairing only the charged
+        # positions; scanning every residue pair was costly, as it runs per segment)
+        charged_idx = [idx for idx, aa in enumerate(self.seq_list) if aa in charged_amino_acids]
+        self.charged_pairs = [
+            (self.seq_list[idx1], self.seq_list[idx2], idx1, idx2)  # Include global positions
+            for idx1, idx2 in itertools.combinations(charged_idx, 2)
+        ]
 
     def _calculate_r(self, N: int) -> float:
         """Function to calculate the distance r from the peptide terminal to the helix
@@ -1106,7 +1142,7 @@ class EnergyCalculator(PrecomputeParams):
     """
     Class to calculate the free energy contributions for a peptide sequence.
     """
-    def __init__(self, seq: str, i: int, j: int, pH: float, T: float, ionic_strength: float, ncap: str = None, ccap: str = None):
+    def __init__(self, seq: str, i: int, j: int, pH: float, T: float, ionic_strength: float, ncap: str = None, ccap: str = None, params: dict = None):
         """
         Initialize the EnergyCalculator for a peptide sequence.
 
@@ -1119,8 +1155,9 @@ class EnergyCalculator(PrecomputeParams):
             ionic_strength (float): Ionic strength of the solution in mol/L.
             ncap (str): N-terminal capping modification (acetylation='Ac', succinylation='Sc').
             ccap (str): C-terminal capping modification (amidation='Am').
+            params (dict): Parameter tables from snapshot_params(). If None, load_params() is used.
         """
-        super().__init__(seq, i, j, pH, T, ionic_strength, ncap, ccap)
+        super().__init__(seq, i, j, pH, T, ionic_strength, ncap, ccap, params=params)
         self._AROMATIC = {"F", "Y", "W"}
         self._ALIPHATIC = {"A", "V", "L", "I", "M"}  # you can expand if you want (e.g. C)
         self.dCp = -0.0015  # kcal/(mol*K)

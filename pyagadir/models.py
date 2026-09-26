@@ -329,6 +329,9 @@ class AGADIR(object):
         Calculate partition function for helical segments
         by summing over all possible helices.
         """
+        # one fast snapshot of the parameter tables, shared by every segment
+        params = EnergyCalculator.snapshot_params()
+
         for j in range(
             self.min_helix_length, self.result.seq_length + 1
         ):  # helix lengths (including capping residues)
@@ -345,7 +348,8 @@ class AGADIR(object):
                     T=self.T_celsius,
                     ionic_strength=self.molarity,
                     ncap=self.n_cap,
-                    ccap=self.c_cap
+                    ccap=self.c_cap,
+                    params=params,
                 )
 
                 # calculate dG_Hel and dG_dict
