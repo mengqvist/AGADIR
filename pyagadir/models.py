@@ -417,6 +417,14 @@ class AGADIR(object):
         # check for valid ncap and ccap
         is_valid_ncap_ccap(ncap, ccap)
 
+        # reset per-call state: caps were previously only ever SET, so reusing one AGADIR
+        # object for an Ac-capped peptide and then a free one silently kept the acetyl
+        self.n_cap = None
+        self.c_cap = None
+        self.has_acetyl = False
+        self.has_succinyl = False
+        self.has_amide = False
+
         # assign ncap
         if ncap is not None:
             if ncap == "Ac":
@@ -432,9 +440,12 @@ class AGADIR(object):
             self.c_cap = "Am"
 
         # check for valid sequence length
-        if len(seq) < self.min_helix_length:
+        # the minimum applies to the cap-extended chain: Ac and Am each occupy a position
+        n_positions = len(seq) + (self.n_cap is not None) + (self.c_cap is not None)
+        if n_positions < self.min_helix_length:
             raise ValueError(
-                f"Input sequence must be at least {self.min_helix_length} amino acids long."
+                f"Input sequence plus terminal caps must span at least {self.min_helix_length} "
+                f"positions (got {n_positions})."
             )
         
         print(f"Predicting helical propensity for sequence: {seq}, method: {self._method}, T(C): {self.T_celsius}, M: {self.molarity}, pH: {self.pH}, ncap: {self.n_cap}, ccap: {self.c_cap}")
