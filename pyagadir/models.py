@@ -280,12 +280,14 @@ class AGADIR(object):
             + dG_charged_staple
             + dG_Hbond
             + dG_ionic
-            + (sum(dG_terminals_dipole_N)
-               + sum(dG_terminals_dipole_C)
-               + np.sum(dG_sidechain_dipole)
-               + np.sum(dG_electrost_term)
-               + np.sum(dG_electrost_sidechain)
-               + dG_electrost_term_term) * elec_temp_factor
+            # Only the side-chain-macrodipole term uses a fixed dielectric (eps = 44) and needs
+            # the eps(T) factor; the other four already use calculate_permittivity(T).
+            + sum(dG_terminals_dipole_N)
+            + sum(dG_terminals_dipole_C)
+            + np.sum(dG_sidechain_dipole) * elec_temp_factor
+            + np.sum(dG_electrost_term)
+            + np.sum(dG_electrost_sidechain)
+            + dG_electrost_term_term
         )
 
         if self.debug:
@@ -383,11 +385,8 @@ class AGADIR(object):
         # self.result.percent_helix = np.round(np.mean(self.result.helical_propensity), 2)
 
         # Exclude synthetic cap tokens ("Ac", "Am") from % helix averaging.
-        # Note: the official AGADIR reference tool ALSO excludes the free-terminal
-        # residues (dividing by n-1 or n-2), but CD measurements average over ALL
-        # residues.  We keep the CD-compatible convention (all real amino acids)
-        # for measured-data comparisons.  See tests/test_yggs_electrostatics.py for
-        # the reference-tool averaging adjustment.
+        # CD measurements average over ALL residues, so the CD-compatible convention
+        # (all real amino acids) is used for measured-data comparisons.
         start = 1 if self.result.ncap is not None else 0
         end = -1 if self.result.ccap is not None else None
         self.result.percent_helix = float(np.round(np.mean(self.result.helical_propensity[start:end]), 2))

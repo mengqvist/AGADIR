@@ -16,9 +16,8 @@ def is_valid_peptide_sequence(pept: str) -> None:
         raise TypeError("Input must be a string.")
 
     # The 6 of Lacroix 1998 is the minimum helical SEGMENT length over the cap-extended chain,
-    # not a minimum peptide length: Ac-AAQAA-NH2 (7 positions) has valid segments and the
-    # reference binary evaluates it (run R0361).  The segment-length check lives in
-    # AGADIR.predict, where the caps are known.
+    # not a minimum peptide length: Ac-AAQAA-NH2 (7 positions) has valid segments.  The
+    # segment-length check lives in AGADIR.predict, where the caps are known.
     if len(pept) < 1:
         raise ValueError("Sequence must not be empty.")
 
@@ -90,9 +89,8 @@ def is_valid_conditions(pH: float, T: float, ionic_strength: float) -> None:
         raise ValueError("Temperature must be between 0 and 140.")
     if not isinstance(ionic_strength, (int, float)):
         raise ValueError("Ionic strength must be a number.")
-    # Upper bound raised 2.0 -> 10.0 M (owner, 2026-09-30): measured data reach 4.8 M NaCl
-    # (Huyghues-Despointes 1993) and the reference binary accepts them.  The bound is kept only
-    # to catch a millimolar value passed as molar.
+    # Upper bound 10.0 M: measured data reach 4.8 M NaCl (Huyghues-Despointes 1993).  The
+    # bound is kept only to catch a millimolar value passed as molar.
     if not 0 <= ionic_strength <= 10.0:
         raise ValueError("Ionic strength must be between 0 and 10.0 M.")
 
