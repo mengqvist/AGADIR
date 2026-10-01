@@ -1587,12 +1587,6 @@ class EnergyCalculator(PrecomputeParams):
             if idx == self.ncap_idx or idx + 3 == self.ccap_idx:
                 base = 0.0
 
-            # An Asp/Glu - Lys/Arg/His pair interacts ionically.  That interaction is the
-            # Coulomb term, which is weighted by both ionisation degrees and so vanishes as
-            # either residue loses its charge; Table IV adds nothing for such a pair.
-            if {AAi, AAi3} & {"D", "E"} and {AAi, AAi3} & {"K", "R", "H"}:
-                base = 0.0
-
             # If both are titratable, Table IV is intended for "not both charged" states.
             if (AAi in (self.pos_charge_aa + self.neg_charge_aa)) and (AAi3 in (self.pos_charge_aa + self.neg_charge_aa)):
                 p_i = abs(self.modified_seq_ionization_hel[idx])
@@ -1648,12 +1642,6 @@ class EnergyCalculator(PrecomputeParams):
             # side chain-side chain pairs only INSIDE the helix (Lacroix 1998, G_SD): a pair
             # involving the N-cap or C-cap residue contributes nothing
             if idx == self.ncap_idx or idx + 4 == self.ccap_idx:
-                base = 0.0
-
-            # An Asp/Glu - Lys/Arg/His pair interacts ionically.  That interaction is the
-            # Coulomb term, which is weighted by both ionisation degrees and so vanishes as
-            # either residue loses its charge; Table IV adds nothing for such a pair.
-            if {AAi, AAi4} & {"D", "E"} and {AAi, AAi4} & {"K", "R", "H"}:
                 base = 0.0
 
             # Suppress Table IV in the both-charged microstate if both residues are titratable
