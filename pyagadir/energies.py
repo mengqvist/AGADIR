@@ -2166,6 +2166,15 @@ class EnergyCalculator(PrecomputeParams):
             # Get the distances between the charged sidechains
             helix_dist = self.sidechain_sidechain_distances_hel[idx1, idx2]
             coil_dist = self.charged_sidechain_distances_rc[idx2, idx1]
+
+            # A pair the helical-state model does not consider is assigned 99 A: of the
+            # residues outside the helix only the caps and N'/C' interact with helical
+            # residues (Lacroix 1998), pairs straddling the helix are not modelled, and
+            # pairs >= 13 apart are out of range.  Such a pair has no modelled change between
+            # the two states, so it contributes nothing.  Subtracting its coil-state energy
+            # alone would charge the helix for an interaction it was never allowed to keep.
+            if helix_dist >= 99:
+                continue
                 
             # Get the ionization states of the charged sidechains
             q1_hel = self.modified_seq_ionization_hel[idx1]
