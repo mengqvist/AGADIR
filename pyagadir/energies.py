@@ -1895,13 +1895,13 @@ class EnergyCalculator(PrecomputeParams):
         # --- Flanking residues: Table 3 empirical approach (nearby-pole only) ---
         # Flanking charged residues interact with the nearby macrodipole pole.
         # Only the C-term (for C-flanking) or N-term (for N-flanking) contributes.
-        # Energy is assigned to the cap position (matching reference convention).
-        # Flanking contributions are only added when the cap residue is uncharged
-        # (charged caps already get their own Coulomb interaction from the interior loop).
+        # Energy is assigned to the cap position.
+        # A flanking charge interacts with the macrodipole whether or not the cap residue is
+        # itself charged: charge-dipole energies superpose, and Lacroix 1998 states the
+        # flanking rule (6 A at N'/C', +3 A per further residue) with no condition on the cap.
 
         # C-terminal flanking (beyond Ccap): only C-term contribution → Ccap position
-        ccap_aa = self.seq_list[ccap_i]
-        if ccap_aa not in charged:
+        if ccap_i + 1 < n:
             for idx in range(ccap_i + 1, min(n, ccap_i + 10)):
                 aa = self.seq_list[idx]
                 if aa not in charged:
@@ -1914,8 +1914,7 @@ class EnergyCalculator(PrecomputeParams):
                 energy_C[ccap_i] += contrib_c * abs(q)
 
         # N-terminal flanking (before Ncap): only N-term contribution → Ncap position
-        ncap_aa = self.seq_list[ncap_i]
-        if ncap_aa not in charged:
+        if ncap_i > 0:
             for idx in range(max(0, ncap_i - 9), ncap_i):
                 aa = self.seq_list[idx]
                 if aa not in charged:
@@ -1929,6 +1928,15 @@ class EnergyCalculator(PrecomputeParams):
 
         return energy_N, energy_C
         
+    def _terminal_group_distance(self, row: str, x: int) -> float:
+        """Helix-state distance (A) between a free terminal group and a helical charged
+        residue x positions away, from Lacroix 1998 supplementary Table VI (rows 'N-cap f',
+        'N’ f', 'C-cap f', 'C’ f').  Beyond the table (x > 12) the pair is not
+        modelled and 99.0 is returned."""
+        if 1 <= x <= 12:
+            return float(self.table_6_helix_lacroix.loc[row, f"i+{x}"])
+        return 99.0
+
     def get_dG_terminals_sidechain_electrost(self) -> tuple[np.ndarray, np.ndarray]:
         """
         Calculate electrostatic interaction energies between terminal backbone charges
@@ -1959,10 +1967,9 @@ class EnergyCalculator(PrecomputeParams):
         # Locality gate (AGADIR/Lacroix-style): only include terminal-sidechain terms
         # when the terminal is in-helix or is the immediate neighbor (N' / C').
         nterm_local = (self.ncap_idx <= 1)
-        # The C-terminal gate is one residue, not two: the term applies when the
-        # C-terminus IS the last helical residue and is negligible one residue further
-        # out, so a two-residue window (>= n - 2) would fire it where it should not.
-        cterm_local = (self.ccap_idx >= (n - 1))
+        # Same window at the C-terminus: the free carboxylate at the C-cap or at C'
+        # (Lacroix 1998 supplementary Table VI gives distances for both positions).
+        cterm_local = (self.ccap_idx >= (n - 2))
 
         # If neither terminal can contribute, bail early
         if not (nterm_present and nterm_local) and not (cterm_present and cterm_local):
@@ -1984,9 +1991,9 @@ class EnergyCalculator(PrecomputeParams):
             # --- N-Terminal Interaction (only if local/present) ---
             if nterm_present and nterm_local:
                 q_nterm_full = float(self.modified_nterm_ionization_hel)  # pH-dependent NH3+ charge
-                dist_hel = float(self.terminal_sidechain_distances_nterm[idx])
-                if np.isnan(dist_hel):
-                    dist_hel = 99.0
+                # Lacroix 1998 supplementary Table VI: free N-terminal group at the N-cap
+                # ('N-cap f') or at N' ('N’ f') to a helical residue idx positions on.
+                dist_hel = self._terminal_group_distance("N-cap f" if self.ncap_idx == 0 else "N’ f", idx)
 
                 G_hel = (
                     self._electrostatic_interaction_energy(qi=q_nterm_full, qj=q_sc, r=dist_hel, factor_pi=4.0)
@@ -2000,7 +2007,8 @@ class EnergyCalculator(PrecomputeParams):
                     if dist_rc < 40.0 else 0.0
                 )
 
-                energy_N[idx] = G_hel - G_rc
+                if dist_hel < 99.0:  # an unmodelled pair contributes nothing
+                    energy_N[idx] = G_hel - G_rc
 
             # --- C-Terminal Interaction ---
             # --- C-Terminal Interaction ---
@@ -2014,12 +2022,10 @@ class EnergyCalculator(PrecomputeParams):
             # on why this and that term had to be corrected together.
             if cterm_present and cterm_local:
                 q_cterm_full = float(self.modified_cterm_ionization_hel)
-                # Table VII holds macrodipole distances; the C-terminal BACKBONE
-                # charge sits closer to the side chains.  Scale back-computed from the
-                # reference (cycle 36).  EMPIRICAL, one constant.
-                dist_hel_c = float(self.terminal_sidechain_distances_cterm[idx]) * 0.8323
-                if np.isnan(dist_hel_c):
-                    dist_hel_c = 99.0
+                # Lacroix 1998 supplementary Table VI: free C-terminal group at the C-cap
+                # ('C-cap f') or at C' ('C’ f') to a helical residue x positions back.
+                dist_hel_c = self._terminal_group_distance(
+                    "C-cap f" if self.ccap_idx == n - 1 else "C’ f", (n - 1) - idx)
 
                 G_hel_c = (
                     self._electrostatic_interaction_energy(qi=q_cterm_full, qj=q_sc, r=dist_hel_c, factor_pi=4.0)
@@ -2032,7 +2038,8 @@ class EnergyCalculator(PrecomputeParams):
                     if dist_rc_c < 40.0 else 0.0
                 )
 
-                energy_C[idx] = G_hel_c - G_rc_c
+                if dist_hel_c < 99.0:  # an unmodelled pair contributes nothing
+                    energy_C[idx] = G_hel_c - G_rc_c
 
         return energy_N, energy_C
 
