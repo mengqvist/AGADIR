@@ -29,6 +29,8 @@ N4 	    Intrinsic helical propensities at position N4.
 Ncen	Intrinsic helical propensities between N4 and C-cap. For charged residues these could change depending of the degree of ionisation.  
 Neutral	Intrinsic helical propensities at positions higher than N4.
 
+The Glu (E) row departs from the published table: its charged columns are 0.172 higher and its Neutral value is 1.046, so that Glu⁻ and Glu⁰ cost +0.572 and +0.366 kcal/mol relative to Ala, the measured helix propensities of Chakrabartty et al. (1994, Protein Sci. 3, 843; Table 2), the source the published table cites for neutral and charged propensities.
+
 
 ## table_2_lacroix
 Energy contributions in Kcal/mol * 100, of the interactions between different amino acids at positions N' (rows) and N4 (columns) in a hydrophobic staple motif. 
@@ -49,6 +51,8 @@ The interaction free energies correspond to those between non-charged residues, 
 Energy contributions in cal/mol Kcal/mol * 100 of the non-charged side chain-side chain interactions between the different amino acids at positions i,i+4. 
 
 The interaction free energies correspond to those between non-charged residues, or in the case of two residues that can be charged to those cases in which at least one of the two is non-charged (the interaction is scaled according to the population of charged and neutral forms of the participating amino acids).
+
+In this implementation (tables 4a and 4b), a pair of an acidic (Asp, Glu) and a basic (Lys, Arg, His) residue is treated differently: its value is the side-chain hydrogen bond, which is present whether or not the acid is charged and does not depend on salt (Scholtz et al. 1993, Biochemistry 32, 9668; Smith & Scholtz 1998, Biochemistry 37, 33), so it is applied in every ionisation state. The ionic part of such a pair is the Coulomb term.
 
 ## table_6_coil_lacroix
 Average distance between charged groups (Å).
@@ -93,6 +97,9 @@ The distances in Å shown in this table have been obtained from the analysis of 
 Distances (Å) between charged amino acids and the half charge from the helix macrodipole.
 
 The distances in Å shown in this table have been obtained from the analysis of the protein database as indicated in Methods.  The nomenclature for the helix position of the charged residues (columns N-cap etc...) is that of Richardson & Richardson (1988).
+
+## table_7_coulomb_Ncap, table_7_coulomb_Ccap
+The distances (Å) used by the side chain-macrodipole term for charged residues inside the helix. They are identical to tables 7 above (Lacroix 1998, supplementary Table VII) and are kept as separate files so that this term's distances can be varied independently of the flanking-residue screening, which reads tables 7.
 
 ## pka_values
 The pKa values for N- and C-termini as well as ionizable side chains when incorporated in a peptide. The values are from Nozaki and Tanford 1969 (https://doi.org/10.1016/S0076-6879(67)11088-4). The value for Arginine (R) is from a different source.

@@ -1554,6 +1554,40 @@ class EnergyCalculator(PrecomputeParams):
 
         return energy
 
+    def _acid_base_hbonds(self) -> set:
+        """Acid-base (Asp/Glu - Lys/Arg/His) side-chain H-bonds that can coexist in this helix.
+
+        A side chain is in one rotamer at a time: it can reach partners on its N-terminal side
+        (i-3, i-4) or on its C-terminal side (i+3, i+4), not both.  Partners on the same side can
+        share that rotamer.  Candidates are the i,i+3 and i,i+4 pairs inside the helix (caps
+        excluded) with a favourable Table IV value; the strongest are taken first.  The ionic
+        part of each pair (the Coulomb term) is not restricted.
+        """
+        if getattr(self, "_ab_hbonds", None) is not None:
+            return self._ab_hbonds
+        cands = []
+        interior = set(self.helix_indices[1:-1])
+        for k, table in ((3, self.table_4a_lacroix), (4, self.table_4b_lacroix)):
+            for i in interior:
+                j = i + k
+                if j not in interior:
+                    continue
+                a, b = self.seq_list[i], self.seq_list[j]
+                if {a, b} & {"D", "E"} and {a, b} & {"K", "R", "H"}:
+                    v = float(table.loc[a, b]) / 100.0
+                    if v < 0:
+                        cands.append((v, i, j))
+        # A side chain points either toward the N-terminus (partners at i-3/i-4) or toward the
+        # C-terminus (partners at i+3/i+4), not both.  Partners on the same side can share it.
+        direction, chosen = {}, set()
+        for v, i, j in sorted(cands):
+            if direction.get(i, "up") != "up" or direction.get(j, "down") != "down":
+                continue
+            direction[i], direction[j] = "up", "down"
+            chosen.add((i, j))
+        self._ab_hbonds = chosen
+        return chosen
+
     def get_dG_i3(self) -> np.ndarray:
         """
         Get the free energy contribution for interaction between each AAi and AAi+3 in the sequence.
@@ -1587,8 +1621,17 @@ class EnergyCalculator(PrecomputeParams):
             if idx == self.ncap_idx or idx + 3 == self.ccap_idx:
                 base = 0.0
 
-            # If both are titratable, Table IV is intended for "not both charged" states.
-            if (AAi in (self.pos_charge_aa + self.neg_charge_aa)) and (AAi3 in (self.pos_charge_aa + self.neg_charge_aa)):
+            # An Asp/Glu - Lys/Arg/His pair forms a side-chain hydrogen bond whose strength does
+            # not depend on salt or on whether the acid is charged (Scholtz et al. 1993; Smith &
+            # Scholtz 1998).  Its Table IV value is that hydrogen bond and applies in every
+            # ionisation state, where the geometry allows it (_acid_base_hbonds); the ionic part
+            # of the pair is the Coulomb term.
+            acid_base = bool({AAi, AAi3} & {"D", "E"} and {AAi, AAi3} & {"K", "R", "H"})
+            if acid_base and base < 0 and (idx, idx + 3) not in self._acid_base_hbonds():
+                base = 0.0
+
+            # Other titratable pairs: Table IV applies to the states that are not both charged.
+            if not acid_base and (AAi in (self.pos_charge_aa + self.neg_charge_aa)) and (AAi3 in (self.pos_charge_aa + self.neg_charge_aa)):
                 p_i = abs(self.modified_seq_ionization_hel[idx])
                 p_j = abs(self.modified_seq_ionization_hel[idx + 3])
                 base = base * (1.0 - p_i * p_j)
@@ -1644,8 +1687,17 @@ class EnergyCalculator(PrecomputeParams):
             if idx == self.ncap_idx or idx + 4 == self.ccap_idx:
                 base = 0.0
 
-            # Suppress Table IV in the both-charged microstate if both residues are titratable
-            if (AAi in (self.pos_charge_aa + self.neg_charge_aa)) and (AAi4 in (self.pos_charge_aa + self.neg_charge_aa)):
+            # An Asp/Glu - Lys/Arg/His pair forms a side-chain hydrogen bond whose strength does
+            # not depend on salt or on whether the acid is charged (Scholtz et al. 1993; Smith &
+            # Scholtz 1998).  Its Table IV value is that hydrogen bond and applies in every
+            # ionisation state, where the geometry allows it (_acid_base_hbonds); the ionic part
+            # of the pair is the Coulomb term.
+            acid_base = bool({AAi, AAi4} & {"D", "E"} and {AAi, AAi4} & {"K", "R", "H"})
+            if acid_base and base < 0 and (idx, idx + 4) not in self._acid_base_hbonds():
+                base = 0.0
+
+            # Other titratable pairs: suppress Table IV in the both-charged microstate.
+            if not acid_base and (AAi in (self.pos_charge_aa + self.neg_charge_aa)) and (AAi4 in (self.pos_charge_aa + self.neg_charge_aa)):
                 p_i = abs(self.modified_seq_ionization_hel[idx])
                 p_j = abs(self.modified_seq_ionization_hel[idx + 4])
                 base = base * (1.0 - p_i * p_j)
