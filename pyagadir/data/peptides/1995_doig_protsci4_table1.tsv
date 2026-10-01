@@ -1,0 +1,95 @@
+peptide_id	sequence	ncap	ccap	n_res	pH	T_C	ionic_strength_M	quantity	value	error	unit	source_table	flags
+Asn	NAKAAAAKAAAAKAAGY		Am	17	9.55	0.0	1.0	minus_theta222	20300		deg cm2 dmol-1	Table 1	c;N-term uncharged
+Asn	NAKAAAAKAAAAKAAGY		Am	17	9.55	0.0	1.0	helix_fraction	0.595		fraction	Table 1	c;N-term uncharged
+Asn	NAKAAAAKAAAAKAAGY		Am	17	5.0	0.0	1.0	minus_theta222	17100		deg cm2 dmol-1	Table 1	c;N-term charged
+Asn	NAKAAAAKAAAAKAAGY		Am	17	5.0	0.0	1.0	helix_fraction	0.501		fraction	Table 1	c;N-term charged
+Asp-	DAKAAAAKAAAAKAAGY		Am	17	9.55	0.0	1.0	minus_theta222	20200		deg cm2 dmol-1	Table 1	N-term uncharged
+Asp-	DAKAAAAKAAAAKAAGY		Am	17	9.55	0.0	1.0	helix_fraction	0.591		fraction	Table 1	N-term uncharged
+Asp-	DAKAAAAKAAAAKAAGY		Am	17	5.0	0.0	1.0	minus_theta222	17900		deg cm2 dmol-1	Table 1	N-term charged
+Asp-	DAKAAAAKAAAAKAAGY		Am	17	5.0	0.0	1.0	helix_fraction	0.527		fraction	Table 1	N-term charged
+Asp0	DAKAAAAKAAAAKAAGY		Am	17	5.0	0.0	1.0	minus_theta222	14200		deg cm2 dmol-1	Table 1	N-term charged
+Asp0	DAKAAAAKAAAAKAAGY		Am	17	5.0	0.0	1.0	helix_fraction	0.42		fraction	Table 1	N-term charged
+Acetyl	AKAAAAKAAAAKAAGY	Ac	Am	16	9.55	0.0	1.0	minus_theta222	19700		deg cm2 dmol-1	Table 1	d;N-term uncharged
+Acetyl	AKAAAAKAAAAKAAGY	Ac	Am	16	9.55	0.0	1.0	helix_fraction	0.578		fraction	Table 1	d;N-term uncharged
+Cys-	CAKAAAAKAAAAKAAGY		Am	17	9.55	0.0	1.0	minus_theta222	19400		deg cm2 dmol-1	Table 1	N-term uncharged
+Cys-	CAKAAAAKAAAAKAAGY		Am	17	9.55	0.0	1.0	helix_fraction	0.569		fraction	Table 1	N-term uncharged
+Cys-	CAKAAAAKAAAAKAAGY		Am	17	5.0	0.0	1.0	minus_theta222	12900		deg cm2 dmol-1	Table 1	N-term charged
+Cys-	CAKAAAAKAAAAKAAGY		Am	17	5.0	0.0	1.0	helix_fraction	0.379		fraction	Table 1	N-term charged
+Cys0	CAKAAAAKAAAAKAAGY		Am	17	5.0	0.0	1.0	minus_theta222	8800		deg cm2 dmol-1	Table 1	N-term charged
+Cys0	CAKAAAAKAAAAKAAGY		Am	17	5.0	0.0	1.0	helix_fraction	0.257		fraction	Table 1	N-term charged
+Trp	WAKAAAAKAAAAKAAGY		Am	17	9.55	0.0	1.0	minus_theta222	18800		deg cm2 dmol-1	Table 1	e;N-term uncharged
+Trp	WAKAAAAKAAAAKAAGY		Am	17	9.55	0.0	1.0	helix_fraction	0.552		fraction	Table 1	e;N-term uncharged
+Trp	WAKAAAAKAAAAKAAGY		Am	17	9.55	0.0	1.0	helix_fraction_corrected	0.516		fraction	Table 1	e;N-term uncharged;f (corrected, see paper text)
+Trp	WAKAAAAKAAAAKAAGY		Am	17	5.0	0.0	1.0	minus_theta222	9900		deg cm2 dmol-1	Table 1	e;N-term charged
+Trp	WAKAAAAKAAAAKAAGY		Am	17	5.0	0.0	1.0	helix_fraction	0.289		fraction	Table 1	e;N-term charged
+Trp	WAKAAAAKAAAAKAAGY		Am	17	5.0	0.0	1.0	helix_fraction_corrected	0.313		fraction	Table 1	e;N-term charged;f (corrected, see paper text)
+Gly	GAKAAAAKAAAAKAAGY		Am	17	9.55	0.0	1.0	minus_theta222	17900		deg cm2 dmol-1	Table 1	c;N-term uncharged
+Gly	GAKAAAAKAAAAKAAGY		Am	17	9.55	0.0	1.0	helix_fraction	0.525		fraction	Table 1	c;N-term uncharged
+Gly	GAKAAAAKAAAAKAAGY		Am	17	5.0	0.0	1.0	minus_theta222	14400		deg cm2 dmol-1	Table 1	c;N-term charged
+Gly	GAKAAAAKAAAAKAAGY		Am	17	5.0	0.0	1.0	helix_fraction	0.422		fraction	Table 1	c;N-term charged
+Ser	SAKAAAAKAAAAKAAGY		Am	17	9.55	0.0	1.0	minus_theta222	17900		deg cm2 dmol-1	Table 1	c;N-term uncharged
+Ser	SAKAAAAKAAAAKAAGY		Am	17	9.55	0.0	1.0	helix_fraction	0.525		fraction	Table 1	c;N-term uncharged
+Ser	SAKAAAAKAAAAKAAGY		Am	17	5.0	0.0	1.0	minus_theta222	13100		deg cm2 dmol-1	Table 1	c;N-term charged
+Ser	SAKAAAAKAAAAKAAGY		Am	17	5.0	0.0	1.0	helix_fraction	0.384		fraction	Table 1	c;N-term charged
+Tyr	YAKAAAAKAAAAKAAGY		Am	17	9.55	0.0	1.0	minus_theta222	16500		deg cm2 dmol-1	Table 1	g;N-term uncharged
+Tyr	YAKAAAAKAAAAKAAGY		Am	17	9.55	0.0	1.0	helix_fraction	0.485		fraction	Table 1	g;N-term uncharged
+Tyr	YAKAAAAKAAAAKAAGY		Am	17	9.55	0.0	1.0	helix_fraction_corrected	0.556		fraction	Table 1	g;N-term uncharged;f (corrected, see paper text)
+Tyr	YAKAAAAKAAAAKAAGY		Am	17	5.0	0.0	1.0	minus_theta222	9300		deg cm2 dmol-1	Table 1	g;N-term charged
+Tyr	YAKAAAAKAAAAKAAGY		Am	17	5.0	0.0	1.0	helix_fraction	0.273		fraction	Table 1	g;N-term charged
+Tyr	YAKAAAAKAAAAKAAGY		Am	17	5.0	0.0	1.0	helix_fraction_corrected	0.313		fraction	Table 1	g;N-term charged;f (corrected, see paper text)
+Thr	TAKAAAAKAAAAKAAGY		Am	17	9.55	0.0	1.0	minus_theta222	15600		deg cm2 dmol-1	Table 1	c;N-term uncharged
+Thr	TAKAAAAKAAAAKAAGY		Am	17	9.55	0.0	1.0	helix_fraction	0.457		fraction	Table 1	c;N-term uncharged
+Thr	TAKAAAAKAAAAKAAGY		Am	17	5.0	0.0	1.0	minus_theta222	12200		deg cm2 dmol-1	Table 1	c;N-term charged
+Thr	TAKAAAAKAAAAKAAGY		Am	17	5.0	0.0	1.0	helix_fraction	0.358		fraction	Table 1	c;N-term charged
+His0	HAKAAAAKAAAAKAAGY		Am	17	9.55	0.0	1.0	minus_theta222	15400		deg cm2 dmol-1	Table 1	N-term uncharged
+His0	HAKAAAAKAAAAKAAGY		Am	17	9.55	0.0	1.0	helix_fraction	0.45		fraction	Table 1	N-term uncharged
+His0	HAKAAAAKAAAAKAAGY		Am	17	5.0	0.0	1.0	minus_theta222	10900		deg cm2 dmol-1	Table 1	N-term charged
+His0	HAKAAAAKAAAAKAAGY		Am	17	5.0	0.0	1.0	helix_fraction	0.319		fraction	Table 1	N-term charged
+His+	HAKAAAAKAAAAKAAGY		Am	17	5.0	0.0	1.0	minus_theta222	5100		deg cm2 dmol-1	Table 1	N-term charged
+His+	HAKAAAAKAAAAKAAGY		Am	17	5.0	0.0	1.0	helix_fraction	0.15		fraction	Table 1	N-term charged
+Leu	LAKAAAAKAAAAKAAGY		Am	17	9.55	0.0	1.0	minus_theta222	15300		deg cm2 dmol-1	Table 1	c;N-term uncharged
+Leu	LAKAAAAKAAAAKAAGY		Am	17	9.55	0.0	1.0	helix_fraction	0.449		fraction	Table 1	c;N-term uncharged
+Leu	LAKAAAAKAAAAKAAGY		Am	17	5.0	0.0	1.0	minus_theta222	10800		deg cm2 dmol-1	Table 1	c;N-term charged
+Leu	LAKAAAAKAAAAKAAGY		Am	17	5.0	0.0	1.0	helix_fraction	0.317		fraction	Table 1	c;N-term charged
+Phe	FAKAAAAKAAAAKAAGY		Am	17	9.55	0.0	1.0	minus_theta222	15300		deg cm2 dmol-1	Table 1	g;N-term uncharged
+Phe	FAKAAAAKAAAAKAAGY		Am	17	9.55	0.0	1.0	helix_fraction	0.448		fraction	Table 1	g;N-term uncharged
+Phe	FAKAAAAKAAAAKAAGY		Am	17	5.0	0.0	1.0	minus_theta222	7800		deg cm2 dmol-1	Table 1	g;N-term charged
+Phe	FAKAAAAKAAAAKAAGY		Am	17	5.0	0.0	1.0	helix_fraction	0.23		fraction	Table 1	g;N-term charged
+Glu-	EAKAAAAKAAAAKAAGY		Am	17	9.55	0.0	1.0	minus_theta222	15300		deg cm2 dmol-1	Table 1	N-term uncharged
+Glu-	EAKAAAAKAAAAKAAGY		Am	17	9.55	0.0	1.0	helix_fraction	0.447		fraction	Table 1	N-term uncharged
+Glu-	EAKAAAAKAAAAKAAGY		Am	17	5.0	0.0	1.0	minus_theta222	10200		deg cm2 dmol-1	Table 1	N-term charged
+Glu-	EAKAAAAKAAAAKAAGY		Am	17	5.0	0.0	1.0	helix_fraction	0.298		fraction	Table 1	N-term charged
+Glu0	EAKAAAAKAAAAKAAGY		Am	17	5.0	0.0	1.0	minus_theta222	9700		deg cm2 dmol-1	Table 1	N-term charged
+Glu0	EAKAAAAKAAAAKAAGY		Am	17	5.0	0.0	1.0	helix_fraction	0.285		fraction	Table 1	N-term charged
+Ile	IAKAAAAKAAAAKAAGY		Am	17	9.55	0.0	1.0	minus_theta222	14300		deg cm2 dmol-1	Table 1	c;N-term uncharged
+Ile	IAKAAAAKAAAAKAAGY		Am	17	9.55	0.0	1.0	helix_fraction	0.419		fraction	Table 1	c;N-term uncharged
+Ile	IAKAAAAKAAAAKAAGY		Am	17	5.0	0.0	1.0	minus_theta222	10500		deg cm2 dmol-1	Table 1	c;N-term charged
+Ile	IAKAAAAKAAAAKAAGY		Am	17	5.0	0.0	1.0	helix_fraction	0.308		fraction	Table 1	c;N-term charged
+Pro	PAKAAAAKAAAAKAAGY		Am	17	9.55	0.0	1.0	minus_theta222	13800		deg cm2 dmol-1	Table 1	c;N-term uncharged
+Pro	PAKAAAAKAAAAKAAGY		Am	17	9.55	0.0	1.0	helix_fraction	0.404		fraction	Table 1	c;N-term uncharged
+Pro	PAKAAAAKAAAAKAAGY		Am	17	5.0	0.0	1.0	minus_theta222	8000		deg cm2 dmol-1	Table 1	c;N-term charged
+Pro	PAKAAAAKAAAAKAAGY		Am	17	5.0	0.0	1.0	helix_fraction	0.234		fraction	Table 1	c;N-term charged
+Met	MAKAAAAKAAAAKAAGY		Am	17	9.55	0.0	1.0	minus_theta222	13700		deg cm2 dmol-1	Table 1	c;N-term uncharged
+Met	MAKAAAAKAAAAKAAGY		Am	17	9.55	0.0	1.0	helix_fraction	0.402		fraction	Table 1	c;N-term uncharged
+Met	MAKAAAAKAAAAKAAGY		Am	17	5.0	0.0	1.0	minus_theta222	10200		deg cm2 dmol-1	Table 1	c;N-term charged
+Met	MAKAAAAKAAAAKAAGY		Am	17	5.0	0.0	1.0	helix_fraction	0.299		fraction	Table 1	c;N-term charged
+Ala	AAKAAAAKAAAAKAAGY		Am	17	9.55	0.0	1.0	minus_theta222	12900		deg cm2 dmol-1	Table 1	c;N-term uncharged
+Ala	AAKAAAAKAAAAKAAGY		Am	17	9.55	0.0	1.0	helix_fraction	0.378		fraction	Table 1	c;N-term uncharged
+Ala	AAKAAAAKAAAAKAAGY		Am	17	5.0	0.0	1.0	minus_theta222	7900		deg cm2 dmol-1	Table 1	c;N-term charged
+Ala	AAKAAAAKAAAAKAAGY		Am	17	5.0	0.0	1.0	helix_fraction	0.232		fraction	Table 1	c;N-term charged
+Arg+	RAKAAAAKAAAAKAAGY		Am	17	9.55	0.0	1.0	minus_theta222	12900		deg cm2 dmol-1	Table 1	N-term uncharged
+Arg+	RAKAAAAKAAAAKAAGY		Am	17	9.55	0.0	1.0	helix_fraction	0.379		fraction	Table 1	N-term uncharged
+Arg+	RAKAAAAKAAAAKAAGY		Am	17	5.0	0.0	1.0	minus_theta222	5700		deg cm2 dmol-1	Table 1	N-term charged
+Arg+	RAKAAAAKAAAAKAAGY		Am	17	5.0	0.0	1.0	helix_fraction	0.167		fraction	Table 1	N-term charged
+Val	VAKAAAAKAAAAKAAGY		Am	17	9.55	0.0	1.0	minus_theta222	12800		deg cm2 dmol-1	Table 1	c;N-term uncharged
+Val	VAKAAAAKAAAAKAAGY		Am	17	9.55	0.0	1.0	helix_fraction	0.375		fraction	Table 1	c;N-term uncharged
+Val	VAKAAAAKAAAAKAAGY		Am	17	5.0	0.0	1.0	minus_theta222	9000		deg cm2 dmol-1	Table 1	c;N-term charged
+Val	VAKAAAAKAAAAKAAGY		Am	17	5.0	0.0	1.0	helix_fraction	0.265		fraction	Table 1	c;N-term charged
+Lys+	KAKAAAAKAAAAKAAGY		Am	17	9.55	0.0	1.0	minus_theta222	12100		deg cm2 dmol-1	Table 1	N-term uncharged
+Lys+	KAKAAAAKAAAAKAAGY		Am	17	9.55	0.0	1.0	helix_fraction	0.355		fraction	Table 1	N-term uncharged
+Lys+	KAKAAAAKAAAAKAAGY		Am	17	5.0	0.0	1.0	minus_theta222	6100		deg cm2 dmol-1	Table 1	N-term charged
+Lys+	KAKAAAAKAAAAKAAGY		Am	17	5.0	0.0	1.0	helix_fraction	0.18		fraction	Table 1	N-term charged
+Gln	QAKAAAAKAAAAKAAGY		Am	17	9.55	0.0	1.0	minus_theta222	10000		deg cm2 dmol-1	Table 1	c;N-term uncharged
+Gln	QAKAAAAKAAAAKAAGY		Am	17	9.55	0.0	1.0	helix_fraction	0.293		fraction	Table 1	c;N-term uncharged
+Gln	QAKAAAAKAAAAKAAGY		Am	17	5.0	0.0	1.0	minus_theta222	7000		deg cm2 dmol-1	Table 1	c;N-term charged
+Gln	QAKAAAAKAAAAKAAGY		Am	17	5.0	0.0	1.0	helix_fraction	0.205		fraction	Table 1	c;N-term charged

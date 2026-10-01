@@ -280,12 +280,14 @@ class AGADIR(object):
             + dG_charged_staple
             + dG_Hbond
             + dG_ionic
-            + (sum(dG_terminals_dipole_N)
-               + sum(dG_terminals_dipole_C)
-               + np.sum(dG_sidechain_dipole)
-               + np.sum(dG_electrost_term)
-               + np.sum(dG_electrost_sidechain)
-               + dG_electrost_term_term) * elec_temp_factor
+            # Only the side-chain-macrodipole term uses a fixed dielectric (eps = 44) and needs
+            # the eps(T) factor; the other four already use calculate_permittivity(T).
+            + sum(dG_terminals_dipole_N)
+            + sum(dG_terminals_dipole_C)
+            + np.sum(dG_sidechain_dipole) * elec_temp_factor
+            + np.sum(dG_electrost_term)
+            + np.sum(dG_electrost_sidechain)
+            + dG_electrost_term_term
         )
 
         if self.debug:
@@ -329,6 +331,9 @@ class AGADIR(object):
         Calculate partition function for helical segments
         by summing over all possible helices.
         """
+        # one fast snapshot of the parameter tables, shared by every segment
+        params = EnergyCalculator.snapshot_params()
+
         for j in range(
             self.min_helix_length, self.result.seq_length + 1
         ):  # helix lengths (including capping residues)
@@ -345,7 +350,8 @@ class AGADIR(object):
                     T=self.T_celsius,
                     ionic_strength=self.molarity,
                     ncap=self.n_cap,
-                    ccap=self.c_cap
+                    ccap=self.c_cap,
+                    params=params,
                 )
 
                 # calculate dG_Hel and dG_dict
@@ -379,11 +385,8 @@ class AGADIR(object):
         # self.result.percent_helix = np.round(np.mean(self.result.helical_propensity), 2)
 
         # Exclude synthetic cap tokens ("Ac", "Am") from % helix averaging.
-        # Note: the official AGADIR reference tool ALSO excludes the free-terminal
-        # residues (dividing by n-1 or n-2), but CD measurements average over ALL
-        # residues.  We keep the CD-compatible convention (all real amino acids)
-        # for measured-data comparisons.  See tests/test_yggs_electrostatics.py for
-        # the reference-tool averaging adjustment.
+        # CD measurements average over ALL residues, so the CD-compatible convention
+        # (all real amino acids) is used for measured-data comparisons.
         start = 1 if self.result.ncap is not None else 0
         end = -1 if self.result.ccap is not None else None
         self.result.percent_helix = float(np.round(np.mean(self.result.helical_propensity[start:end]), 2))
@@ -413,6 +416,14 @@ class AGADIR(object):
         # check for valid ncap and ccap
         is_valid_ncap_ccap(ncap, ccap)
 
+        # reset per-call state: caps were previously only ever SET, so reusing one AGADIR
+        # object for an Ac-capped peptide and then a free one silently kept the acetyl
+        self.n_cap = None
+        self.c_cap = None
+        self.has_acetyl = False
+        self.has_succinyl = False
+        self.has_amide = False
+
         # assign ncap
         if ncap is not None:
             if ncap == "Ac":
@@ -428,9 +439,12 @@ class AGADIR(object):
             self.c_cap = "Am"
 
         # check for valid sequence length
-        if len(seq) < self.min_helix_length:
+        # the minimum applies to the cap-extended chain: Ac and Am each occupy a position
+        n_positions = len(seq) + (self.n_cap is not None) + (self.c_cap is not None)
+        if n_positions < self.min_helix_length:
             raise ValueError(
-                f"Input sequence must be at least {self.min_helix_length} amino acids long."
+                f"Input sequence plus terminal caps must span at least {self.min_helix_length} "
+                f"positions (got {n_positions})."
             )
         
         print(f"Predicting helical propensity for sequence: {seq}, method: {self._method}, T(C): {self.T_celsius}, M: {self.molarity}, pH: {self.pH}, ncap: {self.n_cap}, ccap: {self.c_cap}")

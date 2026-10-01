@@ -45,7 +45,7 @@ def test_capping_NN():
     
     # Values from NN file:
     # N-cap: 0.40
-    # C-cap: Binary says 0.50, Publication says 0.40. Code produces 0.40.
+    # C-cap: 0.40 (Lacroix 1998 published value); code produces 0.40.
     # N-dipole: 0.4979
     # C-dipole: 0.7686
     

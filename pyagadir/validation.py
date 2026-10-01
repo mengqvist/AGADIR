@@ -1,3 +1,5 @@
+import warnings
+
 import matplotlib.pyplot as plt
 from pyagadir.models import AGADIR
 import json
@@ -19,6 +21,69 @@ def ensure_figures_dir():
     figures_dir = data_dir / 'figures'
     figures_dir.mkdir(exist_ok=True)
     return figures_dir
+
+def load_validation(filename):
+    """Load a validation dataset together with its recorded experimental conditions.
+
+    Conditions live in the JSON's ``_provenance`` block, next to the citation and the
+    verbatim quote they were taken from, so that the data and the conditions it was
+    measured under cannot drift apart.  They used to be hard-coded here, and two of them
+    were wrong for a long time: the Lacroix panels ran at T = 0 C / I = 0.1 M against a
+    paper that states 278 K and a 2.5 mM sodium phosphate buffer, and Munoz 1995 ran at
+    I = 0.025 M against the same 2.5 mM buffer.
+
+    Note that a phosphate buffer's ionic strength is not its concentration: at pH 7 it is
+    a H2PO4-/HPO4(2-) mixture, and the divalent species contributes z^2 = 4, so 2.5 mM
+    sodium phosphate is about 5 mM ionic strength.
+
+    The ``_provenance`` block is stripped from the returned data so that callers can
+    iterate the remaining top-level keys as panels without tripping over it.
+
+    Returns:
+        tuple[dict, float | None, float]: the panels, the temperature in C (None when the
+        dataset is a temperature series and carries per-point values), and the ionic
+        strength in M.
+    """
+    with open(get_package_data_dir() / "validation" / filename) as fh:
+        data = json.load(fh)
+    prov = data.pop("_provenance", {})
+    if not prov:
+        raise KeyError(f"{filename} has no _provenance block; conditions are unrecorded")
+    per_panel = prov.get("per_panel") or {}
+    all_panels_verified = bool(per_panel) and all(
+        e.get("conditions_verified_against_source") for e in per_panel.values()
+    ) and set(per_panel) >= {k for k in data if not k.startswith("_")}
+    if not prov.get("conditions_verified_against_source", False) and not all_panels_verified:
+        warnings.warn(
+            f"{filename}: experimental conditions are NOT verified against the source "
+            f"paper (T={prov.get('temperature_C')} C, I={prov.get('ionic_strength_M')} M). "
+            f"{prov.get('ionic_strength_source', '')}",
+            stacklevel=2,
+        )
+    return data, prov.get("temperature_C"), prov.get("ionic_strength_M")
+
+
+def load_panel_conditions(filename):
+    """Return ``{panel_key: {temperature_C, ionic_strength_M, pH}}`` for one dataset.
+
+    Panels in one figure need not share conditions.  Munoz 1997 Figure 4 is a *replot* of
+    three separate experiments: 4B was measured at 1 M NaCl and 5 C, 4C at 0.1 M and 0 C,
+    and 4A at 2.5 mM sodium phosphate and 5 C.  Those per-panel conditions have been
+    recorded in the JSON's ``_provenance.per_panel`` block since cycle 60, but until cycle
+    87 only the benchmark harness read them -- the figure below applied the file-level
+    conditions to all three panels, so the shipped figure and the scored number disagreed.
+
+    Panels with no ``per_panel`` entry fall back to the file-level values, so this is safe
+    for the datasets that genuinely do share one set of conditions.
+    """
+    with open(get_package_data_dir() / "validation" / filename) as fh:
+        prov = json.load(fh).get("_provenance", {})
+    per_panel = prov.get("per_panel") or {}
+    base = {"temperature_C": prov.get("temperature_C"),
+            "ionic_strength_M": prov.get("ionic_strength_M"),
+            "pH": prov.get("pH", 7.0)}
+    return {k: {**base, **v} for k, v in per_panel.items()}
+
 
 def plot_ph_helix_content(paper_measured_data_ph, paper_measured_data_helix,
                         paper_predicted_data_ph, paper_predicted_data_helix,
@@ -161,12 +226,10 @@ def reproduce_lacroix_figure_3b(method="1s"):
     """
     # Get paths
     data_dir = get_package_data_dir()
-    validation_file = data_dir / 'validation' / 'lacroix_figure_3_data.json'
     figures_dir = ensure_figures_dir()
 
-    # Load validation data
-    with open(validation_file, "r") as f:
-        data = json.load(f)
+    # Load validation data together with its recorded conditions
+    data, temp_C, ionic_M = load_validation('lacroix_figure_3_data.json')
 
     peptide = data["figure3b"]["peptide"]
     ncap = data["figure3b"]["ncap"]
@@ -180,7 +243,7 @@ def reproduce_lacroix_figure_3b(method="1s"):
     # AGADIR results
     pyagadir_predicted_data_helix = []
     for ph in paper_predicted_data_ph:
-        model = AGADIR(method=method, T=0.0, M=0.1, pH=ph)
+        model = AGADIR(method=method, T=temp_C, M=ionic_M, pH=ph)
         result = model.predict(peptide, ncap=ncap, ccap=ccap)
         pyagadir_predicted_data_helix.append(result.get_percent_helix())
         
@@ -200,12 +263,8 @@ def reproduce_lacroix_figure_4(method="1s"):
     """
     # Get paths
     data_dir = get_package_data_dir()
-    validation_file = data_dir / 'validation' / 'lacroix_figure_4_data.json'
     figures_dir = ensure_figures_dir()
-
-    # Load validation data
-    with open(validation_file, "r") as f:
-        data = json.load(f)
+    data, temp_C, ionic_M = load_validation('lacroix_figure_4_data.json')
 
     # Create figure
     fig, axs = plt.subplots(4, 2, figsize=(10, 16))
@@ -227,7 +286,7 @@ def reproduce_lacroix_figure_4(method="1s"):
 
         pyagadir_predicted_data_helix = []
         for ph in paper_predicted_data_ph:
-            model = AGADIR(method=method, T=0.0, M=0.1, pH=ph)
+            model = AGADIR(method=method, T=temp_C, M=ionic_M, pH=ph)
             result = model.predict(peptide, ncap=ncap, ccap=ccap)
             pyagadir_predicted_data_helix.append(result.get_percent_helix())
             
@@ -250,12 +309,8 @@ def reproduce_huygues_despointes_figure_1(method="1s"):
     """
         # Get paths
     data_dir = get_package_data_dir()
-    validation_file = data_dir / 'validation' / 'huygues_despointes_figure_1_data.json'
     figures_dir = ensure_figures_dir()
-
-    # Load validation data
-    with open(validation_file, "r") as f:
-        data = json.load(f)
+    data, temp_C, ionic_M = load_validation('huygues_despointes_figure_1_data.json')
 
     # Create figure
     fig, axs = plt.subplots(1, 2, figsize=(10, 4))
@@ -275,7 +330,7 @@ def reproduce_huygues_despointes_figure_1(method="1s"):
 
         pyagadir_predicted_data_helix = []
         for pept in peptides:
-            model = AGADIR(method=method, T=0.0, M=0.01, pH=ph)
+            model = AGADIR(method=method, T=temp_C, M=ionic_M, pH=ph)
             result = model.predict(pept, ncap=ncap, ccap=ccap)
             pyagadir_predicted_data_helix.append(result.get_percent_helix())
             
@@ -303,12 +358,9 @@ def reproduce_munoz_1997_figure_4(method="1s"):
     """
     # Get paths
     data_dir = get_package_data_dir()
-    validation_file = data_dir / 'validation' / 'munoz_1997_figure_4_data.json'
     figures_dir = ensure_figures_dir()
-
-    # Load validation data
-    with open(validation_file, "r") as f:
-        data = json.load(f)
+    data, temp_C, ionic_M = load_validation('munoz_1997_figure_4_data.json')
+    panel_cond = load_panel_conditions('munoz_1997_figure_4_data.json')
 
     # Create figure
     fig, axs = plt.subplots(3, 1, figsize=(4, 12))
@@ -325,13 +377,29 @@ def reproduce_munoz_1997_figure_4(method="1s"):
         ccap = fig_data["ccap"]
         paper_measured_data = fig_data["helicity"]
 
+        # Each panel replots a different experiment, so take its own conditions.
+        cond = panel_cond.get(figname, {})
+        T = cond.get("temperature_C", temp_C)
+        M = cond.get("ionic_strength_M", ionic_M)
+        pH = cond.get("pH", 7.0)
+
         pyagadir_predicted_data_helix = []
-        for pept in peptides:
-            model = AGADIR(method=method, T=0.0, M=0.1, pH=7.0)
-            result = model.predict(pept, ncap=ncap, ccap=ccap)
+        keep_x, keep_y = [], []
+        for pept, x, y in zip(peptides, xvals, paper_measured_data):
+            try:
+                model = AGADIR(method=method, T=T, M=M, pH=pH)
+                result = model.predict(pept, ncap=ncap, ccap=ccap)
+            except ValueError:
+                # Shorter than the model's six-residue minimum.  Figure 4A's shortest
+                # (AAQAA)n member is five residues; drop the point rather than invent
+                # one, and rather than fail the whole figure.
+                continue
             pyagadir_predicted_data_helix.append(result.get_percent_helix())
-            
-        title = f'{ncap}-Y[{repeat}](n)F-{ccap}'
+            keep_x.append(x)
+            keep_y.append(y)
+        xvals, paper_measured_data = keep_x, keep_y
+
+        title = f'{ncap}-[{repeat}](n)-{ccap}, {T:g} C, {M:g} M, pH {pH:g}'
         xlabel = "Peptide length"
         _, ax = plot_peptides_helix_content(paper_measured_data,
                                             pyagadir_predicted_data_helix, 
@@ -354,12 +422,8 @@ def reproduce_munoz_1995_figure_3(method="1s"):
     """
     # Get paths
     data_dir = get_package_data_dir()
-    validation_file = data_dir / 'validation' / 'munoz_1995_figure_3.json'
     figures_dir = ensure_figures_dir()
-
-    # Load validation data
-    with open(validation_file, "r") as f:
-        data = json.load(f)
+    data, _temp_unused, ionic_M = load_validation('munoz_1995_figure_3.json')
 
     # Create figure
     fig, axs = plt.subplots(3, 2, figsize=(8, 12))
@@ -374,7 +438,7 @@ def reproduce_munoz_1995_figure_3(method="1s"):
 
         pyagadir_predicted_data_helix = []
         for temp in xvals:
-            model = AGADIR(method=method, T=temp, M=0.025, pH=7.0)
+            model = AGADIR(method=method, T=temp, M=ionic_M, pH=7.0)
             result = model.predict(peptide, ncap=ncap, ccap=ccap)
             pyagadir_predicted_data_helix.append(result.get_percent_helix())
             

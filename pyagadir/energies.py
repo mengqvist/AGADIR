@@ -13,6 +13,34 @@ import copy
 
 
 
+class ParamTable:
+    """
+    Read-only, dict-backed copy of a parameter DataFrame.
+
+    Scalar DataFrame.loc lookups cost ~10 µs each, and a prediction makes tens of
+    thousands of them (one EnergyCalculator per helical segment), which made them
+    ~70% of the run time. This keeps the same spelling -- table.loc[row, col],
+    table.loc[row][col], `row in table.index`, table.columns[k] -- at dict speed.
+
+    It is a snapshot: edits to the source DataFrame are only seen after rebuilding.
+    """
+
+    def __init__(self, df: pd.DataFrame):
+        self._rows = df.to_dict(orient="index")
+        self.index = tuple(df.index)
+        self.columns = tuple(df.columns)
+
+    @property
+    def loc(self):
+        return self
+
+    def __getitem__(self, key):
+        if isinstance(key, tuple):
+            row, col = key
+            return self._rows[row][col]
+        return self._rows[key]
+
+
 class PrecomputeParams:
     """
     Class to load parameters for the AGADIR model and
@@ -133,7 +161,16 @@ class PrecomputeParams:
 
         return cls._params
 
-    def __init__(self, seq: str, i: int, j: int, pH: float, T: float, ionic_strength: float, ncap: str = None, ccap: str = None, debug: bool = False):
+    @classmethod
+    def snapshot_params(cls) -> dict:
+        """
+        Fast ParamTable copies of load_params(), for passing as params= to many
+        instances. Rebuilt on every call (~10 ms), so take one per prediction:
+        edits made to the _params DataFrames between predictions are then honoured.
+        """
+        return {name: ParamTable(df) for name, df in cls.load_params().items()}
+
+    def __init__(self, seq: str, i: int, j: int, pH: float, T: float, ionic_strength: float, ncap: str = None, ccap: str = None, debug: bool = False, params: dict = None):
         """
         Initialize the PrecomputedParams for a peptide sequence.
 
@@ -146,11 +183,13 @@ class PrecomputeParams:
             ionic_strength (float): Ionic strength of the solution in mol/L.
             ncap (str): N-terminal capping modification (acetylation='Ac', succinylation='Sc').
             ccap (str): C-terminal capping modification (amidation='Am').
+            params (dict): Parameter tables from snapshot_params(). If None, load_params() is used.
         """
         self.debug = debug
-        
+
         # load params
-        params = self.load_params()
+        if params is None:
+            params = self.load_params()
         self.table_1_lacroix = params["table_1_lacroix"]
         self.table_2_lacroix = params["table_2_lacroix"]
         self.table_3_lacroix = params["table_3_lacroix"]
@@ -269,16 +308,13 @@ class PrecomputeParams:
         """
         charged_amino_acids = self.neg_charge_aa + self.pos_charge_aa
 
-        # Iterate over all pairs of charged residues
-        result = []
-        for idx1 in range(len(self.seq_list)):
-            for idx2 in range(idx1 + 1, len(self.seq_list)):
-                AA1 = self.seq_list[idx1]
-                AA2 = self.seq_list[idx2]
-                if not all(aa in charged_amino_acids for aa in (AA1, AA2)):
-                    continue
-                result.append((AA1, AA2, idx1, idx2))  # Include global positions
-        self.charged_pairs = result
+        # Iterate over all pairs of charged residues (pairing only the charged
+        # positions; scanning every residue pair was costly, as it runs per segment)
+        charged_idx = [idx for idx, aa in enumerate(self.seq_list) if aa in charged_amino_acids]
+        self.charged_pairs = [
+            (self.seq_list[idx1], self.seq_list[idx2], idx1, idx2)  # Include global positions
+            for idx1, idx2 in itertools.combinations(charged_idx, 2)
+        ]
 
     def _calculate_r(self, N: int) -> float:
         """Function to calculate the distance r from the peptide terminal to the helix
@@ -302,11 +338,16 @@ class PrecomputeParams:
     def _terminal_macrodipole_r(N: int) -> float:
         """Distance from the free terminus to the helix macrodipole pole.
 
-        Uses a polynomial fitted to back-computed distances from the AGADIR
-        reference tool (YGGS, M=0.1, pH=4, T=273K). The reference distances
-        grow at ~1.7-1.8 Å per residue (decreasing slightly), rather than
-        the 2.0 Å per residue given in the Lacroix 1998 paper text.
-        Reproduces reference terminal-macrodipole energies with RMSE < 0.001.
+        Uses an empirically fitted polynomial.
+
+        NOTE: Lacroix 1998 states this distance directly as 2.1 A plus 2 A per
+        extra residue (r = 2.1 + 2.0*N); the polynomial grows at ~1.7-1.8 A per
+        residue instead. Replacing it with the paper's rule is a candidate change
+        whose benchmark effect has been measured separately.
+
+        It is NOT replaced here, because doing so alone makes end-to-end
+        agreement worse: another term is compensating for this error. See
+        reasoning/nodes/N045.md for the measurements and what to fix alongside it.
 
         This function is only used for terminal-macrodipole distances, not
         for random-coil reference distances in the pKa solver or scsc code.
@@ -324,7 +365,7 @@ class PrecomputeParams:
     def _electrostatic_interaction_energy(self, qi: float, qj: float, r: float, factor_pi: float = 4.0) -> float:
         """Calculate the interaction energy between two charges by
         applying equation 6 from Lacroix, 1998.
-        Note: The paper prints 3π but the reference tool output matches 4π (standard Coulomb).
+        Note: The paper prints 3π; 4π (standard Coulomb) is used.
 
         Args:
             qi (float): Charge of the first residue.
@@ -732,8 +773,8 @@ class PrecomputeParams:
                     # Always use 'Ccap'/'Ncap' rows for cap-position distances.
                     # The 'C-cap f'/'N-cap f' rows give shorter distances (e.g.
                     # 8.03 vs 10.7 for i+1) that overestimate repulsion; the
-                    # reference tool matches the blocked-cap geometry ('Ccap'/'Ncap')
-                    # for sidechain-sidechain interactions at cap positions.
+                    # blocked-cap geometry ('Ccap'/'Ncap') is used for
+                    # sidechain-sidechain interactions at cap positions.
                     cap_row = None
                     if idx2 == self.ccap_idx:
                         cap_row = 'Ccap'
@@ -1096,7 +1137,7 @@ class EnergyCalculator(PrecomputeParams):
     """
     Class to calculate the free energy contributions for a peptide sequence.
     """
-    def __init__(self, seq: str, i: int, j: int, pH: float, T: float, ionic_strength: float, ncap: str = None, ccap: str = None):
+    def __init__(self, seq: str, i: int, j: int, pH: float, T: float, ionic_strength: float, ncap: str = None, ccap: str = None, params: dict = None):
         """
         Initialize the EnergyCalculator for a peptide sequence.
 
@@ -1109,8 +1150,9 @@ class EnergyCalculator(PrecomputeParams):
             ionic_strength (float): Ionic strength of the solution in mol/L.
             ncap (str): N-terminal capping modification (acetylation='Ac', succinylation='Sc').
             ccap (str): C-terminal capping modification (amidation='Am').
+            params (dict): Parameter tables from snapshot_params(). If None, load_params() is used.
         """
-        super().__init__(seq, i, j, pH, T, ionic_strength, ncap, ccap)
+        super().__init__(seq, i, j, pH, T, ionic_strength, ncap, ccap, params=params)
         self._AROMATIC = {"F", "Y", "W"}
         self._ALIPHATIC = {"A", "V", "L", "I", "M"}  # you can expand if you want (e.g. C)
         self.dCp = -0.0015  # kcal/(mol*K)
@@ -1173,7 +1215,8 @@ class EnergyCalculator(PrecomputeParams):
         This accounts for the loss of entropy due to the helix formation.
         The first and last residues are considered to be caps unless they are
         the peptide terminal residues with modifications.
-        Equation (7) from Muñoz & Serrano (1995) is used to correct for temperature effects.
+        Temperature: equation (9) of Muñoz & Serrano (1995-III), a purely entropic term,
+        dG(t) = dG_ref * t/t_ref - t * dCp * ln(t/t_ref) with t_ref = 273 K.
 
         Returns:
             np.ndarray: The intrinsic free energy contributions for each amino acid in the helical segment.
@@ -1181,7 +1224,6 @@ class EnergyCalculator(PrecomputeParams):
         # Initialize energy array
         energy = np.zeros(len(self.seq_list))
         T = self.T_kelvin
-        Tref = 273.15  # 0°C reference temperature
         dCp = self.dCp
 
         # Iterate over the helix and get the intrinsic energy for each residue, 
@@ -1225,24 +1267,17 @@ class EnergyCalculator(PrecomputeParams):
                 # When deionized (extreme pH), interpolate toward the Neutral column.
                 # Y and C are excluded: their pKa (~10.1, ~8.3) means they are normally
                 # neutral at pH 7, so Table 1 values already represent the neutral form.
-                # Reference AGADIR confirms: Y intrinsic is constant across all pH.
                 q = abs(self.modified_seq_ionization_hel[idx])
                 basic_energy = energy[idx]
                 basic_energy_neutral = self.table_1_lacroix.loc[AA, "Neutral"]
                 energy[idx] = q * basic_energy + (1 - q) * basic_energy_neutral
 
-        # Apply Muñoz & Serrano (1995) temperature correction.
-        # Intrinsic energies are purely entropic: dH_ref = 0, dG_ref = -Tref * dS_ref.
-        # Full Kirchhoff correction for purely entropic term:
-        #   dG(T) = dG_ref * (T/Tref) + dCp * [(T - Tref) - T * ln(T/Tref)]
-        # The dCp correction is applied here (once per helix residue) and NOT in get_dG_Hbond
-        # to avoid double-counting. Capping also gets its own dCp via _apply_temp_correction_hbond_like.
-
-        # 1. Scale reference energy (entropic part)
+        # Munoz & Serrano 1995-III eq. (9): dG_Int = -t (dS_ref + dCp ln(t/t_ref)),
+        # i.e. dG_ref * t/t_ref - t * dCp * ln(t/t_ref).  The dCp*(t - t_ref) enthalpy term
+        # belongs to the H-bond (eq. 8), not here.  t_ref = 273.0 K.
+        Tref = 273.0
         scaled_ref = energy * (T / Tref)
-
-        # 2. Full Kirchhoff Cp correction per residue
-        cp_term = dCp * ((T - Tref) - T * np.log(T / Tref))
+        cp_term = -T * dCp * np.log(T / Tref)
 
         # Apply to all non-zero entries (avoid adding energy to caps/zeros)
         energy = np.where(energy != 0, scaled_ref + cp_term, energy)
@@ -1258,27 +1293,19 @@ class EnergyCalculator(PrecomputeParams):
         zero net enthalpy since they are nucleating residues.
         This gives a total of 6 residues that don't count toward hydrogen bonding.
 
-        The net H-bond ΔG at 0°C is -0.895 kcal/mol (Lacroix 1998).
-        Decomposed as ΔG = ΔH - T×ΔS where ΔH ≈ 0 and ΔS = +0.003277 kcal/(mol·K).
-        The near-zero enthalpy reflects cancellation between peptide H-bond
-        formation and water H-bond reorganisation; the positive ΔS reflects
-        release of ordered solvent from the backbone upon helix formation.
-        The per-residue ΔCp correction is applied separately in get_dG_Int
-        and _apply_temp_correction_hbond_like.
+        The net H-bond ΔG at 0°C is -0.898 kcal/mol per bond (Lacroix 1998). It is
+        treated as enthalpic, with the temperature dependence of equation (8) of
+        Muñoz & Serrano (1995-III): ΔG(t) = ΔH_ref + ΔCp (t - t_ref), ΔCp = -1.5
+        cal/(mol·K) in the folding direction, t_ref = 273 K.
 
         Returns:
             float: The total free energy contribution for hydrogen bonding in the sequence.
         """
         n_hbonds = max((self.j - 6), 0)
 
-        # ΔG_hb(T) = ΔH_hb - T × ΔS_hb
-        # Calibrated so that ΔG(273.15 K) = -0.898 kcal/mol.
-        # With eq.(12) dielectric correction for electrostatics,
-        # optimal ΔH = -0.15 from Muñoz 1995 Figure 3a calibration.
-        dH_hb = -0.15      # kcal/mol per bond
-        dS_hb = 0.002739   # kcal/(mol·K) per bond  (= (0.898-0.15) / 273.15)
-
-        dG_per_bond = dH_hb - self.T_kelvin * dS_hb
+        # Munoz & Serrano 1995-III eq. (8): dG_HBond = dH_ref + dCp (t - t_ref) per bond,
+        # with dH_ref = -0.898 (Lacroix 1998), dCp = -0.0015 kcal/(mol K), t_ref = 273.0 K.
+        dG_per_bond = -0.898 + self.dCp * (self.T_kelvin - 273.0)
         return dG_per_bond * n_hbonds
 
     def _apply_temp_correction_hbond_like(self, dG_ref_values: np.ndarray) -> np.ndarray:
@@ -1326,7 +1353,8 @@ class EnergyCalculator(PrecomputeParams):
         else:
             energy[self.ncap_idx] = self.table_1_lacroix.loc[self.Ncap_AA, "Nc-1"]
 
-        return self._apply_temp_correction_hbond_like(energy)
+        # capping values are treated as temperature-independent
+        return energy
 
     def get_dG_Ccap(self) -> np.ndarray:
         """
@@ -1345,7 +1373,8 @@ class EnergyCalculator(PrecomputeParams):
         else:
             energy[self.ccap_idx] = self.table_1_lacroix.loc[self.Ccap_AA, "Cc-1"]
 
-        return self._apply_temp_correction_hbond_like(energy)
+        # capping values are treated as temperature-independent
+        return energy
 
     def get_dG_staple(self) -> float:
         """
@@ -1364,8 +1393,14 @@ class EnergyCalculator(PrecomputeParams):
             return energy
 
         # The hydrophobic staple motif is only considered whenever the N-cap residue is Asn, Asp, Ser, Pro or Thr.
-        if self.Ncap_AA in ["N", "D", "S", "P", "T"]:
-            energy = self.table_2_lacroix.loc[self.Ncap_AA, self.N4_AA] / 100
+        # Table II is indexed by N' (rows) x N4 (columns): "the interactions between
+        # different amino acids at positions N' (rows) and N4 (columns) in a hydrophobic
+        # staple motif" (Lacroix 1998, supplementary Table II caption), which is also what
+        # this method's docstring says.  This lookup previously used Ncap_AA, so the term
+        # read the wrong table row for every staple it fired on.
+        Nprime_AA = self.seq_list[self.ncap_idx - 1]
+        if self.Ncap_AA in ["N", "D", "S", "P", "T"] and Nprime_AA in self.table_2_lacroix.index:
+            energy = self.table_2_lacroix.loc[Nprime_AA, self.N4_AA] / 100
 
             # whenever the N-cap residue is Asn, Asp, Ser, or Thr and the N3 residue is Glu, Asp or Gln, multiply by 1.0
             if self.Ncap_AA in ["N", "D", "S", "T"] and self.N3_AA in ["E", "D", "Q"]:
@@ -1535,6 +1570,10 @@ class EnergyCalculator(PrecomputeParams):
 
             # Table IV values are "kcal/mol * 100" -> convert to kcal/mol
             base = self.table_4a_lacroix.loc[AAi, AAi3] / 100.0
+            # side chain-side chain pairs only INSIDE the helix (Lacroix 1998, G_SD): a pair
+            # involving the N-cap or C-cap residue contributes nothing
+            if idx == self.ncap_idx or idx + 3 == self.ccap_idx:
+                base = 0.0
 
             # If both are titratable, Table IV is intended for "not both charged" states.
             if (AAi in (self.pos_charge_aa + self.neg_charge_aa)) and (AAi3 in (self.pos_charge_aa + self.neg_charge_aa)):
@@ -1542,12 +1581,14 @@ class EnergyCalculator(PrecomputeParams):
                 p_j = abs(self.modified_seq_ionization_hel[idx + 3])
                 base = base * (1.0 - p_i * p_j)
 
-            # Calculate dCp for this pair (returns 0.0 if not hydrophobic)
+            # _dCp_hydroph_kcal is non-zero only for hydrophobic pairs; used here as the gate
             dCp_val = self._dCp_hydroph_kcal(AAi, AAi3)
             
-            # Apply correction if dCp is non-zero and base energy implies interaction exists
+            # temperature scaling applies to hydrophobic pairs only
             if dCp_val != 0.0 and base != 0.0:
-                base = self._entropic_cp_correct(base, dCp_val)
+                # hydrophobic pairs scale entropically (dG_ref * t/t_ref), no dCp_hydroph term:
+                # Munoz 1995-III states this term becomes more favourable with temperature
+                base = self._entropic_cp_correct(base, 0.0)
 
             energy[idx] = base
 
@@ -1586,6 +1627,10 @@ class EnergyCalculator(PrecomputeParams):
 
             # Table IV values are "kcal/mol * 100" -> convert to kcal/mol
             base = self.table_4b_lacroix.loc[AAi, AAi4] / 100.0
+            # side chain-side chain pairs only INSIDE the helix (Lacroix 1998, G_SD): a pair
+            # involving the N-cap or C-cap residue contributes nothing
+            if idx == self.ncap_idx or idx + 4 == self.ccap_idx:
+                base = 0.0
 
             # Suppress Table IV in the both-charged microstate if both residues are titratable
             if (AAi in (self.pos_charge_aa + self.neg_charge_aa)) and (AAi4 in (self.pos_charge_aa + self.neg_charge_aa)):
@@ -1593,12 +1638,14 @@ class EnergyCalculator(PrecomputeParams):
                 p_j = abs(self.modified_seq_ionization_hel[idx + 4])
                 base = base * (1.0 - p_i * p_j)
 
-            # Calculate dCp for this pair (returns 0.0 if not hydrophobic)
+            # _dCp_hydroph_kcal is non-zero only for hydrophobic pairs; used here as the gate
             dCp_val = self._dCp_hydroph_kcal(AAi, AAi4)
             
-            # Apply correction if dCp is non-zero and base energy implies interaction exists
+            # temperature scaling applies to hydrophobic pairs only
             if dCp_val != 0.0 and base != 0.0:
-                base = self._entropic_cp_correct(base, dCp_val)
+                # hydrophobic pairs scale entropically (dG_ref * t/t_ref), no dCp_hydroph term:
+                # Munoz 1995-III states this term becomes more favourable with temperature
+                base = self._entropic_cp_correct(base, 0.0)
 
             extra = 0.0
 
@@ -1660,8 +1707,8 @@ class EnergyCalculator(PrecomputeParams):
         C_term = np.zeros(len(self.seq_list))
 
         # Calculate the interaction energy between the N-terminal and the helix macrodipole.
-        # Reference AGADIR applies a distance cutoff: when the terminal is >= 6 coil
-        # residues from the helix start (ncap_idx >= 6), the interaction is zero.
+        # Distance cutoff: when the terminal is >= 6 coil residues from the helix
+        # start (ncap_idx >= 6), the interaction is zero.
         if self.ncap_idx < 6:
             N_term[self.ncap_idx] = self._electrostatic_interaction_energy(
                 qi=self.mu_helix,
@@ -1685,7 +1732,7 @@ class EnergyCalculator(PrecomputeParams):
     def get_dG_sidechain_macrodipole(self) -> tuple[np.ndarray, np.ndarray]:
         """
         Calculate the interaction energy between charged side-chains and the helix macrodipole
-        using screened Coulomb formulas reverse-engineered from AGADIR reference output.
+        using screened Coulomb formulas.
 
         The helix macrodipole is modeled as ±0.5e charges at the N- and C-terminal poles.
         Each charged sidechain residue (Ncap to Ccap inclusive) interacts with both poles:
@@ -1737,18 +1784,49 @@ class EnergyCalculator(PrecomputeParams):
         # Amino acids with empirical macrodipole values in Table 3
         table3_aas = set(self.table_3_munoz_nterm.index)
 
-        def _table3_screen(aa, pos, table3, table7):
-            """Look up Table 3 empirical value and apply Debye screening from Table VII."""
-            if pos < 0 or pos > 9 or aa not in table3_aas:
+        # Flanking (outside-helix) charged residues.
+        #
+        # Munoz 1995 II Table 3 lists empirical macrodipole free energies for Asp, Glu,
+        # His, Lys and Arg only.  Cys and Tyr have no row, so before this change they
+        # received EXACTLY ZERO flanking macrodipole energy -- although Lacroix 1998
+        # states "Cys and Tyr are now correctly treated as titratable amino acid
+        # residues" and its Table VII gives distances for all seven.
+        #
+        # For those two residues we therefore fall back to the same screened Coulomb form
+        # the interior branch uses, at the distance rule Lacroix 1998 states directly:
+        # "For residues N0 and C0, the distance is 6 A.  That separation distance
+        # increases by 3 A for every extra position after the N0 or C0 positions."  It
+        # is applied at flank positions 1 and 2 only and is exactly zero beyond.
+        #
+        # Asp/Glu/His/Lys/Arg keep their Table 3 values unchanged.
+        _FLANK_D = [6.0, 9.0]
+        _FLANK_D_C = [6.0, 9.0]
+
+        def _table3_screen(aa, pos, table3, table7, q=1.0):
+            is_n = table3 is self.table_3_munoz_nterm
+            if aa in table3_aas:
+                # The flank cutoff below (positions 1-2 only) applies to this branch too
+                # for Lys and Arg: the `return 0.0` enforcing it sat after this branch's
+                # return, so the Table-3 residues kept firing out to position 9.
+                # D/E/H keep their old range: extending the cutoff to Asp costs residual
+                # structure on the Huyghues-Despointes Asp scan.
+                if aa in ("K", "R") and (pos < 1 or pos > 2):
+                    return 0.0
+                col = table3.columns[pos]
+                raw = float(table3.loc[aa, col])
+                if pos <= 13 and aa in table7.index:
+                    d7_col = table7.columns[pos]
+                    d = float(table7.loc[aa, d7_col])
+                    if not np.isnan(d):
+                        raw *= math.exp(-self.kappa * d * 1e-10)
+                return raw
+            if pos < 1 or pos > 2:
                 return 0.0
-            col = table3.columns[pos]
-            raw = float(table3.loc[aa, col])
-            if pos <= 13 and aa in table7.index:
-                d7_col = table7.columns[pos]
-                d = float(table7.loc[aa, d7_col])
-                if not np.isnan(d):
-                    raw *= math.exp(-self.kappa * d * 1e-10)
-            return raw
+            d = (_FLANK_D if is_n else _FLANK_D_C)[pos - 1] * 10.0
+            sgn = 1.0 if q >= 0 else -1.0
+            if is_n:
+                return sgn * 0.5 * B_N / d * math.exp(-kappa_01A * d)
+            return -sgn * 0.5 * A_C / (d * d) * math.exp(-kappa_01A * d)
 
         # Helper: look up Coulomb distance from dedicated tables (Å)
         def _coulomb_dist_n(aa, n_pos):
@@ -1817,13 +1895,13 @@ class EnergyCalculator(PrecomputeParams):
         # --- Flanking residues: Table 3 empirical approach (nearby-pole only) ---
         # Flanking charged residues interact with the nearby macrodipole pole.
         # Only the C-term (for C-flanking) or N-term (for N-flanking) contributes.
-        # Energy is assigned to the cap position (matching reference convention).
-        # Flanking contributions are only added when the cap residue is uncharged
-        # (charged caps already get their own Coulomb interaction from the interior loop).
+        # Energy is assigned to the cap position.
+        # A flanking charge interacts with the macrodipole whether or not the cap residue is
+        # itself charged: charge-dipole energies superpose, and Lacroix 1998 states the
+        # flanking rule (6 A at N'/C', +3 A per further residue) with no condition on the cap.
 
         # C-terminal flanking (beyond Ccap): only C-term contribution → Ccap position
-        ccap_aa = self.seq_list[ccap_i]
-        if ccap_aa not in charged:
+        if ccap_i + 1 < n:
             for idx in range(ccap_i + 1, min(n, ccap_i + 10)):
                 aa = self.seq_list[idx]
                 if aa not in charged:
@@ -1832,12 +1910,11 @@ class EnergyCalculator(PrecomputeParams):
                 if abs(q) < 1e-6:
                     continue
                 flank_pos = idx - ccap_i  # 1, 2, 3, ...
-                contrib_c = _table3_screen(aa, flank_pos, self.table_3_munoz_cterm, self.table_7_ccap_lacroix)
+                contrib_c = _table3_screen(aa, flank_pos, self.table_3_munoz_cterm, self.table_7_ccap_lacroix, q)
                 energy_C[ccap_i] += contrib_c * abs(q)
 
         # N-terminal flanking (before Ncap): only N-term contribution → Ncap position
-        ncap_aa = self.seq_list[ncap_i]
-        if ncap_aa not in charged:
+        if ncap_i > 0:
             for idx in range(max(0, ncap_i - 9), ncap_i):
                 aa = self.seq_list[idx]
                 if aa not in charged:
@@ -1846,11 +1923,20 @@ class EnergyCalculator(PrecomputeParams):
                 if abs(q) < 1e-6:
                     continue
                 flank_pos = ncap_i - idx  # 1, 2, 3, ...
-                contrib_n = _table3_screen(aa, flank_pos, self.table_3_munoz_nterm, self.table_7_ncap_lacroix)
+                contrib_n = _table3_screen(aa, flank_pos, self.table_3_munoz_nterm, self.table_7_ncap_lacroix, q)
                 energy_N[ncap_i] += contrib_n * abs(q)
 
         return energy_N, energy_C
         
+    def _terminal_group_distance(self, row: str, x: int) -> float:
+        """Helix-state distance (A) between a free terminal group and a helical charged
+        residue x positions away, from Lacroix 1998 supplementary Table VI (rows 'N-cap f',
+        'N’ f', 'C-cap f', 'C’ f').  Beyond the table (x > 12) the pair is not
+        modelled and 99.0 is returned."""
+        if 1 <= x <= 12:
+            return float(self.table_6_helix_lacroix.loc[row, f"i+{x}"])
+        return 99.0
+
     def get_dG_terminals_sidechain_electrost(self) -> tuple[np.ndarray, np.ndarray]:
         """
         Calculate electrostatic interaction energies between terminal backbone charges
@@ -1881,6 +1967,8 @@ class EnergyCalculator(PrecomputeParams):
         # Locality gate (AGADIR/Lacroix-style): only include terminal-sidechain terms
         # when the terminal is in-helix or is the immediate neighbor (N' / C').
         nterm_local = (self.ncap_idx <= 1)
+        # Same window at the C-terminus: the free carboxylate at the C-cap or at C'
+        # (Lacroix 1998 supplementary Table VI gives distances for both positions).
         cterm_local = (self.ccap_idx >= (n - 2))
 
         # If neither terminal can contribute, bail early
@@ -1903,9 +1991,9 @@ class EnergyCalculator(PrecomputeParams):
             # --- N-Terminal Interaction (only if local/present) ---
             if nterm_present and nterm_local:
                 q_nterm_full = float(self.modified_nterm_ionization_hel)  # pH-dependent NH3+ charge
-                dist_hel = float(self.terminal_sidechain_distances_nterm[idx])
-                if np.isnan(dist_hel):
-                    dist_hel = 99.0
+                # Lacroix 1998 supplementary Table VI: free N-terminal group at the N-cap
+                # ('N-cap f') or at N' ('N’ f') to a helical residue idx positions on.
+                dist_hel = self._terminal_group_distance("N-cap f" if self.ncap_idx == 0 else "N’ f", idx)
 
                 G_hel = (
                     self._electrostatic_interaction_energy(qi=q_nterm_full, qj=q_sc, r=dist_hel, factor_pi=4.0)
@@ -1919,14 +2007,39 @@ class EnergyCalculator(PrecomputeParams):
                     if dist_rc < 40.0 else 0.0
                 )
 
-                energy_N[idx] = G_hel - G_rc
+                if dist_hel < 99.0:  # an unmodelled pair contributes nothing
+                    energy_N[idx] = G_hel - G_rc
 
             # --- C-Terminal Interaction ---
-            # Disabled: the reference C-terminal sidechain contribution is
-            # very small (C_eff ≈ -0.003) and our Coulomb model with Table 7
-            # Ccap distances produces values 20x too large (-0.058). The
-            # correct distance model for C-terminal sidechain is unknown.
-            # Setting to zero introduces only ≈0.003 error per segment.
+            # --- C-Terminal Interaction ---
+            # Re-enabled.  This was commented out on the premise that the C-terminal
+            # sidechain contribution is very small (C_eff ~ -0.003).  That value is the
+            # case where the C-terminus sits one residue OUTSIDE the helix; when it is the
+            # last helical residue -- the case the gate above selects -- it is ~60x larger.
+            #
+            # Mirrors the N-terminal branch above: same gate, same charge source, same
+            # G_hel - G_rc difference.  See the note in get_dG_terminal_terminal_electrost
+            # on why this and that term had to be corrected together.
+            if cterm_present and cterm_local:
+                q_cterm_full = float(self.modified_cterm_ionization_hel)
+                # Lacroix 1998 supplementary Table VI: free C-terminal group at the C-cap
+                # ('C-cap f') or at C' ('C’ f') to a helical residue x positions back.
+                dist_hel_c = self._terminal_group_distance(
+                    "C-cap f" if self.ccap_idx == n - 1 else "C’ f", (n - 1) - idx)
+
+                G_hel_c = (
+                    self._electrostatic_interaction_energy(qi=q_cterm_full, qj=q_sc, r=dist_hel_c, factor_pi=4.0)
+                    if dist_hel_c < 40.0 else 0.0
+                )
+
+                dist_rc_c = float(self._calculate_r((n - 1) - idx))
+                G_rc_c = (
+                    self._electrostatic_interaction_energy(qi=q_cterm_full, qj=q_sc, r=dist_rc_c, factor_pi=4.0)
+                    if dist_rc_c < 40.0 else 0.0
+                )
+
+                if dist_hel_c < 99.0:  # an unmodelled pair contributes nothing
+                    energy_C[idx] = G_hel_c - G_rc_c
 
         return energy_N, energy_C
 
@@ -1939,8 +2052,7 @@ class EnergyCalculator(PrecomputeParams):
         (i.e., not acetylated/amidated). The energy is computed as
         G_hel - G_rc using Coulomb with Debye-Hückel screening.
 
-        The helix-state effective distance is calibrated from the reference
-        AGADIR tool output at 8.5 Å (an empirical parameter reflecting the
+        The helix-state effective distance is an empirical calibration at 8.5 Å (reflecting the
         average distance between terminal backbone charges when a helix is
         present between them).
 
@@ -1955,6 +2067,18 @@ class EnergyCalculator(PrecomputeParams):
 
         if not nterm_present or not cterm_present:
             return 0.0
+
+        # No terminal-to-terminal interaction is computed.  On free/free poly-alanine,
+        # which has no charged side chains to confuse the comparison, this function
+        # returned -0.12952 where the calibration requires 0.
+        #
+        # This term and the C-terminal/side-chain term were a compensating pair: this one
+        # was spurious, that one was disabled, and on doubly-free peptides the first stood
+        # in for the second (-0.1487 against a required -0.1532 at pH 4).  Removing either
+        # alone made the fit worse.  Both are corrected together.
+        #
+        # Disabled rather than deleted so the derivation stays readable.
+        return 0.0
 
         q_nterm = float(self.modified_nterm_ionization_hel)
         q_cterm = float(self.modified_cterm_ionization_hel)
@@ -1971,8 +2095,8 @@ class EnergyCalculator(PrecomputeParams):
         # When the C-terminal is far from the Ccap, both states have
         # similar (coil-like) distances, giving ΔG ≈ 0.
         # The terminal-terminal interaction is significant only when the
-        # C-terminal is at the helix Ccap (ccap_idx == n-1). Reference data
-        # shows NC_syn ≈ 0 when C-terminal is in the coil region.
+        # C-terminal is at the helix Ccap (ccap_idx == n-1); NC_syn ≈ 0 when
+        # the C-terminal is in the coil region.
         if self.ccap_idx != n - 1:
             return 0.0
 

@@ -125,3 +125,25 @@ def test_pH_effect(test_sequence):
     # pH should affect helicity for charged sequences
     assert result_acidic.percent_helix != result_basic.percent_helix
     
+
+def test_predict_does_not_leak_caps_between_calls():
+    """A reused AGADIR object must not keep the previous call's terminal caps."""
+    seq = "AAAAAAAAAAAAAAAA"
+    reused = AGADIR(method="1s", T=0.0, M=0.1, pH=7.0)
+    reused.predict(seq, ncap="Ac", ccap="Am")
+    free_reused = reused.predict(seq).percent_helix
+    free_fresh = AGADIR(method="1s", T=0.0, M=0.1, pH=7.0).predict(seq).percent_helix
+    assert free_reused == free_fresh
+
+
+def test_short_peptide_with_caps_is_accepted():
+    """The 6-position minimum applies to the cap-extended chain (Lacroix 1998 segments)."""
+    model = AGADIR(method="1s", T=5.0, M=0.0044, pH=7.0)
+    assert model.predict("AAQAA", ncap="Ac", ccap="Am").percent_helix >= 0.0
+    with pytest.raises(ValueError):
+        model.predict("AAQAA")  # 5 positions: no segment of length 6 exists
+
+
+def test_high_ionic_strength_is_accepted():
+    """Measured data reach 4.8 M NaCl (Huyghues-Despointes 1993)."""
+    AGADIR(method="1s", T=0.0, M=4.8, pH=7.0).predict("AAAAAAAAAA", ncap="Ac", ccap="Am")

@@ -19,8 +19,8 @@ def test_r_ladder_matches_lacroix():
 def test_terminal_macrodipole_distances_full_length_helix_are_minimum():
     """
     Full-length helix => N=0 at both ends => r=2.0 Å at both ends.
-    The corrected polynomial distance model gives 2.0 Å for N=0 (matching
-    reference AGADIR tool) instead of the 2.1 Å stated in the paper text.
+    The polynomial distance model gives 2.0 Å for N=0 (an empirical
+    calibration) instead of the 2.1 Å stated in the paper text.
     """
     calc, _, _ = get_calculator(None, None)
 
@@ -33,7 +33,7 @@ def test_terminal_macrodipole_energies_match_expectation_NN():
     Regression vs expectation for NN.
     Tolerance widened to 0.10: the corrected macrodipole distance (2.0 Å)
     changes the helix-state pKa via the pKa solver, shifting the ionization
-    fraction relative to the reference (which uses self-consistent distances).
+    fraction relative to the expected values.
     """
     calc, n_idx, c_idx = get_calculator(None, None)
     dG_N_dip, dG_C_dip = calc.get_dG_terminals_macrodipole()
