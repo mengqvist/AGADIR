@@ -1353,6 +1353,13 @@ class EnergyCalculator(PrecomputeParams):
         else:
             energy[self.ncap_idx] = self.table_1_lacroix.loc[self.Ncap_AA, "Nc-1"]
 
+        # Lacroix 1998 (G_nonH): the N-capping contribution of Cys is 1 kcal/mol more
+        # favourable when it is charged, and that of His 1 kcal/mol more favourable when it
+        # is neutral.  Table I holds the neutral forms; weighted by helix-state ionisation.
+        if self.Ncap_AA in ("C", "H"):
+            q_cap = abs(float(self.modified_seq_ionization_hel[self.ncap_idx]))
+            energy[self.ncap_idx] += (-1.0 if self.Ncap_AA == "C" else 1.0) * q_cap
+
         # capping values are treated as temperature-independent
         return energy
 
@@ -1372,6 +1379,14 @@ class EnergyCalculator(PrecomputeParams):
         # Cc-1 	Normal C-cap values
         else:
             energy[self.ccap_idx] = self.table_1_lacroix.loc[self.Ccap_AA, "Cc-1"]
+
+        # Lacroix 1998 (G_nonH): uncharged Asp at the C-cap H-bonds the C3 carbonyl as Asn
+        # does and takes Asn's C-capping value; Table I holds the charged form.
+        if self.Ccap_AA == "D":
+            col = "Cc-2" if self.Cprime_AA == "P" else "Cc-1"
+            q_cap = abs(float(self.modified_seq_ionization_hel[self.ccap_idx]))
+            energy[self.ccap_idx] = (q_cap * self.table_1_lacroix.loc["D", col]
+                                     + (1.0 - q_cap) * self.table_1_lacroix.loc["N", col])
 
         # capping values are treated as temperature-independent
         return energy
@@ -1731,23 +1746,22 @@ class EnergyCalculator(PrecomputeParams):
 
     def get_dG_sidechain_macrodipole(self) -> tuple[np.ndarray, np.ndarray]:
         """
-        Calculate the interaction energy between charged side-chains and the helix macrodipole
-        using screened Coulomb formulas.
+        Calculate the interaction energy between charged side-chains and the helix macrodipole.
 
-        The helix macrodipole is modeled as ±0.5e charges at the N- and C-terminal poles.
-        Each charged sidechain residue (Ncap to Ccap inclusive) interacts with both poles:
+        The macrodipole is treated as local: the field of a helix end comes from the
+        unpaired amides of the first turn or carbonyls of the last turn, so each charged
+        residue (Ncap to Ccap inclusive) interacts with the NEAREST helix end only (ties go
+        to the N-terminus), with the law of Munoz 1995-II eq. 11:
 
-        N-terminal interaction (1/d screened Coulomb, fixed εr=44):
-            Nter = q × B_N / d_N × exp(−κ × d_N)
+            N-terminal end:  g =  q × K / d_N² × exp(−κ × d_N)
+            C-terminal end:  g = −q × K / d_C² × exp(−κ × d_C)
 
-        C-terminal interaction (1/d² screened Coulomb, distance-dependent εr = 5.0 × d_Å):
-            Cter = −q × A_C / d_C² × exp(−κ × d_C)
+        K = 0.6 × 4.9² kcal Å² mol⁻¹, d_N / d_C are distances from the charged group to that
+        end (Coulomb distance tables, after Lacroix 1998 Table VII), and residues more than
+        nine positions from the cap contribute nothing.
 
-        Total per-residue:
-            g_dipole = 0.5 × (Nter + Cter)
-
-        where d_N, d_C are distances from Table VII (Lacroix 1998) in 0.1Å units,
-        and the 0.5 factor represents the macrodipole half-charge.
+        Flanking residues outside the helix use the Munoz 1995-II Table 3 values (screened
+        Coulomb at the Lacroix 1998 flank distances for Cys and Tyr), assigned to the cap.
 
         An empirical correction δ = −0.2162 kcal/mol is added for lysine at the Ccap position.
 
@@ -1765,6 +1779,7 @@ class EnergyCalculator(PrecomputeParams):
         J_per_kcal = 4184.0
         four_pi_eps0 = 4.0 * math.pi * self.epsilon_0
 
+        # B_N and A_C serve the screened-Coulomb fallback for flanking residues below.
         # N-terminal: standard Coulomb with εr_N = 44
         # B_N = q_pole × e² × NA / (4π × ε₀ × εr_N × unit_01A × J_per_kcal)
         epsilon_r_N = 44.0
@@ -1777,6 +1792,11 @@ class EnergyCalculator(PrecomputeParams):
 
         # Debye-Hückel screening factor in 0.1Å units
         kappa_01A = self.kappa * unit_01A
+
+        # Helical residues (Munoz 1995-II eq. 11): dG = 0.6 × (4.9 / r)² kcal/mol per unit
+        # charge, r in Å -- calibrated on a charged His 4.9 Å from the last turn of a protein
+        # helix (-0.6 kcal/mol).  In 0.1 Å units: 0.6 × 49² = 1440.6.
+        K_DIPOLE = 0.6 * 49.0**2
 
         # K-at-Ccap empirical correction (kcal/mol)
         DELTA_K_CCAP = -0.2162
@@ -1878,15 +1898,15 @@ class EnergyCalculator(PrecomputeParams):
             if d_N < 1.0 or d_C < 1.0:
                 continue
 
-            # N-terminal: screened Coulomb 1/d (positive for cations = destabilizing)
-            Nter = q * B_N / d_N * math.exp(-kappa_01A * d_N)
-
-            # C-terminal: screened Coulomb 1/d² (negative for cations = stabilizing)
-            Cter = -q * A_C / (d_C * d_C) * math.exp(-kappa_01A * d_C)
-
-            # g_dipole = 0.5 × (Nter + Cter), split into N and C arrays
-            energy_N[idx] = 0.5 * Nter
-            energy_C[idx] = 0.5 * Cter
+            # The macrodipole acts locally: a charge interacts with the end of the helix it
+            # is nearest to (ties go to the N-terminus), not with the far end as well.
+            # Munoz 1995-II eq. 11 law, screened; zero beyond nine positions from the cap.
+            # Cations are destabilised at the N-terminus and stabilised at the C-terminus.
+            if n_pos <= c_pos:
+                if n_pos <= 9:
+                    energy_N[idx] = q * K_DIPOLE / (d_N * d_N) * math.exp(-kappa_01A * d_N)
+            elif c_pos <= 9:
+                energy_C[idx] = -q * K_DIPOLE / (d_C * d_C) * math.exp(-kappa_01A * d_C)
 
             # K-at-Ccap correction: empirical extra stabilization for lysine at Ccap
             if aa == 'K' and c_pos == 0:
