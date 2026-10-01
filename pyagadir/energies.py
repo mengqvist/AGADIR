@@ -733,7 +733,9 @@ class PrecomputeParams:
         The function handles the following cases:
         1. Both residues in helix: use table 6 helix distances
         2. Both residues in coil: use table 6 coil distances 
-        3. One in helix, one in coil: combine distances through the helix boundary
+        3. One in helix, one in coil: only N' or C' interacts with helical residues, at the
+           table 6 N' / C' (C'G-cap when the C-cap is Gly) distances; other such pairs are
+           not modelled
         Special case: Use HelixRest for pairs containing Tyrosine and Cysteine since they're missing from table
         """
         self.sidechain_sidechain_distances_hel = np.full((len(self.seq_list), len(self.seq_list)), np.nan)
@@ -820,26 +822,21 @@ class PrecomputeParams:
                     if not (is_N_prime or is_C_prime):
                         distance_angstrom = 99
                     else:
-                        # If it is N' or C', use your existing logic (or simplified Table 6 Coil lookup)
-                        # Your existing logic for summing paths is acceptable specifically for N'/C'
-                        # because they are adjacent to the helix boundaries.
-                        if idx1 in self.helix_indices:
-                            helix_idx = idx1
+                        # Lacroix 1998 supplementary Table VI gives these distances directly:
+                        # row N' (residue N' to a helical residue i+x), row C' (residue C' to a
+                        # helical residue i-x), and row C'G-cap for C' when the C-cap is a Gly
+                        # (the row's name; its printed caption, "when C' is a Gly", cannot apply
+                        # to a charged C').  Beyond the table the pair is not modelled.
+                        helix_idx = idx1 if idx1 in self.helix_indices else idx2
+                        x = abs(coil_idx - helix_idx)
+                        if is_N_prime:
+                            row = "N’"
                         else:
-                            helix_idx = idx2
-                            
-                        if coil_idx < self.ncap_idx:
-                            coil_separation = self.ncap_idx - coil_idx
-                            helix_separation = helix_idx - self.ncap_idx
-                            d_coil = 0.0 if coil_separation == 0 else self.table_6_coil_lacroix.loc['RcoilRest', f"i+{coil_separation}"]
-                            d_helix = 0.0 if helix_separation == 0 else self.table_6_helix_lacroix.loc['HelixRest', f"i+{helix_separation}"]
+                            row = "C’G-cap" if self.seq_list[self.ccap_idx] == "G" else "C’"
+                        if row is None or not 1 <= x <= 12:
+                            distance_angstrom = 99
                         else:
-                            coil_separation = coil_idx - self.ccap_idx
-                            helix_separation = self.ccap_idx - helix_idx
-                            d_coil = 0.0 if coil_separation == 0 else self.table_6_coil_lacroix.loc['RcoilRest', f"i+{coil_separation}"]
-                            d_helix = 0.0 if helix_separation == 0 else self.table_6_helix_lacroix.loc['HelixRest', f"i+{helix_separation}"]
-                            
-                        distance_angstrom = d_coil + d_helix
+                            distance_angstrom = float(self.table_6_helix_lacroix.loc[row, f"i+{x}"])
                 
             self.sidechain_sidechain_distances_hel[idx1, idx2] = distance_angstrom
             self.sidechain_sidechain_distances_hel[idx2, idx1] = distance_angstrom
@@ -1590,6 +1587,12 @@ class EnergyCalculator(PrecomputeParams):
             if idx == self.ncap_idx or idx + 3 == self.ccap_idx:
                 base = 0.0
 
+            # An Asp/Glu - Lys/Arg/His pair interacts ionically.  That interaction is the
+            # Coulomb term, which is weighted by both ionisation degrees and so vanishes as
+            # either residue loses its charge; Table IV adds nothing for such a pair.
+            if {AAi, AAi3} & {"D", "E"} and {AAi, AAi3} & {"K", "R", "H"}:
+                base = 0.0
+
             # If both are titratable, Table IV is intended for "not both charged" states.
             if (AAi in (self.pos_charge_aa + self.neg_charge_aa)) and (AAi3 in (self.pos_charge_aa + self.neg_charge_aa)):
                 p_i = abs(self.modified_seq_ionization_hel[idx])
@@ -1645,6 +1648,12 @@ class EnergyCalculator(PrecomputeParams):
             # side chain-side chain pairs only INSIDE the helix (Lacroix 1998, G_SD): a pair
             # involving the N-cap or C-cap residue contributes nothing
             if idx == self.ncap_idx or idx + 4 == self.ccap_idx:
+                base = 0.0
+
+            # An Asp/Glu - Lys/Arg/His pair interacts ionically.  That interaction is the
+            # Coulomb term, which is weighted by both ionisation degrees and so vanishes as
+            # either residue loses its charge; Table IV adds nothing for such a pair.
+            if {AAi, AAi4} & {"D", "E"} and {AAi, AAi4} & {"K", "R", "H"}:
                 base = 0.0
 
             # Suppress Table IV in the both-charged microstate if both residues are titratable
@@ -2021,7 +2030,10 @@ class EnergyCalculator(PrecomputeParams):
                 )
 
                 # RC distance: N = idx residues between N-terminus and residue idx
-                dist_rc = float(self._calculate_r(idx))
+                # Lacroix 1998 supplementary Table VI, row RcoilRest: random-coil distance for
+                # charged pairs without a residue-specific row, such as terminus-side chain.
+                dist_rc = (float(self.table_6_coil_lacroix.loc["RcoilRest", f"i+{idx}"])
+                           if 1 <= idx <= 12 else 99.0)
                 G_rc = (
                     self._electrostatic_interaction_energy(qi=q_nterm_full, qj=q_sc, r=dist_rc, factor_pi=4.0)
                     if dist_rc < 40.0 else 0.0
@@ -2052,7 +2064,9 @@ class EnergyCalculator(PrecomputeParams):
                     if dist_hel_c < 40.0 else 0.0
                 )
 
-                dist_rc_c = float(self._calculate_r((n - 1) - idx))
+                x_c = (n - 1) - idx
+                dist_rc_c = (float(self.table_6_coil_lacroix.loc["RcoilRest", f"i+{x_c}"])
+                             if 1 <= x_c <= 12 else 99.0)
                 G_rc_c = (
                     self._electrostatic_interaction_energy(qi=q_cterm_full, qj=q_sc, r=dist_rc_c, factor_pi=4.0)
                     if dist_rc_c < 40.0 else 0.0
