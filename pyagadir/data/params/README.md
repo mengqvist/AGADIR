@@ -104,6 +104,13 @@ The distances in Å shown in this table have been obtained from the analysis of 
 The distances (Å) used by the side chain-macrodipole term for charged residues inside the helix. They are identical to tables 7 above (Lacroix 1998, supplementary Table VII) and are kept as separate files so that this term's distances can be varied independently of the flanking-residue screening, which reads tables 7.
 
 ## pka_values
-The pKa values for N- and C-termini as well as ionizable side chains when incorporated in a peptide. The values are from Nozaki and Tanford 1969 (https://doi.org/10.1016/S0076-6879(67)11088-4). The value for Arginine (R) is from a different source.
+The pKa values for N- and C-termini as well as ionizable side chains when incorporated in a peptide. These are reference (base) pKa values: the pKa of each group in an unstructured peptide, before the model's helix- and coil-state electrostatic shifts are applied. Rule: a value measured in an unstructured peptide at the conditions of the helicity data (0-5 C, low salt) is used where one exists, otherwise the value measured in unstructured alanine pentapeptides.
+
+- Nterm 8.00, Cterm 3.67, Glu 4.25, His 6.54, Cys 8.55, Tyr 9.84, Lys 10.40: Thurlkill, Grimsley, Scholtz & Pace (2006) Protein Sci. 15, 1214, Table 2 (Ac-AAXAA-NH2, 0.1 M KCl, 25 C).
+- Asp 3.91: Huyghues-Despointes, Scholtz & Baldwin (1993) Protein Sci. 2, 80 (Ac-AADAA-NH2 by NMR, 0 C, 10 mM NaCl). This is the same peptide Thurlkill et al. measured at 3.67, but at the conditions of the helicity data.
+- Arg 13.8: Fitch, Platzer, Okon, Garcia-Moreno & McIntosh (2015) Protein Sci. 24, 752.
+- Sc (succinyl) 4.5: unchanged; no measured source found.
+
+These replace values from Nozaki and Tanford (1967), which were measured in model compounds rather than peptides.
 
 
