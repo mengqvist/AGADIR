@@ -31,6 +31,8 @@ Neutral	Intrinsic helical propensities at positions higher than N4.
 
 The Glu (E) row departs from the published table: its charged columns are 0.172 higher and its Neutral value is 1.046, so that Glu⁻ and Glu⁰ cost +0.572 and +0.366 kcal/mol relative to Ala, the measured helix propensities of Chakrabartty et al. (1994, Protein Sci. 3, 843; Table 2), the source the published table cites for neutral and charged propensities.
 
+The Ile (I) and Leu (L) N3 cells depart from the published table: I 1.08 → 1.26 and L 0.98 → 1.21. The published N3 values come from Petukhov et al. (1998, J. Mol. Biol. 278, 279; peptides Ac-AAXAAAAARAAARGGY-NH2) and were fitted in an earlier version of the model. With this model's other terms they no longer reproduce those peptides. Each cell was re-fitted so that the model's X3/Ala helicity ratio equals the measured one in two independent hosts, and the mean of the two fits was taken. The fits were +0.20 (Ile) and +0.16 (Leu) for Petukhov et al. (1998), and +0.17 and +0.30 for Iqbalsyah & Doig (2004, Protein Sci. 13, 32; Ac-AAXAAAAKAAAAKAGY-NH2). Met, Val and Gly N3 cells reproduce Petukhov et al. (1998) as published and are unchanged.
+
 
 ## table_2_lacroix
 Energy contributions in Kcal/mol * 100, of the interactions between different amino acids at positions N' (rows) and N4 (columns) in a hydrophobic staple motif. 
