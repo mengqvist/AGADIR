@@ -1,0 +1,39 @@
+peptide_id	sequence	ncap	ccap	n_res	pH	T_C	ionic_strength_M	quantity	value	error	unit	source_table	flags
+TA	TPAEAAAAAYKA		Am	12	7.5	5.0	0.003	minus_theta222	6800		deg cm2 dmol-1	Table 1	N-term free (printed unblocked)
+TA	TPAEAAAAAYKA		Am	12	7.5	5.0	0.003	helix_percent	21.0		%	Table 1	N-term free (printed unblocked);uncorrected for aromatic CD
+TA	TPAEAAAAAYKA		Am	12	7.5	5.0	0.003	helix_percent_aromatic_corrected	37.2		%	Table 1	N-term free (printed unblocked)
+TD	TPAEDAAAAYKA		Am	12	7.5	5.0	0.003	minus_theta222	16700		deg cm2 dmol-1	Table 1	N-term free (printed unblocked)
+TD	TPAEDAAAAYKA		Am	12	7.5	5.0	0.003	helix_percent	52.0		%	Table 1	N-term free (printed unblocked);uncorrected for aromatic CD
+TD	TPAEDAAAAYKA		Am	12	7.5	5.0	0.003	helix_percent_aromatic_corrected	68.5		%	Table 1	N-term free (printed unblocked)
+DA	DPAEAAAAAYKA		Am	12	7.5	5.0	0.003	minus_theta222	6500		deg cm2 dmol-1	Table 1	N-term free (printed unblocked)
+DA	DPAEAAAAAYKA		Am	12	7.5	5.0	0.003	helix_percent	20.1		%	Table 1	N-term free (printed unblocked);uncorrected for aromatic CD
+DA	DPAEAAAAAYKA		Am	12	7.5	5.0	0.003	helix_percent_aromatic_corrected	36.3		%	Table 1	N-term free (printed unblocked)
+DD	DPAEDAAAAYKA		Am	12	7.5	5.0	0.003	minus_theta222	11600		deg cm2 dmol-1	Table 1	N-term free (printed unblocked)
+DD	DPAEDAAAAYKA		Am	12	7.5	5.0	0.003	helix_percent	36.0		%	Table 1	N-term free (printed unblocked);uncorrected for aromatic CD
+DD	DPAEDAAAAYKA		Am	12	7.5	5.0	0.003	helix_percent_aromatic_corrected	52.4		%	Table 1	N-term free (printed unblocked)
+S1*	SEDELKAAEAAFKRHGPY		Am	18	7.5	5.0	0.003	minus_theta222	9381		deg cm2 dmol-1	Table 1	N-term free (printed unblocked)
+S1*	SEDELKAAEAAFKRHGPY		Am	18	7.5	5.0	0.003	helix_percent	27.0		%	Table 1	N-term free (printed unblocked);uncorrected for aromatic CD
+S1*	SEDELKAAEAAFKRHGPY		Am	18	7.5	5.0	0.003	helix_percent_aromatic_corrected	35.7		%	Table 1	N-term free (printed unblocked)
+A1	AEDELKAAEAAFKRHGPY		Am	18	7.5	5.0	0.003	minus_theta222	6958		deg cm2 dmol-1	Table 1	N-term free (printed unblocked)
+A1	AEDELKAAEAAFKRHGPY		Am	18	7.5	5.0	0.003	helix_percent	20.1		%	Table 1	N-term free (printed unblocked);uncorrected for aromatic CD
+A1	AEDELKAAEAAFKRHGPY		Am	18	7.5	5.0	0.003	helix_percent_aromatic_corrected	28.8		%	Table 1	N-term free (printed unblocked)
+S1'	SPAELKAAEAAFKRHGPY		Am	18	7.5	5.0	0.003	minus_theta222	8796		deg cm2 dmol-1	Table 1	N-term free (printed unblocked)
+S1'	SPAELKAAEAAFKRHGPY		Am	18	7.5	5.0	0.003	helix_percent	25.3		%	Table 1	N-term free (printed unblocked);uncorrected for aromatic CD
+S1'	SPAELKAAEAAFKRHGPY		Am	18	7.5	5.0	0.003	helix_percent_aromatic_corrected	34.0		%	Table 1	N-term free (printed unblocked)
+A1'	APAELKAAEAAFKRHGPY		Am	18	7.5	5.0	0.003	minus_theta222	3147		deg cm2 dmol-1	Table 1	N-term free (printed unblocked)
+A1'	APAELKAAEAAFKRHGPY		Am	18	7.5	5.0	0.003	helix_percent	9.0		%	Table 1	N-term free (printed unblocked);uncorrected for aromatic CD
+A1'	APAELKAAEAAFKRHGPY		Am	18	7.5	5.0	0.003	helix_percent_aromatic_corrected	17.7		%	Table 1	N-term free (printed unblocked)
+S12'NPY	SEDEDLARYYSALRHYINLITRQRY		Am	25	7.5	5.0	0.003	minus_theta222	7809		deg cm2 dmol-1	Table 1	N-term free (printed unblocked)
+S12'NPY	SEDEDLARYYSALRHYINLITRQRY		Am	25	7.5	5.0	0.003	helix_percent	21.4		%	Table 1	N-term free (printed unblocked);uncorrected for aromatic CD
+S12'NPY	SEDEDLARYYSALRHYINLITRQRY		Am	25	7.5	5.0	0.003	helix_percent_aromatic_corrected	46.4		%	Table 1	N-term free (printed unblocked)
+A12'NPY	AEDEDLARYYSALRHYINLITRQRY		Am	25	7.5	5.0	0.003	minus_theta222	8592		deg cm2 dmol-1	Table 1	N-term free (printed unblocked)
+A12'NPY	AEDEDLARYYSALRHYINLITRQRY		Am	25	7.5	5.0	0.003	helix_percent	23.6		%	Table 1	N-term free (printed unblocked);uncorrected for aromatic CD
+A12'NPY	AEDEDLARYYSALRHYINLITRQRY		Am	25	7.5	5.0	0.003	helix_percent_aromatic_corrected	48.6		%	Table 1	N-term free (printed unblocked)
+ND17	NAQEDAAAAEAEAKGGY		Am	17	7.5	5.0	0.003	minus_theta222	12178		deg cm2 dmol-1	Table 1	N-term free (printed unblocked)
+ND17	NAQEDAAAAEAEAKGGY		Am	17	7.5	5.0	0.003	helix_percent	35.4		%	Table 1	N-term free (printed unblocked);uncorrected for aromatic CD
+CD17	CAQEDAAAAEAEAKGGY		Am	17	7.5	5.0	0.003	minus_theta222	8403		deg cm2 dmol-1	Table 1	N-term free (printed unblocked)
+CD17	CAQEDAAAAEAEAKGGY		Am	17	7.5	5.0	0.003	helix_percent	24.4		%	Table 1	N-term free (printed unblocked);uncorrected for aromatic CD
+NE17	NAQEEAAAAEAEAKGGY		Am	17	7.5	5.0	0.003	minus_theta222	11976		deg cm2 dmol-1	Table 1	N-term free (printed unblocked)
+NE17	NAQEEAAAAEAEAKGGY		Am	17	7.5	5.0	0.003	helix_percent	34.8		%	Table 1	N-term free (printed unblocked);uncorrected for aromatic CD
+CE17	CAQEEAAAAEAEAKGGY		Am	17	7.5	5.0	0.003	minus_theta222	8508		deg cm2 dmol-1	Table 1	N-term free (printed unblocked);SEQUENCE CORRECTED: printed NAQEE... (duplicates NE17); name and CD17 pair imply CAQEE...
+CE17	CAQEEAAAAEAEAKGGY		Am	17	7.5	5.0	0.003	helix_percent	24.7		%	Table 1	N-term free (printed unblocked);SEQUENCE CORRECTED: printed NAQEE... (duplicates NE17); name and CD17 pair imply CAQEE...;uncorrected for aromatic CD

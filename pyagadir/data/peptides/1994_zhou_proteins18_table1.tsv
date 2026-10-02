@@ -1,0 +1,25 @@
+peptide_id	sequence	ncap	ccap	n_res	pH	T_C	ionic_strength_M	quantity	value	error	unit	source_table	flags
+S3_parent	YMSEDELKAAEAAFKRHGPT	Ac	Am	20	6.0	4.0	0.01	minus_theta222	16000		deg cm2 dmol-1	Table I	parent
+S3_parent	YMSEDELKAAEAAFKRHGPT	Ac	Am	20	6.0	4.0	0.01	helix_percent	50		%	Table I	parent
+N3	YMNEDELKAAEAAFKRHGPT	Ac	Am	20	6.0	4.0	0.01	minus_theta222	14100		deg cm2 dmol-1	Table I	N-cap series
+N3	YMNEDELKAAEAAFKRHGPT	Ac	Am	20	6.0	4.0	0.01	helix_percent	44		%	Table I	N-cap series
+G3	YMGEDELKAAEAAFKRHGPT	Ac	Am	20	6.0	4.0	0.01	minus_theta222	10580		deg cm2 dmol-1	Table I	N-cap series
+G3	YMGEDELKAAEAAFKRHGPT	Ac	Am	20	6.0	4.0	0.01	helix_percent	33		%	Table I	N-cap series
+A3	YMAEDELKAAEAAFKRHGPT	Ac	Am	20	6.0	4.0	0.01	minus_theta222	7700		deg cm2 dmol-1	Table I	N-cap series
+A3	YMAEDELKAAEAAFKRHGPT	Ac	Am	20	6.0	4.0	0.01	helix_percent	24		%	Table I	N-cap series
+D6	YMSEDDLKAAEAAFKRHGPT	Ac	Am	20	6.0	4.0	0.01	minus_theta222	13200		deg cm2 dmol-1	Table I	N3 series
+D6	YMSEDDLKAAEAAFKRHGPT	Ac	Am	20	6.0	4.0	0.01	helix_percent	41		%	Table I	N3 series
+Q6	YMSEDQLKAAEAAFKRHGPT	Ac	Am	20	6.0	4.0	0.01	minus_theta222	12100		deg cm2 dmol-1	Table I	N3 series
+Q6	YMSEDQLKAAEAAFKRHGPT	Ac	Am	20	6.0	4.0	0.01	helix_percent	38		%	Table I	N3 series
+A6	YMSEDALKAAEAAFKRHGPT	Ac	Am	20	6.0	4.0	0.01	minus_theta222	12000		deg cm2 dmol-1	Table I	N3 series
+A6	YMSEDALKAAEAAFKRHGPT	Ac	Am	20	6.0	4.0	0.01	helix_percent	38		%	Table I	N3 series
+G6	YMSEDGLKAAEAAFKRHGPT	Ac	Am	20	6.0	4.0	0.01	minus_theta222	7000		deg cm2 dmol-1	Table I	N3 series
+G6	YMSEDGLKAAEAAFKRHGPT	Ac	Am	20	6.0	4.0	0.01	helix_percent	22		%	Table I	N3 series
+S10	YMSEDELKASEAAFKRHGPT	Ac	Am	20	6.0	4.0	0.01	minus_theta222	9300		deg cm2 dmol-1	Table I	middle series
+S10	YMSEDELKASEAAFKRHGPT	Ac	Am	20	6.0	4.0	0.01	helix_percent	29		%	Table I	middle series
+G10	YMSEDELKAGEAAFKRHGPT	Ac	Am	20	6.0	4.0	0.01	minus_theta222	5560		deg cm2 dmol-1	Table I	middle series
+G10	YMSEDELKAGEAAFKRHGPT	Ac	Am	20	6.0	4.0	0.01	helix_percent	17		%	Table I	middle series
+N18	YMSEDELKAAEAAFKRHNPT	Ac	Am	20	6.0	4.0	0.01	minus_theta222	20000		deg cm2 dmol-1	Table I	C-cap series
+N18	YMSEDELKAAEAAFKRHNPT	Ac	Am	20	6.0	4.0	0.01	helix_percent	63		%	Table I	C-cap series
+S1	SEDELKAAEAAFKRHGPY	Ac	Am	18	6.0	4.0	0.01	minus_theta222	14000		deg cm2 dmol-1	Table I	truncated
+S1	SEDELKAAEAAFKRHGPY	Ac	Am	18	6.0	4.0	0.01	helix_percent	45		%	Table I	truncated

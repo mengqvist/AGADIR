@@ -1,0 +1,47 @@
+peptide_id	sequence	ncap	ccap	n_res	pH	T_C	ionic_strength_M	quantity	value	error	unit	source_table	flags
+N2_E-	AEAAAAKAAAAKAAGY	Ac	Am	16	7.01	0.0	0.019	minus_theta222	22050		deg cm2 dmol-1	Table 1	
+N2_E-	AEAAAAKAAAAKAAGY	Ac	Am	16	7.01	0.0	0.019	helix_percent	65	3	%	Table 1	
+N2_D-	ADAAAAKAAAAKAAGY	Ac	Am	16	7.01	0.0	0.019	minus_theta222	20776		deg cm2 dmol-1	Table 1	
+N2_D-	ADAAAAKAAAAKAAGY	Ac	Am	16	7.01	0.0	0.019	helix_percent	62	3	%	Table 1	
+N2_A	AAAAAAKAAAAKAAGY	Ac	Am	16	7.01	0.0	0.019	minus_theta222	21799		deg cm2 dmol-1	Table 1	
+N2_A	AAAAAAKAAAAKAAGY	Ac	Am	16	7.01	0.0	0.019	helix_percent	65	3	%	Table 1	
+N2_E0	AEAAAAKAAAAKAAGY	Ac	Am	16	2.0	0.0	0.014	minus_theta222	19288		deg cm2 dmol-1	Table 1	hh_limit
+N2_E0	AEAAAAKAAAAKAAGY	Ac	Am	16	2.0	0.0	0.014	helix_percent	57	3	%	Table 1	hh_limit
+N2_L	ALAAAAKAAAAKAAGY	Ac	Am	16	7.01	0.0	0.019	minus_theta222	18646		deg cm2 dmol-1	Table 1	
+N2_L	ALAAAAKAAAAKAAGY	Ac	Am	16	7.01	0.0	0.019	helix_percent	55	3	%	Table 1	
+N2_V	AVAAAAKAAAAKAAGY	Ac	Am	16	7.01	0.0	0.019	minus_theta222	18438		deg cm2 dmol-1	Table 1	
+N2_V	AVAAAAKAAAAKAAGY	Ac	Am	16	7.01	0.0	0.019	helix_percent	55	3	%	Table 1	
+N2_Q	AQAAAAKAAAAKAAGY	Ac	Am	16	7.01	0.0	0.019	minus_theta222	18125		deg cm2 dmol-1	Table 1	
+N2_Q	AQAAAAKAAAAKAAGY	Ac	Am	16	7.01	0.0	0.019	helix_percent	54	3	%	Table 1	
+N2_T	ATAAAAKAAAAKAAGY	Ac	Am	16	7.01	0.0	0.019	minus_theta222	18229		deg cm2 dmol-1	Table 1	
+N2_T	ATAAAAKAAAAKAAGY	Ac	Am	16	7.01	0.0	0.019	helix_percent	54	3	%	Table 1	
+N2_I	AIAAAAKAAAAKAAGY	Ac	Am	16	7.01	0.0	0.019	minus_theta222	18021		deg cm2 dmol-1	Table 1	pct_vs_theta=53.40
+N2_I	AIAAAAKAAAAKAAGY	Ac	Am	16	7.01	0.0	0.019	helix_percent	54	3	%	Table 1	pct_vs_theta=53.40
+N2_S	ASAAAAKAAAAKAAGY	Ac	Am	16	7.01	0.0	0.019	minus_theta222	18125		deg cm2 dmol-1	Table 1	
+N2_S	ASAAAAKAAAAKAAGY	Ac	Am	16	7.01	0.0	0.019	helix_percent	54	3	%	Table 1	
+N2_M	AMAAAAKAAAAKAAGY	Ac	Am	16	7.01	0.0	0.019	minus_theta222	17500		deg cm2 dmol-1	Table 1	
+N2_M	AMAAAAKAAAAKAAGY	Ac	Am	16	7.01	0.0	0.019	helix_percent	52	3	%	Table 1	
+N2_D0	ADAAAAKAAAAKAAGY	Ac	Am	16	2.0	0.0	0.014	minus_theta222	17044		deg cm2 dmol-1	Table 1	hh_limit
+N2_D0	ADAAAAKAAAAKAAGY	Ac	Am	16	2.0	0.0	0.014	helix_percent	51	3	%	Table 1	hh_limit
+N2_H0	AHAAAAKAAAAKAAGY	Ac	Am	16	8.5	0.0	0.014	minus_theta222	17163		deg cm2 dmol-1	Table 1	hh_limit
+N2_H0	AHAAAAKAAAAKAAGY	Ac	Am	16	8.5	0.0	0.014	helix_percent	51	3	%	Table 1	hh_limit
+N2_R+	ARAAAAKAAAAKAAGY	Ac	Am	16	7.01	0.0	0.019	minus_theta222	16667		deg cm2 dmol-1	Table 1	pct_vs_theta=49.38
+N2_R+	ARAAAAKAAAAKAAGY	Ac	Am	16	7.01	0.0	0.019	helix_percent	50	3	%	Table 1	pct_vs_theta=49.38
+N2_W	AWAAAAKAAAAKAAGY	Ac	Am	16	7.01	0.0	0.019	minus_theta222	17396		deg cm2 dmol-1	Table 1	aromatic_cd
+N2_W	AWAAAAKAAAAKAAGY	Ac	Am	16	7.01	0.0	0.019	helix_percent	52	3	%	Table 1	aromatic_cd
+N2_C	ACAAAAKAAAAKAAGY	Ac	Am	16	7.01	0.0	0.019	minus_theta222	16083		deg cm2 dmol-1	Table 1	1 mM DTT
+N2_C	ACAAAAKAAAAKAAGY	Ac	Am	16	7.01	0.0	0.019	helix_percent	48	3	%	Table 1	1 mM DTT
+N2_K+	AKAAAAKAAAAKAAGY	Ac	Am	16	7.01	0.0	0.019	minus_theta222	16042		deg cm2 dmol-1	Table 1	
+N2_K+	AKAAAAKAAAAKAAGY	Ac	Am	16	7.01	0.0	0.019	helix_percent	48	3	%	Table 1	
+N2_F	AFAAAAKAAAAKAAGY	Ac	Am	16	7.01	0.0	0.019	minus_theta222	16354		deg cm2 dmol-1	Table 1	aromatic_cd;pct_vs_theta=48.46
+N2_F	AFAAAAKAAAAKAAGY	Ac	Am	16	7.01	0.0	0.019	helix_percent	49	3	%	Table 1	aromatic_cd;pct_vs_theta=48.46
+N2_N	ANAAAAKAAAAKAAGY	Ac	Am	16	7.01	0.0	0.019	minus_theta222	16563		deg cm2 dmol-1	Table 1	
+N2_N	ANAAAAKAAAAKAAGY	Ac	Am	16	7.01	0.0	0.019	helix_percent	49	3	%	Table 1	
+N2_G	AGAAAAKAAAAKAAGY	Ac	Am	16	7.01	0.0	0.019	minus_theta222	14063		deg cm2 dmol-1	Table 1	
+N2_G	AGAAAAKAAAAKAAGY	Ac	Am	16	7.01	0.0	0.019	helix_percent	42	3	%	Table 1	
+N2_H+	AHAAAAKAAAAKAAGY	Ac	Am	16	3.5	0.0	0.014	minus_theta222	10000		deg cm2 dmol-1	Table 1	hh_limit
+N2_H+	AHAAAAKAAAAKAAGY	Ac	Am	16	3.5	0.0	0.014	helix_percent	30	3	%	Table 1	hh_limit
+N2_P	APAAAAKAAAAKAAGY	Ac	Am	16	7.01	0.0	0.019	minus_theta222	12788		deg cm2 dmol-1	Table 1	pct_vs_theta=37.89
+N2_P	APAAAAKAAAAKAAGY	Ac	Am	16	7.01	0.0	0.019	helix_percent	36	3	%	Table 1	pct_vs_theta=37.89
+N2_Y	AYAAAAKAAAAKAAGY	Ac	Am	16	7.01	0.0	0.019	minus_theta222	15833		deg cm2 dmol-1	Table 1	aromatic_cd
+N2_Y	AYAAAAKAAAAKAAGY	Ac	Am	16	7.01	0.0	0.019	helix_percent	47	3	%	Table 1	aromatic_cd
