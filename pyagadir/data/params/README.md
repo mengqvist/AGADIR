@@ -33,6 +33,8 @@ The Glu (E) row departs from the published table: its charged columns are 0.172 
 
 The Ile (I) and Leu (L) N3 cells depart from the published table: I 1.08 → 1.26 and L 0.98 → 1.21. The published N3 values come from Petukhov et al. (1998, J. Mol. Biol. 278, 279; peptides Ac-AAXAAAAARAAARGGY-NH2) and were fitted in an earlier version of the model. With this model's other terms they no longer reproduce those peptides. Each cell was re-fitted so that the model's X3/Ala helicity ratio equals the measured one in two independent hosts, and the mean of the two fits was taken. The fits were +0.20 (Ile) and +0.16 (Leu) for Petukhov et al. (1998), and +0.17 and +0.30 for Iqbalsyah & Doig (2004, Protein Sci. 13, 32; Ac-AAXAAAAKAAAAKAGY-NH2). Met, Val and Gly N3 cells reproduce Petukhov et al. (1998) as published and are unchanged.
 
+Capping box: when the N-cap is Ser, Thr, Asp or Asn and N3 is Glu, the Nc-3 value gets an extra -0.9 kcal/mol, weighted by the helix-state ionisation of that Glu (set in `get_dG_Ncap`). The published Nc-3 column gives Ser no capping-box advantage at all (Nc-3 -0.65 vs Nc-1 -0.70). Peptide measurements that isolate the motif put it at -0.9 +/- 0.3 kcal/mol (mean of five within-paper comparisons): Glu vs Ala, Gln and Asp at N3 with a Ser N-cap (Zhou et al. 1994, Proteins 18, 1, Table I), and Ser vs Ala N-caps (Petukhov et al. 1996, Biochemistry 35, 387, Table 1). Glu outperforms Gln by as much as it outperforms Ala, which places the effect on the charged carboxylate.
+
 
 ## table_2_lacroix
 Energy contributions in Kcal/mol * 100, of the interactions between different amino acids at positions N' (rows) and N4 (columns) in a hydrophobic staple motif. 

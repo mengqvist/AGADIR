@@ -1357,6 +1357,16 @@ class EnergyCalculator(PrecomputeParams):
             q_cap = abs(float(self.modified_seq_ionization_hel[self.ncap_idx]))
             energy[self.ncap_idx] += (-1.0 if self.Ncap_AA == "C" else 1.0) * q_cap
 
+        # Capping box (Harper & Rose 1993): a Ser, Thr, Asp or Asn N-cap and a Glu at N3 form
+        # reciprocal side chain-backbone hydrogen bonds. Peptide measurements put it at -0.9
+        # kcal/mol beyond the Nc-3 column: Glu vs Ala, Gln and Asp at N3 and Ser vs Ala at the
+        # N-cap (Zhou et al. 1994, Proteins 18, 1; Petukhov et al. 1996, Biochemistry 35, 387).
+        # Glu beats Gln there by as much as it beats Ala, so the bonus belongs to the charged Glu
+        # and is weighted by that Glu's helix-state ionisation.
+        if self.Ncap_AA in ("S", "T", "D", "N") and self.N3_AA == "E":
+            q_glu = abs(float(self.modified_seq_ionization_hel[self.ncap_idx + 3]))
+            energy[self.ncap_idx] += -0.9 * q_glu
+
         # capping values are treated as temperature-independent
         return energy
 
