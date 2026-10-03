@@ -119,3 +119,13 @@ The pKa values for N- and C-termini as well as ionizable side chains when incorp
 These replace values from Nozaki and Tanford (1967), which were measured in model compounds rather than peptides.
 
 
+
+## Salt terms (constants in `models.py`, no table)
+Two terms describe how salt acts on the helix itself, separately from the Debye-Hückel screening of charge interactions. Both constants come from the NaCl series of Scholtz, York, Stewart & Baldwin (1991) J. Am. Chem. Soc. 113, 5102 (Figure 2): Ac-(AAQAA)3Y-NH2, 0 C, pH 7. That peptide has no charged groups, so its helicity against salt concentration isolates these two terms from everything else in the model.
+
+- Salting-in, per helical segment: `-0.30 (1 - exp(-3 I))` kcal/mol, I = ionic strength (M). This is the shape of equation 12 of Lacroix et al. (1998), and 0.30 kcal/mol is the amplitude Scholtz et al. report for the stabilisation of the neutral helix at low salt. Lacroix et al. fitted 0.15. Their fit had no salting-out term, and their data include ~1 M salt, where the salting-out of a 16-residue helix is about 0.14 kcal/mol; that is roughly the difference between 0.30 and 0.15.
+- Salting-out (Hofmeister), per helical residue (the segment without its caps): `+0.0085 I` kcal/mol. Scholtz et al. obtain the NaCl Hofmeister slope from the points above 1.2 M, where the salting-in has saturated: -0.082 kcal/mol per M for the complete helix in their Lifson-Roig analysis (sigma = 0.0029), i.e. about 0.006 per residue. The value here is the same derivation done in this model: the per-residue coefficient at which the model reproduces the measured helicity fall over those points (best 0.008-0.009). The model's helicity responds less to a uniform per-residue energy than the Lifson-Roig fit does, so the coefficient is larger than the published one.
+
+With both terms the model reproduces the measured NaCl curve of that peptide: a rise of 5.1 helix points to the 0.5-1.2 M plateau (measured 5.6) and a fall of 7.3 points from there to 2.95 M (measured 7.2). Smith & Scholtz (1998) Biochemistry 37, 33 (Table 2) give the same-sign salting-out above 1 M in the same host peptide, with less precision.
+
+Limitations: the coefficient is for NaCl (KCl behaves similarly). Hofmeister effects are ion-specific: Na2SO4 stabilises the helix and CaCl2 destabilises it about twice as strongly as NaCl (Scholtz et al. 1991), and the model has no salt-identity input. Both constants were measured at 0 C and are applied at all temperatures. The per-residue form assumes salting-out scales with the number of residues that change conformation.
