@@ -102,11 +102,12 @@ def score_munoz_1997_figure_4(method="1s", metric="mse"):
 
 def score_munoz_1995_figure_3(method="1s", metric="mse"):
     """Score per peptide vs measured helix content vs temperature (Munoz 1995, Fig 3)."""
-    data, _temp_unused, ionic_M = load_validation('munoz_1995_figure_3.json')
+    filename = 'munoz_1995_figure_3.json'
+    data, _temp_unused, ionic_M = load_validation(filename)
     scores = {}
     for figname, fig_data in data.items():
-        predicted = [_predict(fig_data["peptide"], fig_data["ncap"], fig_data["ccap"], method,
-                              temp, ionic_M, fig_data.get("pH", 7.0))
+        _, M, pH = _panel_conditions(filename, figname, None, ionic_M, fig_data.get("pH", 7.0))
+        predicted = [_predict(fig_data["peptide"], fig_data["ncap"], fig_data["ccap"], method, temp, M, pH)
                      for temp in fig_data["temperatures"]]
         scores[f"munoz_1995_figure_3_{figname}"] = _score(fig_data["helicity"], predicted, metric)
     return scores

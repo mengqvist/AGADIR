@@ -439,6 +439,7 @@ def reproduce_munoz_1995_figure_3(method="1s"):
     data_dir = get_package_data_dir()
     figures_dir = ensure_figures_dir()
     data, _temp_unused, ionic_M = load_validation('munoz_1995_figure_3.json')
+    panel_cond = load_panel_conditions('munoz_1995_figure_3.json')
 
     # Create figure
     fig, axs = plt.subplots(3, 2, figsize=(8, 12))
@@ -451,9 +452,13 @@ def reproduce_munoz_1995_figure_3(method="1s"):
         ncap = fig_data["ncap"]
         ccap = fig_data["ccap"]
 
+        # Panels replotted from another lab carry that lab's buffer (3D: Yumoto 1993)
+        cond = panel_cond.get(figname, {})
+        M = cond.get("ionic_strength_M", ionic_M)
+        pH = cond.get("pH", fig_data.get("pH", 7.0))
         pyagadir_predicted_data_helix = []
         for temp in xvals:
-            model = AGADIR(method=method, T=temp, M=ionic_M, pH=7.0)
+            model = AGADIR(method=method, T=temp, M=M, pH=pH)
             result = model.predict(peptide, ncap=ncap, ccap=ccap)
             pyagadir_predicted_data_helix.append(result.get_percent_helix())
             
