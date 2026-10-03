@@ -14,6 +14,9 @@
     "previous_coded_value": {
       "ionic_strength_M": 0.025,
       "note": "Superseded at cycle 51. Both the old temperature and the old ionic strength disagreed with the source; see reasoning/nodes/N040.md for the measured effect."
+    },
+    "sequence_corrections": {
+      "figure_3b": "Residue 14 is Asp, not Ala as printed in the Figure 3B label (KDESYEELLRKTKAELLHW...). The titin peptide (residues 1977-2014) is from Musco, Tziatzios, Schuck & Pastore (1995), Biochemistry 34, 553-561, doi:10.1021/bi00002a021, which prints Asp14 both in the titin sequence of its Figure 1a and in the NMR assignment table (Table 2) of the synthesized peptide. Paper III does not describe this panel as a mutant (its panel C is). Changed from Ala14 to Asp14 on the owner's instruction."
     }
   },
   "figure_3a": {
@@ -41,7 +44,7 @@
     "ccap": "Am"
   },
   "figure_3b": {
-    "peptide": "KDESYEELLRKTKAELLHWTKELTEEEKKALAEEGKIT",
+    "peptide": "KDESYEELLRKTKDELLHWTKELTEEEKKALAEEGKIT",
     "temperatures": [
       2.84,
       10.78,
