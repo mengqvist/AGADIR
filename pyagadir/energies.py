@@ -1819,6 +1819,10 @@ class EnergyCalculator(PrecomputeParams):
         end (Coulomb distance tables, after Lacroix 1998 Table VII), and residues more than
         nine positions from the cap contribute nothing.
 
+        The other (far) end adds the field of its half charge (Hol et al. 1978): screened
+        Coulomb in water at the Table VII distance to that end, extended past 13 positions by
+        1.5 A per residue (FEH; reasoning/nodes/N083.md).
+
         Flanking residues outside the helix use the Munoz 1995-II Table 3 values (screened
         Coulomb at the Lacroix 1998 flank distances for Cys and Tyr), assigned to the cap.
 
@@ -1966,6 +1970,24 @@ class EnergyCalculator(PrecomputeParams):
                     energy_N[idx] = q * K_DIPOLE / (d_N * d_N) * math.exp(-kappa_01A * d_N)
             elif c_pos <= 9:
                 energy_C[idx] = -q * K_DIPOLE / (d_C * d_C) * math.exp(-kappa_01A * d_C)
+
+            # Far end (FEH). The axial peptide dipoles of a helix add up to about half a unit
+            # charge at each end (Hol, van Duijnen & Berendsen 1978). The nearest end is
+            # described by eq. 11 above; the other end is that half charge, as screened Coulomb
+            # in water (its field reaches the charge through the solvent), at the Lacroix 1998
+            # Table VII distance to that end, extended past the table's 13 positions by the helix
+            # rise of 1.5 A per residue. No fitted constant. Checked against Poisson-Boltzmann
+            # calculations on built helices (reasoning/nodes/N083.md). Evaluated with the 0 C
+            # dielectric because _calc_dG_Hel applies the eps(T) factor to this term.
+            eps_to_0C = self.epsilon_r / calculate_permittivity(273.15)
+            if n_pos <= c_pos:
+                d_far = d_C_angstrom if c_pos <= 13 else _coulomb_dist_c(aa, 13) + 1.5 * (c_pos - 13)
+                energy_C[idx] += self._electrostatic_interaction_energy(
+                    qi=-self.mu_helix, qj=q, r=d_far) * eps_to_0C
+            else:
+                d_far = d_N_angstrom if n_pos <= 13 else _coulomb_dist_n(aa, 13) + 1.5 * (n_pos - 13)
+                energy_N[idx] += self._electrostatic_interaction_energy(
+                    qi=self.mu_helix, qj=q, r=d_far) * eps_to_0C
 
             # K-at-Ccap correction: empirical extra stabilization for lysine at Ccap
             if aa == 'K' and c_pos == 0:
