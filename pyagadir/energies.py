@@ -1827,8 +1827,6 @@ class EnergyCalculator(PrecomputeParams):
         by the same screened Coulomb law in water, at the Lacroix 1998 flank distance (6 A at
         N'/C', +3 A per further position), and the energy is assigned to the cap.
 
-        An empirical correction δ = −0.2162 kcal/mol is added for lysine at the Ccap position.
-
         Returns:
             tuple[np.ndarray, np.ndarray]: N-terminal and C-terminal dipole energy arrays.
         """
@@ -1845,9 +1843,6 @@ class EnergyCalculator(PrecomputeParams):
         # charge, r in Å -- calibrated on a charged His 4.9 Å from the last turn of a protein
         # helix (-0.6 kcal/mol).  In 0.1 Å units: 0.6 × 49² = 1440.6.
         K_DIPOLE = 0.6 * 49.0**2
-
-        # K-at-Ccap empirical correction (kcal/mol)
-        DELTA_K_CCAP = -0.2162
 
         # Helper: look up Coulomb distance from dedicated tables (Å)
         def _coulomb_dist_n(aa, n_pos):
@@ -1926,10 +1921,6 @@ class EnergyCalculator(PrecomputeParams):
                 d_far = d_N_angstrom if n_pos <= 13 else _coulomb_dist_n(aa, 13) + 1.5 * (n_pos - 13)
                 energy_N[idx] += self._electrostatic_interaction_energy(
                     qi=self.mu_helix, qj=q, r=d_far) * eps_to_0C
-
-            # K-at-Ccap correction: empirical extra stabilization for lysine at Ccap
-            if aa == 'K' and c_pos == 0:
-                energy_C[idx] += DELTA_K_CCAP
 
         # --- Flanking residues: the nearby end's half charge (FEH law) ---
         # A charged residue just outside the helix feels the half charge of the end it flanks
