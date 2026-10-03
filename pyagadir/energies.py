@@ -1823,8 +1823,9 @@ class EnergyCalculator(PrecomputeParams):
         Coulomb in water at the Table VII distance to that end, extended past 13 positions by
         1.5 A per residue (FEH; reasoning/nodes/N083.md).
 
-        Flanking residues outside the helix use the Munoz 1995-II Table 3 values (screened
-        Coulomb at the Lacroix 1998 flank distances for Cys and Tyr), assigned to the cap.
+        Flanking charged residues outside the helix interact with the nearby end's half charge
+        by the same screened Coulomb law in water, at the Lacroix 1998 flank distance (6 A at
+        N'/C', +3 A per further position), and the energy is assigned to the cap.
 
         An empirical correction δ = −0.2162 kcal/mol is added for lysine at the Ccap position.
 
@@ -1837,24 +1838,8 @@ class EnergyCalculator(PrecomputeParams):
 
         charged = set(self.neg_charge_aa + self.pos_charge_aa)
 
-        # Physical constants for Coulomb formula (derived from first principles)
-        unit_01A = 1e-11  # 0.1Å in meters
-        J_per_kcal = 4184.0
-        four_pi_eps0 = 4.0 * math.pi * self.epsilon_0
-
-        # B_N and A_C serve the screened-Coulomb fallback for flanking residues below.
-        # N-terminal: standard Coulomb with εr_N = 44
-        # B_N = q_pole × e² × NA / (4π × ε₀ × εr_N × unit_01A × J_per_kcal)
-        epsilon_r_N = 44.0
-        B_N = 0.5 * self.e**2 * self.N_A / (four_pi_eps0 * epsilon_r_N * unit_01A * J_per_kcal)
-
-        # C-terminal: Coulomb with distance-dependent εr_C = 5.0 × d_Å = 0.5 × d_01A
-        # The q_pole=0.5 and εr factor=0.5×d cancel, giving:
-        # A_C = e² × NA / (4π × ε₀ × unit_01A × J_per_kcal)
-        A_C = self.e**2 * self.N_A / (four_pi_eps0 * unit_01A * J_per_kcal)
-
         # Debye-Hückel screening factor in 0.1Å units
-        kappa_01A = self.kappa * unit_01A
+        kappa_01A = self.kappa * 1e-11
 
         # Helical residues (Munoz 1995-II eq. 11): dG = 0.6 × (4.9 / r)² kcal/mol per unit
         # charge, r in Å -- calibrated on a charged His 4.9 Å from the last turn of a protein
@@ -1863,53 +1848,6 @@ class EnergyCalculator(PrecomputeParams):
 
         # K-at-Ccap empirical correction (kcal/mol)
         DELTA_K_CCAP = -0.2162
-
-        # Amino acids with empirical macrodipole values in Table 3
-        table3_aas = set(self.table_3_munoz_nterm.index)
-
-        # Flanking (outside-helix) charged residues.
-        #
-        # Munoz 1995 II Table 3 lists empirical macrodipole free energies for Asp, Glu,
-        # His, Lys and Arg only.  Cys and Tyr have no row, so before this change they
-        # received EXACTLY ZERO flanking macrodipole energy -- although Lacroix 1998
-        # states "Cys and Tyr are now correctly treated as titratable amino acid
-        # residues" and its Table VII gives distances for all seven.
-        #
-        # For those two residues we therefore fall back to the same screened Coulomb form
-        # the interior branch uses, at the distance rule Lacroix 1998 states directly:
-        # "For residues N0 and C0, the distance is 6 A.  That separation distance
-        # increases by 3 A for every extra position after the N0 or C0 positions."  It
-        # is applied at flank positions 1 and 2 only and is exactly zero beyond.
-        #
-        # Asp/Glu/His/Lys/Arg keep their Table 3 values unchanged.
-        _FLANK_D = [6.0, 9.0]
-        _FLANK_D_C = [6.0, 9.0]
-
-        def _table3_screen(aa, pos, table3, table7, q=1.0):
-            is_n = table3 is self.table_3_munoz_nterm
-            if aa in table3_aas:
-                # The flank cutoff below (positions 1-2 only) applies to this branch too
-                # for Lys and Arg: the `return 0.0` enforcing it sat after this branch's
-                # return, so the Table-3 residues kept firing out to position 9.
-                # D/E/H keep their old range: extending the cutoff to Asp costs residual
-                # structure on the Huyghues-Despointes Asp scan.
-                if aa in ("K", "R") and (pos < 1 or pos > 2):
-                    return 0.0
-                col = table3.columns[pos]
-                raw = float(table3.loc[aa, col])
-                if pos <= 13 and aa in table7.index:
-                    d7_col = table7.columns[pos]
-                    d = float(table7.loc[aa, d7_col])
-                    if not np.isnan(d):
-                        raw *= math.exp(-self.kappa * d * 1e-10)
-                return raw
-            if pos < 1 or pos > 2:
-                return 0.0
-            d = (_FLANK_D if is_n else _FLANK_D_C)[pos - 1] * 10.0
-            sgn = 1.0 if q >= 0 else -1.0
-            if is_n:
-                return sgn * 0.5 * B_N / d * math.exp(-kappa_01A * d)
-            return -sgn * 0.5 * A_C / (d * d) * math.exp(-kappa_01A * d)
 
         # Helper: look up Coulomb distance from dedicated tables (Å)
         def _coulomb_dist_n(aa, n_pos):
@@ -1993,15 +1931,22 @@ class EnergyCalculator(PrecomputeParams):
             if aa == 'K' and c_pos == 0:
                 energy_C[idx] += DELTA_K_CCAP
 
-        # --- Flanking residues: Table 3 empirical approach (nearby-pole only) ---
-        # Flanking charged residues interact with the nearby macrodipole pole.
-        # Only the C-term (for C-flanking) or N-term (for N-flanking) contributes.
-        # Energy is assigned to the cap position.
-        # A flanking charge interacts with the macrodipole whether or not the cap residue is
-        # itself charged: charge-dipole energies superpose, and Lacroix 1998 states the
-        # flanking rule (6 A at N'/C', +3 A per further residue) with no condition on the cap.
+        # --- Flanking residues: the nearby end's half charge (FEH law) ---
+        # A charged residue just outside the helix feels the half charge of the end it flanks
+        # (Hol et al. 1978), as screened Coulomb in water at the distance Lacroix 1998 states
+        # for flanking residues: "For residues N0 and C0, the distance is 6 A. That separation
+        # distance increases by 3 A for every extra position". The sign comes from the charge.
+        # This replaces the Munoz 1995-II Table 3 values, which are about twice what
+        # Poisson-Boltzmann calculations on built helices give (reasoning/nodes/N087.md,
+        # N090.md). The energy is assigned to the cap. Evaluated with the 0 C dielectric
+        # because _calc_dG_Hel applies the eps(T) factor to this term.
+        eps_to_0C = self.epsilon_r / calculate_permittivity(273.15)
 
-        # C-terminal flanking (beyond Ccap): only C-term contribution → Ccap position
+        def _flank(q, flank_pos, pole):
+            return self._electrostatic_interaction_energy(
+                qi=pole * self.mu_helix, qj=q, r=6.0 + 3.0 * (flank_pos - 1)) * eps_to_0C
+
+        # C-terminal flanking (beyond Ccap): the C-terminal half charge, assigned to the Ccap
         if ccap_i + 1 < n:
             for idx in range(ccap_i + 1, min(n, ccap_i + 10)):
                 aa = self.seq_list[idx]
@@ -2010,11 +1955,9 @@ class EnergyCalculator(PrecomputeParams):
                 q = float(self.modified_seq_ionization_hel[idx])
                 if abs(q) < 1e-6:
                     continue
-                flank_pos = idx - ccap_i  # 1, 2, 3, ...
-                contrib_c = _table3_screen(aa, flank_pos, self.table_3_munoz_cterm, self.table_7_ccap_lacroix, q)
-                energy_C[ccap_i] += contrib_c * abs(q)
+                energy_C[ccap_i] += _flank(q, idx - ccap_i, -1.0)
 
-        # N-terminal flanking (before Ncap): only N-term contribution → Ncap position
+        # N-terminal flanking (before Ncap): the N-terminal half charge, assigned to the Ncap
         if ncap_i > 0:
             for idx in range(max(0, ncap_i - 9), ncap_i):
                 aa = self.seq_list[idx]
@@ -2023,9 +1966,7 @@ class EnergyCalculator(PrecomputeParams):
                 q = float(self.modified_seq_ionization_hel[idx])
                 if abs(q) < 1e-6:
                     continue
-                flank_pos = ncap_i - idx  # 1, 2, 3, ...
-                contrib_n = _table3_screen(aa, flank_pos, self.table_3_munoz_nterm, self.table_7_ncap_lacroix, q)
-                energy_N[ncap_i] += contrib_n * abs(q)
+                energy_N[ncap_i] += _flank(q, ncap_i - idx, 1.0)
 
         return energy_N, energy_C
         
