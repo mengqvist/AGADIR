@@ -127,14 +127,19 @@ For detailed analysis, you can use the `EnergyCalculator` class directly to exam
 ```python
 from pyagadir.energies import EnergyCalculator
 
-# Initialize calculator
+seq = "ILKSLEEFLKVTLRSTRQT"
+
+# Initialize calculator for one helical segment. i is the segment's N-cap index and j its
+# length including both caps, counted in the sequence with any terminal modifications added
+# (here Ac at index 0 and Am at the end, so i=0, j=len(seq)+2 spans the whole peptide).
 calc = EnergyCalculator(
-    pept="ILKSLEEFLKVTLRSTRQT",
+    seq=seq,
+    i=0,
+    j=len(seq) + 2,
     pH=7.0,  # pH of solution
     T=4.0,  # Temperature in Celsius
     ionic_strength=0.15,  # Ionic strength in mol/L
-    min_helix_length=6,  # Minimum helix length, default 6 as in the paper
-    ncap='Ac',  # N-terminal acetylation 
+    ncap='Ac',  # N-terminal acetylation
     ccap='Am'  # C-terminal amidation
 )
 
@@ -155,9 +160,11 @@ i3_interactions = calc.get_dG_i3()    # Returns: np.ndarray
 i4_interactions = calc.get_dG_i4()    # Returns: np.ndarray
 
 # Electrostatic and dipole interactions
-electrostatic = calc.get_dG_electrost()  # Returns: np.ndarray
+sidechain_pairs = calc.get_dG_sidechain_sidechain_electrost()  # Returns: np.ndarray (pair matrix)
+term_n, term_c = calc.get_dG_terminals_sidechain_electrost()  # Returns: tuple[np.ndarray, np.ndarray]
 n_term_macro, c_term_macro = calc.get_dG_terminals_macrodipole()  # Returns: tuple[np.ndarray, np.ndarray]
 dipole_n, dipole_c = calc.get_dG_sidechain_macrodipole()  # Returns: tuple[np.ndarray, np.ndarray]
+```
 
 Each energy term represents a different contribution to helix stability:
 - Intrinsic energies: Base propensities for each residue
@@ -166,7 +173,7 @@ Each energy term represents a different contribution to helix stability:
 - Staple motif: Hydrophobic interactions between N' and N4 residues
 - Schellman motif: Special C-terminal capping interaction with glycine
 - i,i+3 and i,i+4 interactions: Side chain interactions
-- Electrostatic: Charged residue pair interactions
+- Electrostatic: Charged side chain pairs, and terminal charges with charged side chains
 - Macrodipole: Interactions between charged residues and the helix dipole
 
 
@@ -181,7 +188,7 @@ conda activate agadir-dev
 
 2. Run the validation script:
 ```bash
-python ./pyagadir/validation.py
+python -m pyagadir.validation
 ```
 
 This will generate comparison plots in the `pyagadir/data/figures` directory.
