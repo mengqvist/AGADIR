@@ -87,6 +87,18 @@ def test_glu_arg_i3_levels():
     assert (sum(e * e for e in err) / len(err)) ** 0.5 < 9.0
 
 
+def test_asp_arg_i3_levels():
+    """Asp(i)-Arg(i+3) = -0.15 (table 4a; published -0.30): the Asp-first Huyghues-Despointes peptide
+    Ac-ADAARADAARADAARY-NH2 at pH 2.5 and 7.0, 0.01 and 1.0 M NaCl, within 6 points RMSE. The published value gives 11.9;
+    -0.15 gives 2.8."""
+    err = []
+    for pH in (2.5, 7.0):
+        for nacl in (0.01, 1.0):
+            seq, meas = _huyghues("AspArg_i+3_AB", pH, nacl)
+            err.append(_model(seq, pH, nacl) - meas)
+    assert (sum(e * e for e in err) / len(err)) ** 0.5 < 6.0
+
+
 @pytest.mark.xfail(strict=True, reason="Documented limitation (params/README.md): the measured Glu-Arg i+3 orientation "
                    "preference depends on the charge of Glu, which a cell applied in every ionisation state cannot "
                    "carry. With Glu neutral the Arg-first peptide is measured 6.7 points more helical; the model has "
