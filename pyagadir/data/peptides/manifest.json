@@ -262,5 +262,144 @@
     "why_it_matters": "THE BEST IONIC-STRENGTH LEVER IN THE CORPUS. 19 peptides on ONE host at THREE NaCl concentrations and TWO pH values - three salt points where Huyghues-Despointes gives two, on a host whose only titratable groups are the substituted residues themselves, so the salt axis is not confounded. It is simultaneously a Glu/Lys ion-pair series at i,i+1 (E5K6), i,i+2 (E5K7), i,i+3 (E6K9) and i,i+4 (E6K10) in the Glu-first orientation and i,i+3 (K6E9) / i,i+4 (K6E10) in the Lys-first one, with the single-substitution Glu and Lys series as their own controls - a direct probe of tables 4a/4b with the controls built in. The AQ row is also what confirmed N050's normalisation hypothesis at cycle 93.",
     "cross_reference": "The AQ host row (0.49 / 0.52 / 0.48) is the peptide at Munoz 1997 Figure 4A's 16-residue point. See pyagadir/data/validation/munoz_1997_figure_4_data.json _provenance.per_panel.figure4A and reasoning/nodes/N050.md@4.",
     "related_tables_not_extracted": "Tables III, IV and V ('Side-Chain Interactions' at 10 mM, 1.0 M and 2.5 M NaCl) are FITTED interaction free energies derived from Table II, not measurements, and are deliberately not stored - the same treatment the Viguera 1995 dG_interaction column gets."
+  },
+  "2001_cochran_protsci10_n1": {
+    "citation": "Cochran, D.A.E., Penel, S. & Doig, A.J. (2001). Effect of the N1 residue on the stability of the alpha-helix for all 20 amino acids. Protein Sci. 10, 463-470.",
+    "source_pdf": "doc/2001_cochran_Effect-of-the-N1-residue-on-the-stability-of-the-α-helix-for-all-20-amino-acids.pdf",
+    "source_table": "Table 1",
+    "extractor": "reasoning/evidence/scripts/extract_doig_n123.py",
+    "transcription_method": "Born-digital PDF; text layer clean. Table 1 rendered at 170 dpi and compared cell by cell with the text layer (all rows agree); cycle-130 rows also matched the PMC HTML.",
+    "self_consistency_check": "Every printed % helix reproduces -[theta]222/(40,000(1-2.5/n)) to the paper's rounding (guard 2 in the extractor).",
+    "n_table_rows": 23,
+    "n_data_rows": 46,
+    "conditions_verified_against_source": true,
+    "conditions_quote": "'Ellipticity was measured in 10 mM NaCl, 5 mM sodium phosphate (pH 7.0)' ... 'at 273 K' (Materials and methods). Titrations: 'The buffer used for pH titrations contained 10 mM NaCl, 1 mM sodium phosphate, 1 mM sodium borate, and 1 mM sodium citrate.'",
+    "host_quote": "Table 1 footnote a: CH3CO-XAAAAQAAAAQAAGY-NH2",
+    "temperature_C": 0.0,
+    "ionic_strength_M": {
+      "direct pH-7 rows": 0.019,
+      "hh_limit rows": 0.014,
+      "note": "DERIVED from the stated buffers, not stated as ionic strengths"
+    },
+    "pH": {
+      "direct rows": 7.01,
+      "hh_limit rows": "evaluation pH, see EVAL_PH in the extractor"
+    },
+    "conversion_quote": "'[theta]222(max) is given by -40,000(1-2.5/n), where n is the number of amino acids in the peptide' (Materials and methods); no coil baseline.",
+    "flags_note": "hh_limit = asymptote of a Henderson-Hasselbalch fit to a pH titration (not a measurement at the stated pH); aromatic_cd = the paper warns that W/Y (and less so F) perturb the 222 nm signal."
+  },
+  "2001_cochran_protsci10_n2": {
+    "citation": "Cochran, D.A.E. & Doig, A.J. (2001). Effect of the N2 residue on the stability of the alpha-helix for all 20 amino acids. Protein Sci. 10, 1305-1311.",
+    "source_pdf": "doc/2001_cochran_Effect-of-the-N2-residue-on-the-stability-of-the-α-helix-for-all-20-amino-acids.pdf",
+    "source_table": "Table 1",
+    "extractor": "reasoning/evidence/scripts/extract_doig_n123.py",
+    "transcription_method": "Born-digital PDF; text layer clean. Table 1 rendered at 170 dpi and compared cell by cell with the text layer (all rows agree); cycle-130 rows also matched the PMC HTML.",
+    "self_consistency_check": "Every printed % helix reproduces -[theta]222/(40,000(1-2.5/n)) to the paper's rounding (guard 2 in the extractor).",
+    "n_table_rows": 23,
+    "n_data_rows": 46,
+    "conditions_verified_against_source": true,
+    "conditions_quote": "'Ellipticity was measured in 10 mM NaCl, 5 mM sodium phosphate (pH 7.0)' ... 'at 273 K' (Materials and methods). Titrations: 'The buffer used for pH titrations contained 10 mM NaCl, 1 mM sodium phosphate, 1 mM sodium borate, and 1 mM sodium citrate.'",
+    "host_quote": "Table 1 footnote a: CH3CO-AXAAAAKAAAAKAAGY-NH2",
+    "temperature_C": 0.0,
+    "ionic_strength_M": {
+      "direct pH-7 rows": 0.019,
+      "hh_limit rows": 0.014,
+      "note": "DERIVED from the stated buffers, not stated as ionic strengths"
+    },
+    "pH": {
+      "direct rows": 7.01,
+      "hh_limit rows": "evaluation pH, see EVAL_PH in the extractor"
+    },
+    "conversion_quote": "'[theta]222(max) is given by -40,000(1-2.5/n), where n is the number of amino acids in the peptide' (Materials and methods); no coil baseline.",
+    "flags_note": "hh_limit = asymptote of a Henderson-Hasselbalch fit to a pH titration (not a measurement at the stated pH); aromatic_cd = the paper warns that W/Y (and less so F) perturb the 222 nm signal."
+  },
+  "2004_iqbalsyah_protsci13_n3": {
+    "citation": "Iqbalsyah, T.M. & Doig, A.J. (2004). Effect of the N3 residue on the stability of the alpha-helix. Protein Sci. 13, 32-39.",
+    "source_pdf": "doc/2003_iqbalsyah_Effect-of-the-N3-residue-on-the-stability-of-the-alpha-helix.pdf",
+    "source_table": "Table 1",
+    "extractor": "reasoning/evidence/scripts/extract_doig_n123.py",
+    "transcription_method": "Born-digital PDF; text layer clean. Table 1 rendered at 170 dpi and compared cell by cell with the text layer (all rows agree); cycle-130 rows also matched the PMC HTML.",
+    "self_consistency_check": "Every printed % helix reproduces -[theta]222/(40,000(1-2.5/n)) to the paper's rounding (guard 2 in the extractor).",
+    "n_table_rows": 22,
+    "n_data_rows": 44,
+    "conditions_verified_against_source": true,
+    "conditions_quote": "'Ellipticity was measured in 10 mM NaCl, 5 mM sodium phosphate (pH 7.0)' ... 'at 273 K' (Materials and methods). Titrations: 'The buffer used for pH titrations contained 10 mM NaCl, 1 mM sodium phosphate, 1 mM sodium borate, and 1 mM sodium citrate.'",
+    "host_quote": "Table 1 footnote a: CH3CO-AAXAAAAKAAAAKAGY-NH2",
+    "temperature_C": 0.0,
+    "ionic_strength_M": {
+      "direct pH-7 rows": 0.019,
+      "hh_limit rows": 0.014,
+      "note": "DERIVED from the stated buffers, not stated as ionic strengths"
+    },
+    "pH": {
+      "direct rows": 7.0,
+      "hh_limit rows": "evaluation pH, see EVAL_PH in the extractor"
+    },
+    "conversion_quote": "'[theta]222(max) is given by -40,000(1-2.5/n), where n is the number of amino acids in the peptide' (Materials and methods); no coil baseline.",
+    "flags_note": "hh_limit = asymptote of a Henderson-Hasselbalch fit to a pH titration (not a measurement at the stated pH); aromatic_cd = the paper warns that W/Y (and less so F) perturb the 222 nm signal."
+  },
+  "1994_zhou_proteins18_table1": {
+    "citation": "Zhou, H.X., Lyu, P., Wemmer, D.E. & Kallenbach, N.R. (1994). Alpha helix capping in synthetic model peptides by reciprocal side chain-main chain interactions: evidence for an N terminal 'capping box'. Proteins 18, 1-7.",
+    "source_pdf": "doc/1994_zhou_Alpha-helix-capping-in-synthetic-model-peptides-by-reciprocal-side-chain-main-chain-interactions.pdf",
+    "source_table": "Table I",
+    "extractor": "reasoning/evidence/scripts/extract_capbox.py",
+    "transcription_method": "Rendered at 200 dpi and read by eye (text layer is OCR); printed % reproduces the stated conversion for every row.",
+    "conditions_quote": "'CD Measurements were performed in 10 mM KF solutions in a 1 mm pathlength cell at a peptide concentration about 30 uM, pH 6, 4 C' (Materials and Methods); Table I footnote: all peptides acetylated and amidated.",
+    "conversion_quote": "'F = [-[theta]obsd/40,000(n-4)/n] x 100% = percent helix content' (Table I footnote)",
+    "temperature_C": 4.0,
+    "pH": 6.0,
+    "ionic_strength_M": {
+      "value": 0.01,
+      "note": "DERIVED from 10 mM KF"
+    },
+    "flags_note": "Parents E6, A10 and G18 are the S3 peptide itself and are stored once as S3_parent."
+  },
+  "1996_petukhov_biochem35_table1": {
+    "citation": "Petukhov, M., Yumoto, N., Murase, S., Onmura, R. & Yoshikawa, S. (1996). Factors that affect the stabilization of alpha-helices in short peptides by a capping box. Biochemistry 35, 387-397.",
+    "source_pdf": "doc/1996_petukhov_Factors-That-Affect-the-Stabilization-of-R-Helices-in-Short-Peptides-by-a-Capping-Box.pdf",
+    "source_table": "Table 1",
+    "extractor": "reasoning/evidence/scripts/extract_capbox.py",
+    "transcription_method": "Rendered at 150 dpi and read by eye; every theta found in the text layer.",
+    "conditions_quote": "'All peptides were analyzed at pH 7.5 in 5 mM TES-NaOH buffer at 5 C.' (Table 1 footnote); 'at a concentration of approximately 10 uM' (Methods).",
+    "conversion_quote": "'The percentage of a helicity was calculated by the method of Scholtz et al. (1991).' Parenthesised values corrected for aromatic contributions: TA/TD/DA/DD -5000, S1*/A1/S1'/A1' -3000, NPY -9000 deg cm2/dmol (Table 1 footnote b).",
+    "temperature_C": 5.0,
+    "pH": 7.5,
+    "ionic_strength_M": {
+      "value": 0.003,
+      "note": "DERIVED from 5 mM TES-NaOH at pH 7.5 (TES pKa ~7.5)"
+    },
+    "caps_note": "Sequences are printed with -NH2 and no N-terminal block; stored as free N-terminus."
+  },
+  "1998_smith_biochem37_table3": {
+    "citation": "Smith, J.S. & Scholtz, J.M. (1998). Energetics of polar side-chain interactions in helical peptides: salt effects on ion pairs and hydrogen bonds. Biochemistry 37, 33-40.",
+    "source_pdf": "doc/1998_smith_Energetics-of-Polar-Side-Chain-Interactions-in-Helical-Peptides_-Salt-Effects-on-Ion-Pairs-and-Hydrogen-Bonds.pdf",
+    "source_table": "Table 1 ('Sequences of the Peptides Used in This Study') joined to Table 3 ('Observed Helicity (-[theta]222 in deg cm2 dmol-1) of Each of the Peptides at 0 C')",
+    "extractor": "reasoning/evidence/scripts/extract_smith1998.py",
+    "transcription_method": "Table 1 READ FROM PAGE 2 RENDERED AT 170 dpi (the text layer carries only its caption). Table 3 parsed from the text layer, which is clean for this table, and compared cell by cell with an eye transcription of the rendered page; the extractor raises on any disagreement.",
+    "validation": "Four checks in the extractor, each able to fail. (1) Row count: 14 series x 3 spacings x 3 NaCl concentrations + 3 host rows = 129. (2) Every sequence is the 16-residue host with Gln 3, 8, 13 and Tyr 16 untouched and exactly two substitutions. (3) NAME CHECK: the residues at positions 6 and 6+k are the two letters of the peptide's own name (3EK, 4KE, 5HE, ...) and k is its leading digit. (4) The text-layer parse of Table 3 equals the eye transcription.",
+    "n_peptides": 19,
+    "n_conditions": "3 NaCl concentrations per series; one pH per charge state",
+    "n_data_rows": 129,
+    "host": "Ac-AAQAAAAQAAAAQAAY-NH2, 16 residues: the AQ host of Scholtz 1993 (1993_scholtz_biochem32_tables1_2) and Huyghues-Despointes 1993. Every guest pair replaces the Ala at position 6 and the Ala at position 6+k (k = 3, 4, 5).",
+    "conditions_verified_against_source": true,
+    "conditions_quote": "Materials and Methods: 'The effects of different concentrations of sodium chloride at neutral, acidic, and basic conditions were measured by preparing individual samples at each salt concentration and pH in CD buffer (1 mM each of sodium borate, sodium citrate, and sodium phosphate). The Asp-Lys (DK) or Glu-Lys (EK) peptides were prepared in pH 7.0 (D-K+ or E-K+) and pH 2.5 (D0K+ or E0K+) buffer, and the Glu-His series was prepared in pH 8.5 (E-H0), pH 5.5 (E-H+), and pH 2.5 (E0H+) buffer.' / Table 3 title: 'at 0 C' / Table 1 footnote a: 'The peptides are N-acetylated (Ac) and the alpha-carboxyl group is amidated (NH2) to eliminate free charges at the helix termini.'",
+    "temperature_C": 0.0,
+    "pH_values": [
+      2.5,
+      5.5,
+      7.0,
+      8.5
+    ],
+    "ionic_strengths_M": [
+      0.01,
+      1.0,
+      2.5
+    ],
+    "ionic_strength_derivation": "DERIVED. The coded ionic_strength_M is the stated NaCl plus the CD buffer (1 mM each sodium borate, citrate and phosphate) computed at the series' pH with reasoning/evidence/scripts/ionic_strength.py's speciation: +0.0009 at pH 2.5, +0.0040 at pH 5.5, +0.0072 at pH 7.0, +0.0090 at pH 8.5. The stated NaCl is kept in each row's flags.",
+    "host_pH_note": "Table 3 lists the AQ host once per NaCl concentration without a pH. The host has no titratable group in the pH 2.5-8.5 range (the C-terminal Tyr's pKa is about 9.5), so it is coded pH 7.0 and flagged.",
+    "conversion_quote": "'fH = ([theta]obs - [theta]C)/([theta]H - [theta]C) (1) ... [theta]C = +640 deg cm2 dmol-1 (2) [theta]H = -42500(1 - 3/n) deg cm2 dmol-1 (3) where n = 16, the number of residues with flanking amide groups in each peptide'",
+    "conversion_note": "Only -[theta]222 is printed; it is stored as printed and the conversion is NOT applied in the TSV. With n = 16, theta_H = -34,531. This is a different theta_H convention from Scholtz 1993's -33,750 for the same host.",
+    "error_note": "No per-value error is printed. Materials and Methods: 'The largest source of error in these experiments is in the measure of [theta]222, and we estimate it to be +-3-4% on a single measurement.'",
+    "design_note": "The (i,i+5) peptides are the authors' no-interaction references (flagged); the difference between an (i,i+k) peptide and its (i,i+5) partner at the same salt and pH cancels the charge-helix macrodipole terms (their analysis)."
   }
 }

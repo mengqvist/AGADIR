@@ -30,16 +30,14 @@ def test_terminal_macrodipole_distances_full_length_helix_are_minimum():
 
 def test_terminal_macrodipole_energies_match_expectation_NN():
     """
-    Regression vs expectation for NN.
-    Tolerance widened to 0.10: the corrected macrodipole distance (2.0 Å)
-    changes the helix-state pKa via the pKa solver, shifting the ionization
-    fraction relative to the expected values.
+    Regression vs expectation for NN. The N-terminal energy follows the free N-terminus'
+    helix-state ionization (base pKa 8.00, Thurlkill et al. 2006 -> helix pKa 7.45 at pH 7).
     """
     calc, n_idx, c_idx = get_calculator(None, None)
     dG_N_dip, dG_C_dip = calc.get_dG_terminals_macrodipole()
 
-    assert np.isclose(dG_N_dip[n_idx], 0.4979, atol=0.10)
-    assert np.isclose(dG_C_dip[c_idx], 0.7686, atol=0.10)
+    assert np.isclose(dG_N_dip[n_idx], 0.60, atol=0.05)
+    assert np.isclose(dG_C_dip[c_idx], 0.81, atol=0.05)
 
 
 def test_free_Nterm_effective_charge_fraction_matches_expectation():
@@ -48,13 +46,14 @@ def test_free_Nterm_effective_charge_fraction_matches_expectation():
     So (N-term energy)/(C-term energy) should equal the *effective N-term charge fraction*
     relative to a fully charged C-terminus.
 
-    With corrected distances (2.0 Å), the charge fraction is ~0.694.
+    With corrected distances (2.0 Å) and the N-terminal base pKa 8.00 (Thurlkill et al. 2006),
+    the charge fraction is ~0.740 (it was ~0.694 with base pKa 7.9).
     """
     calc, n_idx, c_idx = get_calculator(None, None)
     dG_N_dip, dG_C_dip = calc.get_dG_terminals_macrodipole()
 
     frac = dG_N_dip[n_idx] / dG_C_dip[c_idx]
-    assert np.isclose(frac, 0.694, atol=0.02)
+    assert np.isclose(frac, 0.740, atol=0.02)
 
 
 def test_free_Nterm_effective_charge_fraction_matches_energy_ratio():
@@ -76,6 +75,6 @@ def test_inferred_Nterm_pKa_helix_matches_expectation():
     # invert q = 1 / (1 + 10^(pH - pKa))  (basic group)
     pKa_hel = pH - np.log10((1.0 / q) - 1.0)
 
-    # With corrected macrodipole distance (2.0 Å), the stronger repulsion
-    # shifts the helix-state pKa slightly higher (~7.35 vs old 7.265).
-    assert np.isclose(pKa_hel, 7.35, atol=0.05)
+    # With corrected macrodipole distance (2.0 Å) the helix-state pKa sits 0.55 below the base
+    # pKa: 7.45 for base 8.00 (Thurlkill et al. 2006); it was 7.35 for the earlier base 7.9.
+    assert np.isclose(pKa_hel, 7.45, atol=0.05)

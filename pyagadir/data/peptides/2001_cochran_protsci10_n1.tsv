@@ -1,0 +1,47 @@
+peptide_id	sequence	ncap	ccap	n_res	pH	T_C	ionic_strength_M	quantity	value	error	unit	source_table	flags
+N1_D-	DAAAAQAAAAQAAGY	Ac	Am	15	7.01	0.0	0.019	minus_theta222	15100		deg cm2 dmol-1	Table 1	
+N1_D-	DAAAAQAAAAQAAGY	Ac	Am	15	7.01	0.0	0.019	helix_percent	45	3	%	Table 1	
+N1_A	AAAAAQAAAAQAAGY	Ac	Am	15	7.01	0.0	0.019	minus_theta222	13900		deg cm2 dmol-1	Table 1	
+N1_A	AAAAAQAAAAQAAGY	Ac	Am	15	7.01	0.0	0.019	helix_percent	42	3	%	Table 1	
+N1_E-	EAAAAQAAAAQAAGY	Ac	Am	15	7.01	0.0	0.019	minus_theta222	13500		deg cm2 dmol-1	Table 1	
+N1_E-	EAAAAQAAAAQAAGY	Ac	Am	15	7.01	0.0	0.019	helix_percent	41	3	%	Table 1	
+N1_E0	EAAAAQAAAAQAAGY	Ac	Am	15	2.0	0.0	0.014	minus_theta222	12000		deg cm2 dmol-1	Table 1	hh_limit
+N1_E0	EAAAAQAAAAQAAGY	Ac	Am	15	2.0	0.0	0.014	helix_percent	36	3	%	Table 1	hh_limit
+N1_W	WAAAAQAAAAQAAGY	Ac	Am	15	7.01	0.0	0.019	minus_theta222	12800		deg cm2 dmol-1	Table 1	aromatic_cd
+N1_W	WAAAAQAAAAQAAGY	Ac	Am	15	7.01	0.0	0.019	helix_percent	38	3	%	Table 1	aromatic_cd
+N1_L	LAAAAQAAAAQAAGY	Ac	Am	15	7.01	0.0	0.019	minus_theta222	12100		deg cm2 dmol-1	Table 1	
+N1_L	LAAAAQAAAAQAAGY	Ac	Am	15	7.01	0.0	0.019	helix_percent	36	3	%	Table 1	
+N1_S	SAAAAQAAAAQAAGY	Ac	Am	15	7.01	0.0	0.019	minus_theta222	12800		deg cm2 dmol-1	Table 1	
+N1_S	SAAAAQAAAAQAAGY	Ac	Am	15	7.01	0.0	0.019	helix_percent	38	3	%	Table 1	
+N1_D0	DAAAAQAAAAQAAGY	Ac	Am	15	2.0	0.0	0.014	minus_theta222	11200		deg cm2 dmol-1	Table 1	hh_limit
+N1_D0	DAAAAQAAAAQAAGY	Ac	Am	15	2.0	0.0	0.014	helix_percent	34	3	%	Table 1	hh_limit
+N1_T	TAAAAQAAAAQAAGY	Ac	Am	15	7.01	0.0	0.019	minus_theta222	11700		deg cm2 dmol-1	Table 1	
+N1_T	TAAAAQAAAAQAAGY	Ac	Am	15	7.01	0.0	0.019	helix_percent	35	3	%	Table 1	
+N1_Q	QAAAAQAAAAQAAGY	Ac	Am	15	7.01	0.0	0.019	minus_theta222	10200		deg cm2 dmol-1	Table 1	
+N1_Q	QAAAAQAAAAQAAGY	Ac	Am	15	7.01	0.0	0.019	helix_percent	31	3	%	Table 1	
+N1_M	MAAAAQAAAAQAAGY	Ac	Am	15	7.01	0.0	0.019	minus_theta222	11000		deg cm2 dmol-1	Table 1	
+N1_M	MAAAAQAAAAQAAGY	Ac	Am	15	7.01	0.0	0.019	helix_percent	33	3	%	Table 1	
+N1_I	IAAAAQAAAAQAAGY	Ac	Am	15	7.01	0.0	0.019	minus_theta222	11200		deg cm2 dmol-1	Table 1	
+N1_I	IAAAAQAAAAQAAGY	Ac	Am	15	7.01	0.0	0.019	helix_percent	34	3	%	Table 1	
+N1_V	VAAAAQAAAAQAAGY	Ac	Am	15	7.01	0.0	0.019	minus_theta222	10600		deg cm2 dmol-1	Table 1	
+N1_V	VAAAAQAAAAQAAGY	Ac	Am	15	7.01	0.0	0.019	helix_percent	32	3	%	Table 1	
+N1_P	PAAAAQAAAAQAAGY	Ac	Am	15	7.01	0.0	0.019	minus_theta222	10471		deg cm2 dmol-1	Table 1	
+N1_P	PAAAAQAAAAQAAGY	Ac	Am	15	7.01	0.0	0.019	helix_percent	31	3	%	Table 1	
+N1_K+	KAAAAQAAAAQAAGY	Ac	Am	15	7.01	0.0	0.019	minus_theta222	9900		deg cm2 dmol-1	Table 1	
+N1_K+	KAAAAQAAAAQAAGY	Ac	Am	15	7.01	0.0	0.019	helix_percent	30	3	%	Table 1	
+N1_R	RAAAAQAAAAQAAGY	Ac	Am	15	7.01	0.0	0.019	minus_theta222	10000		deg cm2 dmol-1	Table 1	
+N1_R	RAAAAQAAAAQAAGY	Ac	Am	15	7.01	0.0	0.019	helix_percent	30	3	%	Table 1	
+N1_H0	HAAAAQAAAAQAAGY	Ac	Am	15	8.5	0.0	0.014	minus_theta222	10800		deg cm2 dmol-1	Table 1	hh_limit
+N1_H0	HAAAAQAAAAQAAGY	Ac	Am	15	8.5	0.0	0.014	helix_percent	32	3	%	Table 1	hh_limit
+N1_C	CAAAAQAAAAQAAGY	Ac	Am	15	7.01	0.0	0.019	minus_theta222	8400		deg cm2 dmol-1	Table 1	1 mM DTT
+N1_C	CAAAAQAAAAQAAGY	Ac	Am	15	7.01	0.0	0.019	helix_percent	25	3	%	Table 1	1 mM DTT
+N1_G	GAAAAQAAAAQAAGY	Ac	Am	15	7.01	0.0	0.019	minus_theta222	10400		deg cm2 dmol-1	Table 1	
+N1_G	GAAAAQAAAAQAAGY	Ac	Am	15	7.01	0.0	0.019	helix_percent	31	3	%	Table 1	
+N1_F	FAAAAQAAAAQAAGY	Ac	Am	15	7.01	0.0	0.019	minus_theta222	8500		deg cm2 dmol-1	Table 1	aromatic_cd;pct_vs_theta=25.50
+N1_F	FAAAAQAAAAQAAGY	Ac	Am	15	7.01	0.0	0.019	helix_percent	26	3	%	Table 1	aromatic_cd;pct_vs_theta=25.50
+N1_N	NAAAAQAAAAQAAGY	Ac	Am	15	7.01	0.0	0.019	minus_theta222	10800		deg cm2 dmol-1	Table 1	
+N1_N	NAAAAQAAAAQAAGY	Ac	Am	15	7.01	0.0	0.019	helix_percent	32	3	%	Table 1	
+N1_Y	YAAAAQAAAAQAAGY	Ac	Am	15	7.01	0.0	0.019	minus_theta222	8400		deg cm2 dmol-1	Table 1	aromatic_cd
+N1_Y	YAAAAQAAAAQAAGY	Ac	Am	15	7.01	0.0	0.019	helix_percent	25	3	%	Table 1	aromatic_cd
+N1_H+	HAAAAQAAAAQAAGY	Ac	Am	15	3.5	0.0	0.014	minus_theta222	5500		deg cm2 dmol-1	Table 1	hh_limit
+N1_H+	HAAAAQAAAAQAAGY	Ac	Am	15	3.5	0.0	0.014	helix_percent	17	3	%	Table 1	hh_limit

@@ -85,6 +85,18 @@ def load_panel_conditions(filename):
     return {k: {**base, **v} for k, v in per_panel.items()}
 
 
+def point_conditions(panel_cond, peptide, T, M, pH):
+    """Return ``(T, M, pH)`` for one point of a panel.
+
+    A replotted panel can mix experiments: Munoz 1997 Figure 4A carries Scholtz's 16-residue
+    peptide, measured at 0 C in 0.1 M NaCl, among Munoz's own 5 C / 2.5 mM phosphate points.
+    Such a point has its own entry under the panel's ``per_point`` block; every other point
+    takes the panel's conditions.
+    """
+    e = (panel_cond.get("per_point") or {}).get(peptide, {})
+    return e.get("temperature_C", T), e.get("ionic_strength_M", M), e.get("pH", pH)
+
+
 def plot_ph_helix_content(paper_measured_data_ph, paper_measured_data_helix,
                         paper_predicted_data_ph, paper_predicted_data_helix,
                         pyagadir_predicted_data_helix, peptide, ncap, ccap,
@@ -386,8 +398,9 @@ def reproduce_munoz_1997_figure_4(method="1s"):
         pyagadir_predicted_data_helix = []
         keep_x, keep_y = [], []
         for pept, x, y in zip(peptides, xvals, paper_measured_data):
+            T_pt, M_pt, pH_pt = point_conditions(cond, pept, T, M, pH)
             try:
-                model = AGADIR(method=method, T=T, M=M, pH=pH)
+                model = AGADIR(method=method, T=T_pt, M=M_pt, pH=pH_pt)
                 result = model.predict(pept, ncap=ncap, ccap=ccap)
             except ValueError:
                 # Shorter than the model's six-residue minimum.  Figure 4A's shortest
@@ -400,6 +413,8 @@ def reproduce_munoz_1997_figure_4(method="1s"):
         xvals, paper_measured_data = keep_x, keep_y
 
         title = f'{ncap}-[{repeat}](n)-{ccap}, {T:g} C, {M:g} M, pH {pH:g}'
+        for pept, e in (cond.get("per_point") or {}).items():
+            title += f'\n{len(pept)}-mer: {e.get("temperature_C", T):g} C, {e.get("ionic_strength_M", M):g} M'
         xlabel = "Peptide length"
         _, ax = plot_peptides_helix_content(paper_measured_data,
                                             pyagadir_predicted_data_helix, 
@@ -424,6 +439,7 @@ def reproduce_munoz_1995_figure_3(method="1s"):
     data_dir = get_package_data_dir()
     figures_dir = ensure_figures_dir()
     data, _temp_unused, ionic_M = load_validation('munoz_1995_figure_3.json')
+    panel_cond = load_panel_conditions('munoz_1995_figure_3.json')
 
     # Create figure
     fig, axs = plt.subplots(3, 2, figsize=(8, 12))
@@ -436,9 +452,13 @@ def reproduce_munoz_1995_figure_3(method="1s"):
         ncap = fig_data["ncap"]
         ccap = fig_data["ccap"]
 
+        # Panels replotted from another lab carry that lab's buffer (3D: Yumoto 1993)
+        cond = panel_cond.get(figname, {})
+        M = cond.get("ionic_strength_M", ionic_M)
+        pH = cond.get("pH", fig_data.get("pH", 7.0))
         pyagadir_predicted_data_helix = []
         for temp in xvals:
-            model = AGADIR(method=method, T=temp, M=ionic_M, pH=7.0)
+            model = AGADIR(method=method, T=temp, M=M, pH=pH)
             result = model.predict(peptide, ncap=ncap, ccap=ccap)
             pyagadir_predicted_data_helix.append(result.get_percent_helix())
             

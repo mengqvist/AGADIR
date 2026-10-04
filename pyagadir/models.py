@@ -171,7 +171,7 @@ class AGADIR(object):
             dG_staple (float): The free energy for the hydrophobic staple motif.
             dG_schellman (float): The free energy for the schellman motif.
             dG_Hbond (float): The free energy for the main chain-main chain H-bonds.
-            dG_ionic (float): The free energy for the ionic strength correction.
+            dG_ionic (float): The free energy of the salt terms (salting-in and Hofmeister salting-out).
             dG_Hel (float): The total free energy for the helical segment.
             i (int): The starting position of the helical segment.
             j (int): The length of the helical segment.
@@ -196,7 +196,7 @@ class AGADIR(object):
         print(f"g schellman = {dG_schellman:.4f}")
         print(f"dG_electrost = {(np.sum(dG_electrost_sidechain) + np.sum(dG_electrost_term_N) + np.sum(dG_electrost_term_C)):.4f}")
         print(f"main chain-main chain H-bonds = {dG_Hbond:.4f}")
-        print(f"ionic strngth corr. from eq. 12 {dG_ionic:.4f}")
+        print(f"salt terms (salting-in + Hofmeister) {dG_ionic:.4f}")
         print(f"total Helix free energy = {dG_Hel:.4f}")
         print("==============================================")
 
@@ -257,17 +257,27 @@ class AGADIR(object):
         # get electrostatic energy between N-terminal and C-terminal backbone charges
         dG_electrost_term_term = self.energy_calculator.get_dG_terminal_terminal_electrost()
 
-        # modify by ionic strength according to equation 12 of the paper
-        alpha = 0.15
+        # Salt effects on the neutral helix (Scholtz et al. 1991, JACS 113:5102; see params/README.md).
+        # Salting-in: the shape of equation 12 of the paper, per helical segment, at the measured
+        # amplitude 0.30 kcal/mol (the paper's 0.15 was fitted without a salting-out term).
+        alpha = 0.30
         beta = 3.0
         dG_ionic = -alpha * (1 - np.exp(-beta * self.molarity))
+        # Salting-out (NaCl Hofmeister term): linear in ionic strength, per helical residue
+        # (j - 2: the segment without its N- and C-cap).
+        k_hofmeister = 0.0085
+        dG_ionic += k_hofmeister * self.molarity * (j - 2)
 
         # Muñoz 1995 III eq. (12): electrostatic interactions scale with
         # the temperature-dependent dielectric constant of water.
         # ε(T) = ε(0°C) × exp(-0.004314×ΔT), so Coulomb energies scale
         # as exp(+0.004314×ΔT) (stronger at higher T due to lower ε).
-        dT = self.T_kelvin - 273.15
-        elec_temp_factor = np.exp(0.004314 * dT)
+        elec_temp_factor = self.energy_calculator.dipole_temperature_factor()
+
+        # Ionisation free energy of the segment: the part of the mean-field electrostatic free
+        # energy that the q-weighted electrostatic terms below leave out (energies.py,
+        # _assign_modified_ionization_states).
+        dG_ionization = self.energy_calculator.get_dG_ionization()
 
         # sum all components
         dG_Hel = (
@@ -288,6 +298,7 @@ class AGADIR(object):
             + np.sum(dG_electrost_term)
             + np.sum(dG_electrost_sidechain)
             + dG_electrost_term_term
+            + dG_ionization
         )
 
         if self.debug:

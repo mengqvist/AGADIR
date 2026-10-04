@@ -33,9 +33,18 @@
         },
         "conditions_quote": "Munoz & Serrano 1995-II, Materials and Methods: 'Jasco-710 instrument at a temperature of 5 C. The peptides (roughly 1.5 mg) were dissolved in 1 ml of 2.5 mM sodium phosphate buffer (pH 7.0), unless otherwise indicated.' / Figure 1 legend: 'The spectra were acquired at 5 C, in 2.5 mM phosphate buffer (pH 7.0), peptide concentration was 25 microM.'",
         "ionic_strength_derivation": "DERIVED. 2.5 mM sodium phosphate at pH 7.0: the H2PO4-/HPO4(2-) speciation at pKa2 = 7.20 gives I = 0.00443 M by I = 0.5*sum(c*z^2) with Na+ set by electroneutrality. Coded 0.0044. NOT the 0.1 M previously carried, which was an inference with no source behind it.",
-        "mixed_conditions_warning": "THIS PANEL DOES NOT SHARE ONE SET OF CONDITIONS. Three of the four points (n = 1, 2, 4) are Munoz's own, at 5 C / I = 0.0044 M. The 16-residue point is Scholtz et al. 1991b (JACS 113, 5102), measured at 0 C in 0.1 M NaCl / 1 mM phosphate, I = 0.102 M. The harness resolves conditions per PANEL, not per point, so the panel is coded at Munoz's conditions - right for 3 of 4 rather than the previous 1 of 4. The 16-mer is the residual known defect in this panel's conditions.",
+        "mixed_conditions_warning": "THIS PANEL DOES NOT SHARE ONE SET OF CONDITIONS. Three of the four points (n = 5, 10, 20) are Munoz's own, at 5 C / I = 0.0044 M (the panel-level values above). The 16-residue point is Scholtz et al. 1991b (JACS 113, 5102), measured at 0 C in 0.1 M NaCl / 1 mM phosphate, I = 0.102 M. Until cycle 152 the conditions were resolved per panel only, so the 16-mer was scored at Munoz's conditions; it now carries its own entry in `per_point`, which the figure, pyagadir.scoring and the benchmark harness all read.",
         "y_values_open": "NOT CHANGED, and this is the open part of the finding. The plotted values 0.33 / 16.62 / 41.14 / 56.79 are Munoz's 1997 REPLOT. N050's cycle-65 normalisation hypothesis is NOT overturned and now has a second anchor: Scholtz's own scale gives 49.84% for the 16-mer and a flat theta_H of -40,000 gives 42.18%, against the 41.14 plotted; and 1995-II Figure 2's own bar for the same peptide reads about 49 by eye. So 1997 Figure 4A appears renormalised against BOTH. The clean next operation is to re-digitise 1995-II Figure 2's (AAQAA)n bars, which are primary and carry stated conditions, and replace this digitisation of a replot entirely.",
-        "effect_measured": "Cycle 87, like-for-like on the three points the model can evaluate (the 5-residue member is below pyagadir's six-residue minimum and now scores in nothing). Panel RMSE 10.742 -> 8.705 from the abscissa, sequence and conditions correction alone; all three points moved toward the measurement. THE TWO DEFECTS CORROBORATE EACH OTHER: applying N050's cycle-65 normalisation on top of the corrected abscissa - y_true = y_plotted * 40000/(40000*(1-2.5/n)) - gives 22.16/48.76/64.90 against pyagadir's 18.81/48.07/70.00, RMSE 3.544, and the residuals change sign (+3.35/+0.69/-5.10) instead of being uniformly one-signed. Cycle 65 left the hypothesis unapplied because only one of four points had a primary source; three of four now do. NOT APPLIED HERE either - the definitive test is re-digitising 1995-II Figure 2's (AAQAA)n bars, not arithmetic on a replot. Reproduce: reasoning/evidence/scripts/run_benchmarks.py."
+        "effect_measured": "Cycle 87, like-for-like on the three points the model can evaluate (the 5-residue member is below pyagadir's six-residue minimum and now scores in nothing). Panel RMSE 10.742 -> 8.705 from the abscissa, sequence and conditions correction alone; all three points moved toward the measurement. THE TWO DEFECTS CORROBORATE EACH OTHER: applying N050's cycle-65 normalisation on top of the corrected abscissa - y_true = y_plotted * 40000/(40000*(1-2.5/n)) - gives 22.16/48.76/64.90 against pyagadir's 18.81/48.07/70.00, RMSE 3.544, and the residuals change sign (+3.35/+0.69/-5.10) instead of being uniformly one-signed. Cycle 65 left the hypothesis unapplied because only one of four points had a primary source; three of four now do. NOT APPLIED HERE either - the definitive test is re-digitising 1995-II Figure 2's (AAQAA)n bars, not arithmetic on a replot. Reproduce: reasoning/evidence/scripts/run_benchmarks.py.",
+        "per_point": {
+          "AAQAAAAQAAAAQAAY": {
+            "temperature_C": 0.0,
+            "ionic_strength_M": 0.102,
+            "pH": 7.0,
+            "conditions_verified_against_source": true,
+            "source": "Scholtz, York, Stewart & Baldwin (1991) J. Am. Chem. Soc. 113, 5102: 'The value of -[theta]222 at 0 C in 0.1 M NaCl (16500 deg cm2 dmol-1)', in 1 mM phosphate, pH 7 (I = 0.1 + 0.002). Munoz & Serrano 1995-II attributes this point to that paper ('with the exception of the 16-residue peptide, which has been analysed by Scholtz et al., 1991b')."
+          }
+        }
       },
       "figure4B": {
         "temperature_C": 5.0,
@@ -90,15 +99,15 @@
       "AAQAAAAQAAAAQAAAAQAA"
     ],
     "helicity": [
-      0.65,
-      22.04,
-      48.62,
-      64.76
+      0.0,
+      18.0,
+      49.84,
+      65.0
     ],
     "ncap": "Ac",
     "ccap": "Am",
     "peptide_note": "CORRECTED at cycle 87. Ac-(AAQAA)n-NH2 for n = 1, 2, 4 plus Scholtz's Ac-(AAQAA)3Y-NH2 at n = 3. Lengths 5, 10, 16, 20, read off the x-axis of Munoz & Serrano 1995-II Figure 2 at 340 dpi. The previous coding was AAQAAY / AAQAAAAQAAY / AAQAAAAQAAAAQAAY / AAQAAAAQAAAAQAAAAQAAY, i.e. (AAQAA)nY for n = 1..4, lengths 6, 11, 16, 21 - a uniform +1 from assuming every member carries the Tyr. It does not: 1995-II states 'The (AAQAA)n peptides were synthesised WITHOUT a Tyr residue (with the exception of that with 16 residues, Scholtz et al., 1991b)'. Only the 16-mer keeps it, which is why the third point alone was already right.",
-    "helicity_note": "RENORMALISED AT CYCLE 94. These are NOT the numbers plotted in Munoz 1997 Figure 4A. Read `helicity_provenance` below before using, changing or citing them.",
+    "helicity_note": "PRINTED SOURCE VALUES SINCE CYCLE 156. These are NOT the numbers plotted in Munoz 1997 Figure 4A. Read `helicity_provenance` (cycle 94 renormalisation) and `helicity_provenance.cycle_156_printed_values` before using, changing or citing them.",
     "helicity_provenance": {
       "what_changed": "figure4A.helicity was 0.33 / 16.62 / 41.14 / 56.79 and is now 0.65 / 22.04 / 48.62 / 64.76. The peptides, lengths, caps and conditions are untouched by THIS change - they were corrected separately at cycle 87 and are described in _provenance.per_panel.figure4A.",
       "why": "Munoz 1997 Figure 4A is a REPLOT of measurements made elsewhere, and the replot converted ellipticity to percent helix with a LENGTH-INDEPENDENT theta_H of -40,000 where the source used the chain-length-corrected -40,000*(1-2.5/n). That under-reports helicity, and more so the shorter the peptide, which is exactly the shape of the residual this panel had. The hypothesis is N050's, raised at cycle 65.",
@@ -114,7 +123,20 @@
       "scope_and_limits": "CONFIRMED for the 16-residue point against a printed primary number. The other three points are corrected by the same transformation on the strength of the MECHANISM being established, not because each has its own anchor - none of them does. The n=5 point is the weakest: theta_H(5) = -20,000 is a long extrapolation of a formula fitted on longer chains, and the factor 1.97 is the largest applied. It matters little in practice - Munoz 1995-II says the five-residue peptides' helical content is zero, both values round to under 1%, and pyagadir refuses the peptide anyway for being under six residues, so it scores in nothing.",
       "could_be_wrong_if": "Munoz did not in fact use a flat -40,000 but some other scale that happens to reproduce 41.14 at n=16. Nothing rules that out directly; what makes the flat -40,000 the right reading is that it is the SAME formula the source uses with the chain-length term dropped, which is a plausible slip, and that it reproduces the one point with a primary source to 0.38 points. If a future reading of Munoz 1995-II Figure 2's bars gives values materially different from 22.04 / 48.62 / 64.76 for n = 10, 16 and 20, this renormalisation is wrong and `previous_values` should be restored.",
       "effect_on_the_benchmark": "MEASURED, not predicted: panel 4A RMSE 8.705 -> 3.568 on the three points the model can evaluate. (The pre-application prediction was 3.571; the 0.003 difference is the 2-dp rounding of the stored values.) Munoz 1997 as a dataset 4.405 -> 2.434 and all panels 6.290 -> 5.994 on the mean-of-per-panel-RMSE convention the map uses; no other panel moves. Reproduce: reasoning/evidence/scripts/run_benchmarks.py then score_sweep.py. Scholtz's own values are in reasoning/evidence/data/scholtz1993_table2.tsv and the full dataset in pyagadir/data/peptides/1993_scholtz_biochem32_tables1_2.tsv.",
-      "see_also": "reasoning/nodes/N050.md@5 (the full argument and its history from cycle 65, including why it was NOT applied at cycles 65, 87 and 93); reasoning/log.md entries 89, 93 and 94; pyagadir/data/peptides/manifest.json entry 1993_scholtz_biochem32_tables1_2, whose AQ row is the anchor. NOTE also reasoning/question.md: this correction leaves success condition 1's recorded failure resting on a stale measurement, flagged there."
+      "see_also": "reasoning/nodes/N050.md@5 (the full argument and its history from cycle 65, including why it was NOT applied at cycles 65, 87 and 93); reasoning/log.md entries 89, 93 and 94; pyagadir/data/peptides/manifest.json entry 1993_scholtz_biochem32_tables1_2, whose AQ row is the anchor. NOTE also reasoning/question.md: this correction leaves success condition 1's recorded failure resting on a stale measurement, flagged there.",
+      "cycle_156_printed_values": {
+        "what_changed": "figure4A.helicity 0.65 / 22.04 / 48.62 / 64.76 (cycle-94 renormalisation of the replot) -> 0.0 / 18.0 / 49.84 / 65.0: every point now carries a value printed in its primary source.",
+        "sources": "n = 5, 10, 20: Munoz & Serrano (1995) J. Mol. Biol. 245, 275 (1995-II), Results, p. 277, verbatim: 'The helical content of both five-residue peptides is zero with respect to the ellipticity at 222 nm' / 'The ten-residue peptide has a significant helical content when the N terminus is blocked (~18%)' / 'the 20-residue peptide presented a significant degree of helical content in both the acetylated and N-terminal unblocked peptides (35% and 65%, respectively: Figure 1A)'. Helical content by the method of Chen et al. (1974) (Figure 2 legend), a chain-length-corrected scale. n = 16: Scholtz, York, Stewart & Baldwin (1991) J. Am. Chem. Soc. 113, 5102: -[theta]222 = 16,500 at 0 C in 0.1 M NaCl with theta_H = -33,750, theta_C = +640 -> 49.84%, the same experiment whose conditions `_provenance.per_panel.figure4A.per_point` assigns to this point.",
+        "the_20_residue_assignment": "Read literally, 1995-II gives 35% to the ACETYLATED 20-mer and 65% to the free one. Taken as a swap in print: acetylation raises helicity (the paper's own 10-mer: ~18% blocked, random coil free), and Munoz's 1997 replot of the acetylated 20-mer (56.79 on a flat -40,000 scale) corresponds to ~65% on a length-corrected scale, never to 35%. So 65.0 is used for Ac-(AAQAA)4-NH2. This is an inference, recorded as such.",
+        "why_the_10_residue_value_moves": "The cycle-94 renormalisation (flat -40,000 in the replot vs length-corrected in the source) is confirmed by printed numbers for n = 16 (49 / 49.84 vs 48.62) and n = 20 (65 vs 64.76), but NOT for n = 10: the printed source value is ~18%, against 22.04 from the renormalisation and 16.62 in the replot. Its own could_be_wrong_if clause anticipated exactly this test. The printed value wins; the '~' makes it approximate (+-1 or so).",
+        "previous_values": [
+          0.65,
+          22.04,
+          48.62,
+          64.76
+        ],
+        "effect_on_the_benchmark": "Measured at cycle 156 (model at commit 4426c77, 16-mer at its per-point conditions): residuals +2.58 / -1.56 / +1.49 / -0.93 for n = 5 / 10 / 16 / 20; panel 4A RMSE 3.275 -> 1.745; Munoz 1997 1.973 -> 1.463 on the mean-of-per-panel-RMSE convention. No other panel moves. Reproduce: reasoning/evidence/scripts/run_benchmarks.py then score_sweep.py."
+      }
     }
   },
   "figure4B": {

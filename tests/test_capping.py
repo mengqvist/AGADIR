@@ -43,18 +43,16 @@ def test_capping_NN():
     dG_Ccap = calc.get_dG_Ccap()[c_idx]
     dG_N_dip, dG_C_dip = calc.get_dG_terminals_macrodipole()
     
-    # Values from NN file:
     # N-cap: 0.40
     # C-cap: 0.40 (Lacroix 1998 published value); code produces 0.40.
-    # N-dipole: 0.4979
-    # C-dipole: 0.7686
-    
+    # N-dipole 0.60, C-dipole 0.81: the free N-terminus is partly charged at pH 7. Its base pKa
+    # is 8.00 (Thurlkill et al. 2006, unstructured peptides), giving a helix-state pKa of 7.45
+    # and q = 0.74. With the earlier base pKa of 7.9 these were 0.50 and 0.77.
+
     assert np.isclose(dG_Ncap, 0.40, atol=0.01)
     assert np.isclose(dG_Ccap, 0.40, atol=0.01)
-    # Tolerance 0.10: corrected macrodipole distance (2.0 Å) gives slightly
-    # different energies due to pKa solver using the old distance model internally.
-    assert np.isclose(dG_N_dip[n_idx], 0.4979, atol=0.10)
-    assert np.isclose(dG_C_dip[c_idx], 0.7686, atol=0.10)
+    assert np.isclose(dG_N_dip[n_idx], 0.60, atol=0.05)
+    assert np.isclose(dG_C_dip[c_idx], 0.81, atol=0.05)
 
 def test_capping_NA():
     """Test Acetylated N-term, Free C-term (NA)."""
@@ -114,13 +112,12 @@ def test_capping_YN():
     dG_Ccap = calc.get_dG_Ccap()[c_idx]
     dG_N_dip, dG_C_dip = calc.get_dG_terminals_macrodipole()
     
-    # Values from YN file:
-    # N-dipole: 0.4979
-    # C-dipole: 0.00
-    
+    # N-dipole 0.56 (free N-terminus, base pKa 8.00 as in test_capping_NN; the uncharged amidated
+    # C-terminus leaves it slightly less charged than in NN); C-dipole 0.00
+
     assert np.isclose(dG_Ncap, 0.40, atol=0.01)
     assert np.isclose(dG_Ccap, 0.40, atol=0.01)
-    assert np.isclose(dG_N_dip[n_idx], 0.4979, atol=0.05)
+    assert np.isclose(dG_N_dip[n_idx], 0.56, atol=0.05)
     assert np.isclose(dG_C_dip[c_idx], 0.00, atol=0.01)
 
 def test_capping_YS():

@@ -1,0 +1,130 @@
+peptide_id	sequence	ncap	ccap	n_res	pH	T_C	ionic_strength_M	quantity	value	error	unit	source_table	flags
+3EK	AAQAAEAQKAAAQAAY	Ac	Am	16	2.5	0.0	0.0109	minus_theta222	10700		deg cm2 dmol-1	Tables 1+3	state=E0K+;NaCl=0.01 M
+4EK	AAQAAEAQAKAAQAAY	Ac	Am	16	2.5	0.0	0.0109	minus_theta222	12100		deg cm2 dmol-1	Tables 1+3	state=E0K+;NaCl=0.01 M
+5EK	AAQAAEAQAAKAQAAY	Ac	Am	16	2.5	0.0	0.0109	minus_theta222	9800		deg cm2 dmol-1	Tables 1+3	state=E0K+;NaCl=0.01 M;authors' no-interaction reference (i,i+5)
+3EK	AAQAAEAQKAAAQAAY	Ac	Am	16	2.5	0.0	1.0009	minus_theta222	12450		deg cm2 dmol-1	Tables 1+3	state=E0K+;NaCl=1.0 M
+4EK	AAQAAEAQAKAAQAAY	Ac	Am	16	2.5	0.0	1.0009	minus_theta222	14150		deg cm2 dmol-1	Tables 1+3	state=E0K+;NaCl=1.0 M
+5EK	AAQAAEAQAAKAQAAY	Ac	Am	16	2.5	0.0	1.0009	minus_theta222	11100		deg cm2 dmol-1	Tables 1+3	state=E0K+;NaCl=1.0 M;authors' no-interaction reference (i,i+5)
+3EK	AAQAAEAQKAAAQAAY	Ac	Am	16	2.5	0.0	2.5009	minus_theta222	12750		deg cm2 dmol-1	Tables 1+3	state=E0K+;NaCl=2.5 M
+4EK	AAQAAEAQAKAAQAAY	Ac	Am	16	2.5	0.0	2.5009	minus_theta222	13450		deg cm2 dmol-1	Tables 1+3	state=E0K+;NaCl=2.5 M
+5EK	AAQAAEAQAAKAQAAY	Ac	Am	16	2.5	0.0	2.5009	minus_theta222	10600		deg cm2 dmol-1	Tables 1+3	state=E0K+;NaCl=2.5 M;authors' no-interaction reference (i,i+5)
+3EK	AAQAAEAQKAAAQAAY	Ac	Am	16	7.0	0.0	0.0172	minus_theta222	11400		deg cm2 dmol-1	Tables 1+3	state=E-K+;NaCl=0.01 M
+4EK	AAQAAEAQAKAAQAAY	Ac	Am	16	7.0	0.0	0.0172	minus_theta222	12750		deg cm2 dmol-1	Tables 1+3	state=E-K+;NaCl=0.01 M
+5EK	AAQAAEAQAAKAQAAY	Ac	Am	16	7.0	0.0	0.0172	minus_theta222	8500		deg cm2 dmol-1	Tables 1+3	state=E-K+;NaCl=0.01 M;authors' no-interaction reference (i,i+5)
+3EK	AAQAAEAQKAAAQAAY	Ac	Am	16	7.0	0.0	1.0072	minus_theta222	11750		deg cm2 dmol-1	Tables 1+3	state=E-K+;NaCl=1.0 M
+4EK	AAQAAEAQAKAAQAAY	Ac	Am	16	7.0	0.0	1.0072	minus_theta222	13100		deg cm2 dmol-1	Tables 1+3	state=E-K+;NaCl=1.0 M
+5EK	AAQAAEAQAAKAQAAY	Ac	Am	16	7.0	0.0	1.0072	minus_theta222	9700		deg cm2 dmol-1	Tables 1+3	state=E-K+;NaCl=1.0 M;authors' no-interaction reference (i,i+5)
+3EK	AAQAAEAQKAAAQAAY	Ac	Am	16	7.0	0.0	2.5072	minus_theta222	11050		deg cm2 dmol-1	Tables 1+3	state=E-K+;NaCl=2.5 M
+4EK	AAQAAEAQAKAAQAAY	Ac	Am	16	7.0	0.0	2.5072	minus_theta222	12100		deg cm2 dmol-1	Tables 1+3	state=E-K+;NaCl=2.5 M
+5EK	AAQAAEAQAAKAQAAY	Ac	Am	16	7.0	0.0	2.5072	minus_theta222	9200		deg cm2 dmol-1	Tables 1+3	state=E-K+;NaCl=2.5 M;authors' no-interaction reference (i,i+5)
+3DK	AAQAADAQKAAAQAAY	Ac	Am	16	2.5	0.0	0.0109	minus_theta222	7700		deg cm2 dmol-1	Tables 1+3	state=D0K+;NaCl=0.01 M
+4DK	AAQAADAQAKAAQAAY	Ac	Am	16	2.5	0.0	0.0109	minus_theta222	8500		deg cm2 dmol-1	Tables 1+3	state=D0K+;NaCl=0.01 M
+5DK	AAQAADAQAAKAQAAY	Ac	Am	16	2.5	0.0	0.0109	minus_theta222	6900		deg cm2 dmol-1	Tables 1+3	state=D0K+;NaCl=0.01 M;authors' no-interaction reference (i,i+5)
+3DK	AAQAADAQKAAAQAAY	Ac	Am	16	2.5	0.0	1.0009	minus_theta222	7900		deg cm2 dmol-1	Tables 1+3	state=D0K+;NaCl=1.0 M
+4DK	AAQAADAQAKAAQAAY	Ac	Am	16	2.5	0.0	1.0009	minus_theta222	9500		deg cm2 dmol-1	Tables 1+3	state=D0K+;NaCl=1.0 M
+5DK	AAQAADAQAAKAQAAY	Ac	Am	16	2.5	0.0	1.0009	minus_theta222	8000		deg cm2 dmol-1	Tables 1+3	state=D0K+;NaCl=1.0 M;authors' no-interaction reference (i,i+5)
+3DK	AAQAADAQKAAAQAAY	Ac	Am	16	2.5	0.0	2.5009	minus_theta222	7500		deg cm2 dmol-1	Tables 1+3	state=D0K+;NaCl=2.5 M
+4DK	AAQAADAQAKAAQAAY	Ac	Am	16	2.5	0.0	2.5009	minus_theta222	8700		deg cm2 dmol-1	Tables 1+3	state=D0K+;NaCl=2.5 M
+5DK	AAQAADAQAAKAQAAY	Ac	Am	16	2.5	0.0	2.5009	minus_theta222	7600		deg cm2 dmol-1	Tables 1+3	state=D0K+;NaCl=2.5 M;authors' no-interaction reference (i,i+5)
+3DK	AAQAADAQKAAAQAAY	Ac	Am	16	7.0	0.0	0.0172	minus_theta222	8200		deg cm2 dmol-1	Tables 1+3	state=D-K+;NaCl=0.01 M
+4DK	AAQAADAQAKAAQAAY	Ac	Am	16	7.0	0.0	0.0172	minus_theta222	9200		deg cm2 dmol-1	Tables 1+3	state=D-K+;NaCl=0.01 M
+5DK	AAQAADAQAAKAQAAY	Ac	Am	16	7.0	0.0	0.0172	minus_theta222	7400		deg cm2 dmol-1	Tables 1+3	state=D-K+;NaCl=0.01 M;authors' no-interaction reference (i,i+5)
+3DK	AAQAADAQKAAAQAAY	Ac	Am	16	7.0	0.0	1.0072	minus_theta222	8900		deg cm2 dmol-1	Tables 1+3	state=D-K+;NaCl=1.0 M
+4DK	AAQAADAQAKAAQAAY	Ac	Am	16	7.0	0.0	1.0072	minus_theta222	10000		deg cm2 dmol-1	Tables 1+3	state=D-K+;NaCl=1.0 M
+5DK	AAQAADAQAAKAQAAY	Ac	Am	16	7.0	0.0	1.0072	minus_theta222	8400		deg cm2 dmol-1	Tables 1+3	state=D-K+;NaCl=1.0 M;authors' no-interaction reference (i,i+5)
+3DK	AAQAADAQKAAAQAAY	Ac	Am	16	7.0	0.0	2.5072	minus_theta222	8000		deg cm2 dmol-1	Tables 1+3	state=D-K+;NaCl=2.5 M
+4DK	AAQAADAQAKAAQAAY	Ac	Am	16	7.0	0.0	2.5072	minus_theta222	8900		deg cm2 dmol-1	Tables 1+3	state=D-K+;NaCl=2.5 M
+5DK	AAQAADAQAAKAQAAY	Ac	Am	16	7.0	0.0	2.5072	minus_theta222	8000		deg cm2 dmol-1	Tables 1+3	state=D-K+;NaCl=2.5 M;authors' no-interaction reference (i,i+5)
+3EH	AAQAAEAQHAAAQAAY	Ac	Am	16	2.5	0.0	0.0109	minus_theta222	4200		deg cm2 dmol-1	Tables 1+3	state=E0H+;NaCl=0.01 M
+4EH	AAQAAEAQAHAAQAAY	Ac	Am	16	2.5	0.0	0.0109	minus_theta222	3900		deg cm2 dmol-1	Tables 1+3	state=E0H+;NaCl=0.01 M
+5EH	AAQAAEAQAAHAQAAY	Ac	Am	16	2.5	0.0	0.0109	minus_theta222	4400		deg cm2 dmol-1	Tables 1+3	state=E0H+;NaCl=0.01 M;authors' no-interaction reference (i,i+5)
+3EH	AAQAAEAQHAAAQAAY	Ac	Am	16	2.5	0.0	1.0009	minus_theta222	4800		deg cm2 dmol-1	Tables 1+3	state=E0H+;NaCl=1.0 M
+4EH	AAQAAEAQAHAAQAAY	Ac	Am	16	2.5	0.0	1.0009	minus_theta222	4500		deg cm2 dmol-1	Tables 1+3	state=E0H+;NaCl=1.0 M
+5EH	AAQAAEAQAAHAQAAY	Ac	Am	16	2.5	0.0	1.0009	minus_theta222	5100		deg cm2 dmol-1	Tables 1+3	state=E0H+;NaCl=1.0 M;authors' no-interaction reference (i,i+5)
+3EH	AAQAAEAQHAAAQAAY	Ac	Am	16	2.5	0.0	2.5009	minus_theta222	4000		deg cm2 dmol-1	Tables 1+3	state=E0H+;NaCl=2.5 M
+4EH	AAQAAEAQAHAAQAAY	Ac	Am	16	2.5	0.0	2.5009	minus_theta222	4300		deg cm2 dmol-1	Tables 1+3	state=E0H+;NaCl=2.5 M
+5EH	AAQAAEAQAAHAQAAY	Ac	Am	16	2.5	0.0	2.5009	minus_theta222	4800		deg cm2 dmol-1	Tables 1+3	state=E0H+;NaCl=2.5 M;authors' no-interaction reference (i,i+5)
+3EH	AAQAAEAQHAAAQAAY	Ac	Am	16	5.5	0.0	0.014	minus_theta222	4500		deg cm2 dmol-1	Tables 1+3	state=E-H+;NaCl=0.01 M
+4EH	AAQAAEAQAHAAQAAY	Ac	Am	16	5.5	0.0	0.014	minus_theta222	4100		deg cm2 dmol-1	Tables 1+3	state=E-H+;NaCl=0.01 M
+5EH	AAQAAEAQAAHAQAAY	Ac	Am	16	5.5	0.0	0.014	minus_theta222	3600		deg cm2 dmol-1	Tables 1+3	state=E-H+;NaCl=0.01 M;authors' no-interaction reference (i,i+5)
+3EH	AAQAAEAQHAAAQAAY	Ac	Am	16	5.5	0.0	1.004	minus_theta222	5000		deg cm2 dmol-1	Tables 1+3	state=E-H+;NaCl=1.0 M
+4EH	AAQAAEAQAHAAQAAY	Ac	Am	16	5.5	0.0	1.004	minus_theta222	4400		deg cm2 dmol-1	Tables 1+3	state=E-H+;NaCl=1.0 M
+5EH	AAQAAEAQAAHAQAAY	Ac	Am	16	5.5	0.0	1.004	minus_theta222	4300		deg cm2 dmol-1	Tables 1+3	state=E-H+;NaCl=1.0 M;authors' no-interaction reference (i,i+5)
+3EH	AAQAAEAQHAAAQAAY	Ac	Am	16	5.5	0.0	2.504	minus_theta222	4400		deg cm2 dmol-1	Tables 1+3	state=E-H+;NaCl=2.5 M
+4EH	AAQAAEAQAHAAQAAY	Ac	Am	16	5.5	0.0	2.504	minus_theta222	4000		deg cm2 dmol-1	Tables 1+3	state=E-H+;NaCl=2.5 M
+5EH	AAQAAEAQAAHAQAAY	Ac	Am	16	5.5	0.0	2.504	minus_theta222	4000		deg cm2 dmol-1	Tables 1+3	state=E-H+;NaCl=2.5 M;authors' no-interaction reference (i,i+5)
+3EH	AAQAAEAQHAAAQAAY	Ac	Am	16	8.5	0.0	0.019	minus_theta222	5100		deg cm2 dmol-1	Tables 1+3	state=E-H0;NaCl=0.01 M
+4EH	AAQAAEAQAHAAQAAY	Ac	Am	16	8.5	0.0	0.019	minus_theta222	4400		deg cm2 dmol-1	Tables 1+3	state=E-H0;NaCl=0.01 M
+5EH	AAQAAEAQAAHAQAAY	Ac	Am	16	8.5	0.0	0.019	minus_theta222	4700		deg cm2 dmol-1	Tables 1+3	state=E-H0;NaCl=0.01 M;authors' no-interaction reference (i,i+5)
+3EH	AAQAAEAQHAAAQAAY	Ac	Am	16	8.5	0.0	1.009	minus_theta222	5600		deg cm2 dmol-1	Tables 1+3	state=E-H0;NaCl=1.0 M
+4EH	AAQAAEAQAHAAQAAY	Ac	Am	16	8.5	0.0	1.009	minus_theta222	5100		deg cm2 dmol-1	Tables 1+3	state=E-H0;NaCl=1.0 M
+5EH	AAQAAEAQAAHAQAAY	Ac	Am	16	8.5	0.0	1.009	minus_theta222	5500		deg cm2 dmol-1	Tables 1+3	state=E-H0;NaCl=1.0 M;authors' no-interaction reference (i,i+5)
+3EH	AAQAAEAQHAAAQAAY	Ac	Am	16	8.5	0.0	2.509	minus_theta222	4700		deg cm2 dmol-1	Tables 1+3	state=E-H0;NaCl=2.5 M
+4EH	AAQAAEAQAHAAQAAY	Ac	Am	16	8.5	0.0	2.509	minus_theta222	4900		deg cm2 dmol-1	Tables 1+3	state=E-H0;NaCl=2.5 M
+5EH	AAQAAEAQAAHAQAAY	Ac	Am	16	8.5	0.0	2.509	minus_theta222	5200		deg cm2 dmol-1	Tables 1+3	state=E-H0;NaCl=2.5 M;authors' no-interaction reference (i,i+5)
+3KE	AAQAAKAQEAAAQAAY	Ac	Am	16	2.5	0.0	0.0109	minus_theta222	10050		deg cm2 dmol-1	Tables 1+3	state=K+E0;NaCl=0.01 M
+4KE	AAQAAKAQAEAAQAAY	Ac	Am	16	2.5	0.0	0.0109	minus_theta222	9700		deg cm2 dmol-1	Tables 1+3	state=K+E0;NaCl=0.01 M
+5KE	AAQAAKAQAAEAQAAY	Ac	Am	16	2.5	0.0	0.0109	minus_theta222	7900		deg cm2 dmol-1	Tables 1+3	state=K+E0;NaCl=0.01 M;authors' no-interaction reference (i,i+5)
+3KE	AAQAAKAQEAAAQAAY	Ac	Am	16	2.5	0.0	1.0009	minus_theta222	12100		deg cm2 dmol-1	Tables 1+3	state=K+E0;NaCl=1.0 M
+4KE	AAQAAKAQAEAAQAAY	Ac	Am	16	2.5	0.0	1.0009	minus_theta222	11050		deg cm2 dmol-1	Tables 1+3	state=K+E0;NaCl=1.0 M
+5KE	AAQAAKAQAAEAQAAY	Ac	Am	16	2.5	0.0	1.0009	minus_theta222	10400		deg cm2 dmol-1	Tables 1+3	state=K+E0;NaCl=1.0 M;authors' no-interaction reference (i,i+5)
+3KE	AAQAAKAQEAAAQAAY	Ac	Am	16	2.5	0.0	2.5009	minus_theta222	11750		deg cm2 dmol-1	Tables 1+3	state=K+E0;NaCl=2.5 M
+4KE	AAQAAKAQAEAAQAAY	Ac	Am	16	2.5	0.0	2.5009	minus_theta222	11400		deg cm2 dmol-1	Tables 1+3	state=K+E0;NaCl=2.5 M
+5KE	AAQAAKAQAAEAQAAY	Ac	Am	16	2.5	0.0	2.5009	minus_theta222	9900		deg cm2 dmol-1	Tables 1+3	state=K+E0;NaCl=2.5 M;authors' no-interaction reference (i,i+5)
+3KE	AAQAAKAQEAAAQAAY	Ac	Am	16	7.0	0.0	0.0172	minus_theta222	9000		deg cm2 dmol-1	Tables 1+3	state=K+E-;NaCl=0.01 M
+4KE	AAQAAKAQAEAAQAAY	Ac	Am	16	7.0	0.0	0.0172	minus_theta222	10350		deg cm2 dmol-1	Tables 1+3	state=K+E-;NaCl=0.01 M
+5KE	AAQAAKAQAAEAQAAY	Ac	Am	16	7.0	0.0	0.0172	minus_theta222	6900		deg cm2 dmol-1	Tables 1+3	state=K+E-;NaCl=0.01 M;authors' no-interaction reference (i,i+5)
+3KE	AAQAAKAQEAAAQAAY	Ac	Am	16	7.0	0.0	1.0072	minus_theta222	10350		deg cm2 dmol-1	Tables 1+3	state=K+E-;NaCl=1.0 M
+4KE	AAQAAKAQAEAAQAAY	Ac	Am	16	7.0	0.0	1.0072	minus_theta222	10700		deg cm2 dmol-1	Tables 1+3	state=K+E-;NaCl=1.0 M
+5KE	AAQAAKAQAAEAQAAY	Ac	Am	16	7.0	0.0	1.0072	minus_theta222	9100		deg cm2 dmol-1	Tables 1+3	state=K+E-;NaCl=1.0 M;authors' no-interaction reference (i,i+5)
+3KE	AAQAAKAQEAAAQAAY	Ac	Am	16	7.0	0.0	2.5072	minus_theta222	8650		deg cm2 dmol-1	Tables 1+3	state=K+E-;NaCl=2.5 M
+4KE	AAQAAKAQAEAAQAAY	Ac	Am	16	7.0	0.0	2.5072	minus_theta222	8650		deg cm2 dmol-1	Tables 1+3	state=K+E-;NaCl=2.5 M
+5KE	AAQAAKAQAAEAQAAY	Ac	Am	16	7.0	0.0	2.5072	minus_theta222	8700		deg cm2 dmol-1	Tables 1+3	state=K+E-;NaCl=2.5 M;authors' no-interaction reference (i,i+5)
+3KD	AAQAAKAQDAAAQAAY	Ac	Am	16	2.5	0.0	0.0109	minus_theta222	7800		deg cm2 dmol-1	Tables 1+3	state=K+D0;NaCl=0.01 M
+4KD	AAQAAKAQADAAQAAY	Ac	Am	16	2.5	0.0	0.0109	minus_theta222	8100		deg cm2 dmol-1	Tables 1+3	state=K+D0;NaCl=0.01 M
+5KD	AAQAAKAQAADAQAAY	Ac	Am	16	2.5	0.0	0.0109	minus_theta222	5900		deg cm2 dmol-1	Tables 1+3	state=K+D0;NaCl=0.01 M;authors' no-interaction reference (i,i+5)
+3KD	AAQAAKAQDAAAQAAY	Ac	Am	16	2.5	0.0	1.0009	minus_theta222	9600		deg cm2 dmol-1	Tables 1+3	state=K+D0;NaCl=1.0 M
+4KD	AAQAAKAQADAAQAAY	Ac	Am	16	2.5	0.0	1.0009	minus_theta222	10100		deg cm2 dmol-1	Tables 1+3	state=K+D0;NaCl=1.0 M
+5KD	AAQAAKAQAADAQAAY	Ac	Am	16	2.5	0.0	1.0009	minus_theta222	7900		deg cm2 dmol-1	Tables 1+3	state=K+D0;NaCl=1.0 M;authors' no-interaction reference (i,i+5)
+3KD	AAQAAKAQDAAAQAAY	Ac	Am	16	2.5	0.0	2.5009	minus_theta222	8600		deg cm2 dmol-1	Tables 1+3	state=K+D0;NaCl=2.5 M
+4KD	AAQAAKAQADAAQAAY	Ac	Am	16	2.5	0.0	2.5009	minus_theta222	8700		deg cm2 dmol-1	Tables 1+3	state=K+D0;NaCl=2.5 M
+5KD	AAQAAKAQAADAQAAY	Ac	Am	16	2.5	0.0	2.5009	minus_theta222	7500		deg cm2 dmol-1	Tables 1+3	state=K+D0;NaCl=2.5 M;authors' no-interaction reference (i,i+5)
+3KD	AAQAAKAQDAAAQAAY	Ac	Am	16	7.0	0.0	0.0172	minus_theta222	8400		deg cm2 dmol-1	Tables 1+3	state=K+D-;NaCl=0.01 M
+4KD	AAQAAKAQADAAQAAY	Ac	Am	16	7.0	0.0	0.0172	minus_theta222	10300		deg cm2 dmol-1	Tables 1+3	state=K+D-;NaCl=0.01 M
+5KD	AAQAAKAQAADAQAAY	Ac	Am	16	7.0	0.0	0.0172	minus_theta222	5800		deg cm2 dmol-1	Tables 1+3	state=K+D-;NaCl=0.01 M;authors' no-interaction reference (i,i+5)
+3KD	AAQAAKAQDAAAQAAY	Ac	Am	16	7.0	0.0	1.0072	minus_theta222	8400		deg cm2 dmol-1	Tables 1+3	state=K+D-;NaCl=1.0 M
+4KD	AAQAAKAQADAAQAAY	Ac	Am	16	7.0	0.0	1.0072	minus_theta222	10100		deg cm2 dmol-1	Tables 1+3	state=K+D-;NaCl=1.0 M
+5KD	AAQAAKAQAADAQAAY	Ac	Am	16	7.0	0.0	1.0072	minus_theta222	7700		deg cm2 dmol-1	Tables 1+3	state=K+D-;NaCl=1.0 M;authors' no-interaction reference (i,i+5)
+3KD	AAQAAKAQDAAAQAAY	Ac	Am	16	7.0	0.0	2.5072	minus_theta222	7400		deg cm2 dmol-1	Tables 1+3	state=K+D-;NaCl=2.5 M
+4KD	AAQAAKAQADAAQAAY	Ac	Am	16	7.0	0.0	2.5072	minus_theta222	8700		deg cm2 dmol-1	Tables 1+3	state=K+D-;NaCl=2.5 M
+5KD	AAQAAKAQAADAQAAY	Ac	Am	16	7.0	0.0	2.5072	minus_theta222	7300		deg cm2 dmol-1	Tables 1+3	state=K+D-;NaCl=2.5 M;authors' no-interaction reference (i,i+5)
+3HE	AAQAAHAQEAAAQAAY	Ac	Am	16	2.5	0.0	0.0109	minus_theta222	5100		deg cm2 dmol-1	Tables 1+3	state=H+E0;NaCl=0.01 M
+4HE	AAQAAHAQAEAAQAAY	Ac	Am	16	2.5	0.0	0.0109	minus_theta222	5400		deg cm2 dmol-1	Tables 1+3	state=H+E0;NaCl=0.01 M
+5HE	AAQAAHAQAAEAQAAY	Ac	Am	16	2.5	0.0	0.0109	minus_theta222	2700		deg cm2 dmol-1	Tables 1+3	state=H+E0;NaCl=0.01 M;authors' no-interaction reference (i,i+5)
+3HE	AAQAAHAQEAAAQAAY	Ac	Am	16	2.5	0.0	1.0009	minus_theta222	5700		deg cm2 dmol-1	Tables 1+3	state=H+E0;NaCl=1.0 M
+4HE	AAQAAHAQAEAAQAAY	Ac	Am	16	2.5	0.0	1.0009	minus_theta222	5900		deg cm2 dmol-1	Tables 1+3	state=H+E0;NaCl=1.0 M
+5HE	AAQAAHAQAAEAQAAY	Ac	Am	16	2.5	0.0	1.0009	minus_theta222	3900		deg cm2 dmol-1	Tables 1+3	state=H+E0;NaCl=1.0 M;authors' no-interaction reference (i,i+5)
+3HE	AAQAAHAQEAAAQAAY	Ac	Am	16	2.5	0.0	2.5009	minus_theta222	4500		deg cm2 dmol-1	Tables 1+3	state=H+E0;NaCl=2.5 M
+4HE	AAQAAHAQAEAAQAAY	Ac	Am	16	2.5	0.0	2.5009	minus_theta222	4500		deg cm2 dmol-1	Tables 1+3	state=H+E0;NaCl=2.5 M
+5HE	AAQAAHAQAAEAQAAY	Ac	Am	16	2.5	0.0	2.5009	minus_theta222	3700		deg cm2 dmol-1	Tables 1+3	state=H+E0;NaCl=2.5 M;authors' no-interaction reference (i,i+5)
+3HE	AAQAAHAQEAAAQAAY	Ac	Am	16	5.5	0.0	0.014	minus_theta222	4400		deg cm2 dmol-1	Tables 1+3	state=H+E-;NaCl=0.01 M
+4HE	AAQAAHAQAEAAQAAY	Ac	Am	16	5.5	0.0	0.014	minus_theta222	5300		deg cm2 dmol-1	Tables 1+3	state=H+E-;NaCl=0.01 M
+5HE	AAQAAHAQAAEAQAAY	Ac	Am	16	5.5	0.0	0.014	minus_theta222	2300		deg cm2 dmol-1	Tables 1+3	state=H+E-;NaCl=0.01 M;authors' no-interaction reference (i,i+5)
+3HE	AAQAAHAQEAAAQAAY	Ac	Am	16	5.5	0.0	1.004	minus_theta222	5000		deg cm2 dmol-1	Tables 1+3	state=H+E-;NaCl=1.0 M
+4HE	AAQAAHAQAEAAQAAY	Ac	Am	16	5.5	0.0	1.004	minus_theta222	5300		deg cm2 dmol-1	Tables 1+3	state=H+E-;NaCl=1.0 M
+5HE	AAQAAHAQAAEAQAAY	Ac	Am	16	5.5	0.0	1.004	minus_theta222	3300		deg cm2 dmol-1	Tables 1+3	state=H+E-;NaCl=1.0 M;authors' no-interaction reference (i,i+5)
+3HE	AAQAAHAQEAAAQAAY	Ac	Am	16	5.5	0.0	2.504	minus_theta222	4100		deg cm2 dmol-1	Tables 1+3	state=H+E-;NaCl=2.5 M
+4HE	AAQAAHAQAEAAQAAY	Ac	Am	16	5.5	0.0	2.504	minus_theta222	4300		deg cm2 dmol-1	Tables 1+3	state=H+E-;NaCl=2.5 M
+5HE	AAQAAHAQAAEAQAAY	Ac	Am	16	5.5	0.0	2.504	minus_theta222	3100		deg cm2 dmol-1	Tables 1+3	state=H+E-;NaCl=2.5 M;authors' no-interaction reference (i,i+5)
+3HE	AAQAAHAQEAAAQAAY	Ac	Am	16	8.5	0.0	0.019	minus_theta222	3300		deg cm2 dmol-1	Tables 1+3	state=H0E-;NaCl=0.01 M
+4HE	AAQAAHAQAEAAQAAY	Ac	Am	16	8.5	0.0	0.019	minus_theta222	3300		deg cm2 dmol-1	Tables 1+3	state=H0E-;NaCl=0.01 M
+5HE	AAQAAHAQAAEAQAAY	Ac	Am	16	8.5	0.0	0.019	minus_theta222	3400		deg cm2 dmol-1	Tables 1+3	state=H0E-;NaCl=0.01 M;authors' no-interaction reference (i,i+5)
+3HE	AAQAAHAQEAAAQAAY	Ac	Am	16	8.5	0.0	1.009	minus_theta222	6400		deg cm2 dmol-1	Tables 1+3	state=H0E-;NaCl=1.0 M
+4HE	AAQAAHAQAEAAQAAY	Ac	Am	16	8.5	0.0	1.009	minus_theta222	6600		deg cm2 dmol-1	Tables 1+3	state=H0E-;NaCl=1.0 M
+5HE	AAQAAHAQAAEAQAAY	Ac	Am	16	8.5	0.0	1.009	minus_theta222	4700		deg cm2 dmol-1	Tables 1+3	state=H0E-;NaCl=1.0 M;authors' no-interaction reference (i,i+5)
+3HE	AAQAAHAQEAAAQAAY	Ac	Am	16	8.5	0.0	2.509	minus_theta222	5200		deg cm2 dmol-1	Tables 1+3	state=H0E-;NaCl=2.5 M
+4HE	AAQAAHAQAEAAQAAY	Ac	Am	16	8.5	0.0	2.509	minus_theta222	5400		deg cm2 dmol-1	Tables 1+3	state=H0E-;NaCl=2.5 M
+5HE	AAQAAHAQAAEAQAAY	Ac	Am	16	8.5	0.0	2.509	minus_theta222	4500		deg cm2 dmol-1	Tables 1+3	state=H0E-;NaCl=2.5 M;authors' no-interaction reference (i,i+5)
+AQ	AAQAAAAQAAAAQAAY	Ac	Am	16	7.0	0.0	0.0172	minus_theta222	15580		deg cm2 dmol-1	Tables 1+3	host, no substitution;NaCl=0.01 M;pH not stated (no titratable group in range)
+AQ	AAQAAAAQAAAAQAAY	Ac	Am	16	7.0	0.0	1.0072	minus_theta222	16580		deg cm2 dmol-1	Tables 1+3	host, no substitution;NaCl=1.0 M;pH not stated (no titratable group in range)
+AQ	AAQAAAAQAAAAQAAY	Ac	Am	16	7.0	0.0	2.5072	minus_theta222	15250		deg cm2 dmol-1	Tables 1+3	host, no substitution;NaCl=2.5 M;pH not stated (no titratable group in range)

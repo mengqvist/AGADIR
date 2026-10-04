@@ -14,6 +14,55 @@
     "previous_coded_value": {
       "ionic_strength_M": 0.025,
       "note": "Superseded at cycle 51. Both the old temperature and the old ionic strength disagreed with the source; see reasoning/nodes/N040.md for the measured effect."
+    },
+    "sequence_corrections": {
+      "figure_3b": "Residue 14 is Asp, not Ala as printed in the Figure 3B label (KDESYEELLRKTKAELLHW...). The titin peptide (residues 1977-2014) is from Musco, Tziatzios, Schuck & Pastore (1995), Biochemistry 34, 553-561, doi:10.1021/bi00002a021, which prints Asp14 both in the titin sequence of its Figure 1a and in the NMR assignment table (Table 2) of the synthesized peptide. Paper III does not describe this panel as a mutant (its panel C is). Changed from Ala14 to Asp14 on the owner's instruction."
+    },
+    "per_panel": {
+      "figure_3d1": {
+        "source": "Yumoto, N., Murase, S., Hattori, T., Yamamoto, H., Tatsu, Y. & Yoshikawa, S. (1993). Stabilization of alpha-helix in C-terminal fragments of neuropeptide Y. Biochem. Biophys. Res. Commun. 196, 1490-1495.",
+        "ionic_strength_M": 0.0006,
+        "pH": 7.5,
+        "conditions_verified_against_source": true,
+        "conditions_source": "\"CD spectra were measured at 10 C (A), 25 C (B) and 37 C (C) with a 0.2 cm light path. The peptides were dissolved in 5 mM N-[tris(hydroxymethyl)methyl]-2-aminomethanesulfonate buffer (pH 7.5).\" (Fig. 2 legend)",
+        "ionic_strength_derivation": "DERIVED, not stated. 5 mM TAPS at pH 7.5 with its pKa of about 8.4 (25 C; value from general knowledge, not from this paper) is about 11% anionic, so 0.56 mM TAPS- plus 0.56 mM Na+ from titration gives I = 0.56 mM; peptide counter-ions add about 0.1 mM. Rounded to 0.0006 M.",
+        "values_note": "Values are Yumoto's own data, not the replot in paper III Figure 3D. theta222 was digitised from Yumoto Fig. 2 (rendered at 600 dpi, deskewed, pixel runs at 222 nm; reasoning/evidence/scripts/n076_yumoto_digitise.py) and converted with paper III's own equations 2-4 (theta_H = -39500(1 - 2.57/n) + 100t, theta_C = 400 - 45t, n = 25), the convention of every other panel in this file. Paper III plotted 27.4/23.4/19.4 (Ala12) and 48.9/40.9/32.8 (Thr12), which no conversion of Yumoto's spectra reproduces. Caveat: Yumoto's Fig. 3B bar for Ala12 at 37 C (8.6%, Chen 1974 basis) is lower than the Fig. 2 spectrum gives on the same basis (13.0%); Fig. 2 used 30.8 uM and Fig. 3's concentration is not stated. Thr12 and Arg12 agree better. Fig. 2 is used because it is the only temperature series. Changed on the owner's instruction (cycle 166).",
+        "previous_coded_values": {
+          "temperatures": [
+            9.55,
+            24.78,
+            36.72
+          ],
+          "helicity": [
+            27.41,
+            23.42,
+            19.42
+          ],
+          "source": "paper III Figure 3D replot, scored at pH 7.0 / 0.005 M"
+        }
+      },
+      "figure_3d2": {
+        "source": "Yumoto, N., Murase, S., Hattori, T., Yamamoto, H., Tatsu, Y. & Yoshikawa, S. (1993). Stabilization of alpha-helix in C-terminal fragments of neuropeptide Y. Biochem. Biophys. Res. Commun. 196, 1490-1495.",
+        "ionic_strength_M": 0.0006,
+        "pH": 7.5,
+        "conditions_verified_against_source": true,
+        "conditions_source": "\"CD spectra were measured at 10 C (A), 25 C (B) and 37 C (C) with a 0.2 cm light path. The peptides were dissolved in 5 mM N-[tris(hydroxymethyl)methyl]-2-aminomethanesulfonate buffer (pH 7.5).\" (Fig. 2 legend)",
+        "ionic_strength_derivation": "DERIVED, not stated. 5 mM TAPS at pH 7.5 with its pKa of about 8.4 (25 C; value from general knowledge, not from this paper) is about 11% anionic, so 0.56 mM TAPS- plus 0.56 mM Na+ from titration gives I = 0.56 mM; peptide counter-ions add about 0.1 mM. Rounded to 0.0006 M.",
+        "values_note": "Values are Yumoto's own data, not the replot in paper III Figure 3D. theta222 was digitised from Yumoto Fig. 2 (rendered at 600 dpi, deskewed, pixel runs at 222 nm; reasoning/evidence/scripts/n076_yumoto_digitise.py) and converted with paper III's own equations 2-4 (theta_H = -39500(1 - 2.57/n) + 100t, theta_C = 400 - 45t, n = 25), the convention of every other panel in this file. Paper III plotted 27.4/23.4/19.4 (Ala12) and 48.9/40.9/32.8 (Thr12), which no conversion of Yumoto's spectra reproduces. Caveat: Yumoto's Fig. 3B bar for Ala12 at 37 C (8.6%, Chen 1974 basis) is lower than the Fig. 2 spectrum gives on the same basis (13.0%); Fig. 2 used 30.8 uM and Fig. 3's concentration is not stated. Thr12 and Arg12 agree better. Fig. 2 is used because it is the only temperature series. Changed on the owner's instruction (cycle 166).",
+        "previous_coded_values": {
+          "temperatures": [
+            9.85,
+            25.07,
+            36.72
+          ],
+          "helicity": [
+            48.9,
+            40.91,
+            32.78
+          ],
+          "source": "paper III Figure 3D replot, scored at pH 7.0 / 0.005 M"
+        }
+      }
     }
   },
   "figure_3a": {
@@ -41,7 +90,7 @@
     "ccap": "Am"
   },
   "figure_3b": {
-    "peptide": "KDESYEELLRKTKAELLHWTKELTEEEKKALAEEGKIT",
+    "peptide": "KDESYEELLRKTKDELLHWTKELTEEEKKALAEEGKIT",
     "temperatures": [
       2.84,
       10.78,
@@ -97,32 +146,32 @@
   "figure_3d1": {
     "peptide": "APAEDLARYYSALRHYINLITRQRY",
     "temperatures": [
-      9.55,
-      24.78,
-      36.72
+      10.0,
+      25.0,
+      37.0
     ],
     "helicity": [
-      27.41,
-      23.42,
-      19.42
+      20.2,
+      15.6,
+      11.0
     ],
-    "pH": 7.0,
+    "pH": 7.5,
     "ncap": null,
     "ccap": "Am"
   },
   "figure_3d2": {
     "peptide": "TPAEDLARYYSALRHYINLITRQRY",
     "temperatures": [
-      9.85,
-      25.07,
-      36.72
+      10.0,
+      25.0,
+      37.0
     ],
     "helicity": [
-      48.9,
-      40.91,
-      32.78
+      47.5,
+      34.6,
+      30.1
     ],
-    "pH": 7.0,
+    "pH": 7.5,
     "ncap": null,
     "ccap": "Am"
   },

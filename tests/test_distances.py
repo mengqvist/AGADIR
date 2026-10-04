@@ -11,6 +11,10 @@ aa = ['A', 'G', 'K', 'R', 'D', 'E', 'C', 'Y', 'Nterm', 'Cterm', 'Ac', 'Am', 'Sc'
 cols = [f'i+{k}' for k in range(30)]
 
 helix_df = pd.DataFrame(10.0, index=['AA', 'RK', 'DA', 'KK', 'HelixRest'], columns=cols)
+# distances for N'/C' residues to a helical residue (Lacroix 1998 supplementary Table VI)
+helix_df.loc['N’'] = 11.0
+helix_df.loc['C’'] = 12.0
+helix_df.loc['C’G-cap'] = 13.0
 coil_df  = pd.DataFrame(20.0, index=['AA', 'RK', 'DA', 'KK', 'RcoilRest'], columns=cols)
 n_macro_df = pd.DataFrame(30.0, index=aa, columns=['Ncap'] + [f'N{k}' for k in range(1, 30)])
 c_macro_df = pd.DataFrame(30.0, index=aa, columns=['Ccap'] + [f'C{k}' for k in range(1, 30)])
@@ -136,43 +140,18 @@ def test_helix_coil_interface_restriction(calculator):
     Target Helix Residue = 5 (K)
     """
     
-    # Case A: N'(1) to Helix(5) -> Valid
-    # Path: Coil(1->2) + Helix(2->5). 
-    # Dist: MockCoil(20.0) + MockHelix(10.0) = 30.0
+    # Case A: N'(1) to Helix(5) -> Valid, Table VI row N' (mock 11.0)
     dist_n_prime = calculator.sidechain_sidechain_distances_hel[1, 5]
-    assert dist_n_prime == 30.0, f"Expected Sum (30.0) for N'->Helix, got {dist_n_prime}"
+    assert dist_n_prime == 11.0, f"Expected row N' (11.0) for N'->Helix, got {dist_n_prime}"
 
-    # Case B: C'(8) to Helix(5) -> Valid
-    # Path: Coil(8->7) + Helix(7->5). 
-    # Dist: MockCoil(20.0) + MockHelix(10.0) = 30.0
+    # Case B: C'(8) to Helix(5) -> Valid, Table VI row C' (mock 12.0); the C-cap is Ala, not Gly
     dist_c_prime = calculator.sidechain_sidechain_distances_hel[5, 8]
-    assert dist_c_prime == 30.0, f"Expected Sum (30.0) for C'->Helix, got {dist_c_prime}"
+    assert dist_c_prime == 12.0, f"Expected row C' (12.0) for C'->Helix, got {dist_c_prime}"
 
     # Case C: "Phantom" Interaction C''(9) to Helix(5)
     # 9 is NOT N' or C'. Should be 99 (ignored).
     dist_phantom = calculator.sidechain_sidechain_distances_hel[5, 9]
     assert dist_phantom == 99.0, f"Expected Phantom Interaction to be 99.0, got {dist_phantom}"
-
-@pytest.mark.xfail(strict=True, reason="stale expectation (pre-dates the reasoning/ investigation's "
-                   "distance revisions); was masked by a KeyError in MOCK_PARAMS until 2026-09-30")
-def test_terminal_sidechain_rc_linear_formula(calculator):
-    """
-    Verify Random Coil interactions involving the N-terminus use 
-    the linear distance formula.
-    Target: Index 5 (K).
-    N-term is at -1 (conceptually/physically at 0).
-    
-    Correct Physics: Separation = Index 5 - Index 0 = 5 residues.
-    Formula: r = 0.1 + (N+1)*2
-    r = 0.1 + (5+1)*2 = 12.1 A.
-    """
-    # Check the stored distance in the calculator
-    calc_dist = calculator.terminal_sidechain_distances_nterm[5]
-    
-    # With the fix in `_assign...` (using idx), this should be 12.1
-    expected = 12.1
-    
-    assert np.isclose(calc_dist, expected), f"Expected linear dist {expected}, got {calc_dist}"
 
 def test_electrostatic_matrix_symmetry(calculator):
     """
