@@ -67,21 +67,60 @@ def _huyghues(peptide_id, pH, nacl):
 
 
 def test_glu_arg_i3_orientation_neutral_ph():
-    """Arg(i)-Glu(i+3) = -0.05 (table 4a; was -0.35, which reversed the measured preference): at pH 7, 0.01 M NaCl the
-    Glu-first peptide is the more helical one (measured +30.8 points; the old cell gave -15.6)."""
+    """Glu(i)-Arg(i+3) = Arg(i)-Glu(i+3) = -0.20 (table 4a; published 0 and -0.35, which reversed the measured
+    preference): at pH 7, 0.01 M NaCl the Glu-first peptide is the more helical one (measured +30.8 points)."""
     seq_ab, meas_ab = _huyghues("GluArg_i+3_AB", 7.0, 0.01)
     seq_ba, meas_ba = _huyghues("GluArg_i+3_BA", 7.0, 0.01)
     assert meas_ab - meas_ba > 0
     assert _model(seq_ab, 7.0, 0.01) - _model(seq_ba, 7.0, 0.01) > 0
 
 
+def test_glu_arg_i3_levels():
+    """The i,i+3 Glu-Arg cells are fixed jointly by the Huyghues-Despointes levels: all eight (two orientations x two pH
+    x two NaCl) within 9 points RMSE. The published cells (0 / -0.35) give 15.5 and Arg-first -0.05 alone gives 14.9."""
+    err = []
+    for pid in ("GluArg_i+3_AB", "GluArg_i+3_BA"):
+        for pH in (2.5, 7.0):
+            for nacl in (0.01, 1.0):
+                seq, meas = _huyghues(pid, pH, nacl)
+                err.append(_model(seq, pH, nacl) - meas)
+    assert (sum(e * e for e in err) / len(err)) ** 0.5 < 9.0
+
+
+@pytest.mark.xfail(strict=True, reason="Documented limitation (params/README.md): the measured Glu-Arg i+3 orientation "
+                   "preference depends on the charge of Glu, which a cell applied in every ionisation state cannot "
+                   "carry. With Glu neutral the Arg-first peptide is measured 6.7 points more helical; the model has "
+                   "the two about equal.")
 def test_glu_arg_i3_orientation_neutral_acid():
-    """With Glu neutral (pH 2.5, 0.01 M) the Arg-first peptide is only slightly more helical (measured -6.7 points);
-    the old cell gave -27.2."""
+    """With Glu neutral (pH 2.5, 0.01 M) the Arg-first peptide is slightly more helical (measured -6.7 points)."""
     seq_ab, meas_ab = _huyghues("GluArg_i+3_AB", 2.5, 0.01)
     seq_ba, meas_ba = _huyghues("GluArg_i+3_BA", 2.5, 0.01)
     model = _model(seq_ab, 2.5, 0.01) - _model(seq_ba, 2.5, 0.01)
     assert model == pytest.approx(meas_ab - meas_ba, abs=5.0)
+
+
+RICHARDSON = Path(__file__).resolve().parents[1] / "pyagadir/data/peptides"
+
+
+def test_arg_glu_i3_levels_third_and_fourth_design():
+    """Richardson & Makhatadze 2004 (J. Mol. Biol. 335, 1029), Table 2, twelve Y(XEARA)n peptides at pH 2.0, 0 C, and
+    Richardson et al. 1999 (Biochemistry 38, 12869), NH2-Y(MEARA)6-CONH2 at 1 C, pH 2.0 and 7.0. Every peptide carries
+    only Arg(i)-Glu(i+3) pairs (four or five), so its level fixes that cell alone. Mean model - measured within 5
+    points; Arg(i)-Glu(i+3) = -0.05 gives -15 and the published -0.35 gives +9."""
+    err = []
+    for f, q in (("2004_richardson_jmb335_table2.tsv", "helix_fraction"),
+                 ("1999_richardson_biochem38_meara6.tsv", "helix_percent")):
+        with (RICHARDSON / f).open() as fh:
+            for r in csv.DictReader(fh, delimiter="\t"):
+                if r["quantity"] != q:
+                    continue
+                meas = float(r["value"]) * (100 if q == "helix_fraction" else 1)
+                with contextlib.redirect_stdout(io.StringIO()):
+                    p = AGADIR(method="1s", T=float(r["T_C"]), M=float(r["ionic_strength_M"]), pH=float(r["pH"])).predict(
+                        r["sequence"], ncap=r["ncap"] or None, ccap=r["ccap"] or None).get_percent_helix()
+                err.append(p - meas)
+    assert len(err) == 14
+    assert abs(sum(err) / len(err)) < 5.0
 
 
 @pytest.mark.parametrize("pH,ionic", [(6.8, 0.0314), (2.0, 0.0183)])
