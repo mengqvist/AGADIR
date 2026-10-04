@@ -76,3 +76,10 @@ def test_n_terminal_tyr_alpha_amino_pka():
     assert np.isclose(_calc("YGGSAAAAAAAKRAAA", None, "Am", pH=7.0, T=5.0).nterm_pka, 7.2)
     assert np.isclose(_calc("AGGSAAAAAAAKRAAA", None, "Am", pH=7.0, T=5.0).nterm_pka, 8.00)
     assert np.isnan(_calc("YGGSAAAAAAAKRAAA", "Ac", "Am", pH=7.0, T=5.0).nterm_pka)
+
+
+def test_tyr_side_chain_coil_pka():
+    """Tyr base pKa 9.5 (params README): in the unstructured control KR-1c (Lacroix 1998 Table 1, apparent 9.4
+    +/- 0.1 at 278 K) the coil-state Tyr1 side chain is half ionised at pH 9.4."""
+    c = _calc("YGGSAGAGAGAKRGAA", None, "Am", pH=9.4, T=5.0, M=0.005)
+    assert abs(float(c.modified_seq_ionization_rc[0])) == pytest.approx(0.5, abs=0.05)
