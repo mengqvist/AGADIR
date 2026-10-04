@@ -189,3 +189,31 @@ def debye_screening_kappa(ionic_strength: float, T: float) -> float:
     )
 
     return kappa
+
+
+def ionization_free_energy(ln_x: float, psi: float, q: float, RT: float) -> float:
+    """
+    Ionisation free energy of one titratable group in a mean-field electrostatic environment,
+    beyond the q-weighted energy q * psi (kcal/mol).
+
+    For a group whose intrinsic charged/neutral ratio at this pH is x (ln_x = ln x) and whose
+    charged state has energy psi in its environment, the exact single-group free energy relative
+    to no environment is -RT ln[(1 + x e^(-psi/RT)) / (1 + x)]. A model that charges q * psi at
+    the self-consistent charge q = x e^(-psi/RT) / (1 + x e^(-psi/RT)) omits the difference
+    returned here, which is >= 0 and vanishes when the group stays fully charged or fully
+    neutral. Summed over all groups at the mean-field fixed point, it turns the mean-field
+    energy into the mean-field free energy.
+
+    Args:
+        ln_x (float): Natural log of the intrinsic charged/neutral ratio, ln 10 * (pH - pKa) for
+            an acid, ln 10 * (pKa - pH) for a base.
+        psi (float): Energy (kcal/mol) of the fully charged state in the environment.
+        q (float): Fraction charged at the fixed point (0..1).
+        RT (float): RT in kcal/mol.
+
+    Returns:
+        float: The ionisation free energy in kcal/mol.
+    """
+    log1p_shifted = max(0.0, ln_x - psi / RT) + math.log1p(math.exp(-abs(ln_x - psi / RT)))
+    log1p_free = max(0.0, ln_x) + math.log1p(math.exp(-abs(ln_x)))
+    return -RT * (log1p_shifted - log1p_free) - q * psi

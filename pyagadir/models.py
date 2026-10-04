@@ -272,8 +272,12 @@ class AGADIR(object):
         # the temperature-dependent dielectric constant of water.
         # ε(T) = ε(0°C) × exp(-0.004314×ΔT), so Coulomb energies scale
         # as exp(+0.004314×ΔT) (stronger at higher T due to lower ε).
-        dT = self.T_kelvin - 273.15
-        elec_temp_factor = np.exp(0.004314 * dT)
+        elec_temp_factor = self.energy_calculator.dipole_temperature_factor()
+
+        # Ionisation free energy of the segment: the part of the mean-field electrostatic free
+        # energy that the q-weighted electrostatic terms below leave out (energies.py,
+        # _assign_modified_ionization_states).
+        dG_ionization = self.energy_calculator.get_dG_ionization()
 
         # sum all components
         dG_Hel = (
@@ -294,6 +298,7 @@ class AGADIR(object):
             + np.sum(dG_electrost_term)
             + np.sum(dG_electrost_sidechain)
             + dG_electrost_term_term
+            + dG_ionization
         )
 
         if self.debug:

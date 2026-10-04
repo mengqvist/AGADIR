@@ -105,7 +105,7 @@ Distances (Å) between charged amino acids and the half charge from the helix ma
 The distances in Å shown in this table have been obtained from the analysis of the protein database as indicated in Methods.  The nomenclature for the helix position of the charged residues (columns N-cap etc...) is that of Richardson & Richardson (1988).
 
 ## table_7_coulomb_Ncap, table_7_coulomb_Ccap
-The distances (Å) used by the side chain-macrodipole term for charged residues inside the helix. They are identical to tables 7 above (Lacroix 1998, supplementary Table VII) and are kept as separate files so that this term's distances can be varied independently of the flanking-residue screening, which reads tables 7.
+The distances (Å) used by the side chain-macrodipole term for charged residues inside the helix. They are identical to tables 7 above (Lacroix 1998, supplementary Table VII). The model reads these copies (`EnergyCalculator._sidechain_dipole_potential`); tables 7 are kept as the published reference.
 
 ## pka_values
 The pKa values for N- and C-termini as well as ionizable side chains when incorporated in a peptide. These are reference (base) pKa values: the pKa of each group in an unstructured peptide, before the model's helix- and coil-state electrostatic shifts are applied. Rule: a value measured in an unstructured peptide at the conditions of the helicity data (0-5 C, low salt) is used where one exists, otherwise the value measured in unstructured alanine pentapeptides.
@@ -115,10 +115,17 @@ The pKa values for N- and C-termini as well as ionizable side chains when incorp
 - Asp 3.91: Huyghues-Despointes, Scholtz & Baldwin (1993) Protein Sci. 2, 80 (Ac-AADAA-NH2 by NMR, 0 C, 10 mM NaCl). This is the same peptide Thurlkill et al. measured at 3.67, but at the conditions of the helicity data.
 - Arg 13.8: Fitch, Platzer, Okon, Garcia-Moreno & McIntosh (2015) Protein Sci. 24, 752.
 - Sc (succinyl) 4.5: unchanged; no measured source found.
+- Nterm_Y 7.2: the alpha-amino pKa depends on the N-terminal residue (7.6-8.9 across residues in Doig & Baldwin 1995 Protein Sci. 4, 1325, Table 2), and a residue-specific row overrides Nterm for a free N-terminus starting with that residue. Lacroix, Viguera & Serrano (1998) J. Mol. Biol. 284, 173, Table 1 measured the free alpha-amino group of Tyr1 at 7.1 +/- 0.1 in the unstructured control peptide KR-1c (CD titration, 278 K, no added salt), the conditions of their pH-titration panels. That apparent value includes the repulsion from the peptide's Lys and Arg; the model's coil state puts that repulsion at about 0.1 pKa unit at these conditions, so the base value is 7.2.
 
 These replace values from Nozaki and Tanford (1967), which were measured in model compounds rather than peptides.
 
 
+
+## Electrostatic free energy (no table)
+The ionisation states of all titratable groups are solved self-consistently in the helix and coil states (Lacroix 1998, eqs 8-11): each group's pKa is shifted by the energy of its charged state in the field of the macrodipole (helix only) and of the other groups. Two rules keep this consistent with the energy terms:
+
+- The solver uses the same interaction model as the energy terms: the side chain-macrodipole law (nearest end by Muñoz 1995-II eq. 11, far end and flanks as half charges), the terminal-macrodipole term with its locality gate, and the terminal-side chain and side chain-side chain distances of Lacroix 1998 supplementary Table VI. A pair the energy terms do not model has the same distance in both states, so it shifts pKas alike and adds no helix-coil energy.
+- The electrostatic terms charge sum q_i q_j W_ij + sum q_i phi_i at the converged charges. That is the mean-field energy; the free energy also contains the cost of moving each group's ionisation away from its intrinsic value. The segment energy therefore includes the ionisation free energy, sum over groups of -RT ln[(1 + x e^(-psi/RT)) / (1 + x)] - q psi, helix minus coil (`chemistry.ionization_free_energy`). It vanishes for groups that stay fully charged or fully neutral; for partly ionised groups the energy alone over-counts the interaction (for Asp next to Arg at pH 2.5, by a factor of 1.8). With it, the mean-field result matches exact enumeration of all protonation states to within 0.003 kcal/mol on test peptides.
 
 ## Salt terms (constants in `models.py`, no table)
 Two terms describe how salt acts on the helix itself, separately from the Debye-Hückel screening of charge interactions. Both constants come from the NaCl series of Scholtz, York, Stewart & Baldwin (1991) J. Am. Chem. Soc. 113, 5102 (Figure 2): Ac-(AAQAA)3Y-NH2, 0 C, pH 7. That peptide has no charged groups, so its helicity against salt concentration isolates these two terms from everything else in the model.

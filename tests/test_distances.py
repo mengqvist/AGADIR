@@ -153,27 +153,6 @@ def test_helix_coil_interface_restriction(calculator):
     dist_phantom = calculator.sidechain_sidechain_distances_hel[5, 9]
     assert dist_phantom == 99.0, f"Expected Phantom Interaction to be 99.0, got {dist_phantom}"
 
-@pytest.mark.xfail(strict=True, reason="stale expectation (pre-dates the reasoning/ investigation's "
-                   "distance revisions); was masked by a KeyError in MOCK_PARAMS until 2026-09-30")
-def test_terminal_sidechain_rc_linear_formula(calculator):
-    """
-    Verify Random Coil interactions involving the N-terminus use 
-    the linear distance formula.
-    Target: Index 5 (K).
-    N-term is at -1 (conceptually/physically at 0).
-    
-    Correct Physics: Separation = Index 5 - Index 0 = 5 residues.
-    Formula: r = 0.1 + (N+1)*2
-    r = 0.1 + (5+1)*2 = 12.1 A.
-    """
-    # Check the stored distance in the calculator
-    calc_dist = calculator.terminal_sidechain_distances_nterm[5]
-    
-    # With the fix in `_assign...` (using idx), this should be 12.1
-    expected = 12.1
-    
-    assert np.isclose(calc_dist, expected), f"Expected linear dist {expected}, got {calc_dist}"
-
 def test_electrostatic_matrix_symmetry(calculator):
     """
     Verify that the electrostatic matrix is symmetric and has correct shape.
