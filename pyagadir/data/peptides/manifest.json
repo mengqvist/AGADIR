@@ -401,5 +401,83 @@
     "conversion_note": "Only -[theta]222 is printed; it is stored as printed and the conversion is NOT applied in the TSV. With n = 16, theta_H = -34,531. This is a different theta_H convention from Scholtz 1993's -33,750 for the same host.",
     "error_note": "No per-value error is printed. Materials and Methods: 'The largest source of error in these experiments is in the measure of [theta]222, and we estimate it to be +-3-4% on a single measurement.'",
     "design_note": "The (i,i+5) peptides are the authors' no-interaction references (flagged); the difference between an (i,i+k) peptide and its (i,i+5) partner at the same salt and pH cancels the charge-helix macrodipole terms (their analysis)."
+  },
+  "1987_marqusee_pnas84_table1": {
+    "citation": "Marqusee, S. & Baldwin, R.L. (1987). Helix stabilization by Glu-...Lys+ salt bridges in short peptides of de novo design. Proc. Natl. Acad. Sci. USA 84, 8898-8902.",
+    "source_pdf": "doc/1987_marqusee_Helix-stabilization-by-Glu-Lys+-salt-bridges-in-short-peptides-of-de-novo-design.pdf",
+    "source_table": "Fig. 1 (Upper; sequences) joined to Table 1 ('Helix content (pH 7.0, 1 C)')",
+    "extractor": "reasoning/evidence/scripts/extract_marqusee1987.py",
+    "transcription_method": "Fig. 1 and Table 1 READ FROM PAGES 2-3 RENDERED AT 130 dpi; the text layer agrees for Table 1.",
+    "validation": "Five checks in the extractor, each able to fail. (1) Lengths equal the printed 17mer/16mer. (2) Three Glu and three Lys in each peptide. (3) The first charged residue matches the E,K / K,E orientation in the name. (4) The charged-residue spacings are i+4/i+1 or i+3/i+2 as the name says. (5) Table 1's 'Helix dipole interaction' sign matches the orientation, and the paper's 36,000 conversion reproduces the abstract's ~80 % for (i+4)E,K.",
+    "n_peptides": 4,
+    "n_conditions": 2,
+    "n_data_rows": 8,
+    "conditions_verified_against_source": true,
+    "conditions_quote": "Materials and Methods: 'CD samples were prepared by diluting stock solutions with a 1 mM sodium citrate/1 mM sodium borate/1 mM sodium phosphate buffer of the indicated NaCl concentration. ... The pH was adjusted with HCl and NaOH.' / Table 1 title: 'Helix content (pH 7.0, 1 C)' / Abstract: 'Each peptide ... has blocked alpha-NH2 and alpha-COOH groups.'",
+    "temperature_C": 1.0,
+    "pH_values": [
+      7.0
+    ],
+    "ionic_strengths_M": [
+      0.01,
+      1.0
+    ],
+    "ionic_strength_derivation": "DERIVED. Coded ionic_strength_M = stated NaCl + the CD buffer (1 mM each citrate/borate/phosphate) at pH 7.0 by reasoning/evidence/scripts/ionic_strength.py (+0.0072). The stated NaCl is kept in each row's flags.",
+    "conversion_quote": "'the best helix-former, (i+4)E,K, contains ~80% helix in 0.01 M NaCl at 1C (based on -[theta]222 = 36,000 for 100% helix in trifluoroethanol/H2O mixtures; S.M., unpublished data)'",
+    "conversion_note": "Only -[theta]222 is printed; it is stored as printed. extracted_direct.py applies the paper's own conversion (100 % = 36,000, no coil correction). Scholtz 1991's 40,000(1-2.5/n) with +640 coil gives 4-5 points more, with the same contrasts.",
+    "error_note": "No per-value error is printed. Materials and Methods: 'The reproducibility of the peptide concentration determinations was +-5%.'",
+    "why_it_matters": "The two i+4 peptides are the same sequences as Meuzelaar et al. 2016 EK4/KE4: a second lab's measurement of the Glu/Lys i+4 orientation contrast, at two salt concentrations. The model over-predicts that contrast about 3x (reasoning/nodes/N107.md, N109.md)."
+  },
+  "1999_richardson_biochem38_meara6": {
+    "citation": "Richardson, J.M., McMahon, K.W., MacDonald, C.C. & Makhatadze, G.I. (1999). MEARA sequence repeat of human CstF-64 polyadenylation factor is helical in solution. A spectroscopic and calorimetric study. Biochemistry 38, 12869-12875.",
+    "source_pdf": "doc/1999_richardson_MEARA-sequence-repeat-of-human-CstF-64-polyadenylation-factor-is-helical-in-solution.pdf",
+    "source_table": "Results text, 'Structural Characterization of MEARA6 in Solution by CD Spectroscopy' (pp. 12871-12872; Fig. 2A). No table.",
+    "extractor": "reasoning/evidence/scripts/extract_richardson1999.py",
+    "transcription_method": "Page 3 RENDERED AT 110 dpi; the text layer agrees.",
+    "validation": "Two checks. (1) Length 31, as printed. (2) The paper's own conversion (its eqs 1-4 with d[Theta]H/dT = 250) applied to the printed ellipticities reproduces the printed helix percentages within the stated +-3 %.",
+    "n_peptides": 1,
+    "n_conditions": 2,
+    "n_data_rows": 4,
+    "conditions_verified_against_source": true,
+    "conditions_quote": "'MEARA6, model peptide with the sequence NH2-Y-(MEARA)6-CONH2' (footnote 1) / 'All CD experiments were performed in buffers containing 10 mM NaCl, and 1 mM each of sodium phosphate, sodium borate, sodium citrate (CD buffer)' / 'The absolute values of ellipticity are larger at pH 2.0 ([Theta]222 = -27 000 deg cm2 dmol-1) than at pH 7.0 ([Theta]222 = -23 400 deg cm2 dmol-1)' / 'in the absence of TFE at 1 C the fraction of MEARA6 residues in helical conformation is 76% +- 3% and 65% +- 3% at pH 2.0 and 7.0, respectively.'",
+    "temperature_C": 1.0,
+    "pH_values": [
+      2.0,
+      7.0
+    ],
+    "ionic_strengths_M": [
+      0.0205,
+      0.0172
+    ],
+    "ionic_strength_derivation": "DERIVED. 10 mM NaCl + CD buffer at the pH (ionic_strength.py), plus 10^-pH for the HCl that sets pH 2.0.",
+    "conversion_quote": "'fH = ([Theta]222 - [Theta]C)/([Theta]H - [Theta]C) (1); [Theta]C = 640 - 45T (2); [Theta]H = [Theta]H(inf){1 - (2.5/Nr)} (3); [Theta]H(inf) = -40 000 + (d[Theta]H(inf)/dT) T (4)' with 250 deg cm2 dmol-1 C-1 used for f_H(T).",
+    "conversion_note": "Both the printed helix_percent and the printed -[theta]222 are stored; extracted_direct.py scores helix_percent.",
+    "why_it_matters": "Five Arg(i)->Glu(i+3) pairs, no Glu(i)->Arg(i+3) pair, free N-terminus: one of the four designs that fix the i+3 Arg/Glu cells (reasoning/nodes/N108.md). Full melts, NaCl and TFE titrations are figure-only and not extracted."
+  },
+  "2004_richardson_jmb335_table2": {
+    "citation": "Richardson, J.M. & Makhatadze, G.I. (2004). Temperature dependence of the thermodynamics of helix-coil transition. J. Mol. Biol. 335, 1029-1037.",
+    "source_pdf": "doc/2004_richardson_Temperature-dependence-of-the-thermodynamics-of-helix-coil-transition.pdf",
+    "source_table": "Table 1 ('Abbreviations for different peptide sequences') joined to Table 2 ('Thermodynamic parameters of helix-coil transition for studied peptides')",
+    "extractor": "reasoning/evidence/scripts/extract_richardson2004.py",
+    "transcription_method": "Page 3 RENDERED AT 150 dpi. The text layer prints minus signs as '2' (T50% '210' for -10), so every value was read from the rendered page.",
+    "validation": "Three checks. (1) Every sequence built from its name (X at the given repeats of Y(XEARA)n) equals the printed Table 1 sequence, except V345 and V34I5. (2) Those two printed sequences are exactly swapped against their names. (3) Row count 12 x 2.",
+    "sequence_note": "Table 1 prints the V345 and V34I5 sequences swapped against their names. Sequences are built from the names; Table 2 supports this: V34I5 (one Ile for one Val) is the more helical, 0.45 vs 0.40 with +-0.02 errors. Those rows are flagged.",
+    "n_peptides": 12,
+    "n_conditions": 1,
+    "n_data_rows": 24,
+    "conditions_verified_against_source": true,
+    "conditions_quote": "'All CD experiments were performed in buffer containing 10 mM NaCl, and 1 mM each of sodium phosphate, sodium borate, and sodium citrate at pH 2.0 (CD buffer)' / Table 1 footnotes: 'a -CONH2 stands for the amidated C terminus. b syn.-peptides were synthesized on solid phase support, rec. peptides were recombinantly expressed as a fusion with ubiquitin' / Table 2 column heads: 'fH (at 0 C)', 'T50% (C)'.",
+    "temperature_C": 0.0,
+    "pH_values": [
+      2.0
+    ],
+    "ionic_strengths_M": [
+      0.0205
+    ],
+    "ionic_strength_derivation": "DERIVED. 10 mM NaCl + CD buffer at pH 2.0 (ionic_strength.py), plus 10^-2 M for the HCl that sets the pH.",
+    "termini_note": "All N-termini free (NH2-). C-terminus free (-COOH) for the recombinant peptides, amidated for the synthetic ones (I6, L6, M6, V6), as Table 1 prints.",
+    "conversion_quote": "'[Theta]C = 640 - 45T (2)' / '[Theta]H = (-40,000 + 250T){1 - (2.5/Nr)} (3)'",
+    "conversion_note": "f_H is printed and stored as helix_fraction (scored). T50% is stored as quantity T50_C and is not scored by extracted_direct.py.",
+    "why_it_matters": "Four or five Arg(i)->Glu(i+3) pairs per peptide, no Glu(i)->Arg(i+3) pair: one of the four designs that fix the i+3 Arg/Glu cells (reasoning/nodes/N108.md). Also the source of the first calorimetric helix-coil dCp (-32 +- 10 J/(mol K) per residue), not stored here."
   }
 }

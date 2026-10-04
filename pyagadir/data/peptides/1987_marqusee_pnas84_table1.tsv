@@ -1,0 +1,9 @@
+peptide_id	sequence	ncap	ccap	n_res	pH	T_C	ionic_strength_M	quantity	value	error	unit	source_table	flags
+(i+4)E,K	AEAAAKEAAAKEAAAKA	Ac	Am	17	7.0	1.0	0.0172	minus_theta222	29000.0		deg cm2 dmol-1	Fig. 1 + Table 1	NaCl=0.01 M;helix-dipole +;same sequence as Meuzelaar 2016 EK4
+(i+4)E,K	AEAAAKEAAAKEAAAKA	Ac	Am	17	7.0	1.0	1.0072	minus_theta222	24800.0		deg cm2 dmol-1	Fig. 1 + Table 1	NaCl=1.0 M;helix-dipole +;same sequence as Meuzelaar 2016 EK4
+(i+4)K,E	AKAAAEKAAAEKAAAEA	Ac	Am	17	7.0	1.0	0.0172	minus_theta222	25300.0		deg cm2 dmol-1	Fig. 1 + Table 1	NaCl=0.01 M;helix-dipole -;same sequence as Meuzelaar 2016 KE4
+(i+4)K,E	AKAAAEKAAAEKAAAEA	Ac	Am	17	7.0	1.0	1.0072	minus_theta222	25700.0		deg cm2 dmol-1	Fig. 1 + Table 1	NaCl=1.0 M;helix-dipole -;same sequence as Meuzelaar 2016 KE4
+(i+3)E,K	AEAAKAEAAKAEAAKA	Ac	Am	16	7.0	1.0	0.0172	minus_theta222	17600.0		deg cm2 dmol-1	Fig. 1 + Table 1	NaCl=0.01 M;helix-dipole +;pair spacing i,i+3
+(i+3)E,K	AEAAKAEAAKAEAAKA	Ac	Am	16	7.0	1.0	1.0072	minus_theta222	17400.0		deg cm2 dmol-1	Fig. 1 + Table 1	NaCl=1.0 M;helix-dipole +;pair spacing i,i+3
+(i+3)K,E	AKAAEAKAAEAKAAEA	Ac	Am	16	7.0	1.0	0.0172	minus_theta222	8500.0		deg cm2 dmol-1	Fig. 1 + Table 1	NaCl=0.01 M;helix-dipole -;pair spacing i,i+3
+(i+3)K,E	AKAAEAKAAEAKAAEA	Ac	Am	16	7.0	1.0	1.0072	minus_theta222	12000.0		deg cm2 dmol-1	Fig. 1 + Table 1	NaCl=1.0 M;helix-dipole -;pair spacing i,i+3
