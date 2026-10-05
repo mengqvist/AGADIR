@@ -431,7 +431,8 @@ def reproduce_munoz_1997_figure_4(method="1s"):
 
 def reproduce_munoz_1995_figure_3(method="1s"):
     """
-    Reproduce Figure 3 from the Munoz et al. (1995) paper.
+    Reproduce Figure 3 from the Munoz et al. (1995) paper, with its NPY panels (3D) replaced by the designed melts of
+    Scholtz et al. (1991, Biopolymers 31, 1463, Fig. 2) and Marqusee & Baldwin (1987, PNAS 84, 8898, Fig. 3a).
     Testing various peptides under different temperatures.
     https://doi.org/10.1006/jmbi.1994.0024
     """
@@ -441,9 +442,14 @@ def reproduce_munoz_1995_figure_3(method="1s"):
     data, _temp_unused, ionic_M = load_validation('munoz_1995_figure_3.json')
     panel_cond = load_panel_conditions('munoz_1995_figure_3.json')
 
-    # Create figure
-    fig, axs = plt.subplots(3, 2, figsize=(8, 12))
-    
+    # Create figure: three columns, as many rows as the panels need (Munoz 1995 Fig. 3 panels plus the designed melts
+    # of Scholtz et al. 1991 and Marqusee & Baldwin 1987 that replaced the NPY panels)
+    ncols = 3
+    nrows = -(-len(data) // ncols)
+    fig, axs = plt.subplots(nrows, ncols, figsize=(4 * ncols, 4 * nrows))
+    for ax in axs.flatten()[len(data):]:
+        ax.set_visible(False)
+
     for figname, ax in zip(data.keys(), axs.flatten()):
         fig_data = data[figname]
         peptide = fig_data["peptide"]
