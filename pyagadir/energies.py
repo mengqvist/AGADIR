@@ -1348,14 +1348,16 @@ class EnergyCalculator(PrecomputeParams):
         if self.ncap_idx == 0:
             return energy
 
-        # The hydrophobic staple motif is only considered whenever the N-cap residue is Asn, Asp, Ser, Pro or Thr.
+        # The hydrophobic staple motif applies whatever the N-cap residue: x 1 in the two capping-box cases below
+        # (Lacroix 1998 supplement) and x 0.5 otherwise, including non-polar N-caps (Viguera & Serrano 1999,
+        # Protein Sci. 8, 1733, Table 3 note c; params/README.md). The supplement had given non-polar N-caps 0.
         # Table II is indexed by N' (rows) x N4 (columns): "the interactions between
         # different amino acids at positions N' (rows) and N4 (columns) in a hydrophobic
         # staple motif" (Lacroix 1998, supplementary Table II caption), which is also what
         # this method's docstring says.  This lookup previously used Ncap_AA, so the term
         # read the wrong table row for every staple it fired on.
         Nprime_AA = self.seq_list[self.ncap_idx - 1]
-        if self.Ncap_AA in ["N", "D", "S", "P", "T"] and Nprime_AA in self.table_2_lacroix.index:
+        if Nprime_AA in self.table_2_lacroix.index and self.N4_AA in self.table_2_lacroix.columns:
             energy = self.table_2_lacroix.loc[Nprime_AA, self.N4_AA] / 100
 
             # whenever the N-cap residue is Asn, Asp, Ser, or Thr and the N3 residue is Glu, Asp or Gln, multiply by 1.0
