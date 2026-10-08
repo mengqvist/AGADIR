@@ -1,0 +1,5 @@
+peptide_id	sequence	ncap	ccap	n_res	pH	T_C	ionic_strength_M	quantity	value	error	unit	source_table	flags
+Reference	YKAAAAKAAAAKAAAAK	Ac	Am	17	7	0	0.0572	helix_fraction	0.63	0.03	fraction	Table 2	NaCl 0.05 M;aromatic_cd
+Reference	YKAAAAKAAAAKAAAAK	Ac	Am	17	7	0	0.1072	helix_fraction	0.64	0.03	fraction	Table 2	NaCl 0.1 M;aromatic_cd
+Reference	YKAAAAKAAAAKAAAAK	Ac	Am	17	7	0	1.0072	helix_fraction	0.74	0.03	fraction	Table 2	NaCl 1 M;aromatic_cd
+Reference	YKAAAAKAAAAKAAAAK	Ac	Am	17	7	0	2.5072	helix_fraction	0.72	0.03	fraction	Table 2	NaCl 2.5 M;aromatic_cd

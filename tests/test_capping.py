@@ -136,3 +136,20 @@ def test_capping_YS():
     assert np.isclose(dG_Ccap, 0.40, atol=0.01)
     assert np.isclose(dG_N_dip[n_idx], -0.3405, atol=0.05)
     assert np.isclose(dG_C_dip[c_idx], 0.00, atol=0.01)
+
+@pytest.mark.parametrize("ncap,factor", [("A", 0.5), ("G", 0.5), ("S", 0.5), ("P", 0.5)])
+def test_staple_after_any_ncap(ncap, factor):
+    """Hydrophobic staple (Leu N' - Leu N4, table 2: -0.90) is half strength after a non-polar N-cap (Viguera & Serrano
+    1999, Protein Sci. 8, 1733, Table 3 note c), as after a polar N-cap without the capping box; the published
+    supplement gave non-polar N-caps nothing."""
+    seq = "L" + ncap + "AAALAAAAAAAA"
+    calc = EnergyCalculator(seq=seq, i=1, j=12, pH=PH, T=TEMP, ionic_strength=IONIC, ncap=None, ccap=None,
+                            params=EnergyCalculator.snapshot_params())
+    assert calc.get_dG_staple() == pytest.approx(factor * -0.90, abs=1e-6)
+
+
+def test_staple_full_with_capping_box():
+    """Ser N-cap with Glu at N3 (capping box): full staple."""
+    calc = EnergyCalculator(seq="LSAAELAAAAAAAA", i=1, j=12, pH=PH, T=TEMP, ionic_strength=IONIC, ncap=None, ccap=None,
+                            params=EnergyCalculator.snapshot_params())
+    assert calc.get_dG_staple() == pytest.approx(-0.90, abs=1e-6)
