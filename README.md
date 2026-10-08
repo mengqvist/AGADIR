@@ -178,7 +178,7 @@ Each energy term represents a different contribution to helix stability:
 
 ### Protein Structures: Helices, Strands and Loops
 
-`pyagadir.pdb_elements` splits one chain of a PDB file into helix, sheet, loop/turn and other elements (DSSP H; E; T, S and coil; G, I and B) and scores each one. Helices are scored with AGADIR as isolated peptides with two flanking residues on each side (N' and N-cap, C-cap and C', which the capping motifs need) and Ac/Am ends. Strands and loops get the empirical scores of `pyagadir.element_scores`, transferred from studies of designed mini-proteins (Rocklin et al. 2017; Kim et al. 2022): ABEGO sequence-backbone compatibility, an exposed-strand amino-acid score, core participation of each helix and strand, and the contacts and connectivity of the hydrophobic core. Only NumPy is needed; the secondary structure is assigned by a built-in DSSP implementation.
+`pyagadir.pdb_elements` splits one chain of a PDB file into helix, sheet, loop/turn and other elements (DSSP H; E; T, S and coil; G, I and B) and scores each one. Helices are scored with AGADIR as isolated peptides with two flanking residues on each side (N' and N-cap, C-cap and C', which the capping motifs need) and Ac/Am ends. Strands and loops get the empirical scores of `pyagadir.element_scores`, transferred from studies of designed mini-proteins (Rocklin et al. 2017; Kim et al. 2022): ABEGO sequence-backbone compatibility, an exposed-strand amino-acid score (measured effects from Tsuboyama et al. 2023, kcal/mol), core participation of each helix and strand, the contacts and connectivity of the hydrophobic core, buried and exposed nonpolar surface area (united-atom ProtOr radii; the buried area of hydrophobic residues was the main stability determinant in both studies), and buried polar atoms without a hydrogen-bond partner. Only NumPy is needed; the secondary structure is assigned by a built-in DSSP implementation.
 
 ```bash
 python -m pyagadir.pdb_elements protein.pdb --chain A --T 25 --pH 7 --M 0.15 --json scores.json
@@ -193,7 +193,7 @@ for element in report["elements"]:
 print(report["summary"])
 ```
 
-The strand and loop scores are features in the units of their source (log-odds, protease stability-score units), not folding free energies.
+The strand and loop scores are features in the units of their source (log-odds, kcal/mol, square angstrom), not folding free energies. The surface areas track Rosetta's closely (r = 0.86-0.98 on the published designs, Rosetta's about 20% larger because it counts explicit hydrogens); the buried-unsatisfied count is a geometric approximation that agrees only loosely with Rosetta's filter.
 
 
 ## Validation

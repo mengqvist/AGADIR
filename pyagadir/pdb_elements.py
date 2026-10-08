@@ -6,10 +6,11 @@ groups the residues into elements and scores each element:
 
 - helix: AGADIR helical propensity of the isolated helix, and the free energy of the
   observed helical segment.
-- sheet: edge or middle strand, the surface amino-acid score of Rocklin et al. (2017),
-  and the number of large hydrophobics the strand buries in the core.
-- every element: ABEGO sequence-backbone compatibility, and its hydrophobic side-chain
-  contacts.
+- sheet: edge or middle strand, the surface amino-acid score measured by Tsuboyama et al.
+  (2023), and the number of large hydrophobics the strand buries in the core.
+- every element: ABEGO sequence-backbone compatibility, its hydrophobic side-chain
+  contacts, the nonpolar surface it buries and exposes, and its buried polar atoms left
+  without a hydrogen-bond partner.
 - the whole chain: the same scores summed or averaged, and the connectivity of the
   hydrophobic core.
 
@@ -35,10 +36,12 @@ import numpy as np
 from pyagadir.element_scores import (
     abego_from_torsions,
     abego_profile,
+    buried_unsatisfied_polar_atoms,
     core_participation,
     hydrophobic_core_clusters,
     sidechain_neighbors,
     strand_surface_score,
+    surface_burial,
 )
 from pyagadir.energies import EnergyCalculator
 from pyagadir.models import AGADIR
@@ -84,8 +87,8 @@ class ProteinChain:
         c (np.ndarray): Carbonyl C coordinates.
         o (np.ndarray): Carbonyl O coordinates.
         cb (np.ndarray): CB coordinates, virtual where the residue has none.
-        sidechains (List[Dict[str, np.ndarray]]): Per residue, the coordinates of its
-            side-chain heavy atoms (CB included, hydrogens excluded) keyed by atom name.
+        atoms (List[Dict[str, np.ndarray]]): Per residue, the coordinates of all its heavy
+            atoms present in the file (hydrogens excluded) keyed by atom name.
     """
 
     chain_id: str
@@ -96,10 +99,15 @@ class ProteinChain:
     c: np.ndarray
     o: np.ndarray
     cb: np.ndarray
-    sidechains: List[Dict[str, np.ndarray]]
+    atoms: List[Dict[str, np.ndarray]]
 
     def __len__(self) -> int:
         return len(self.sequence)
+
+    @property
+    def sidechains(self) -> List[Dict[str, np.ndarray]]:
+        """Per residue, the side-chain heavy atoms (CB included) keyed by atom name."""
+        return [{atom: xyz for atom, xyz in residue.items() if atom not in BACKBONE_ATOMS} for residue in self.atoms]
 
 
 @dataclass
@@ -219,10 +227,7 @@ def read_pdb(path: Union[str, Path], chain: Optional[str] = None) -> ProteinChai
         residue_ids=[key[1] for key, _ in selected],
         sequence="".join(RESIDUE_CODES.get(res["name"], "X") for _, res in selected),
         n=n, ca=ca, c=c, o=o, cb=cb,
-        sidechains=[
-            {atom: np.array(xyz) for atom, xyz in res["atoms"].items() if atom not in BACKBONE_ATOMS}
-            for _, res in selected
-        ],
+        atoms=[{atom: np.array(xyz) for atom, xyz in res["atoms"].items()} for _, res in selected],
     )
 
 
@@ -613,7 +618,10 @@ def score_structure(
     - every element: ``abego_total`` and ``abego_mean``, the ABEGO log-odds of the
       element's residues (``element_scores.abego_profile``).
     - every element: ``n_hydrophobic_contacts``, the hydrophobic side-chain contacts
-      (``element_scores.hydrophobic_core_clusters``) with at least one residue in it.
+      (``element_scores.hydrophobic_core_clusters``) with at least one residue in it;
+      ``buried_npsa`` and ``exposed_npsa`` of its residues (``element_scores.surface_burial``);
+      ``n_buried_unsatisfied``, its buried polar atoms left without a hydrogen-bond partner
+      (``element_scores.buried_unsatisfied_polar_atoms``).
     - helix: ``agadir_helix_percent`` and ``agadir_dG_helix`` (``score_helix``);
       ``n_core_hydrophobics``.
     - sheet: ``strand_surface_score`` over its exposed residues, ``n_exposed`` and
@@ -638,11 +646,17 @@ def score_structure(
             - ``burial``: side-chain neighbour count per residue.
             - ``elements``: list of scored Elements.
             - ``hydrophobic_core``: the result of ``hydrophobic_core_clusters``.
+            - ``surface``: the result of ``surface_burial``.
+            - ``unsatisfied``: the result of ``buried_unsatisfied_polar_atoms``.
             - ``summary``: whole-chain scores (``abego_res_profile``,
               ``abego_res_profile_penalty``, ``one_core_each``, ``two_core_each``,
               ``ss_contributes_core``, ``strand_surface_score``, ``n_hydrophobic``,
               ``hphob_sc_contacts``, ``hphob_sc_degree``, ``largest_hphob_cluster``,
-              ``n_hphob_clusters``) and residue counts per element class.
+              ``n_hphob_clusters``, ``buried_npsa``, ``buried_npsa_per_residue``,
+              ``buried_npsa_afilmvwy_per_residue`` (from hydrophobic residues only, the
+              quantity behind the Rocklin 2017 threshold), ``exposed_npsa``, ``buried_psa``,
+              ``exposed_psa``, ``buried_unsat_backbone``, ``buried_unsat_sidechain``,
+              ``buried_unsat_hydrogens``) and residue counts per element class.
     """
     protein = read_pdb(path, chain=chain)
     phi, psi, omega = backbone_torsions(protein)
@@ -671,6 +685,11 @@ def score_structure(
     ]
     hydrophobic = hydrophobic_core_clusters(sequence, nonpolar_sidechains)
     breaks = chain_breaks(protein) if len(protein) > 1 else np.zeros(0, dtype=bool)
+    surface_areas = surface_burial(sequence, protein.atoms, bonded=~breaks)
+    buried_nonpolar = surface_areas["reference_nonpolar"] - surface_areas["exposed_nonpolar"]
+    unsatisfied = buried_unsatisfied_polar_atoms(
+        sequence, protein.atoms, surface_areas["atom_area"], bonded=~breaks
+    )
 
     for element in elements:
         positions = range(element.start, element.end)
@@ -680,6 +699,9 @@ def score_structure(
         element.scores["n_hydrophobic_contacts"] = sum(
             i in positions or j in positions for i, j in hydrophobic["contacts"]
         )
+        element.scores["buried_npsa"] = float(buried_nonpolar[element.start : element.end].sum())
+        element.scores["exposed_npsa"] = float(surface_areas["exposed_nonpolar"][element.start : element.end].sum())
+        element.scores["n_buried_unsatisfied"] = sum(i in positions for i, _, _ in unsatisfied["unsatisfied"])
         if element.kind in ("helix", "sheet"):
             element.scores["n_core_hydrophobics"] = core_counts.get((element.start, element.end))
         if element.kind == "helix" and agadir:
@@ -721,6 +743,17 @@ def score_structure(
         "hphob_sc_degree": hydrophobic["contacts_per_residue"],
         "largest_hphob_cluster": hydrophobic["largest_cluster"],
         "n_hphob_clusters": hydrophobic["n_clusters"],
+        "buried_npsa": surface_areas["buried_npsa"],
+        "buried_npsa_per_residue": surface_areas["buried_npsa"] / len(protein),
+        "buried_npsa_afilmvwy_per_residue": float(
+            sum(b for aa, b in zip(sequence, buried_nonpolar) if aa in "AFILMVWY") / len(protein)
+        ),
+        "exposed_npsa": surface_areas["exposed_npsa"],
+        "buried_psa": surface_areas["buried_psa"],
+        "exposed_psa": surface_areas["exposed_psa"],
+        "buried_unsat_backbone": unsatisfied["n_backbone"],
+        "buried_unsat_sidechain": unsatisfied["n_sidechain"],
+        "buried_unsat_hydrogens": unsatisfied["n_hydrogen"],
     }
     return {
         "chain": protein,
@@ -729,6 +762,8 @@ def score_structure(
         "burial": burial,
         "elements": elements,
         "hydrophobic_core": hydrophobic,
+        "surface": surface_areas,
+        "unsatisfied": unsatisfied,
         "summary": summary,
     }
 
@@ -743,7 +778,8 @@ def _format_report(path: Union[str, Path], report: Dict[str, object]) -> str:
         f"abego     {report['abego']}",
         "",
         f"{'#':>3} {'kind':<6} {'residues':<11} {'len':>3}  {'sequence':<20} {'abego':>7}"
-        f" {'helix%':>7} {'dG_hel':>7} {'strand':>7} {'surface':>8} {'core':>5} {'contacts':>8}",
+        f" {'helix%':>7} {'dG_hel':>7} {'strand':>7} {'surface':>8} {'core':>5} {'contacts':>8}"
+        f" {'bNPSA':>6} {'unsat':>5}",
     ]
 
     def number(value: Optional[float], digits: int) -> str:
@@ -763,6 +799,7 @@ def _format_report(path: Union[str, Path], report: Dict[str, object]) -> str:
             f" {number(scores.get('strand_surface_score'), 3):>8}"
             f" {'' if core is None else core:>5}"
             f" {scores['n_hydrophobic_contacts']:>8}"
+            f" {scores['buried_npsa']:>6.0f} {scores['n_buried_unsatisfied']:>5}"
         )
         lines.extend(f"      note: {note}" for note in element.notes)
     lines.extend([
@@ -770,12 +807,14 @@ def _format_report(path: Union[str, Path], report: Dict[str, object]) -> str:
         "abego: summed ABEGO log-odds of the residues (positive: the sequence suits the backbone)",
         "helix%: AGADIR helicity of the isolated helix; dG_hel: AGADIR free energy of the",
         "  helical segment (kcal/mol); strand: edge or middle strand; surface: amino-acid",
-        "  score of the exposed strand residues (stability-score units, positive stabilises);",
+        "  effect of the exposed strand residues (kcal/mol, positive stabilises);",
         "  core: large hydrophobics buried in the core; contacts: hydrophobic side-chain",
-        "  contacts involving the element",
+        "  contacts involving the element; bNPSA: buried nonpolar surface (square angstrom);",
+        "  unsat: buried polar atoms without a hydrogen-bond partner",
         "",
     ])
-    lines.extend(f"{key:<26} {value:.4g}" for key, value in report["summary"].items())
+    width = max(len(key) for key in report["summary"])
+    lines.extend(f"{key:<{width}} {value:.4g}" for key, value in report["summary"].items())
     return "\n".join(lines)
 
 
@@ -788,10 +827,20 @@ def _to_json(report: Dict[str, object]) -> Dict[str, object]:
         "dssp": report["dssp"],
         "abego": report["abego"],
         "residues": [
-            {"residue": rid, "aa": aa, "dssp": state, "burial": round(float(burial), 3)}
-            for rid, aa, state, burial in zip(protein.residue_ids, protein.sequence, report["dssp"], report["burial"])
+            {
+                "residue": rid, "aa": aa, "dssp": state, "burial": round(float(burial), 3),
+                "exposed_npsa": round(float(exposed), 2), "buried_npsa": round(float(reference - exposed), 2),
+            }
+            for rid, aa, state, burial, exposed, reference in zip(
+                protein.residue_ids, protein.sequence, report["dssp"], report["burial"],
+                report["surface"]["exposed_nonpolar"], report["surface"]["reference_nonpolar"],
+            )
         ],
         "elements": [asdict(element) for element in report["elements"]],
+        "buried_unsatisfied": [
+            {"residue": protein.residue_ids[i], "atom": atom, "free_hydrogens": free}
+            for i, atom, free in report["unsatisfied"]["unsatisfied"]
+        ],
         "hydrophobic_clusters": [
             [protein.residue_ids[i] for i in cluster] for cluster in report["hydrophobic_core"]["clusters"]
         ],

@@ -121,6 +121,17 @@ def test_hydrophobic_contacts_are_attributed_to_elements(reports):
         assert element.scores["n_hydrophobic_contacts"] == touching
 
 
+def test_surface_scores_add_up_over_elements(reports):
+    for report in reports.values():
+        elements, summary = report["elements"], report["summary"]
+        assert sum(e.scores["buried_npsa"] for e in elements) == pytest.approx(summary["buried_npsa"])
+        assert sum(e.scores["exposed_npsa"] for e in elements) == pytest.approx(summary["exposed_npsa"])
+        unsatisfied = report["unsatisfied"]["unsatisfied"]
+        assert sum(e.scores["n_buried_unsatisfied"] for e in elements) == len(unsatisfied)
+        # well-packed designs bury more nonpolar surface than they expose
+        assert summary["buried_npsa"] > summary["exposed_npsa"] > 0
+
+
 def test_virtual_cb_is_close_to_real_cb():
     chain = read_pdb(STRUCTURES / "HEEH_rd4_0428.pdb")
     non_gly = [i for i, aa in enumerate(chain.sequence) if aa != "G"]
