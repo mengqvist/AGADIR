@@ -176,6 +176,25 @@ Each energy term represents a different contribution to helix stability:
 - Electrostatic: Charged side chain pairs, and terminal charges with charged side chains
 - Macrodipole: Interactions between charged residues and the helix dipole
 
+### Protein Structures: Helices, Strands and Loops
+
+`pyagadir.pdb_elements` splits one chain of a PDB file into helix, sheet, loop/turn and other elements (DSSP H; E; T, S and coil; G, I and B) and scores each one. Helices are scored with AGADIR as isolated peptides with two flanking residues on each side (N' and N-cap, C-cap and C', which the capping motifs need) and Ac/Am ends. Strands and loops get the empirical scores of `pyagadir.element_scores`, transferred from studies of designed mini-proteins (Rocklin et al. 2017; Kim et al. 2022): ABEGO sequence-backbone compatibility, an exposed-strand amino-acid score, core participation of each helix and strand, and the contacts and connectivity of the hydrophobic core. Only NumPy is needed; the secondary structure is assigned by a built-in DSSP implementation.
+
+```bash
+python -m pyagadir.pdb_elements protein.pdb --chain A --T 25 --pH 7 --M 0.15 --json scores.json
+```
+
+```python
+from pyagadir.pdb_elements import score_structure
+
+report = score_structure("protein.pdb")
+for element in report["elements"]:
+    print(element.kind, element.first_residue, element.last_residue, element.scores)
+print(report["summary"])
+```
+
+The strand and loop scores are features in the units of their source (log-odds, protease stability-score units), not folding free energies.
+
 
 ## Validation
 
