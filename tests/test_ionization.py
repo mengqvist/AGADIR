@@ -83,3 +83,31 @@ def test_tyr_side_chain_coil_pka():
     +/- 0.1 at 278 K) the coil-state Tyr1 side chain is half ionised at pH 9.4."""
     c = _calc("YGGSAGAGAGAKRGAA", None, "Am", pH=9.4, T=5.0, M=0.005)
     assert abs(float(c.modified_seq_ionization_rc[0])) == pytest.approx(0.5, abs=0.05)
+
+
+@pytest.mark.parametrize("pH", [3.0, 6.0, 6.5, 7.0, 8.0])
+def test_his_his_pair_matches_exact_microstate_enumeration(pH):
+    """His-His has no row of its own in Lacroix 1998 Table VI; it takes the HelixRest/RcoilRest
+    distances ("charged pairs not included before"). Its electrostatic segment energy (pair term
+    at the solver's fractional charges + macrodipole + ionisation free energy) must equal the
+    exact free energy of the four protonation microstates, so no further protonation scaling
+    belongs on the pair term."""
+    seq = "AAAAAHAAAHAAAAA"
+    c = EnergyCalculator(seq=seq, i=0, j=len(seq) + 2, pH=pH, T=25.0, ionic_strength=0.1, ncap="Ac", ccap="Am")
+    his = [k for k, aa in enumerate(c.seq_list) if aa == "H"]
+    n, cc = c.get_dG_sidechain_macrodipole()
+    model = (np.sum(c.get_dG_sidechain_sidechain_electrost()) + np.sum(n + cc) * c.dipole_temperature_factor()
+             + c.get_dG_ionization())
+
+    rt = 1.9865e-3 * c.T_kelvin
+    x = [10 ** (c.seq_pka[k] - pH) for k in his]
+
+    def free_energy(helix):
+        d = (c.sidechain_sidechain_distances_hel if helix else c.charged_sidechain_distances_rc)[his[0], his[1]]
+        w = c._electrostatic_interaction_energy(1.0, 1.0, d)
+        phi = [c.sidechain_dipole_potential[k] if helix else 0.0 for k in his]
+        z = sum(x[0] ** s1 * x[1] ** s2 * math.exp(-(s1 * phi[0] + s2 * phi[1] + s1 * s2 * w) / rt)
+                for s1 in (0, 1) for s2 in (0, 1))
+        return -rt * math.log(z)
+
+    assert model == pytest.approx(free_energy(True) - free_energy(False), abs=0.005)

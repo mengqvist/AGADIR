@@ -737,7 +737,9 @@ class PrecomputeParams:
         3. One in helix, one in coil: only N' or C' interacts with helical residues, at the
            table 6 N' / C' (C'G-cap when the C-cap is Gly) distances; other such pairs are
            not modelled
-        Special case: Use HelixRest for pairs containing Tyrosine and Cysteine since they're missing from table
+        Pairs without a row of their own (His-His, and any pair with Tyr or Cys) use the
+        HelixRest / RcoilRest rows, which the table caption defines as "all possible charged
+        pairs not included before" (helix) and the pairs "not included in Rcoil" (coil).
         """
         self.sidechain_sidechain_distances_hel = np.full((len(self.seq_list), len(self.seq_list)), np.nan)
         self.charged_sidechain_distances_rc = np.full((len(self.seq_list), len(self.seq_list)), np.nan)
@@ -751,7 +753,7 @@ class PrecomputeParams:
                 distance_angstrom = 99
             else:
                 pair = AA1 + AA2
-                if ('Y' in pair) or ('C' in pair): # Handle Cysteine and Tyrosine special case
+                if pair not in self.table_6_coil_lacroix.index:  # His-His, Tyr, Cys: no own row
                     pair = 'RcoilRest'
                 distance_angstrom = self.table_6_coil_lacroix.loc[pair, distance_key]
 
@@ -792,7 +794,7 @@ class PrecomputeParams:
                         distance_angstrom = self.table_6_helix_lacroix.loc[cap_row, distance_key]
                     else:
                         pair = AA1 + AA2
-                        if ('Y' in pair) or ('C' in pair):
+                        if pair not in self.table_6_helix_lacroix.index:  # His-His, Tyr, Cys: no own row
                             pair = 'HelixRest'
                         distance_angstrom = self.table_6_helix_lacroix.loc[pair, distance_key]
                 
@@ -802,7 +804,7 @@ class PrecomputeParams:
 
                     if not straddles_helix:
                         pair = AA1 + AA2
-                        if ("Y" in pair) or ("C" in pair):
+                        if pair not in self.table_6_coil_lacroix.index:  # His-His, Tyr, Cys: no own row
                             pair = "RcoilRest"
                         distance_angstrom = float(self.table_6_coil_lacroix.loc[pair, distance_key])
                     else:
