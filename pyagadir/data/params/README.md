@@ -73,6 +73,8 @@ Rcoil 		Distance between i, i+x pairs of charged residues in the whole protein d
 RcoilRest 		Average distance between i, i+x pairs of charged residues in the reference state 
 		not included in Rcoil. 
 
+Pairs without a row of their own (His-His, and any pair with Tyr or Cys) take the RcoilRest row here and the HelixRest row of table_6_helix_lacroix, as these captions define them. The pair energy is q_i q_j W(r) at the self-consistent fractional charges, so a His pair is weighted by its protonation automatically; with the ionisation free energy it reproduces exact enumeration of the four protonation microstates of a His-His peptide (tests/test_ionization.py).
+
 ## table_6_helix_lacroix
 Average distance between charged groups (Å).
 
