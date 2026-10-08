@@ -31,7 +31,7 @@ def calls(monkeypatch):
 
 def test_score_all_runs_and_returns_every_panel(calls):
     scores = scoring.score_all(metric="rmse")
-    assert len(scores) == 20
+    assert len(scores) == 26  # Munoz 1995 set: 3A-C, 3E + six Scholtz 1991 + two Marqusee 1987 melts (NPY 3D removed)
     assert all(v == v for v in scores.values())  # no NaN from an empty panel
 
 

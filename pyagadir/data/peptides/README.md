@@ -41,3 +41,17 @@ helicity was re-derived under a mismatched one (`reasoning/nodes/N050.md`@2).
 guard.** The first Petukhov run silently dropped five of thirty peptides to a control
 character in the PDF text; it produced a smaller table rather than an error. Each extractor
 now counts the rows it can see against the rows it emits and raises on a mismatch.
+
+## Figure data
+
+Some datasets are read from figures rather than tables (the C-peptide / S-peptide
+analogue papers, Shoemaker 1987, Mitchinson & Baldwin 1986 and Fairman 1989, and the
+Cochran 2001 pH titrations). Those rows carry `digitised` in `flags`; the manifest entry
+says how the axes were calibrated, how the figure values were checked against any printed
+values in the same paper, and the reading uncertainty (about ±200 deg cm2 dmol-1 in
+`-[theta]222`). The abscissa is stored as read (pH to 0.05, temperature to 0.5 °C), with
+NaCl snapped to the figure's nominal concentrations. Values printed in the same papers
+are stored as ordinary rows alongside.
+
+The C-peptide papers state a fourth helicity convention (0 % = +3,000, 100 % = -27,000
+deg cm2 dmol-1 at 3 °C); as with the others it is recorded in the manifest, not applied.

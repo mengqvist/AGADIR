@@ -1,0 +1,5 @@
+peptide_id	sequence	ncap	ccap	n_res	pH	T_C	ionic_strength_M	quantity	value	error	unit	source_table	flags
+MEARA6	YMEARAMEARAMEARAMEARAMEARAMEARA		Am	31	2.0	1.0	0.0205	helix_percent	76.0	3.0	%	Results text (Fig. 2A)	free N-terminus;five R(i)-E(i+3) pairs
+MEARA6	YMEARAMEARAMEARAMEARAMEARAMEARA		Am	31	2.0	1.0	0.0205	minus_theta222	27000.0		deg cm2 dmol-1	Results text (Fig. 2A)	free N-terminus;five R(i)-E(i+3) pairs
+MEARA6	YMEARAMEARAMEARAMEARAMEARAMEARA		Am	31	7.0	1.0	0.0172	helix_percent	65.0	3.0	%	Results text (Fig. 2A)	free N-terminus;five R(i)-E(i+3) pairs
+MEARA6	YMEARAMEARAMEARAMEARAMEARAMEARA		Am	31	7.0	1.0	0.0172	minus_theta222	23400.0		deg cm2 dmol-1	Results text (Fig. 2A)	free N-terminus;five R(i)-E(i+3) pairs
