@@ -41,6 +41,16 @@ class ParamTable:
         return self._rows[key]
 
 
+# Extra first-turn energy (kcal/mol per +1 charge) of a helical cation at segment positions N1, N2, N3: the near-field
+# repulsion between the side-chain charge and the unpaired first-turn N-H groups that eq. 11 underestimates. From
+# continuum electrostatics (APBS) on built helices: helix minus PPII coil, uniform average over clash-free rotamers,
+# relative to the helix interior, interior dielectric 16 (the value at which the computed His+ - His0 contrasts match
+# Cochran et al. 2001, Protein Sci. 10, 463, N1 and N2 titrations), minus what eq. 11 already gives. With that one
+# constant the same calculation gives Lys at N1/N2 within 0.01 kcal/mol of the Cochran Lys scans (apolar-residue
+# reference). Salt-independent (near field). See params/README.md.
+FIRST_TURN_CATION = {"K": (0.126, 0.192, 0.007), "R": (0.092, 0.188, 0.019), "H": (0.076, 0.315, 0.123)}
+
+
 class PrecomputeParams:
     """
     Class to load parameters for the AGADIR model and
@@ -547,6 +557,14 @@ class PrecomputeParams:
             d_N, d_C = dist_n(n_pos), dist_c(c_pos)
             if d_N * 10.0 < 1.0 or d_C * 10.0 < 1.0:
                 return 0.0, 0.0
+            # First-turn near field: a helical Lys, Arg or His at N1-N3 sits next to the unpaired N-H groups of
+            # the first turn, and its long or bulky side chain leans back onto them. Eq. 11 at the Table VII
+            # distances underestimates this repulsion; the extra per +1 charge is FIRST_TURN_CATION (continuum
+            # electrostatics on built helices, helix minus PPII coil, rotamer-averaged, interior dielectric 16
+            # fitted to the His titrations of Cochran et al. 2001). Acids get no counterpart here: their attraction
+            # at the first turn is carried by their Table 1 N1-N3 cells.
+            if aa in FIRST_TURN_CATION and 1 <= n_pos <= 3 and c_pos >= 1:
+                phi_N += FIRST_TURN_CATION[aa][n_pos - 1]
             # the nearest end (ties go to the N-terminus); the other end as a half charge
             if n_pos <= c_pos:
                 if n_pos <= 9:

@@ -153,3 +153,25 @@ def test_staple_full_with_capping_box():
     calc = EnergyCalculator(seq="LSAAELAAAAAAAA", i=1, j=12, pH=PH, T=TEMP, ionic_strength=IONIC, ncap=None, ccap=None,
                             params=EnergyCalculator.snapshot_params())
     assert calc.get_dG_staple() == pytest.approx(-0.90, abs=1e-6)
+
+
+def test_first_turn_cation_near_field():
+    """A helical Lys at N2 carries the FIRST_TURN_CATION near field on top of eq. 11; at N5 it does not."""
+    from pyagadir.energies import FIRST_TURN_CATION
+
+    def phi(pos):
+        seq = "A" * (pos - 1) + "K" + "A" * (12 - pos)
+        c = EnergyCalculator(seq=seq, i=0, j=14, pH=7.0, T=0.0, ionic_strength=0.1, ncap="Ac", ccap="Am")
+        return sum(c._sidechain_dipole_potential(pos))
+
+    def phi_ala_host_eq11(pos):
+        from pyagadir import energies as E
+        saved = dict(E.FIRST_TURN_CATION)
+        E.FIRST_TURN_CATION.clear()
+        try:
+            return phi(pos)
+        finally:
+            E.FIRST_TURN_CATION.update(saved)
+
+    assert abs((phi(2) - phi_ala_host_eq11(2)) - FIRST_TURN_CATION["K"][1]) < 1e-9
+    assert abs(phi(5) - phi_ala_host_eq11(5)) < 1e-12

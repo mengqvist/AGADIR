@@ -36,8 +36,11 @@ def _calc(seq, ncap, ccap, pH, T=0.0, M=0.01, i=None, j=None):
 
 
 def test_segment_ionization_free_energy_zero_when_groups_fully_charged():
+    # Lys stays charged at pH 7, so the ionisation free energy is ~0. Not exactly 0: Lys2 sits at N2 in the
+    # first-turn field (FIRST_TURN_CATION), which lowers its helix pKa by ~0.14 units, and the far-from-pKa
+    # residual is ~0.001 kcal/mol.
     c = _calc("AKAAAAKAAAAKAAGY", "Ac", "Am", pH=7.0)
-    assert abs(c.get_dG_ionization()) < 1e-3
+    assert abs(c.get_dG_ionization()) < 2e-3
 
 
 def test_segment_ionization_free_energy_positive_for_titrating_acid_pairs():
