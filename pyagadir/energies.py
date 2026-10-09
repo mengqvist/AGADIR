@@ -50,6 +50,14 @@ class ParamTable:
 # reference). Salt-independent (near field). See params/README.md.
 FIRST_TURN_CATION = {"K": (0.126, 0.192, 0.007), "R": (0.092, 0.188, 0.019), "H": (0.076, 0.315, 0.123)}
 
+# Helix-state distance (A) between a succinyl N-cap's carboxylate and a charged side chain at N1, N2 or N3, used in
+# place of Lacroix 1998 Table VI 'N-cap f' (which places a free amine on the backbone: 9.2 A to N2 in the helix vs 9.6 A
+# in the coil). Each value is the distance at which this model's own Coulomb law reproduces the helix-minus-coil pair
+# energy from continuum electrostatics (APBS, carboxylate on the N-cap residue as the succinyl proxy, helix minus PPII,
+# rotamer-averaged, interior dielectric 16 as for FIRST_TURN_CATION) at 0.1 M and 3 C: acid N2 +0.50, acid N3 +0.35,
+# acid N1 +0.04, base N2 -0.34 kcal/mol. Pairs not listed keep Table VI. See params/README.md.
+SUCCINYL_HELIX_DISTANCE = {("acid", 1): 9.33, ("acid", 2): 3.95, ("acid", 3): 5.27, ("base", 2): 4.80}
+
 
 class PrecomputeParams:
     """
@@ -678,6 +686,14 @@ class PrecomputeParams:
                     if d_tab < 99.0:
                         d_hel = d_tab
                         modelled[idx] = True
+                    # A succinyl N-cap reaches further than a free amine: its carboxylate sits on a flexible
+                    # -CH2-CH2- arm, and an N2/N3 side chain leans back toward the N-cap in the helix.
+                    if row == n_row and self.ncap == "Sc" and self.ncap_idx == 0:
+                        kind = "acid" if aa in ("D", "E") else ("base" if aa in ("K", "R") else None)
+                        d_sc = SUCCINYL_HELIX_DISTANCE.get((kind, x))
+                        if d_sc is not None:
+                            d_hel = d_sc
+                            modelled[idx] = True
                 hel[idx], rc[idx] = d_hel, d_rc
 
     def get_terminal_sidechain_distances(self):

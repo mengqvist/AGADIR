@@ -108,6 +108,8 @@ C-cap f 		Distance between the free C-terminal group, when this group is located
 C’ f 		Distance between the free C-terminal group, when this group is located at position C’, 
 		and a helical residue at position i-x.  
 
+A succinylated N-cap departs from row 'N-cap f' for charged side chains at N1-N3. The row places a free amine on the backbone (9.2 A to N2 in the helix against 9.6 A in the coil, almost no change between the states), but the succinyl carboxylate sits on a flexible -CH2-CH2- arm and an N2/N3 side chain leans back toward the N-cap in the helix. Its helix distances (`SUCCINYL_HELIX_DISTANCE` in energies.py) are acid N1 9.33, acid N2 3.95, acid N3 5.27 and Lys/Arg N2 4.80 A; other pairs keep the table. Each is the distance at which this model's Coulomb law reproduces the helix-minus-coil pair energy from continuum electrostatics (APBS; a carboxylate on the N-cap residue as the succinyl proxy; helix minus PPII; rotamer-averaged; interior dielectric 16, as for the first-turn cation term) at 0.1 M and 3 C: +0.50 (acid N2), +0.35 (acid N3), +0.04 (acid N1), -0.34 (base N2) kcal/mol. The ionisation solver uses the same distances. Effect on the succinyl-minus-acetyl contrasts with Glu2 (helix points, rms error): Shoemaker et al. 1987 3.2 -> 2.6, Mitchinson & Baldwin 1986 IV-III 4.5 -> 1.6; without Glu2 unchanged. Because the C-peptide family is under-predicted overall, the absolute errors of its succinyl peptides rise (RMSE Mitchinson & Baldwin 1986 +1.07, Shoemaker et al. 1987 +0.74); the scored panels do not change.
+
 ## table_7_Ncap_lacroix
 Distances (Å) between charged amino acids and the half charge from the helix macrodipole.
 
