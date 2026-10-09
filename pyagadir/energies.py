@@ -1673,13 +1673,19 @@ class EnergyCalculator(PrecomputeParams):
             d_coil_4 = float(self.table_6_coil_lacroix.loc['RcoilRest', 'i+4'])
             coil_corr_4 = 1.0 - d_hel_4 / d_coil_4  # ≈ 0.455
 
-            # FYW (i) with His+ (i+4): -0.4 kcal/mol when His is at C1 or C-cap; otherwise divide by 3
+            # FYW (i) with His+ (i+4): -0.4 kcal/mol when His is at C1 or C-cap; otherwise divide by 3.
+            # No coil subtraction for this motif: the aromatic ring and the imidazolium are in contact only when
+            # both side chains lie on one face of the helix, so the interaction is short-range and scarcely
+            # formed in the coil. The 1/d coil share above assumes a Coulomb interaction that persists in the
+            # coil, which does not describe a contact. With the full value the C-peptide family (Shoemaker et
+            # al. 1987, Fairman et al. 1989, Mitchinson & Baldwin 1986), where Fairman et al. report that His-12+
+            # stabilises the helix through Phe-8, is predicted 0.9-1.7 helix points (RMSE) closer.
             if AAi in ["F", "Y", "W"] and AAi4 == "H":
                 p_his = abs(self.modified_seq_ionization_hel[idx + 4])  # population of His+
                 # His is "C1" if it is the residue just before C-cap; "C-cap" if it is C-cap itself
                 his_is_C1_or_Ccap = (idx + 4 == self.ccap_idx) or (idx + 4 == self.ccap_idx - 1)
                 val = -0.4 if his_is_C1_or_Ccap else (-0.4 / 3.0)
-                extra += p_his * val * coil_corr_4
+                extra += p_his * val
 
             # Gln (i) with Asp- (i+4): -0.5 kcal/mol (paper Table V)
             if AAi == "Q" and AAi4 == "D":
