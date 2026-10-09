@@ -50,6 +50,15 @@ class ParamTable:
 # -0.34 kcal/mol. Pairs not listed keep Table VI. See params/README.md.
 SUCCINYL_HELIX_DISTANCE = {("acid", 1): 9.33, ("acid", 2): 3.95, ("acid", 3): 5.27, ("base", 2): 4.80}
 
+# First-turn offset (kcal/mol at 273 K) added to the Table 1 N2 cell of the residues whose first-turn cells were never
+# measured in peptides (Lacroix 1998 took the N1-N4 cells from Petukhov's poly-Ala measurements; K, R and H were left
+# at their interior value, C, F, Y and W at round numbers). Each value makes the residue's N2-minus-interior offset
+# equal to the one measured in the single-mutant scan of Tsuboyama et al. 2023 (Nature 620, 434; exposed helix sites,
+# relative to Ala), scaled by 0.943 so that Leu's protein offset equals its peptide value (Petukhov et al. 1998,
+# J. Mol. Biol. 278, 279: N2 +0.25 above the interior), after removing this model's own electrostatic N2 offset for
+# the charged residues (+0.055 for Lys/Arg at the scan's conditions). Charge-independent. See params/README.md.
+FIRST_TURN_N2_OFFSET = {"K": 0.097, "R": 0.199, "H": -0.059, "C": 0.228, "F": 0.162, "Y": 0.157, "W": 0.141}
+
 
 class PrecomputeParams:
     """
@@ -1222,6 +1231,11 @@ class EnergyCalculator(PrecomputeParams):
                 basic_energy = energy[idx]
                 basic_energy_neutral = self.table_1_lacroix.loc[AA, "Neutral"]
                 energy[idx] = q * basic_energy + (1 - q) * basic_energy_neutral
+
+            # First-turn N2 offset (FIRST_TURN_N2_OFFSET), after the charged/neutral interpolation so that both
+            # charge states pay it; not where the C1-C3 columns apply.
+            if n_dist == 2 and c_dist > 3:
+                energy[idx] += FIRST_TURN_N2_OFFSET.get(AA, 0.0)
 
         # Munoz & Serrano 1995-III eq. (9): dG_Int = -t (dS_ref + dCp ln(t/t_ref)),
         # i.e. dG_ref * t/t_ref - t * dCp * ln(t/t_ref).  The dCp*(t - t_ref) enthalpy term
