@@ -68,6 +68,13 @@ HBOND_NCAPS = ("S", "T", "N", "D", "Ac", "Sc")
 HBOND_CCAPS = ("K", "R", "H", "N", "D")
 HBOND_POLAR = ("S", "T", "N", "Q", "D", "E", "K", "R", "H")
 
+# Far end of the helix macrodipole: a charged residue inside the helix feels the nearest end by Munoz & Serrano 1995-II
+# eq. 11 and the other end as a half charge (Hol, van Duijnen & Berendsen 1978), screened Coulomb in water. Poisson-
+# Boltzmann calculations on built helices (interior dielectric 4; Asp/Glu at N1-N3 and Lys/Arg at C1-C3, helix lengths
+# 6-28) give 0.82 times that half-charge law (least squares through the origin over 72 cases), so the far end is scaled
+# by this factor. The flank half charges are not. See params/README.md.
+FEH_FAR_APBS = 0.82
+
 
 class PrecomputeParams:
     """
@@ -537,7 +544,8 @@ class PrecomputeParams:
         Lacroix 1998 Table VII), zero beyond nine positions from the cap. The other (far) end adds
         the field of its half charge (Hol, van Duijnen & Berendsen 1978): screened Coulomb in water
         at the Table VII distance to that end, extended past 13 positions by the helix rise of
-        1.5 A per residue (reasoning/nodes/N083.md).
+        1.5 A per residue (reasoning/nodes/N083.md), scaled by FEH_FAR_APBS (0.82, Poisson-Boltzmann
+        calculations on built helices).
 
         Flanking residues (up to nine positions outside a cap) feel the nearby end's half charge by
         the same screened Coulomb law in water, at the Lacroix 1998 flank distance (6 A at N'/C',
@@ -580,12 +588,12 @@ class PrecomputeParams:
                 if n_pos <= 9:
                     phi_N += K_DIPOLE / (d_N * 10.0) ** 2 * math.exp(-kappa_01A * d_N * 10.0)
                 d_far = d_C if c_pos <= 13 else dist_c(13) + 1.5 * (c_pos - 13)
-                phi_C += half_charge(-1.0, d_far)
+                phi_C += FEH_FAR_APBS * half_charge(-1.0, d_far)
             else:
                 if c_pos <= 9:
                     phi_C += -K_DIPOLE / (d_C * 10.0) ** 2 * math.exp(-kappa_01A * d_C * 10.0)
                 d_far = d_N if n_pos <= 13 else dist_n(13) + 1.5 * (n_pos - 13)
-                phi_N += half_charge(1.0, d_far)
+                phi_N += FEH_FAR_APBS * half_charge(1.0, d_far)
         elif ccap_i < idx < min(n, ccap_i + 10):
             phi_C += half_charge(-1.0, 6.0 + 3.0 * (idx - ccap_i - 1))
         elif max(0, ncap_i - 9) <= idx < ncap_i:
@@ -1817,7 +1825,7 @@ class EnergyCalculator(PrecomputeParams):
 
         The other (far) end adds the field of its half charge (Hol et al. 1978): screened
         Coulomb in water at the Table VII distance to that end, extended past 13 positions by
-        1.5 A per residue (FEH; reasoning/nodes/N083.md).
+        1.5 A per residue (FEH; reasoning/nodes/N083.md), scaled by FEH_FAR_APBS.
 
         Flanking charged residues outside the helix interact with the nearby end's half charge
         by the same screened Coulomb law in water, at the Lacroix 1998 flank distance (6 A at
