@@ -41,6 +41,34 @@ class ParamTable:
         return self._rows[key]
 
 
+# Helix-state distance (A) between a succinyl N-cap's carboxylate and a charged side chain at N1, N2 or N3, used in
+# place of Lacroix 1998 Table VI 'N-cap f' (which places a free amine on the backbone: 9.2 A to N2 in the helix vs 9.6 A
+# in the coil). Each value is the distance at which this model's own Coulomb law reproduces the helix-minus-coil pair
+# energy from continuum electrostatics (APBS, carboxylate on the N-cap residue as the succinyl proxy, helix minus PPII,
+# rotamer-averaged, interior dielectric 16, the value at which the same calculation matches the N1/N2 His titrations of
+# Cochran et al. 2001, Protein Sci. 10, 463) at 0.1 M and 3 C: acid N2 +0.50, acid N3 +0.35, acid N1 +0.04, base N2
+# -0.34 kcal/mol. Pairs not listed keep Table VI. See params/README.md.
+SUCCINYL_HELIX_DISTANCE = {("acid", 1): 9.33, ("acid", 2): 3.95, ("acid", 3): 5.27, ("base", 2): 4.80}
+
+# First-turn offset (kcal/mol at 273 K) added to the Table 1 N2 cell of the residues whose first-turn cells were never
+# measured in peptides (Lacroix 1998 took the N1-N4 cells from Petukhov's poly-Ala measurements; K, R and H were left
+# at their interior value, C, F, Y and W at round numbers). Each value makes the residue's N2-minus-interior offset
+# equal to the one measured in the single-mutant scan of Tsuboyama et al. 2023 (Nature 620, 434; exposed helix sites,
+# relative to Ala), scaled by 0.943 so that Leu's protein offset equals its peptide value (Petukhov et al. 1998,
+# J. Mol. Biol. 278, 279: N2 +0.25 above the interior), after removing this model's own electrostatic N2 offset for
+# the charged residues (+0.055 for Lys/Arg at the scan's conditions). Charge-independent. See params/README.md.
+FIRST_TURN_N2_OFFSET = {"K": 0.097, "R": 0.199, "H": -0.059, "C": 0.228, "F": 0.162, "Y": 0.157, "W": 0.141}
+
+# Hydrogen-bond terms share one temperature law (EnergyCalculator._hbond_temperature): Munoz & Serrano 1995-III
+# eq. (8) for the backbone bond, dH_ref = -0.898 kcal/mol per bond at 273 K (Lacroix 1998). Side chains and end groups
+# whose capping contribution is a hydrogen bond (Munoz & Serrano 1995-III p. 305), and residues that can form
+# side-chain hydrogen bonds in the Table IV/V pair terms:
+HBOND_DH_REF = -0.898
+HBOND_NCAPS = ("S", "T", "N", "D", "Ac", "Sc")
+HBOND_CCAPS = ("K", "R", "H", "N", "D")
+HBOND_POLAR = ("S", "T", "N", "Q", "D", "E", "K", "R", "H")
+
+
 class PrecomputeParams:
     """
     Class to load parameters for the AGADIR model and
@@ -660,6 +688,14 @@ class PrecomputeParams:
                     if d_tab < 99.0:
                         d_hel = d_tab
                         modelled[idx] = True
+                    # A succinyl N-cap reaches further than a free amine: its carboxylate sits on a flexible
+                    # -CH2-CH2- arm, and an N2/N3 side chain leans back toward the N-cap in the helix.
+                    if row == n_row and self.ncap == "Sc" and self.ncap_idx == 0:
+                        kind = "acid" if aa in ("D", "E") else ("base" if aa in ("K", "R") else None)
+                        d_sc = SUCCINYL_HELIX_DISTANCE.get((kind, x))
+                        if d_sc is not None:
+                            d_hel = d_sc
+                            modelled[idx] = True
                 hel[idx], rc[idx] = d_hel, d_rc
 
     def get_terminal_sidechain_distances(self):
@@ -1205,6 +1241,11 @@ class EnergyCalculator(PrecomputeParams):
                 basic_energy_neutral = self.table_1_lacroix.loc[AA, "Neutral"]
                 energy[idx] = q * basic_energy + (1 - q) * basic_energy_neutral
 
+            # First-turn N2 offset (FIRST_TURN_N2_OFFSET), after the charged/neutral interpolation so that both
+            # charge states pay it; not where the C1-C3 columns apply.
+            if n_dist == 2 and c_dist > 3:
+                energy[idx] += FIRST_TURN_N2_OFFSET.get(AA, 0.0)
+
         # Munoz & Serrano 1995-III eq. (9): dG_Int = -t (dS_ref + dCp ln(t/t_ref)),
         # i.e. dG_ref * t/t_ref - t * dCp * ln(t/t_ref).  The dCp*(t - t_ref) enthalpy term
         # belongs to the H-bond (eq. 8), not here.  t_ref = 273.0 K.
@@ -1229,7 +1270,8 @@ class EnergyCalculator(PrecomputeParams):
         The net H-bond ΔG at 0°C is -0.898 kcal/mol per bond (Lacroix 1998). It is
         treated as enthalpic, with the temperature dependence of equation (8) of
         Muñoz & Serrano (1995-III): ΔG(t) = ΔH_ref + ΔCp (t - t_ref), ΔCp = -1.5
-        cal/(mol·K) in the folding direction, t_ref = 273 K.
+        cal/(mol·K) in the folding direction, t_ref = 273 K (_hbond_temperature, the
+        law every hydrogen-bond term uses).
 
         Returns:
             float: The total free energy contribution for hydrogen bonding in the sequence.
@@ -1238,27 +1280,29 @@ class EnergyCalculator(PrecomputeParams):
 
         # Munoz & Serrano 1995-III eq. (8): dG_HBond = dH_ref + dCp (t - t_ref) per bond,
         # with dH_ref = -0.898 (Lacroix 1998), dCp = -0.0015 kcal/(mol K), t_ref = 273.0 K.
-        dG_per_bond = -0.898 + self.dCp * (self.T_kelvin - 273.0)
+        dG_per_bond = self._hbond_temperature(HBOND_DH_REF)
         return dG_per_bond * n_hbonds
 
-    def _apply_temp_correction_hbond_like(self, dG_ref_values: np.ndarray) -> np.ndarray:
-            """
-            Applies the Gibbs-Helmholtz heat capacity correction to energies
-            that are primarily enthalpic/H-bond based (like capping).
-            """
-            Tref = 273.15
-            
-            # Calculate the Enthalpy at temperature T
-            # Assuming the table value dG_ref is effectively dH_ref at Tref (since dS_ref ~ 0 for H-bonds)
-            delta_H = dG_ref_values + self.dCp * (self.T_kelvin - Tref)
-            
-            # Calculate the Entropic cost due to Heat Capacity
-            delta_S_Cp = self.dCp * np.log(self.T_kelvin / Tref)
-            
-            # Final dG = dH - T * dS_Cp
-            dG_corrected = delta_H - (self.T_kelvin * delta_S_Cp)
-            
-            return dG_corrected
+    def _hbond_temperature(self, dG_ref):
+        """
+        The temperature law of every hydrogen-bond term: the backbone bond (get_dG_Hbond), the
+        hydrogen-bonding N- and C-caps and end groups (get_dG_Ncap, get_dG_Ccap), the side-chain
+        hydrogen bonds of the i,i+3 and i,i+4 terms (Table IV acid-base and polar pairs, the
+        Table V motifs) and the Petukhov and charged-staple motifs.
+
+        Muñoz & Serrano (1995-III) eq. (8) treats a hydrogen-bond term as an enthalpy,
+        ΔG(t) = ΔH_ref + ΔCp (t - t_ref), with ΔCp = -1.5 cal/(mol·K) per backbone bond in the
+        folding direction and t_ref = 273 K; the entropy of fixing the backbone is in
+        get_dG_Int. Other hydrogen bonds take the same law as a relative change,
+        ΔG_ref × (1 + ΔCp (t - t_ref) / ΔH_ref) with the backbone bond's ΔH_ref = -0.898
+        kcal/mol, which for the backbone bond is eq. (8) itself. Muñoz & Serrano apply it to the
+        hydrogen-bonding caps and the end groups (p. 305) and neglect it for side-chain pairs.
+        The term grows more favourable with temperature, as the backbone term does.
+
+        Args:
+            dG_ref: free energy at 273 K (float or array), kcal/mol.
+        """
+        return dG_ref * (1.0 + self.dCp * (self.T_kelvin - 273.0) / HBOND_DH_REF)
 
     def get_dG_Ncap(self) -> np.ndarray:
         """
@@ -1272,19 +1316,20 @@ class EnergyCalculator(PrecomputeParams):
 
         # Nc-4 	N-cap values when there is a Pro at position N1 and Glu, Asp or Gln at position N3.
         if self.N1_AA == "P" and self.N3_AA in ["E", "D", "Q"]:
-            energy[self.ncap_idx] = self.table_1_lacroix.loc[self.Ncap_AA, "Nc-4"]
+            col = "Nc-4"
 
         # Nc-3 	N-cap values when there is a Glu, Asp or Gln at position N3.
         elif self.N3_AA in ["E", "D", "Q"]:
-            energy[self.ncap_idx] = self.table_1_lacroix.loc[self.Ncap_AA, "Nc-3"]
+            col = "Nc-3"
 
         # Nc-2 	N-cap values when there is a Pro at position N1.
         elif self.N1_AA == "P":
-            energy[self.ncap_idx] = self.table_1_lacroix.loc[self.Ncap_AA, "Nc-2"]
+            col = "Nc-2"
 
         # Nc-1 	Normal N-cap values.
         else:
-            energy[self.ncap_idx] = self.table_1_lacroix.loc[self.Ncap_AA, "Nc-1"]
+            col = "Nc-1"
+        energy[self.ncap_idx] = self.table_1_lacroix.loc[self.Ncap_AA, col]
 
         # Lacroix 1998 (G_nonH): the N-capping contribution of Cys is 1 kcal/mol more
         # favourable when it is charged, and that of His 1 kcal/mol more favourable when it
@@ -1303,7 +1348,12 @@ class EnergyCalculator(PrecomputeParams):
             q_glu = abs(float(self.modified_seq_ionization_hel[self.ncap_idx + 3]))
             energy[self.ncap_idx] += -0.9 * q_glu
 
-        # capping values are treated as temperature-independent
+        # A Ser, Thr, Asn or Asp N-cap, and the Ac or Sc end group, stabilise the helix by a
+        # hydrogen bond (Muñoz & Serrano 1995-III p. 305): their advantage over Ala in the same
+        # column, capping box included, takes the hydrogen-bond temperature law.
+        if self.Ncap_AA in HBOND_NCAPS:
+            ref = self.table_1_lacroix.loc["A", col]
+            energy[self.ncap_idx] = ref + self._hbond_temperature(energy[self.ncap_idx] - ref)
         return energy
 
     def get_dG_Ccap(self) -> np.ndarray:
@@ -1331,7 +1381,15 @@ class EnergyCalculator(PrecomputeParams):
             energy[self.ccap_idx] = (q_cap * self.table_1_lacroix.loc["D", col]
                                      + (1.0 - q_cap) * self.table_1_lacroix.loc["N", col])
 
-        # capping values are treated as temperature-independent
+        # A Lys, Arg, His, Asn or Asp C-cap hydrogen-bonds a C-terminal carbonyl, and the Am end
+        # group's contribution is a hydrogen bond (Muñoz & Serrano 1995-III p. 305): the
+        # advantage over Ala (the whole Am value) takes the hydrogen-bond temperature law.
+        col = "Cc-2" if self.Cprime_AA == "P" else "Cc-1"
+        if self.Ccap_AA in HBOND_CCAPS:
+            ref = self.table_1_lacroix.loc["A", col]
+            energy[self.ccap_idx] = ref + self._hbond_temperature(energy[self.ccap_idx] - ref)
+        elif self.Ccap_AA == "Am":
+            energy[self.ccap_idx] = self._hbond_temperature(energy[self.ccap_idx])
         return energy
 
     def get_dG_staple(self) -> float:
@@ -1452,12 +1510,8 @@ class EnergyCalculator(PrecomputeParams):
         q_N4 = abs(self.modified_seq_ionization_hel[self.ncap_idx + 4])
         energy = -1.0 * q_N4
 
-        # Apply H-bond-like temperature correction
-        if energy != 0.0:
-            Tref = 273.15
-            delta_H = energy + self.dCp * (self.T_kelvin - Tref)
-            delta_S_Cp = self.dCp * np.log(self.T_kelvin / Tref)
-            energy = delta_H - (self.T_kelvin * delta_S_Cp)
+        # hydrogen bond: the hydrogen-bond temperature law
+        energy = self._hbond_temperature(energy)
 
         return energy
 
@@ -1493,12 +1547,8 @@ class EnergyCalculator(PrecomputeParams):
         q_N4 = abs(self.modified_seq_ionization_hel[self.ncap_idx + 4])
         energy = -0.3 * q_N4
 
-        # Apply H-bond-like temperature correction
-        if energy != 0.0:
-            Tref = 273.15
-            delta_H = energy + self.dCp * (self.T_kelvin - Tref)
-            delta_S_Cp = self.dCp * np.log(self.T_kelvin / Tref)
-            energy = delta_H - (self.T_kelvin * delta_S_Cp)
+        # hydrogen bond: the hydrogen-bond temperature law
+        energy = self._hbond_temperature(energy)
 
         return energy
 
@@ -1592,6 +1642,9 @@ class EnergyCalculator(PrecomputeParams):
                 # hydrophobic pairs scale entropically (dG_ref * t/t_ref), no dCp_hydroph term:
                 # Munoz 1995-III states this term becomes more favourable with temperature
                 base = self._entropic_cp_correct(base, 0.0)
+            # acid-base and polar pairs are side-chain hydrogen bonds: the hydrogen-bond temperature law
+            elif base < 0.0 and (acid_base or (AAi in HBOND_POLAR and AAi3 in HBOND_POLAR)):
+                base = self._hbond_temperature(base)
 
             energy[idx] = base
 
@@ -1658,8 +1711,12 @@ class EnergyCalculator(PrecomputeParams):
                 # hydrophobic pairs scale entropically (dG_ref * t/t_ref), no dCp_hydroph term:
                 # Munoz 1995-III states this term becomes more favourable with temperature
                 base = self._entropic_cp_correct(base, 0.0)
+            # acid-base and polar pairs are side-chain hydrogen bonds: the hydrogen-bond temperature law
+            elif base < 0.0 and (acid_base or (AAi in HBOND_POLAR and AAi4 in HBOND_POLAR)):
+                base = self._hbond_temperature(base)
 
-            extra = 0.0
+            extra = 0.0  # Table V hydrogen-bond motifs
+            aro_his = 0.0  # Table V aromatic-His+ motif (a ring-cation contact, not a hydrogen bond)
 
             # --- Table V add-ons (orientation matters: position i -> position i+4) ---
             # Table V values are G_helix for charged side-chain interactions.
@@ -1673,13 +1730,19 @@ class EnergyCalculator(PrecomputeParams):
             d_coil_4 = float(self.table_6_coil_lacroix.loc['RcoilRest', 'i+4'])
             coil_corr_4 = 1.0 - d_hel_4 / d_coil_4  # ≈ 0.455
 
-            # FYW (i) with His+ (i+4): -0.4 kcal/mol when His is at C1 or C-cap; otherwise divide by 3
+            # FYW (i) with His+ (i+4): -0.4 kcal/mol when His is at C1 or C-cap; otherwise divide by 3.
+            # No coil subtraction for this motif: the aromatic ring and the imidazolium are in contact only when
+            # both side chains lie on one face of the helix, so the interaction is short-range and scarcely
+            # formed in the coil. The 1/d coil share above assumes a Coulomb interaction that persists in the
+            # coil, which does not describe a contact. With the full value the C-peptide family (Shoemaker et
+            # al. 1987, Fairman et al. 1989, Mitchinson & Baldwin 1986), where Fairman et al. report that His-12+
+            # stabilises the helix through Phe-8, is predicted 0.9-1.7 helix points (RMSE) closer.
             if AAi in ["F", "Y", "W"] and AAi4 == "H":
                 p_his = abs(self.modified_seq_ionization_hel[idx + 4])  # population of His+
                 # His is "C1" if it is the residue just before C-cap; "C-cap" if it is C-cap itself
                 his_is_C1_or_Ccap = (idx + 4 == self.ccap_idx) or (idx + 4 == self.ccap_idx - 1)
                 val = -0.4 if his_is_C1_or_Ccap else (-0.4 / 3.0)
-                extra += p_his * val * coil_corr_4
+                aro_his += p_his * val
 
             # Gln (i) with Asp- (i+4): -0.5 kcal/mol (paper Table V)
             if AAi == "Q" and AAi4 == "D":
@@ -1696,14 +1759,9 @@ class EnergyCalculator(PrecomputeParams):
                 p_glu = abs(self.modified_seq_ionization_hel[idx + 4])  # population of Glu-
                 extra += p_glu * (-0.1) * coil_corr_4
 
-            # These are side-chain H-bonds/Salt bridges, they should weaken with T
-            if extra != 0.0:
-                Tref = 273.15
-                delta_H = extra + self.dCp * (self.T_kelvin - Tref)
-                delta_S_Cp = self.dCp * np.log(self.T_kelvin / Tref)
-                extra = delta_H - (self.T_kelvin * delta_S_Cp)
-
-            energy[idx] = base + extra
+            # the Gln-Asp-, Glu--Asn and Gln-Glu- motifs are side-chain hydrogen bonds: the hydrogen-bond
+            # temperature law; the aromatic-His+ contact is temperature-independent
+            energy[idx] = base + self._hbond_temperature(extra) + aro_his
 
         return energy
 
