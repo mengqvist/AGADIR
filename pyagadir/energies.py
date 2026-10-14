@@ -50,12 +50,12 @@ SUCCINYL_HELIX_DISTANCE = {("acid", 1): 9.33, ("acid", 2): 3.95, ("acid", 3): 5.
 
 # First-turn offset (kcal/mol at 273 K) added to the Table 1 N2 cell of the residues whose first-turn cells were never
 # measured in peptides (Lacroix 1998 took the N1-N4 cells from Petukhov's poly-Ala measurements; K, R and H were left
-# at their interior value, C, F, Y and W at round numbers). Each value makes the residue's N2-minus-interior offset
-# equal to the one measured in the single-mutant scan of Tsuboyama et al. 2023 (Nature 620, 434; exposed helix sites,
-# relative to Ala), scaled by 0.943 so that Leu's protein offset equals its peptide value (Petukhov et al. 1998,
-# J. Mol. Biol. 278, 279: N2 +0.25 above the interior), after removing this model's own electrostatic N2 offset for
-# the charged residues (+0.055 for Lys/Arg at the scan's conditions). Charge-independent. See params/README.md.
-FIRST_TURN_N2_OFFSET = {"K": 0.097, "R": 0.199, "H": -0.059, "C": 0.228, "F": 0.162, "Y": 0.157, "W": 0.141}
+# at their interior value, C, F, Y and W at round numbers). Lys and Arg take the measured peptide value for Leu at N2
+# (Petukhov et al. 1998, J. Mol. Biol. 278, 279: +0.25 above the interior), which the peptides with Lys at N2 support
+# when each is compared with the other peptides of its own host. H, C, F, Y and W take the N2-minus-interior offsets of
+# the single-mutant scan of Tsuboyama et al. 2023 (Nature 620, 434; exposed helix sites, relative to Ala), scaled by
+# 0.943 so that Leu's protein offset equals its peptide value. Charge-independent. See params/README.md.
+FIRST_TURN_N2_OFFSET = {"K": 0.25, "R": 0.25, "H": -0.059, "C": 0.228, "F": 0.162, "Y": 0.157, "W": 0.141}
 
 # Hydrogen-bond terms share one temperature law (EnergyCalculator._hbond_temperature): Munoz & Serrano 1995-III
 # eq. (8) for the backbone bond, dH_ref = -0.898 kcal/mol per bond at 273 K (Lacroix 1998). Side chains and end groups
