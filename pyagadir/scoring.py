@@ -1,6 +1,6 @@
 import numpy as np
 from pyagadir.models import AGADIR
-from pyagadir.validation import get_package_data_dir, load_panel_conditions, load_validation, point_conditions
+from pyagadir.validation import load_panel_conditions, load_validation, point_conditions
 
 METRICS = ("mse", "rmse", "mae", "pearsonr")
 

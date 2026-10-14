@@ -4,11 +4,9 @@ from importlib.resources import files
 import numpy as np
 import pandas as pd
 
-from pyagadir.chemistry import calculate_ionic_strength, adjust_pKa, acidic_residue_ionization, basic_residue_ionization, calculate_permittivity, debye_screening_kappa, ionization_free_energy
-from pyagadir.utils import is_valid_index, is_valid_peptide_sequence, is_valid_ncap_ccap, is_valid_conditions
-import warnings
+from pyagadir.chemistry import adjust_pKa, acidic_residue_ionization, basic_residue_ionization, calculate_permittivity, debye_screening_kappa, ionization_free_energy
+from pyagadir.utils import is_valid_peptide_sequence, is_valid_ncap_ccap, is_valid_conditions
 import itertools
-import copy
 
 
 
@@ -68,6 +66,13 @@ HBOND_NCAPS = ("S", "T", "N", "D", "Ac", "Sc")
 HBOND_CCAPS = ("K", "R", "H", "N", "D")
 HBOND_POLAR = ("S", "T", "N", "Q", "D", "E", "K", "R", "H")
 
+# Far end of the helix macrodipole: a charged residue inside the helix feels the nearest end by Munoz & Serrano 1995-II
+# eq. 11 and the other end as a half charge (Hol, van Duijnen & Berendsen 1978), screened Coulomb in water. Poisson-
+# Boltzmann calculations on built helices (interior dielectric 4; Asp/Glu at N1-N3 and Lys/Arg at C1-C3, helix lengths
+# 6-28) give 0.82 times that half-charge law (least squares through the origin over 72 cases), so the far end is scaled
+# by this factor. The flank half charges are not. See params/README.md.
+FEH_FAR_APBS = 0.82
+
 
 class PrecomputeParams:
     """
@@ -89,7 +94,7 @@ class PrecomputeParams:
             cls._params = {}
 
             # get params
-            datapath = files("pyagadir.data.params")
+            datapath = files("pyagadir.params")
 
             # load energy contributions for intrinsic propensities, capping, etc.
             cls._params["table_1_lacroix"] = pd.read_csv(
@@ -235,7 +240,6 @@ class PrecomputeParams:
 
         is_valid_peptide_sequence(seq)
         is_valid_ncap_ccap(ncap, ccap)
-        # is_valid_index(seq, i, j, ncap, ccap)
         is_valid_conditions(pH, T, ionic_strength)
 
         self.seq = seq
@@ -295,9 +299,6 @@ class PrecomputeParams:
         self.seq_pka = None
         self.nterm_pka = None
         self.cterm_pka = None
-
-        self.distances_hel = None
-        self.distances_rc = None
 
         self.seq_ionization = None
         self.nterm_ionization = None
@@ -537,7 +538,8 @@ class PrecomputeParams:
         Lacroix 1998 Table VII), zero beyond nine positions from the cap. The other (far) end adds
         the field of its half charge (Hol, van Duijnen & Berendsen 1978): screened Coulomb in water
         at the Table VII distance to that end, extended past 13 positions by the helix rise of
-        1.5 A per residue (reasoning/nodes/N083.md).
+        1.5 A per residue (reasoning/nodes/N083.md), scaled by FEH_FAR_APBS (0.82, Poisson-Boltzmann
+        calculations on built helices).
 
         Flanking residues (up to nine positions outside a cap) feel the nearby end's half charge by
         the same screened Coulomb law in water, at the Lacroix 1998 flank distance (6 A at N'/C',
@@ -580,12 +582,12 @@ class PrecomputeParams:
                 if n_pos <= 9:
                     phi_N += K_DIPOLE / (d_N * 10.0) ** 2 * math.exp(-kappa_01A * d_N * 10.0)
                 d_far = d_C if c_pos <= 13 else dist_c(13) + 1.5 * (c_pos - 13)
-                phi_C += half_charge(-1.0, d_far)
+                phi_C += FEH_FAR_APBS * half_charge(-1.0, d_far)
             else:
                 if c_pos <= 9:
                     phi_C += -K_DIPOLE / (d_C * 10.0) ** 2 * math.exp(-kappa_01A * d_C * 10.0)
                 d_far = d_N if n_pos <= 13 else dist_n(13) + 1.5 * (n_pos - 13)
-                phi_N += half_charge(1.0, d_far)
+                phi_N += FEH_FAR_APBS * half_charge(1.0, d_far)
         elif ccap_i < idx < min(n, ccap_i + 10):
             phi_C += half_charge(-1.0, 6.0 + 3.0 * (idx - ccap_i - 1))
         elif max(0, ncap_i - 9) <= idx < ncap_i:
@@ -1164,20 +1166,6 @@ class EnergyCalculator(PrecomputeParams):
 
         return scaled_ref + cp_term
 
-    def _nterm_is_local(self) -> bool:
-        """
-        Check if the N-terminal is local to the helix.
-        """
-        # N-terminus is at index 0; helix starts at ncap_idx
-        return self.ncap_idx <= 1   # helix starts at 0 (terminal in helix) or 1 (terminal is N')
-
-    def _cterm_is_local(self) -> bool:
-        """
-        Check if the C-terminal is local to the helix.
-        """
-        # C-terminus is at index len-1; helix ends at ccap_idx
-        return self.ccap_idx >= (len(self.seq_list) - 2)  # helix ends at last or second-last (terminal is C')
-
     def get_dG_Int(self) -> np.ndarray:
         """
         Get the intrinsic free energy contributions for a helical segment.
@@ -1422,17 +1410,14 @@ class EnergyCalculator(PrecomputeParams):
 
             # whenever the N-cap residue is Asn, Asp, Ser, or Thr and the N3 residue is Glu, Asp or Gln, multiply by 1.0
             if self.Ncap_AA in ["N", "D", "S", "T"] and self.N3_AA in ["E", "D", "Q"]:
-                # print("staple case i")
                 energy *= 1.0
 
             # whenever the N-cap residue is Asp or Asn and the N3 residue is Ser or Thr
             elif self.Ncap_AA in ["N", "D"] and self.N3_AA in ["S", "T"]:
-                # print("staple case ii")
                 energy *= 1.0
 
             # other cases they are multiplied by 0.5
             else:
-                # print("staple case iii")
                 energy *= 0.5
 
         # Apply hydrophobic temperature correction to the N'–N4 interaction
@@ -1817,7 +1802,7 @@ class EnergyCalculator(PrecomputeParams):
 
         The other (far) end adds the field of its half charge (Hol et al. 1978): screened
         Coulomb in water at the Table VII distance to that end, extended past 13 positions by
-        1.5 A per residue (FEH; reasoning/nodes/N083.md).
+        1.5 A per residue (FEH; reasoning/nodes/N083.md), scaled by FEH_FAR_APBS.
 
         Flanking charged residues outside the helix interact with the nearby end's half charge
         by the same screened Coulomb law in water, at the Lacroix 1998 flank distance (6 A at
@@ -1931,26 +1916,11 @@ class EnergyCalculator(PrecomputeParams):
         Calculate the electrostatic interaction between the free N-terminal
         backbone charge (NH3+) and the free C-terminal backbone charge (COO-).
 
-        This interaction is only present when neither terminal is blocked
-        (i.e., not acetylated/amidated). The energy is computed as
-        G_hel - G_rc using Coulomb with Debye-Hückel screening.
-
-        The helix-state effective distance is an empirical calibration at 8.5 Å (reflecting the
-        average distance between terminal backbone charges when a helix is
-        present between them).
+        No such interaction is modelled, so this is always 0.0.
 
         Returns:
             float: The terminal-terminal electrostatic free energy in kcal/mol.
         """
-        n = len(self.seq_list)
-
-        # Both terminals must be present (not blocked by Ac/Am)
-        nterm_present = not (n > 0 and self.seq_list[0] in ("Ac", "Sc"))
-        cterm_present = not (n > 0 and self.seq_list[-1] == "Am")
-
-        if not nterm_present or not cterm_present:
-            return 0.0
-
         # No terminal-to-terminal interaction is computed.  On free/free poly-alanine,
         # which has no charged side chains to confuse the comparison, this function
         # returned -0.12952 where the calibration requires 0.
@@ -1959,40 +1929,7 @@ class EnergyCalculator(PrecomputeParams):
         # was spurious, that one was disabled, and on doubly-free peptides the first stood
         # in for the second (-0.1487 against a required -0.1532 at pH 4).  Removing either
         # alone made the fit worse.  Both are corrected together.
-        #
-        # Disabled rather than deleted so the derivation stays readable.
         return 0.0
-
-        q_nterm = float(self.modified_nterm_ionization_hel)
-        q_cterm = float(self.modified_cterm_ionization_hel)
-
-        if abs(q_nterm) < 1e-6 or abs(q_cterm) < 1e-6:
-            return 0.0
-
-        # Coil distance: random-coil end-to-end for the full sequence
-        d_rc = self._calculate_r(n - 1)
-
-        # Helix distance: only shorter than coil when the terminal is
-        # at or near the helix cap. The empirical distance of 8.5 Å
-        # was calibrated from the YGGS reference (NC_syn = -0.1544).
-        # When the C-terminal is far from the Ccap, both states have
-        # similar (coil-like) distances, giving ΔG ≈ 0.
-        # The terminal-terminal interaction is significant only when the
-        # C-terminal is at the helix Ccap (ccap_idx == n-1); NC_syn ≈ 0 when
-        # the C-terminal is in the coil region.
-        if self.ccap_idx != n - 1:
-            return 0.0
-
-        d_hel = 7.1  # empirical helix-state effective distance (Å), calibrated with factor_pi=4.0
-
-        G_hel = self._electrostatic_interaction_energy(
-            qi=q_nterm, qj=q_cterm, r=d_hel, factor_pi=4.0
-        )
-        G_rc = self._electrostatic_interaction_energy(
-            qi=q_nterm, qj=q_cterm, r=d_rc, factor_pi=4.0
-        )
-
-        return G_hel - G_rc
 
     def get_dG_sidechain_sidechain_electrost(self) -> np.ndarray:
         """

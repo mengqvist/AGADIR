@@ -217,15 +217,6 @@ def test_assign_modified_ionization_states(precompute_instance):
     instance1._assign_modified_ionization_states()  # Recompute
     assert np.allclose(instance1.modified_seq_ionization_hel, prev_states, atol=0.01)
 
-# def test_assign_sidechain_macrodipole_distances(precompute_instance):
-#     """Test the _assign_sidechain_macrodipole_distances method."""
-#     instance = precompute_instance
-#     instance._assign_sidechain_macrodipole_distances()
-
-#     # Verify distances are assigned
-#     assert instance.sidechain_macrodipole_distances_nterm is not None
-#     assert instance.sidechain_macrodipole_distances_cterm is not None
-
 def test_assign_terminal_macrodipole_distances(precompute_instance):
     """Test the _assign_terminal_macrodipole_distances method."""
     instance1, instance2, instance3, instance4 = precompute_instance
@@ -253,14 +244,4 @@ def test_assign_terminal_macrodipole_distances(precompute_instance):
     assert np.isclose(instance4.terminal_macrodipole_distance_nterm, 6.1, atol=0.001)
     # C-terminal uses corrected polynomial: _terminal_macrodipole_r(2) ≈ 5.45 Å
     assert np.isclose(instance4.terminal_macrodipole_distance_cterm, 5.45, atol=0.01)
-
-# def test_assign_charged_sidechain_distances(precompute_instance):
-#     """Test the _assign_charged_sidechain_distances method."""
-#     instance = precompute_instance
-#     instance._assign_charged_sidechain_distances()
-
-#     # Verify charged sidechain distances are assigned
-#     assert instance.charged_sidechain_distances_hel is not None
-#     assert instance.charged_sidechain_distances_rc is not None
-
 

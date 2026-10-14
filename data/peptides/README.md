@@ -7,7 +7,7 @@ ellipticity-to-helicity conversion.
 
 ## These are NOT the scored benchmark
 
-`pyagadir/data/validation/` holds the four datasets the investigation scores against, and
+`data/validation/` holds the four datasets the investigation scores against, and
 `question.md`'s success conditions are defined over those. Nothing here is scored yet.
 Bringing a dataset in is a deliberate act — adding several at once would make condition 1
 ("no dataset regresses") unmeasurable overnight, because every correction would regress

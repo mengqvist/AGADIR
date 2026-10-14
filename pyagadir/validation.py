@@ -3,22 +3,22 @@ import warnings
 import matplotlib.pyplot as plt
 from pyagadir.models import AGADIR
 import json
-from importlib import resources
 from pathlib import Path
 
 
 TITLE_FONT_SIZE = 8
 LEGEND_FONT_SIZE = 8
 
+# The validation datasets and the figures live in the repository, outside the package.
+REPO_ROOT = Path(__file__).resolve().parents[1]
+
 def get_package_data_dir():
-    """Get the path to the data directory in the installed package."""
-    with resources.path('pyagadir', 'data') as data_path:
-        return data_path
+    """Get the path to the repository's data directory."""
+    return REPO_ROOT / 'data'
 
 def ensure_figures_dir():
     """Create figures directory if it doesn't exist."""
-    data_dir = get_package_data_dir()
-    figures_dir = data_dir / 'figures'
+    figures_dir = REPO_ROOT / 'figures'
     figures_dir.mkdir(exist_ok=True)
     return figures_dir
 
@@ -237,7 +237,6 @@ def reproduce_lacroix_figure_3b(method="1s"):
     https://doi.org/10.1006/jmbi.1998.2145
     """
     # Get paths
-    data_dir = get_package_data_dir()
     figures_dir = ensure_figures_dir()
 
     # Load validation data together with its recorded conditions
@@ -274,7 +273,6 @@ def reproduce_lacroix_figure_4(method="1s"):
     Reproduce figure 4 from the AGADIR paper.
     """
     # Get paths
-    data_dir = get_package_data_dir()
     figures_dir = ensure_figures_dir()
     data, temp_C, ionic_M = load_validation('lacroix_figure_4_data.json')
 
@@ -320,7 +318,6 @@ def reproduce_huygues_despointes_figure_1(method="1s"):
     https://onlinelibrary.wiley.com/doi/10.1002/pro.5560021006
     """
         # Get paths
-    data_dir = get_package_data_dir()
     figures_dir = ensure_figures_dir()
     data, temp_C, ionic_M = load_validation('huygues_despointes_figure_1_data.json')
 
@@ -369,7 +366,6 @@ def reproduce_munoz_1997_figure_4(method="1s"):
     https://doi.org/10.1002/(SICI)1097-0282(19970415)41:5%3C495::AID-BIP2%3E3.0.CO;2-H
     """
     # Get paths
-    data_dir = get_package_data_dir()
     figures_dir = ensure_figures_dir()
     data, temp_C, ionic_M = load_validation('munoz_1997_figure_4_data.json')
     panel_cond = load_panel_conditions('munoz_1997_figure_4_data.json')
@@ -437,7 +433,6 @@ def reproduce_munoz_1995_figure_3(method="1s"):
     https://doi.org/10.1006/jmbi.1994.0024
     """
     # Get paths
-    data_dir = get_package_data_dir()
     figures_dir = ensure_figures_dir()
     data, _temp_unused, ionic_M = load_validation('munoz_1995_figure_3.json')
     panel_cond = load_panel_conditions('munoz_1995_figure_3.json')
@@ -491,12 +486,6 @@ def reproduce_munoz_1995_figure_3(method="1s"):
     plt.close(fig)
 
 
-def predict(method="1s"):
-    agadir = AGADIR(method=method, pH=4.0, M=0.05, T=0.0)
-    result = agadir.predict("YGGSAAAAAAAKRAAA", ncap=None, ccap='Am', debug=True)
-    print(result.get_percent_helix())
-
-
 if __name__ == "__main__":
     method = "1s"
     reproduce_lacroix_figure_3b(method=method)
@@ -504,5 +493,3 @@ if __name__ == "__main__":
     reproduce_huygues_despointes_figure_1(method=method)
     reproduce_munoz_1997_figure_4(method=method)
     reproduce_munoz_1995_figure_3(method=method)
-
-    # predict(method=method) # I typically direct the output from this funcion to a file: python validation.py > output.txt
