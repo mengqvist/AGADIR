@@ -1,29 +1,47 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
 [project]
-name = "research"
-version = "0.1.0"
+name = "pyagadir"
+version = "1.1.0"
+description = "A model of alpha-helical stability based on statistical mechanics."
+readme = "README.md"
+license = "MIT"
+authors = [{ name = "Martin Engqvist", email = "martin.engqvist@gmail.com" }]
 requires-python = ">=3.10"
+keywords = ["alpha-helix", "biophysics", "statistical mechanics", "agadir", "model"]
+classifiers = ["Programming Language :: Python :: 3"]
 dependencies = [
     "numpy>=1.24.1",
     "pandas>=1.5.2",
-    "matplotlib>=3.7.0",
-    "scipy",
-    "pymupdf>=1.24.0",       # provides the fitz module for PDF reading
-    "pytest>=9.0.2",
 ]
 
-[project.optional-dependencies]
+[project.urls]
+Homepage = "https://github.com/mengqvist/AGADIR"
+
+# Development groups are not part of the published package; `uv sync` installs both.
+[dependency-groups]
+# Tests, and matplotlib for the validation plots (pyagadir.validation and pyagadir.scoring read
+# the datasets in data/, so they run from a clone of the repository).
 dev = [
     "pytest>=8.1.1",
-    "black>=24.1.0",
-    "flake8>=7.0.0",
-    "isort>=5.13.0",
-    "mypy>=1.8.0",
-    "pre-commit>=3.5.0",
-    "ipython",
-    "ipykernel",
-    "jupyter",
-    "notebook",
+    "matplotlib>=3.7.0",
+]
+# Analysis scripts kept alongside the package.
+research = [
+    "scipy",
+    "pymupdf>=1.24.0",  # provides the fitz module for PDF reading
 ]
 
-# Add packages here as needed, then run: uv sync
-# For dev tools: uv sync --extra dev
+[tool.uv]
+default-groups = ["dev", "research"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["pyagadir"]
+
+[tool.hatch.build.targets.sdist]
+include = ["/pyagadir", "/README.md"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

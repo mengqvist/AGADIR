@@ -1,8 +1,6 @@
 import pytest
 import pandas as pd
-import numpy as np
-from unittest.mock import patch
-from pyagadir.energies import EnergyCalculator, PrecomputeParams
+from pyagadir.energies import EnergyCalculator
 
 # --- 1. MOCK DATA SETUP ---
 
@@ -76,19 +74,6 @@ def calculator():
     return calc
 
 @pytest.fixture
-def calculator_NN():
-    calc = MockEnergyCalculator(
-        seq="AAAAAA",
-        i=0, j=6,
-        pH=7.0, 
-        T=25.0, 
-        ionic_strength=0.1,
-        ncap=None,
-        ccap=None
-    )
-    return calc
-
-@pytest.fixture
 def calculator_AcAm():
     calc = MockEnergyCalculator(
         seq="AAAAAA",
@@ -102,14 +87,6 @@ def calculator_AcAm():
     return calc
 
 # --- 2. TESTS ---
-
-@pytest.mark.xfail(strict=True, reason="stale expectation (pre-dates the reasoning/ investigation's "
-                   "distance revisions); was masked by a KeyError in MOCK_PARAMS until 2026-09-30")
-def test_terminal_macrodipole_distances_NN(calculator_NN):
-    """Verify the terminal macrodipole distances for a free N-term and free C-term.
-    """
-    assert np.isclose(calculator_NN.terminal_macrodipole_distance_nterm, 2.1, atol=1e-6)
-    assert np.isclose(calculator_NN.terminal_macrodipole_distance_cterm, 2.1, atol=1e-6)
 
 def test_helix_state_distances(calculator):
     """

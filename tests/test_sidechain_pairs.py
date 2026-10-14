@@ -13,7 +13,7 @@ import pytest
 
 from pyagadir.models import AGADIR
 
-DATA = Path(__file__).resolve().parents[1] / "pyagadir/data/peptides/1998_smith_biochem37_table3.tsv"
+DATA = Path(__file__).resolve().parents[1] / "data/peptides/1998_smith_biochem37_table3.tsv"
 THETA_H, THETA_C = -42500 * (1 - 3 / 16), 640.0
 
 
@@ -50,7 +50,7 @@ def test_dipole_cancelled_pair_contrast(pair, state, k):
     assert model == pytest.approx(meas_k - meas_5, abs=1.5)
 
 
-HUYGHUES = Path(__file__).resolve().parents[1] / "pyagadir/data/peptides/1993_huyghues_protsci2_aspargglurg.tsv"
+HUYGHUES = Path(__file__).resolve().parents[1] / "data/peptides/1993_huyghues_protsci2_aspargglurg.tsv"
 
 
 def _huyghues(peptide_id, pH, nacl):
@@ -99,19 +99,7 @@ def test_asp_arg_i3_levels():
     assert (sum(e * e for e in err) / len(err)) ** 0.5 < 6.0
 
 
-@pytest.mark.xfail(strict=True, reason="Documented limitation (params/README.md): the measured Glu-Arg i+3 orientation "
-                   "preference depends on the charge of Glu, which a cell applied in every ionisation state cannot "
-                   "carry. With Glu neutral the Arg-first peptide is measured 6.7 points more helical; the model has "
-                   "the two about equal.")
-def test_glu_arg_i3_orientation_neutral_acid():
-    """With Glu neutral (pH 2.5, 0.01 M) the Arg-first peptide is slightly more helical (measured -6.7 points)."""
-    seq_ab, meas_ab = _huyghues("GluArg_i+3_AB", 2.5, 0.01)
-    seq_ba, meas_ba = _huyghues("GluArg_i+3_BA", 2.5, 0.01)
-    model = _model(seq_ab, 2.5, 0.01) - _model(seq_ba, 2.5, 0.01)
-    assert model == pytest.approx(meas_ab - meas_ba, abs=5.0)
-
-
-RICHARDSON = Path(__file__).resolve().parents[1] / "pyagadir/data/peptides"
+RICHARDSON = Path(__file__).resolve().parents[1] / "data/peptides"
 
 
 def test_arg_glu_i3_levels_third_and_fourth_design():

@@ -1,6 +1,3 @@
-from typing import Dict
-
-
 def is_valid_peptide_sequence(pept: str) -> None:
     """
     Validate that the input is a valid peptide sequence.
@@ -29,37 +26,6 @@ def is_valid_peptide_sequence(pept: str) -> None:
     if invalid_residues:
         raise ValueError(
             f"Invalid residues found in sequence: {', '.join(invalid_residues)}"
-        )
-
-
-def is_valid_index(pept: str, i: int, j: int, ncap: str, ccap: str) -> None:
-    """
-    Validate that the input indexes are valid.
-
-    Args:
-        pept (str): The peptide sequence.
-        i (int): The start index.
-        j (int): The helix length.
-        ncap (str): The N-terminal capping modification.
-        ccap (str): The C-terminal capping modification.
-    Raises:
-        TypeError: If the input indexes are not integers.
-        ValueError: If the indexes are out of range.
-    """
-    min_helix_length = 6
-
-    if not isinstance(i, int) or not isinstance(j, int):
-        raise TypeError("Indexes must be integers.")
-
-    if i < 0:
-        raise ValueError("Start index must be greater than or equal to zero.")
-
-    if j < min_helix_length:
-        raise ValueError(f"Helix length must be greater than or equal to {min_helix_length}.")
-
-    if i + j > len(pept) + (1 if ncap is not None else 0) + (1 if ccap is not None else 0):
-        raise ValueError(
-            "The sum of the indexes must be less than the length of the sequence (including capping residues)."
         )
 
 

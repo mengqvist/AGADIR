@@ -129,32 +129,6 @@ def calculate_permittivity(T: float) -> float:
     return epsilon_r
 
 
-def debye_huckel_screening_parameter(ionic_strength: float, T: float) -> float:
-    """Calculate the Debye-Huckel screening parameter K.
-    Equation 7 from Lacroix, 1998.
-
-    Args:
-        ionic_strength (float): Ionic strength of the solution in mol/L.
-        T (float): Temperature in Kelvin.
-
-    Returns:
-        float: The Debye-Huckel screening parameter K.
-    """
-    # TODO: Is this function actually needed anywhere???
-
-    N_A = 6.022e23  # Avogadro's number in mol^-1
-    e = 1.602e-19  # Elementary charge in Coulombs
-    k_B = 1.38e-23  # Boltzmann constant in J/K
-
-    # Convert ionic strength to mol/m**3
-    ionic_strength = ionic_strength * 1000
-
-    # Calculate Debye screening parameter kappa
-    kappa = math.sqrt((8 * math.pi * N_A * e**2 * ionic_strength) / (1000 * k_B * T))
-
-    return kappa
-
-
 def debye_screening_kappa(ionic_strength: float, T: float) -> float:
     """Calculate the inverse of the Debye screening length (kappa) in an electrolyte.
     

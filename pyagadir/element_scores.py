@@ -215,7 +215,7 @@ def load_abego_table() -> Dict[Tuple[str, str], float]:
     Returns:
         Dict[Tuple[str, str], float]: Log-odds keyed by ``(triad, amino_acid)``.
     """
-    path = files("pyagadir.data.params").joinpath("abego_res_profile_table")
+    path = files("pyagadir.params").joinpath("abego_res_profile_table")
     table = {}
     lines = path.read_text().splitlines()
     header = lines[0].split()

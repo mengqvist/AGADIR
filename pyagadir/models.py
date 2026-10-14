@@ -392,9 +392,6 @@ class AGADIR(object):
                 100 * self.result.K_tot_array / (1.0 + self.result.K_tot)
             )
 
-        # # get overall percentage helix
-        # self.result.percent_helix = np.round(np.mean(self.result.helical_propensity), 2)
-
         # Exclude synthetic cap tokens ("Ac", "Am") from % helix averaging.
         # CD measurements average over ALL residues, so the CD-compatible convention
         # (all real amino acids) is used for measured-data comparisons.
