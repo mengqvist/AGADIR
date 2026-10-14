@@ -127,3 +127,6 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Literature PDFs: kept locally, not distributed
+doc/
