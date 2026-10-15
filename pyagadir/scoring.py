@@ -1,6 +1,7 @@
 import numpy as np
 from pyagadir.models import AGADIR
-from pyagadir.validation import load_panel_conditions, load_validation, point_conditions
+from pyagadir.validation import (load_buffer, load_panel_conditions, load_validation, point_conditions,
+                                 titrated_ionic_strength)
 
 METRICS = ("mse", "rmse", "mae", "pearsonr")
 
@@ -29,8 +30,9 @@ def _panel_conditions(filename, panel, temp_C, ionic_M, pH=7.0):
             cond.get("pH", pH))
 
 
-def _predict(peptide, ncap, ccap, method, T, M, pH):
-    model = AGADIR(method=method, T=T, M=M, pH=pH)
+def _predict(peptide, ncap, ccap, method, T, M, pH, buffer=None):
+    """Predict at the sample's ionic strength, including the HCl or NaOH that set its pH."""
+    model = AGADIR(method=method, T=T, M=titrated_ionic_strength(M, pH, buffer), pH=pH)
     return model.predict(peptide, ncap=ncap, ccap=ccap).get_percent_helix()
 
 
@@ -43,7 +45,8 @@ def score_lacroix_figure_3b(method="1s", metric="mse"):
     data, temp_C, ionic_M = load_validation(filename)
     fig_data = data["figure3b"]
     T, M, _ = _panel_conditions(filename, "figure3b", temp_C, ionic_M)
-    predicted = [_predict(fig_data["peptide"], fig_data["ncap"], fig_data["ccap"], method, T, M, ph)
+    buffer = load_buffer(filename)
+    predicted = [_predict(fig_data["peptide"], fig_data["ncap"], fig_data["ccap"], method, T, M, ph, buffer)
                  for ph in fig_data["measured_data_ph"]]
     return {"lacroix_figure_3b": _score(fig_data["measured_data_helix"], predicted, metric)}
 
@@ -52,10 +55,11 @@ def score_lacroix_figure_4(method="1s", metric="mse"):
     """Score per subplot vs measured helix content vs pH (Lacroix 1998, Fig 4)."""
     filename = 'lacroix_figure_4_data.json'
     data, temp_C, ionic_M = load_validation(filename)
+    buffer = load_buffer(filename)
     scores = {}
     for figname, fig_data in data.items():
         T, M, _ = _panel_conditions(filename, figname, temp_C, ionic_M)
-        predicted = [_predict(fig_data["peptide"], fig_data["ncap"], fig_data["ccap"], method, T, M, ph)
+        predicted = [_predict(fig_data["peptide"], fig_data["ncap"], fig_data["ccap"], method, T, M, ph, buffer)
                      for ph in fig_data["measured_data_ph"]]
         scores[f"lacroix_figure_4_{figname}"] = _score(fig_data["measured_data_helix"], predicted, metric)
     return scores

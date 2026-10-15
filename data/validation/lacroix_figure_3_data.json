@@ -11,6 +11,7 @@
     "ionic_strength_M": 0.005,
     "ionic_strength_source": "\"The peptides (roughly 1.5 mg) were dissolved in 1 ml of deionized water with 2.5 mM sodium phosphate buffer (pH 7.0), unless otherwise indicated.\" (Circular dichroism analysis)",
     "ionic_strength_derivation": "DERIVED, not stated as an ionic strength. 2.5 mM sodium phosphate at pH 7 is a mixture of H2PO4- and HPO4(2-); with Na+ counterions I = 0.5*sum(c_i*z_i^2) ~ 5 mM, NOT 2.5 mM -- the divalent species contributes z^2 = 4. Titration with HCl/NaOH raises it toward the pH extremes, so the true value is pH-dependent, roughly 5-15 mM. 0.005 is the neutral-pH end and is an approximation; a pH-dependent I would be more faithful.",
+    "buffer": {"sodium_phosphate_M": 0.0025, "prepared_pH": 7.0, "pH_adjusted_with": "HCl/NaOH", "note": "Each point's ionic strength is computed from this buffer at the point's pH plus the HCl or NaOH that brings it there (pyagadir.validation.titrated_ionic_strength): 4.4 mM at pH 7, 3.5-4.5 mM at pH 3-6, 7.4 mM at pH 9, 8.8 mM at pH 11, 19.8 mM at pH 12. ionic_strength_M above is the buffer at pH 7 rounded."},
     "previous_coded_value": {
       "temperature_C": 0.0,
       "ionic_strength_M": 0.1,

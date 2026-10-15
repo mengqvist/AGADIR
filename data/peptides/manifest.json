@@ -1,5 +1,6 @@
 {
   "_about": "Per-paper provenance for the flat peptide datasets in this directory. One entry per <key>.tsv. Every 'conditions_quote' and 'conversion_quote' is VERBATIM from the source text; anything derived is marked as derived.",
+  "_ionic_strength_titrant": "ionic_strength_M is the ionic strength of the stated salt and buffer. Unless an entry sets ionic_strength_includes_titrant, it does not include the HCl or NaOH that brought the sample to its pH; a consumer adds the free acid or base and its counter-ion, 10^-pH + 10^(pH-14) M (pyagadir.validation.titrated_ionic_strength). This matters below pH 3 and above pH 11.",
   "_audit_cycle_87": {
     "what": "Independent adversarial re-verification of all nine TSVs against the printed tables, requested by the question's owner. Ground truth was re-transcribed by eye from pages rendered at 200-450 dpi, NOT by re-running the extractors, and compared cell by cell. Route per dataset: reasoning/evidence/scripts/verify_peptide_tsvs.py.",
     "result": "197 peptides, 9 datasets, 0 transcription errors. Every sequence, cap assignment, n_res, pH, temperature and ionic strength in the shipped TSVs reproduces its source. Cells compared: Viguera 44, Padmanabhan 16, Chakrabartty 1993 14, Doig Table 1 50, Doig Table 3 50, Huygues Asp 56, Huygues AspArg 32, Chakrabartty 1994 58 peptides x 7 fields, Petukhov 30 peptides x 8 fields.",
@@ -171,6 +172,7 @@
     "ionic_strength_note": "ADDED at cycle 87 (reasoning/evidence/scripts/ionic_strength.py). The coded values are the NaCl concentrations; the CD buffer's own 1 mM each of sodium citrate, sodium phosphate and sodium borate is not in them. At high salt this is immaterial (4.807 vs 4.8; 1.007 vs 1.0). At LOW salt it is not: I = 0.0172 M against the coded 0.010, i.e. 1.7x. Worse for the purpose these datasets were extracted for, the buffer's own charge is pH-dependent - citrate is ~80% trivalent at pH 7 and essentially protonated at pH 2.25 - so the low-salt rows are I = 0.0172 at pH 7 but I = 0.0107 at pH 2.25. The pH 7 vs pH 2.5 comparison that is the whole point of these papers therefore carries a real 1.6x ionic-strength difference which the coding currently records as no difference at all. Not changed unilaterally; this is the sharpest of the ionic-strength flags."
   },
   "1995_viguera_biochem34_table1": {
+    "ionic_strength_includes_titrant": true,
     "citation": "Viguera, A.R. & Serrano, L. (1995). Side-chain interactions between sulfur-containing amino acids and phenylalanine in alpha-helices. Biochemistry 34, 8771-8779.",
     "source_pdf": "doc/1995_viguera_side-chain-interactions-between-sulfur-containing-amino-acids-and-phenyalanine.pdf",
     "source_table": "Table 1 - 'CD Analysis of the Peptides and Determination of the Free Energy of Interaction between the Different Side Chains Being Considered'",
@@ -429,6 +431,7 @@
     "why_it_matters": "The two i+4 peptides are the same sequences as Meuzelaar et al. 2016 EK4/KE4: a second lab's measurement of the Glu/Lys i+4 orientation contrast, at two salt concentrations. The model over-predicts that contrast about 3x (reasoning/nodes/N107.md, N109.md)."
   },
   "1999_richardson_biochem38_meara6": {
+    "ionic_strength_includes_titrant": true,
     "citation": "Richardson, J.M., McMahon, K.W., MacDonald, C.C. & Makhatadze, G.I. (1999). MEARA sequence repeat of human CstF-64 polyadenylation factor is helical in solution. A spectroscopic and calorimetric study. Biochemistry 38, 12869-12875.",
     "source_pdf": "doc/1999_richardson_MEARA-sequence-repeat-of-human-CstF-64-polyadenylation-factor-is-helical-in-solution.pdf",
     "source_table": "Results text, 'Structural Characterization of MEARA6 in Solution by CD Spectroscopy' (pp. 12871-12872; Fig. 2A). No table.",
@@ -455,6 +458,7 @@
     "why_it_matters": "Five Arg(i)->Glu(i+3) pairs, no Glu(i)->Arg(i+3) pair, free N-terminus: one of the four designs that fix the i+3 Arg/Glu cells (reasoning/nodes/N108.md). Full melts, NaCl and TFE titrations are figure-only and not extracted."
   },
   "2004_richardson_jmb335_table2": {
+    "ionic_strength_includes_titrant": true,
     "citation": "Richardson, J.M. & Makhatadze, G.I. (2004). Temperature dependence of the thermodynamics of helix-coil transition. J. Mol. Biol. 335, 1029-1037.",
     "source_pdf": "doc/2004_richardson_Temperature-dependence-of-the-thermodynamics-of-helix-coil-transition.pdf",
     "source_table": "Table 1 ('Abbreviations for different peptide sequences') joined to Table 2 ('Thermodynamic parameters of helix-coil transition for studied peptides')",

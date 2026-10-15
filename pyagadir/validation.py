@@ -85,6 +85,46 @@ def load_panel_conditions(filename):
     return {k: {**base, **v} for k, v in per_panel.items()}
 
 
+PHOSPHATE_PKA = (2.15, 7.20, 12.35)
+
+
+def titrated_ionic_strength(ionic_M, pH, buffer=None):
+    """Ionic strength (M) of a sample whose pH was set with HCl or NaOH.
+
+    Sources state their buffer and salt but rarely the strong acid or base that brought the sample
+    to its measured pH, and that titrant raises the ionic strength at the pH extremes (shortening
+    the Debye length there). Without a buffer composition, the free acid or base and its
+    counter-ion are added to the recorded value, ionic_M + 10^-pH + 10^(pH - 14), a lower bound on
+    the titrant. With one, ``{"sodium_phosphate_M": c, "prepared_pH": p}``, the ionic strength is
+    computed from the phosphate's speciation at the target pH (pKa 2.15 / 7.20 / 12.35) plus the
+    HCl or NaOH that the charge balance needs to move it from its prepared pH, and ionic_M is not
+    used. The pH is taken as set at room temperature (pKw 14.0).
+    """
+    h, oh = 10.0 ** -pH, 10.0 ** (pH - 14.0)
+    if not buffer:
+        return ionic_M + h + oh
+    c = float(buffer["sodium_phosphate_M"])
+
+    def fractions(x):
+        terms = [1.0]
+        for pka in PHOSPHATE_PKA:
+            terms.append(terms[-1] * 10.0 ** (x - pka))
+        total = sum(terms)
+        return [t / total for t in terms]
+
+    f_prep, f = fractions(float(buffer["prepared_pH"])), fractions(pH)
+    na_buffer = c * sum(i * x for i, x in enumerate(f_prep))
+    base = c * sum(i * x for i, x in enumerate(f)) + oh - h - na_buffer  # > 0: NaOH added; < 0: HCl added
+    na, cl = na_buffer + max(base, 0.0), max(-base, 0.0)
+    return 0.5 * (na + cl + h + oh + c * sum(i * i * x for i, x in enumerate(f)))
+
+
+def load_buffer(filename):
+    """The buffer composition recorded in a dataset's ``_provenance`` block (key ``buffer``), or None."""
+    with open(get_package_data_dir() / "validation" / filename) as fh:
+        return json.load(fh).get("_provenance", {}).get("buffer")
+
+
 def point_conditions(panel_cond, peptide, T, M, pH):
     """Return ``(T, M, pH)`` for one point of a panel.
 
@@ -241,6 +281,7 @@ def reproduce_lacroix_figure_3b(method="1s"):
 
     # Load validation data together with its recorded conditions
     data, temp_C, ionic_M = load_validation('lacroix_figure_3_data.json')
+    buffer = load_buffer('lacroix_figure_3_data.json')
 
     peptide = data["figure3b"]["peptide"]
     ncap = data["figure3b"]["ncap"]
@@ -254,7 +295,7 @@ def reproduce_lacroix_figure_3b(method="1s"):
     # AGADIR results
     pyagadir_predicted_data_helix = []
     for ph in paper_predicted_data_ph:
-        model = AGADIR(method=method, T=temp_C, M=ionic_M, pH=ph)
+        model = AGADIR(method=method, T=temp_C, M=titrated_ionic_strength(ionic_M, ph, buffer), pH=ph)
         result = model.predict(peptide, ncap=ncap, ccap=ccap)
         pyagadir_predicted_data_helix.append(result.get_percent_helix())
         
@@ -275,6 +316,7 @@ def reproduce_lacroix_figure_4(method="1s"):
     # Get paths
     figures_dir = ensure_figures_dir()
     data, temp_C, ionic_M = load_validation('lacroix_figure_4_data.json')
+    buffer = load_buffer('lacroix_figure_4_data.json')
 
     # Create figure
     fig, axs = plt.subplots(4, 2, figsize=(10, 16))
@@ -296,7 +338,7 @@ def reproduce_lacroix_figure_4(method="1s"):
 
         pyagadir_predicted_data_helix = []
         for ph in paper_predicted_data_ph:
-            model = AGADIR(method=method, T=temp_C, M=ionic_M, pH=ph)
+            model = AGADIR(method=method, T=temp_C, M=titrated_ionic_strength(ionic_M, ph, buffer), pH=ph)
             result = model.predict(peptide, ncap=ncap, ccap=ccap)
             pyagadir_predicted_data_helix.append(result.get_percent_helix())
             
@@ -339,7 +381,7 @@ def reproduce_huygues_despointes_figure_1(method="1s"):
 
         pyagadir_predicted_data_helix = []
         for pept in peptides:
-            model = AGADIR(method=method, T=temp_C, M=ionic_M, pH=ph)
+            model = AGADIR(method=method, T=temp_C, M=titrated_ionic_strength(ionic_M, ph), pH=ph)
             result = model.predict(pept, ncap=ncap, ccap=ccap)
             pyagadir_predicted_data_helix.append(result.get_percent_helix())
             
@@ -396,7 +438,7 @@ def reproduce_munoz_1997_figure_4(method="1s"):
         for pept, x, y in zip(peptides, xvals, paper_measured_data):
             T_pt, M_pt, pH_pt = point_conditions(cond, pept, T, M, pH)
             try:
-                model = AGADIR(method=method, T=T_pt, M=M_pt, pH=pH_pt)
+                model = AGADIR(method=method, T=T_pt, M=titrated_ionic_strength(M_pt, pH_pt), pH=pH_pt)
                 result = model.predict(pept, ncap=ncap, ccap=ccap)
             except ValueError:
                 # Shorter than the model's six-residue minimum.  Figure 4A's shortest
@@ -459,7 +501,7 @@ def reproduce_munoz_1995_figure_3(method="1s"):
         pH = cond.get("pH", fig_data.get("pH", 7.0))
         pyagadir_predicted_data_helix = []
         for temp in xvals:
-            model = AGADIR(method=method, T=temp, M=M, pH=pH)
+            model = AGADIR(method=method, T=temp, M=titrated_ionic_strength(M, pH), pH=pH)
             result = model.predict(peptide, ncap=ncap, ccap=ccap)
             pyagadir_predicted_data_helix.append(result.get_percent_helix())
             

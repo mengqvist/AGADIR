@@ -23,7 +23,7 @@ One tidy row per (peptide, quantity). Columns:
 | `sequence` | bare sequence, caps stripped into their own columns |
 | `ncap` / `ccap` | `Ac`, `Sc`, `Am`, or empty for free — **read from the paper's notation, never inferred** |
 | `n_res` | length of `sequence` |
-| `pH`, `T_C`, `ionic_strength_M` | per row, so each row stands alone |
+| `pH`, `T_C`, `ionic_strength_M` | per row, so each row stands alone. `ionic_strength_M` is the stated salt and buffer; it leaves out the HCl or NaOH that set the pH unless the manifest entry has `ionic_strength_includes_titrant` (see below) |
 | `quantity` | what `value` is: `minus_theta222`, `helix_percent`, … |
 | `value`, `error`, `unit` | as printed, with the paper's own error where given |
 | `source_table` | which table in the paper |
@@ -55,3 +55,14 @@ are stored as ordinary rows alongside.
 
 The C-peptide papers state a fourth helicity convention (0 % = +3,000, 100 % = -27,000
 deg cm2 dmol-1 at 3 °C); as with the others it is recorded in the manifest, not applied.
+
+## Ionic strength and the titrant
+
+Papers state their salt and buffer, rarely the HCl or NaOH that brought each sample to its pH. That titrant raises the
+ionic strength at the pH extremes: at pH 2 the free HCl alone adds 10 mM. `ionic_strength_M` records the stated salt
+and buffer. A consumer adds the free acid or base with its counter-ion, 10^-pH + 10^(pH-14) M, with
+`pyagadir.validation.titrated_ionic_strength(ionic_strength_M, pH)`. The three datasets whose coded value already
+includes the titrant (Viguera et al. 1995; Richardson et al. 1999 and 2004) carry `ionic_strength_includes_titrant`
+in `manifest.json`. The term is a lower bound: re-speciation of the buffer itself is not included, except for the
+Lacroix 1998 panels in `data/validation/`, whose buffer is computed in full.
+
