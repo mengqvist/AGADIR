@@ -2,7 +2,7 @@ from typing import Dict, Tuple
 
 import numpy as np
 
-from pyagadir.energies import EnergyCalculator
+from pyagadir.energies import DIPOLE_LAWS, EnergyCalculator
 from pyagadir.utils import is_valid_peptide_sequence, is_valid_ncap_ccap
 
 
@@ -79,7 +79,7 @@ class AGADIR(object):
     """
 
     def __init__(
-        self, method: str = "1s", T: float = 4.0, M: float = 0.15, pH: float = 7.0
+        self, method: str = "1s", T: float = 4.0, M: float = 0.15, pH: float = 7.0, dipole_law: str = "munoz"
     ):
         """
         Initialize AGADIR object.
@@ -90,7 +90,14 @@ class AGADIR(object):
                 '1s': One-sequence approximation.
             T (float): Temperature in Celsius. Default is 4.0.
             M (float): Ionic strength in Molar (M, mol/L). Default is 0.15.
+            dipole_law (str): Side chain-macrodipole law. 'munoz' (default): Muñoz & Serrano 1995-II eq. 11 for the
+                nearest end plus the far end's half charge. 'gb': the Generalized Born field of the helix backbone
+                (params/README.md); it is meant for use with table values transferred to it, and without them it
+                counts first-turn and capping electrostatics twice.
         """
+        if dipole_law not in DIPOLE_LAWS:
+            raise ValueError(f"dipole_law must be one of {DIPOLE_LAWS}, got {dipole_law!r}")
+        self.dipole_law = dipole_law
         self.method_options = ["r", "1s"]
         if method not in self.method_options:
             raise ValueError(
@@ -363,6 +370,7 @@ class AGADIR(object):
                     ncap=self.n_cap,
                     ccap=self.c_cap,
                     params=params,
+                    dipole_law=self.dipole_law,
                 )
 
                 # calculate dG_Hel and dG_dict

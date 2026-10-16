@@ -79,6 +79,8 @@ The result object provides several methods to access the predictions:
 - `get_percent_helix()`: Returns the mean helical propensity (float)
 - `get_helical_propensity()`: Returns the helix percentage at each position (numpy array; includes the cap positions when `ncap`/`ccap` are given)
 
+`AGADIR(..., dipole_law="gb")` replaces the side chain-macrodipole law with a Generalized Born field of the helix backbone, computed from built helices (`pyagadir/params/README.md`). It is experimental and not the default: until the position-specific table values are re-derived under it, it counts some first-turn and capping electrostatics twice.
+
 ### Terminal Capping
 
 When predicting helix propensity, the charged termini can significantly affect the results. In real proteins, helices are typically part of a larger sequence and don't experience these terminal charges. The package supports three types of terminal modifications to simulate this:

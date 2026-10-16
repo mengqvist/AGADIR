@@ -73,6 +73,38 @@ HBOND_POLAR = ("S", "T", "N", "Q", "D", "E", "K", "R", "H")
 # by this factor. The flank half charges are not. See params/README.md.
 FEH_FAR_APBS = 0.82
 
+# Side chain-macrodipole laws. "munoz" (default): the law above. "gb": the Generalized Born field of the helix backbone
+# on the charged side chain, tabulated from built poly-Ala helices (params/sidechain_dipole_gb.tsv, made by
+# tools/build_gb_dipole_table.py; params/README.md). Tabulated residues and the sign of their charged form:
+DIPOLE_LAWS = ("munoz", "gb")
+GB_DIPOLE_CHARGE = {"K": 1.0, "R": 1.0, "H": 1.0, "D": -1.0, "E": -1.0, "C": -1.0, "Y": -1.0}
+_GB_TABLE = None
+
+
+def gb_dipole_table() -> dict:
+    """
+    params/sidechain_dipole_gb.tsv, loaded once: the kappa grid (1/A), the coil reference per residue, and the helix
+    rows per (residue, L) as (E_in[k], W[k, kappa], n_rot[k]) for k = 0 (N-cap) .. L + 1 (C-cap); n_rot is the number
+    of clash-free structures averaged (0: none, the row is not used).
+    """
+    global _GB_TABLE
+    if _GB_TABLE is None:
+        df = pd.read_csv(files("pyagadir.params").joinpath("sidechain_dipole_gb.tsv"), sep="\t", comment="#")
+        wcols = [c for c in df.columns if c.startswith("W_")]
+        coil, helix = {}, {}
+        for aa, g in df.groupby("aa"):
+            key = "H" if aa == "H+" else aa
+            c = g[g["state"] == "coil"].iloc[0]
+            coil[key] = (float(c["E_in"]), c[wcols].to_numpy(float))
+            for L, h in g[g["state"] == "helix"].groupby("L"):
+                h = h.sort_values("k")
+                if list(h["k"]) != list(range(int(L) + 2)):
+                    raise ValueError(f"sidechain_dipole_gb.tsv: {aa} L={L} does not cover k = 0..L+1")
+                helix[(key, int(L))] = (h["E_in"].to_numpy(float), h[wcols].to_numpy(float), h["n_rot"].to_numpy(int))
+        _GB_TABLE = dict(kappa=np.array([float(c[2:]) for c in wcols]), coil=coil, helix=helix,
+                         lmax=max(L for _, L in helix))
+    return _GB_TABLE
+
 
 class PrecomputeParams:
     """
@@ -203,7 +235,7 @@ class PrecomputeParams:
         """
         return {name: ParamTable(df) for name, df in cls.load_params().items()}
 
-    def __init__(self, seq: str, i: int, j: int, pH: float, T: float, ionic_strength: float, ncap: str = None, ccap: str = None, debug: bool = False, params: dict = None):
+    def __init__(self, seq: str, i: int, j: int, pH: float, T: float, ionic_strength: float, ncap: str = None, ccap: str = None, debug: bool = False, params: dict = None, dipole_law: str = "munoz"):
         """
         Initialize the PrecomputedParams for a peptide sequence.
 
@@ -217,8 +249,12 @@ class PrecomputeParams:
             ncap (str): N-terminal capping modification (acetylation='Ac', succinylation='Sc').
             ccap (str): C-terminal capping modification (amidation='Am').
             params (dict): Parameter tables from snapshot_params(). If None, load_params() is used.
+            dipole_law (str): side chain-macrodipole law, "munoz" (default) or "gb" (see _sidechain_dipole_potential).
         """
         self.debug = debug
+        if dipole_law not in DIPOLE_LAWS:
+            raise ValueError(f"dipole_law must be one of {DIPOLE_LAWS}, got {dipole_law!r}")
+        self.dipole_law = dipole_law
 
         # load params
         if params is None:
@@ -519,15 +555,77 @@ class PrecomputeParams:
 
     def dipole_temperature_factor(self) -> float:
         """Muñoz 1995-III eq. (12): the side chain-macrodipole term uses a fixed dielectric and is
-        scaled by eps(0 C)/eps(T) = exp(+0.004314 (T - 273.15)) (stronger at higher T)."""
+        scaled by eps(0 C)/eps(T) = exp(+0.004314 (T - 273.15)) (stronger at higher T).
+        The GB law (dipole_law="gb") carries its temperature dependence in eps_w(T) itself: 1."""
+        if self.dipole_law == "gb":
+            return 1.0
         return math.exp(0.004314 * (self.T_kelvin - 273.15))
 
     def _sidechain_dipole_potential(self, idx: int) -> tuple[float, float]:
         """
         Energy (kcal/mol) of a +1 charge on residue idx in the field of the helix macrodipole,
         split into the contributions of the N-terminal and the C-terminal end, before the eps(T)
-        factor. get_dG_sidechain_macrodipole multiplies these by the residue's charge, and the
-        ionisation solver uses them as the helix-state field, so both see one electrostatic model.
+        factor (dipole_temperature_factor). get_dG_sidechain_macrodipole multiplies these by the
+        residue's charge, and the ionisation solver uses them as the helix-state field, so both see
+        one electrostatic model. The law is _munoz_dipole_potential (default) or, with
+        dipole_law="gb", _gb_dipole_potential.
+        """
+        if self.dipole_law == "gb":
+            return self._gb_dipole_potential(idx)
+        return self._munoz_dipole_potential(idx)
+
+    def _gb_dipole_potential(self, idx: int) -> tuple[float, float]:
+        """
+        dipole_law="gb": energy (kcal/mol) of a +1 charge on residue idx from the helix backbone, by Generalized Born
+        on built poly-Ala helices (params/sidechain_dipole_gb.tsv, tools/build_gb_dipole_table.py), helix minus coil.
+        For Lys, Arg, His+, Asp, Glu, Cys- or Tyr- at position k = 0 (N-cap) .. L + 1 (C-cap) of a helix with L
+        helical residues:
+
+            E(kappa, T) = E_in + W(kappa) / eps_w(T)          (the residue's charged form, in each state)
+            potential   = (E_helix(L, k) - E_coil) / z        (z = +1 or -1)
+
+        W is interpolated linearly on the table's kappa grid (held at its last value above kappa = 0.8 / A, about
+        5.6 M at 0 C). The temperature dependence is eps_w(T), so the eps(T) factor is 1 for this law. The value is
+        returned on the nearer end (N on ties); only the sum is used.
+
+        Helices longer than the table take the end-anchored value of the longest tabulated one: a position within
+        lmax // 2 of an end takes that position's value, positions farther from both ends its central value.
+
+        Not tabulated, and kept on Muñoz's law times its eps(T) factor: charged residues outside the caps (flanks), and
+        table rows without a clash-free structure (Tyr- at the N-cap).
+
+        The law covers the side chain's electrostatics with the backbone in both states, including the local terms
+        Table 1's propensities already contain. Its N-cap..C-cap values must be used with table values transferred to
+        it (new value = old value + z[potential_munoz - potential_gb] at each value's reference conditions), or the
+        first-turn and capping energies are counted twice.
+        """
+        aa = self.seq_list[idx]
+        ncap_i, ccap_i = int(self.ncap_idx), int(self.ccap_idx)
+        z = GB_DIPOLE_CHARGE.get(aa)
+        if z is None or not ncap_i <= idx <= ccap_i:
+            factor = math.exp(0.004314 * (self.T_kelvin - 273.15))
+            phi_N, phi_C = self._munoz_dipole_potential(idx)
+            return factor * phi_N, factor * phi_C
+        tab = gb_dipole_table()
+        L, k = ccap_i - ncap_i - 1, idx - ncap_i
+        if L > tab["lmax"]:
+            half, c = tab["lmax"] // 2, L + 1 - k
+            k = min(k, half) if k <= c else tab["lmax"] + 1 - min(c, half)
+            L = tab["lmax"]
+        e_in, w, n_rot = tab["helix"][(aa, L)]
+        if n_rot[k] == 0:
+            factor = math.exp(0.004314 * (self.T_kelvin - 273.15))
+            phi_N, phi_C = self._munoz_dipole_potential(idx)
+            return factor * phi_N, factor * phi_C
+        c_in, c_w = tab["coil"][aa]
+        kap = self.kappa * 1e-10  # 1/A
+        energy = (e_in[k] - c_in) + (np.interp(kap, tab["kappa"], w[k]) - np.interp(kap, tab["kappa"], c_w)) / self.epsilon_r
+        phi = energy / z
+        return (phi, 0.0) if k <= L + 1 - k else (0.0, phi)
+
+    def _munoz_dipole_potential(self, idx: int) -> tuple[float, float]:
+        """
+        The default law (dipole_law="munoz"), before the eps(T) factor.
 
         Inside the helix (N-cap to C-cap): the nearest end by Muñoz 1995-II eq. 11,
 
@@ -1108,7 +1206,7 @@ class EnergyCalculator(PrecomputeParams):
     """
     Class to calculate the free energy contributions for a peptide sequence.
     """
-    def __init__(self, seq: str, i: int, j: int, pH: float, T: float, ionic_strength: float, ncap: str = None, ccap: str = None, params: dict = None):
+    def __init__(self, seq: str, i: int, j: int, pH: float, T: float, ionic_strength: float, ncap: str = None, ccap: str = None, params: dict = None, dipole_law: str = "munoz"):
         """
         Initialize the EnergyCalculator for a peptide sequence.
 
@@ -1122,8 +1220,9 @@ class EnergyCalculator(PrecomputeParams):
             ncap (str): N-terminal capping modification (acetylation='Ac', succinylation='Sc').
             ccap (str): C-terminal capping modification (amidation='Am').
             params (dict): Parameter tables from snapshot_params(). If None, load_params() is used.
+            dipole_law (str): side chain-macrodipole law, "munoz" (default) or "gb".
         """
-        super().__init__(seq, i, j, pH, T, ionic_strength, ncap, ccap, params=params)
+        super().__init__(seq, i, j, pH, T, ionic_strength, ncap, ccap, params=params, dipole_law=dipole_law)
         self._AROMATIC = {"F", "Y", "W"}
         self._ALIPHATIC = {"A", "V", "L", "I", "M"}  # you can expand if you want (e.g. C)
         self.dCp = -0.0015  # kcal/(mol*K)
@@ -1808,7 +1907,9 @@ class EnergyCalculator(PrecomputeParams):
         by the same screened Coulomb law in water, at the Lacroix 1998 flank distance (6 A at
         N'/C', +3 A per further position), and the energy is assigned to the cap.
 
-        The law itself is _sidechain_dipole_potential (shared with the ionisation solver).
+        The law itself is _sidechain_dipole_potential (shared with the ionisation solver); with
+        dipole_law="gb" it is the Generalized Born field (_gb_dipole_potential) and the text above
+        describes only its flanks.
 
         Returns:
             tuple[np.ndarray, np.ndarray]: N-terminal and C-terminal dipole energy arrays.

@@ -125,6 +125,35 @@ The distances (Å) used by the side chain-macrodipole term for charged residues 
 
 Far end of the macrodipole (`FEH_FAR_APBS` in energies.py): 0.82. A charged residue inside the helix feels the nearest helix end by equation 11 of Munoz & Serrano (1995, J. Mol. Biol. 245, 275, paper II) and the other end as a half charge (Hol, van Duijnen & Berendsen 1978, Nature 273, 443): screened Coulomb in water at the Table VII distance to that end, extended past 13 positions by 1.5 A per residue. The half-charge law has no fitted parameter. Its strength is scaled to Poisson-Boltzmann calculations on built ideal helices (interior dielectric 4, 0.005 M, 278 K; Asp and Glu at N1-N3, Lys and Arg at C1-C3; helix lengths 6-28; 72 cases, rotamer-averaged): they give 0.82 times the half-charge law by least squares through the origin. The ratio depends on distance (about 0.89 at 5-9 A, 0.83 at 9-12 A and 0.6-0.66 beyond 12 A, where the values are small and noisy); a single factor is used rather than a fitted distance law. The flank half charges outside the helix are not scaled. Effect: mean panel RMSE 3.261 -> 3.132 (Huyghues-Despointes 2.756 -> 2.657, Lacroix 2.886 -> 2.763, Munoz & Serrano 1995 4.138 -> 3.970, Munoz & Serrano 1997 1.219 -> 1.203); residual structure 2.507 -> 2.484; no literature set worse by more than 0.27 (Zhou et al. 1994). The data agree with the calculated strength. Among the peptides whose prediction the far end changes by more than 2 helix points and whose measurement lies between the predictions with and without it, the best strength is 0.82 (median of 28; half charge scaled from 0 to 1). Peptides whose error from other causes is larger than the far end's effect prefer either no far end or the full one, according to the sign of that error, and carry no information on it. Not explained: the CheY helix-2 fragment (Munoz & Serrano 1995, Fig. 3c) stays under-predicted by about 6.5 helix points. It fits only with a far end at a quarter of the half-charge law or less, which no calculation supports. The fraying of real helix ends does not weaken the far end in this model: amide exchange shows that end fraying follows the helix-coil ensemble (Rohl et al. 1992, Biochemistry 31, 1263), and in that ensemble a frayed end is a shorter helix whose far end is closer.
 
+## sidechain_dipole_gb (opt-in law, `dipole_law="gb"`)
+The side chain-macrodipole law as continuum electrostatics, selected with `AGADIR(..., dipole_law="gb")`. The default (`"munoz"`) is the law above, and is unchanged. Made by `tools/build_gb_dipole_table.py`; nothing in it is fitted.
+
+What it is: the Generalized Born energy (Still et al. 1990, J. Am. Chem. Soc. 112, 6127; salt as Srinivasan et al. 1999, Theor. Chem. Acc. 101, 426) between a charged side chain (Lys, Arg, His+, Asp, Glu, Cys-, Tyr-) and the backbone atoms (N, H, CA, HA, C, O) of the N-cap, the helix and the C-cap, in the helix and in the coil.
+- Structures: ideal poly-Ala helices built with PeptideBuilder (helix -60/-45, N-cap -167/147, C-cap -60/150).
+- Charges and radii: AMBER, from pdb2pqr. Cys- is AMBER's thiolate. AMBER has no tyrosinate, so Tyr- is AMBER's Tyr without its hydroxyl proton, with the remaining charge spread over the ring and oxygen in the pattern of PARSE's tyrosinate (Sitkoff, Sharp & Honig 1994) and the residue at exactly -1.
+- Dielectric: interior 4, water eps_w(T).
+- Born radii: each atom's burial in the structure (the r^-6 volume integral of Grycuk 2003 over the solvent-excluded surface, 1.4 A probe).
+- Rotamers: the energy is averaged, with equal weights, over the side chain's chi1 rotamers (-60, 180, 60) that are clash-free in that state. Other dihedrals are 180, except Arg's guanidinium (0/180) and Tyr's ring (chi2 90). Where no rotamer is clash-free (Asp, His+ and Tyr- at the N-cap), chi2 is varied; Tyr- at the N-cap stays without a clash-free structure.
+- What the table holds: the charged form's energy with the backbone, multiplied in the model by the helix-state ionisation, as the default law does with its point charge.
+- Coverage: per residue, helix length L = 4-40 and position k = 0 (N-cap) .. L + 1 (C-cap).
+- Storage: the table holds `E_in` and `W(kappa)`; the model uses E = E_in + W(kappa)/eps_w(T), helix minus the coil mean, divided by the charge. Salt and temperature therefore enter through kappa and eps_w, and the eps(T) factor of the default law is not applied.
+
+Why: the default law's first-turn field is an empirical 1/d^2 near-end term that salt screens away. Poisson-Boltzmann calculations (APBS) on the same structures show something else.
+- Most of a charged residue's first-turn energy is contact electrostatics with the backbone one turn below (residues k-3 and k-4, about 3 A away, effective dielectric about 20), which is absent at N1-N3.
+- Salt hardly changes it: in APBS, Asp at N1 relative to N6 (helix) is -0.96 kcal/mol at 0.01 M and -0.88 at 2.5 M.
+- The default law gives -0.27 and -0.02; this table gives -0.83 and -0.67.
+- Lys: APBS +0.27 / +0.22, this table +0.29 / +0.21. His+: +0.60 / +0.53 against +0.51 / +0.38.
+- The size depends on the rotamer populations, which equal weights only approximate. With Asp's chi1 at -60 alone, both APBS and GB give about -1.37.
+
+Against APBS (pdie 4; Lys, Arg, His+, Asp, Glu at helix lengths 10, 16 and 28; 0.01 and 2.5 M):
+- Overall RMS 0.10 kcal/mol, against 0.32 for the default law.
+- First and last turns within about 0.1-0.15.
+- Known shortfalls: residues 5-7 positions toward the N-terminus get about 60 % of the APBS interaction, and salt screens the far field more than in APBS (ions are allowed up to the molecular surface). The interior gradient is therefore too weak, most of all at high salt.
+
+Not covered, and kept on the default law times its eps(T) factor: charged residues outside the caps, and Tyr- at the N-cap (no clash-free structure at the N-cap's backbone angles for any chi1 and chi2 tried; those table rows have n_rot = 0). Helices longer than 40 residues take the value of the 40-residue helix at the same distance from the nearer end, up to 20 positions; beyond that, its central value. An acetyl or amide cap token in the cap position is treated as an Ala cap.
+
+Status: not the default. The law contains all of the side chain's electrostatics with its backbone, including the local terms that Table 1's measured propensities already hold (the first-turn cells of Asp and Glu, the capping cells, charged Ncen). Used as is, those energies are counted twice. It is meant for use with those table values transferred to it: each value gains z[potential_munoz - potential_gb] at the conditions it was measured under.
+
 ## pka_values
 The pKa values for N- and C-termini as well as ionizable side chains when incorporated in a peptide. These are reference (base) pKa values: the pKa of each group in an unstructured peptide, before the model's helix- and coil-state electrostatic shifts are applied. Rule: a value measured in an unstructured peptide at the conditions of the helicity data (0-5 C, low salt) is used where one exists, otherwise the value measured in unstructured alanine pentapeptides.
 
