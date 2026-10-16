@@ -16,7 +16,8 @@
       "note": "Superseded at cycle 51. Both the old temperature and the old ionic strength disagreed with the source; see reasoning/nodes/N040.md for the measured effect."
     },
     "sequence_corrections": {
-      "figure_3b": "Residue 14 is Asp, not Ala as printed in the Figure 3B label (KDESYEELLRKTKAELLHW...). The titin peptide (residues 1977-2014) is from Musco, Tziatzios, Schuck & Pastore (1995), Biochemistry 34, 553-561, doi:10.1021/bi00002a021, which prints Asp14 both in the titin sequence of its Figure 1a and in the NMR assignment table (Table 2) of the synthesized peptide. Paper III does not describe this panel as a mutant (its panel C is). Changed from Ala14 to Asp14 on the owner's instruction."
+      "figure_3b": "Residue 14 is Asp, not Ala as printed in the Figure 3B label (KDESYEELLRKTKAELLHW...). The titin peptide (residues 1977-2014) is from Musco, Tziatzios, Schuck & Pastore (1995), Biochemistry 34, 553-561, doi:10.1021/bi00002a021, which prints Asp14 both in the titin sequence of its Figure 1a and in the NMR assignment table (Table 2) of the synthesized peptide. Paper III does not describe this panel as a mutant (its panel C is). Changed from Ala14 to Asp14 on the owner's instruction.",
+      "figure_3e": "Lys17 restored (ETGTKAELLAKYEATH -> ETGTKAELLAKYEATHK) from the primary source, Bradley et al. 1990 Fig. 1 and its NMR assignment table; pH 7.0 -> 2.0 from Bradley Fig. 4 (see per_panel.figure_3e). Changed on the owner's instruction (2026-10-16)."
     },
     "per_panel": {
       "scholtz1991_n14": {
@@ -86,7 +87,8 @@
         "conditions_verified_against_source": true,
         "conditions_source": "Fig. 3 legend: \"(i+4)E,K in 0.01 M NaCl (pH 7.3); (i+3)K,E in 0.01 M NaCl (pH 7.0)\"; Methods: \"1 mM sodium citrate/1 mM sodium borate/1 mM sodium phosphate buffer of the indicated NaCl concentration\"; Table 1 (pH 7.0, 1 C).",
         "ionic_strength_derivation": "DERIVED: 0.01 M NaCl + the CD buffer at the panel pH (ionic_strength.py).",
-        "values_note": "Digitised from the rendered figure (reasoning/evidence/scripts/n114_digitise_marqusee1987.py; overlay reasoning/evidence/data/digitise/marqusee1987_fig3a_overlay.png); the 1 C value from Table 1. -[theta]222 x 1e-3: 1 C 29.00, 7.9 C 25.43, 10.2 C 24.71, 11.8 C 23.85, 13.1 C 22.87, 15.3 C 21.92, 17.4 C 21.08, 18.7 C 20.19, 21 C 19.32, 25.4 C 17.09, 29.7 C 15.10, 34.8 C 13.37, 39.1 C 11.94, 44.2 C 10.97, 49.1 C 9.80, 54.6 C 9.14, 58.5 C 8.41, 63 C 7.71, 67.4 C 7.43. Converted with Scholtz et al. 1991 eqs 3-4 (x = 2.5, n = 17 or 16): the paper's own 100 % = 36,000 is a 1 C value and not temperature-dependent."
+        "values_note": "Digitised from the rendered figure (reasoning/evidence/scripts/n114_digitise_marqusee1987.py; overlay reasoning/evidence/data/digitise/marqusee1987_fig3a_overlay.png); the 1 C value from Table 1. -[theta]222 x 1e-3: 1 C 29.00, 7.9 C 25.43, 10.2 C 24.71, 11.8 C 23.85, 13.1 C 22.87, 15.3 C 21.92, 17.4 C 21.08, 18.7 C 20.19, 21 C 19.32, 25.4 C 17.09, 29.7 C 15.10, 34.8 C 13.37, 39.1 C 11.94, 44.2 C 10.97, 49.1 C 9.80, 54.6 C 9.14, 58.5 C 8.41, 63 C 7.71, 67.4 C 7.43. Converted with Scholtz et al. 1991 eqs 3-4 (x = 2.5, n = 17 or 16): the paper's own 100 % = 36,000 is a 1 C value and not temperature-dependent.",
+        "concentration_caveat": "Possible systematic offset (flagged 2026-10-16, N173): Marqusee, Robbins & Baldwin 1989 (PNAS 86, 5286) say the ninhydrin-based concentrations of their earlier work were 10-20% low, so 'values from our previous studies are probably too high' (-[theta]222 10-20% too large); this panel's source is Marqusee & Baldwin 1987. Not corrected. See data/peptides/manifest.json 1987_marqusee_pnas84_table1.concentration_caveat."
       },
       "marqusee1987_i3KE": {
         "source": "Marqusee, S. & Baldwin, R. L. (1987). Helix stabilization by Glu-...Lys+ salt bridges in short peptides of de novo design. Proc. Natl. Acad. Sci. USA 84, 8898-8902. Figure 3a and Table 1.",
@@ -95,7 +97,17 @@
         "conditions_verified_against_source": true,
         "conditions_source": "Fig. 3 legend: \"(i+4)E,K in 0.01 M NaCl (pH 7.3); (i+3)K,E in 0.01 M NaCl (pH 7.0)\"; Methods: \"1 mM sodium citrate/1 mM sodium borate/1 mM sodium phosphate buffer of the indicated NaCl concentration\"; Table 1 (pH 7.0, 1 C).",
         "ionic_strength_derivation": "DERIVED: 0.01 M NaCl + the CD buffer at the panel pH (ionic_strength.py).",
-        "values_note": "Digitised from the rendered figure (reasoning/evidence/scripts/n114_digitise_marqusee1987.py; overlay reasoning/evidence/data/digitise/marqusee1987_fig3a_overlay.png); the 1 C value from Table 1. -[theta]222 x 1e-3: 1 C 8.50, 6.3 C 6.80, 9.2 C 6.24, 12.4 C 5.48, 16.9 C 4.79, 25.8 C 3.80, 35.1 C 3.38, 44.1 C 3.23, 57.1 C 3.22. Converted with Scholtz et al. 1991 eqs 3-4 (x = 2.5, n = 17 or 16): the paper's own 100 % = 36,000 is a 1 C value and not temperature-dependent."
+        "values_note": "Digitised from the rendered figure (reasoning/evidence/scripts/n114_digitise_marqusee1987.py; overlay reasoning/evidence/data/digitise/marqusee1987_fig3a_overlay.png); the 1 C value from Table 1. -[theta]222 x 1e-3: 1 C 8.50, 6.3 C 6.80, 9.2 C 6.24, 12.4 C 5.48, 16.9 C 4.79, 25.8 C 3.80, 35.1 C 3.38, 44.1 C 3.23, 57.1 C 3.22. Converted with Scholtz et al. 1991 eqs 3-4 (x = 2.5, n = 17 or 16): the paper's own 100 % = 36,000 is a 1 C value and not temperature-dependent.",
+        "concentration_caveat": "Possible systematic offset (flagged 2026-10-16, N173): Marqusee, Robbins & Baldwin 1989 (PNAS 86, 5286) say the ninhydrin-based concentrations of their earlier work were 10-20% low, so 'values from our previous studies are probably too high' (-[theta]222 10-20% too large); this panel's source is Marqusee & Baldwin 1987. Not corrected. See data/peptides/manifest.json 1987_marqusee_pnas84_table1.concentration_caveat."
+      },
+      "figure_3e": {
+        "source": "Bradley, E.K., Thomason, J.F., Cohen, F.E., Kosen, P.A. & Kuntz, I.D. (1990). Studies of synthetic helical peptides using circular dichroism and nuclear magnetic resonance. J. Mol. Biol. 215, 607-622. Figure 4 (the measurement Munoz & Serrano 1995 replot in their Fig. 3 panel F).",
+        "pH": 2.0,
+        "ionic_strength_M": 0.1005,
+        "conditions_verified_against_source": true,
+        "conditions_source": "Bradley et al. 1990 Fig. 4 legend: \"c.d. spectra of N,C-blocked (i+4) peptide at different temperatures. Spectra were taken at pH 2.0 in buffer solution of 1 mM-sodium citrate, 1 mM-sodium borate, 1 mM-sodium phosphate and 0.1 M-NaCl. Temperature (C) is indicated near each spectrum.\" Fig. 1: the (i+4) peptide is ETGTKAELLAKYEATHK (17 residues; the NMR assignment table lists Glu1 ... His16, Lys17); N,C-blocked = acetylated amino terminus and amidated carboxyl terminus.",
+        "ionic_strength_derivation": "DERIVED: 0.1 M NaCl + 1 mM each citrate/borate/phosphate at pH 2.0 (reasoning/evidence/scripts/ionic_strength.py); the HCl that set pH 2 is added by the scorer (titrated_ionic_strength).",
+        "correction_note": "Corrected 2026-10-16 (N173, owner's approval): previously coded as ETGTKAELLAKYEATH (16 residues, no Lys17) at pH 7.0 and the file-level 0.005 M. Munoz & Serrano 1995 do not state this panel's pH; the primary source records the melt at pH 2.0. The helicities are unchanged (as digitised from Munoz & Serrano's panel)."
       }
     },
     "removed_panels": {
@@ -261,7 +273,7 @@
     "ccap": null
   },
   "figure_3e": {
-    "peptide": "ETGTKAELLAKYEATH",
+    "peptide": "ETGTKAELLAKYEATHK",
     "temperatures": [
       5.01,
       15.06,
@@ -278,7 +290,7 @@
       11.82,
       9.88
     ],
-    "pH": 7.0,
+    "pH": 2.0,
     "ncap": "Ac",
     "ccap": "Am"
   },
