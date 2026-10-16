@@ -1,0 +1,53 @@
+peptide_id	sequence	ncap	ccap	n_res	pH	T_C	ionic_strength_M	quantity	value	error	unit	source_table	flags
+3K(I)	AAAAKAAAAKAAAAKA	Ac	Am	16	7.0	1.0	0.0172	minus_theta222	22900.0		deg cm2 dmol-1	Table 1	NaCl 0.01 M;Ala-1/Tyr-1 set not stated
+3K(I)	AAAAKAAAAKAAAAKA	Ac	Am	16	7.0	1.0	1.0072	minus_theta222	25100.0		deg cm2 dmol-1	Table 1	NaCl 1 M;Ala-1/Tyr-1 set not stated
+3K(II)	AKAAAAKAAAAKAAAA	Ac	Am	16	7.0	1.0	0.0172	minus_theta222	21300.0		deg cm2 dmol-1	Table 1	NaCl 0.01 M;Ala-1/Tyr-1 set not stated
+3K(II)	AKAAAAKAAAAKAAAA	Ac	Am	16	7.0	1.0	1.0072	minus_theta222	24800.0		deg cm2 dmol-1	Table 1	NaCl 1 M;Ala-1/Tyr-1 set not stated
+4K	AKAAKAAAAKAAAAKA	Ac	Am	16	7.0	1.0	0.0172	minus_theta222	17300.0		deg cm2 dmol-1	Table 1	NaCl 0.01 M;Ala-1/Tyr-1 set not stated
+4K	AKAAKAAAAKAAAAKA	Ac	Am	16	7.0	1.0	1.0072	minus_theta222	22700.0		deg cm2 dmol-1	Table 1	NaCl 1 M;Ala-1/Tyr-1 set not stated
+6K(I)	AKAAKAKAAKAKAAKA	Ac	Am	16	7.0	1.0	0.0172	minus_theta222	6100.0		deg cm2 dmol-1	Table 1	NaCl 0.01 M;Ala-1/Tyr-1 set not stated
+6K(I)	AKAAKAKAAKAKAAKA	Ac	Am	16	7.0	1.0	1.0072	minus_theta222	13600.0		deg cm2 dmol-1	Table 1	NaCl 1 M;Ala-1/Tyr-1 set not stated
+6K(II)	AKAAAKKAAAKKAAAKA	Ac	Am	17	7.0	1.0	0.0172	minus_theta222	8300.0		deg cm2 dmol-1	Table 1	NaCl 0.01 M;Ala-1/Tyr-1 set not stated
+6K(II)	AKAAAKKAAAKKAAAKA	Ac	Am	17	7.0	1.0	1.0072	minus_theta222	18000.0		deg cm2 dmol-1	Table 1	NaCl 1 M;Ala-1/Tyr-1 set not stated
+3E	AEAAAAEAAAAEAAAA	Ac	Am	16	7.0	1.0	0.0172	minus_theta222	22600.0		deg cm2 dmol-1	Table 1	NaCl 0.01 M;Ala-1/Tyr-1 set not stated
+3E	AEAAAAEAAAAEAAAA	Ac	Am	16	7.0	1.0	1.0072	minus_theta222	21000.0		deg cm2 dmol-1	Table 1	NaCl 1 M;Ala-1/Tyr-1 set not stated
+3K(I)	AAAAKAAAAKAAAAKA	Ac	Am	16	7.0	1.0	0.0172	minus_theta222	22975		deg cm2 dmol-1	Fig. 2b	digitised;NaCl 0.01 M;Ala-1/Tyr-1 set not stated
+3K(I)	AAAAKAAAAKAAAAKA	Ac	Am	16	7.0	3.5	0.0172	minus_theta222	21808		deg cm2 dmol-1	Fig. 2b	digitised;NaCl 0.01 M;Ala-1/Tyr-1 set not stated
+3K(I)	AAAAKAAAAKAAAAKA	Ac	Am	16	7.0	7.0	0.0172	minus_theta222	20299		deg cm2 dmol-1	Fig. 2b	digitised;NaCl 0.01 M;Ala-1/Tyr-1 set not stated
+3K(I)	AAAAKAAAAKAAAAKA	Ac	Am	16	7.0	10.0	0.0172	minus_theta222	18582		deg cm2 dmol-1	Fig. 2b	digitised;NaCl 0.01 M;Ala-1/Tyr-1 set not stated
+3K(I)	AAAAKAAAAKAAAAKA	Ac	Am	16	7.0	14.5	0.0172	minus_theta222	16072		deg cm2 dmol-1	Fig. 2b	digitised;NaCl 0.01 M;Ala-1/Tyr-1 set not stated
+3K(I)	AAAAKAAAAKAAAAKA	Ac	Am	16	7.0	20.5	0.0172	minus_theta222	13292		deg cm2 dmol-1	Fig. 2b	digitised;NaCl 0.01 M;Ala-1/Tyr-1 set not stated
+3K(I)	AAAAKAAAAKAAAAKA	Ac	Am	16	7.0	26.5	0.0172	minus_theta222	10931		deg cm2 dmol-1	Fig. 2b	digitised;NaCl 0.01 M;Ala-1/Tyr-1 set not stated
+3K(I)	AAAAKAAAAKAAAAKA	Ac	Am	16	7.0	33.0	0.0172	minus_theta222	8564		deg cm2 dmol-1	Fig. 2b	digitised;NaCl 0.01 M;Ala-1/Tyr-1 set not stated
+3K(I)	AAAAKAAAAKAAAAKA	Ac	Am	16	7.0	39.5	0.0172	minus_theta222	7072		deg cm2 dmol-1	Fig. 2b	digitised;NaCl 0.01 M;Ala-1/Tyr-1 set not stated
+3K(I)	AAAAKAAAAKAAAAKA	Ac	Am	16	7.0	47.0	0.0172	minus_theta222	5784		deg cm2 dmol-1	Fig. 2b	digitised;NaCl 0.01 M;Ala-1/Tyr-1 set not stated
+3K(I)	AAAAKAAAAKAAAAKA	Ac	Am	16	7.0	56.0	0.0172	minus_theta222	5036		deg cm2 dmol-1	Fig. 2b	digitised;NaCl 0.01 M;Ala-1/Tyr-1 set not stated
+3K(I)	AAAAKAAAAKAAAAKA	Ac	Am	16	7.0	63.0	0.0172	minus_theta222	4711		deg cm2 dmol-1	Fig. 2b	digitised;NaCl 0.01 M;Ala-1/Tyr-1 set not stated
+3K(I)	AAAAKAAAAKAAAAKA	Ac	Am	16	3.0	1.0	0.0113	minus_theta222	23449		deg cm2 dmol-1	Fig. 4	digitised;NaCl 0.01 M;Ala-1 set (Methods: pH dependence)
+3K(I)	AAAAKAAAAKAAAAKA	Ac	Am	16	5.6	1.0	0.0142	minus_theta222	23335		deg cm2 dmol-1	Fig. 4	digitised;NaCl 0.01 M;Ala-1 set (Methods: pH dependence)
+3K(I)	AAAAKAAAAKAAAAKA	Ac	Am	16	7.55	1.0	0.0182	minus_theta222	22988		deg cm2 dmol-1	Fig. 4	digitised;NaCl 0.01 M;Ala-1 set (Methods: pH dependence)
+3K(I)	AAAAKAAAAKAAAAKA	Ac	Am	16	7.95	1.0	0.0187	minus_theta222	23233		deg cm2 dmol-1	Fig. 4	digitised;NaCl 0.01 M;Ala-1 set (Methods: pH dependence)
+3K(I)	AAAAKAAAAKAAAAKA	Ac	Am	16	9.0	1.0	0.0193	minus_theta222	23248		deg cm2 dmol-1	Fig. 4	digitised;NaCl 0.01 M;Ala-1 set (Methods: pH dependence)
+3K(I)	AAAAKAAAAKAAAAKA	Ac	Am	16	9.8	1.0	0.0198	minus_theta222	23399		deg cm2 dmol-1	Fig. 4	digitised;NaCl 0.01 M;Ala-1 set (Methods: pH dependence)
+3K(I)	AAAAKAAAAKAAAAKA	Ac	Am	16	10.35	1.0	0.02	minus_theta222	24317		deg cm2 dmol-1	Fig. 4	digitised;NaCl 0.01 M;Ala-1 set (Methods: pH dependence)
+3K(I)	AAAAKAAAAKAAAAKA	Ac	Am	16	11.55	1.0	0.0204	minus_theta222	26978		deg cm2 dmol-1	Fig. 4	digitised;NaCl 0.01 M;Ala-1 set (Methods: pH dependence)
+4K	AKAAKAAAAKAAAAKA	Ac	Am	16	4.05	1.0	0.0122	minus_theta222	16039		deg cm2 dmol-1	Fig. 4	digitised;NaCl 0.01 M;Ala-1 set (Methods: pH dependence)
+4K	AKAAKAAAAKAAAAKA	Ac	Am	16	5.9	1.0	0.0147	minus_theta222	17021		deg cm2 dmol-1	Fig. 4	digitised;NaCl 0.01 M;Ala-1 set (Methods: pH dependence)
+4K	AKAAKAAAAKAAAAKA	Ac	Am	16	6.95	1.0	0.0171	minus_theta222	17564		deg cm2 dmol-1	Fig. 4	digitised;NaCl 0.01 M;Ala-1 set (Methods: pH dependence)
+4K	AKAAKAAAAKAAAAKA	Ac	Am	16	8.2	1.0	0.0189	minus_theta222	17138		deg cm2 dmol-1	Fig. 4	digitised;NaCl 0.01 M;Ala-1 set (Methods: pH dependence)
+4K	AKAAKAAAAKAAAAKA	Ac	Am	16	8.85	1.0	0.0192	minus_theta222	17252		deg cm2 dmol-1	Fig. 4	digitised;NaCl 0.01 M;Ala-1 set (Methods: pH dependence)
+4K	AKAAKAAAAKAAAAKA	Ac	Am	16	9.35	1.0	0.0195	minus_theta222	17401		deg cm2 dmol-1	Fig. 4	digitised;NaCl 0.01 M;Ala-1 set (Methods: pH dependence)
+4K	AKAAKAAAAKAAAAKA	Ac	Am	16	9.8	1.0	0.0198	minus_theta222	17832		deg cm2 dmol-1	Fig. 4	digitised;NaCl 0.01 M;Ala-1 set (Methods: pH dependence)
+4K	AKAAKAAAAKAAAAKA	Ac	Am	16	10.15	1.0	0.0199	minus_theta222	18494		deg cm2 dmol-1	Fig. 4	digitised;NaCl 0.01 M;Ala-1 set (Methods: pH dependence)
+4K	AKAAKAAAAKAAAAKA	Ac	Am	16	10.65	1.0	0.02	minus_theta222	21881		deg cm2 dmol-1	Fig. 4	digitised;NaCl 0.01 M;Ala-1 set (Methods: pH dependence)
+4K	AKAAKAAAAKAAAAKA	Ac	Am	16	11.25	1.0	0.0202	minus_theta222	24567		deg cm2 dmol-1	Fig. 4	digitised;NaCl 0.01 M;Ala-1 set (Methods: pH dependence)
+4K	AKAAKAAAAKAAAAKA	Ac	Am	16	11.7	1.0	0.0205	minus_theta222	24632		deg cm2 dmol-1	Fig. 4	digitised;NaCl 0.01 M;Ala-1 set (Methods: pH dependence)
+6K(I)	AKAAKAKAAKAKAAKA	Ac	Am	16	3.05	1.0	0.0114	minus_theta222	5103		deg cm2 dmol-1	Fig. 4	digitised;NaCl 0.01 M;Ala-1 set (Methods: pH dependence)
+6K(I)	AKAAKAKAAKAKAAKA	Ac	Am	16	6.15	1.0	0.0152	minus_theta222	6164		deg cm2 dmol-1	Fig. 4	digitised;NaCl 0.01 M;Ala-1 set (Methods: pH dependence)
+6K(I)	AKAAKAKAAKAKAAKA	Ac	Am	16	7.4	1.0	0.018	minus_theta222	6440		deg cm2 dmol-1	Fig. 4	digitised;NaCl 0.01 M;Ala-1 set (Methods: pH dependence)
+6K(I)	AKAAKAKAAKAKAAKA	Ac	Am	16	8.5	1.0	0.019	minus_theta222	6943		deg cm2 dmol-1	Fig. 4	digitised;NaCl 0.01 M;Ala-1 set (Methods: pH dependence)
+6K(I)	AKAAKAKAAKAKAAKA	Ac	Am	16	9.05	1.0	0.0194	minus_theta222	6833		deg cm2 dmol-1	Fig. 4	digitised;NaCl 0.01 M;Ala-1 set (Methods: pH dependence)
+6K(I)	AKAAKAKAAKAKAAKA	Ac	Am	16	10.55	1.0	0.02	minus_theta222	14008		deg cm2 dmol-1	Fig. 4	digitised;NaCl 0.01 M;Ala-1 set (Methods: pH dependence)
+6K(I)	AKAAKAKAAKAKAAKA	Ac	Am	16	11.0	1.0	0.0201	minus_theta222	15989		deg cm2 dmol-1	Fig. 4	digitised;NaCl 0.01 M;Ala-1 set (Methods: pH dependence)
+6K(I)	AKAAKAKAAKAKAAKA	Ac	Am	16	11.45	1.0	0.0203	minus_theta222	17442		deg cm2 dmol-1	Fig. 4	digitised;NaCl 0.01 M;Ala-1 set (Methods: pH dependence)
+6K(I)	AKAAKAKAAKAKAAKA	Ac	Am	16	11.85	1.0	0.0207	minus_theta222	17709		deg cm2 dmol-1	Fig. 4	digitised;NaCl 0.01 M;Ala-1 set (Methods: pH dependence)

@@ -1,0 +1,7 @@
+peptide_id	sequence	ncap	ccap	n_res	pH	T_C	ionic_strength_M	quantity	value	error	unit	source_table	flags
+LLL	YSEEEEKKKKLLLEEEEKKKK	Sc	Am	21	7.0	4.0	0.01	minus_theta222	24100.0	700.0	deg cm2 dmol-1	Table I	KF 0.01 M;aromatic_cd=Y;reprint=1990_lyu_science250:ELK
+LLL	YSEEEEKKKKLLLEEEEKKKK	Sc	Am	21	7.0	4.0	0.01	helix_percent	75.0	3.0	%	Table I	KF 0.01 M;aromatic_cd=Y;reprint=1990_lyu_science250:ELK
+LGL	YSEEEEKKKKLGLEEEEKKKK	Sc	Am	21	7.0	4.0	0.01	minus_theta222	18500.0	550.0	deg cm2 dmol-1	Table I	KF 0.01 M;aromatic_cd=Y
+LGL	YSEEEEKKKKLGLEEEEKKKK	Sc	Am	21	7.0	4.0	0.01	helix_percent	58.0	3.0	%	Table I	KF 0.01 M;aromatic_cd=Y
+GGG	YSEEEEKKKKGGGEEEEKKKK	Sc	Am	21	7.0	4.0	0.01	minus_theta222	8100.0	450.0	deg cm2 dmol-1	Table I	KF 0.01 M;aromatic_cd=Y;reprint=1990_lyu_science250:EGK;misprint_corrected: printed 18100, f 25 % and Lyu 1990 EGK give 8100
+GGG	YSEEEEKKKKGGGEEEEKKKK	Sc	Am	21	7.0	4.0	0.01	helix_percent	25.0	2.0	%	Table I	KF 0.01 M;aromatic_cd=Y;reprint=1990_lyu_science250:EGK;misprint_corrected: printed 18100, f 25 % and Lyu 1990 EGK give 8100

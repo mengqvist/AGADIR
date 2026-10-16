@@ -56,6 +56,14 @@ are stored as ordinary rows alongside.
 The C-peptide papers state a fourth helicity convention (0 % = +3,000, 100 % = -27,000
 deg cm2 dmol-1 at 3 °C); as with the others it is recorded in the manifest, not applied.
 
+## Per-residue NMR data (`nmr/`)
+
+`nmr/` holds per-residue NMR measurements: one row per (peptide, residue), with columns `position` (the
+residue number in that peptide's own chain) and `residue` added after `n_res`. `quantity` names what is stored
+(for example `CaH_shift_ppm`). These are not helicities. They live in a subdirectory because the scripts that read
+`data/peptides/*.tsv` treat every row as one measurement condition and need a pH, and the NMR papers often do
+not state one. The manifest key is the path relative to this directory (`nmr/<key>`).
+
 ## Ionic strength and the titrant
 
 Papers state their salt and buffer, rarely the HCl or NaOH that brought each sample to its pH. That titrant raises the
