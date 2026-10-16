@@ -1,0 +1,55 @@
+peptide_id	sequence	ncap	ccap	n_res	pH	T_C	ionic_strength_M	quantity	value	error	unit	source_table	flags
+(E2K2)6	GEEKKEEKKEEKKEEKKEEKKEEKKGYY	Ac	Am	28	7.4	5.0	0.162	minus_theta222	-813.0		deg cm2 dmol-1	Table 1	PBS;aromatic_cd=YY
+(E2K2)6	GEEKKEEKKEEKKEEKKEEKKEEKKGYY	Ac	Am	28	7.4	5.0	0.162	helix_percent	-1.0		%	Table 1	PBS;aromatic_cd=YY
+(EK)12	GEKEKEKEKEKEKEKEKEKEKEKEKGW	Ac	Am	27	7.4	5.0	0.162	minus_theta222	8136.0		deg cm2 dmol-1	Table 1	PBS;aromatic_cd=W
+(EK)12	GEKEKEKEKEKEKEKEKEKEKEKEKGW	Ac	Am	27	7.4	5.0	0.162	helix_percent	22.0		%	Table 1	PBS;aromatic_cd=W
+(KE)12	GKEKEKEKEKEKEKEKEKEKEKEKEGW	Ac	Am	27	7.4	5.0	0.162	minus_theta222	4180.0		deg cm2 dmol-1	Table 1	PBS;aromatic_cd=W
+(KE)12	GKEKEKEKEKEKEKEKEKEKEKEKEGW	Ac	Am	27	7.4	5.0	0.162	helix_percent	12.0		%	Table 1	PBS;aromatic_cd=W
+(E4K4)4	GEEEEKKKKEEEEKKKKEEEEKKKKEEEEKKKKGW	Ac	Am	35	7.4	5.0	0.162	minus_theta222	36454.0		deg cm2 dmol-1	Table 1	PBS;aromatic_cd=W
+(E4K4)4	GEEEEKKKKEEEEKKKKEEEEKKKKEEEEKKKKGW	Ac	Am	35	7.4	5.0	0.162	helix_percent	94.0		%	Table 1	PBS;aromatic_cd=W
+(E4K4)3	GEEEEKKKKEEEEKKKKEEEEKKKKGW	Ac	Am	27	7.4	5.0	0.162	minus_theta222	27885.0		deg cm2 dmol-1	Table 1	PBS;aromatic_cd=W
+(E4K4)3	GEEEEKKKKEEEEKKKKEEEEKKKKGW	Ac	Am	27	7.4	5.0	0.162	helix_percent	74.0		%	Table 1	PBS;aromatic_cd=W
+(E4K4)2	GEEEEKKKKEEEEKKKKGW	Ac	Am	19	7.4	5.0	0.162	minus_theta222	23374.0		deg cm2 dmol-1	Table 1	PBS;aromatic_cd=W
+(E4K4)2	GEEEEKKKKEEEEKKKKGW	Ac	Am	19	7.4	5.0	0.162	helix_percent	65.0		%	Table 1	PBS;aromatic_cd=W
+(E4K4)1	GEEEEKKKKGW	Ac	Am	11	7.4	5.0	0.162	minus_theta222	4219.0		deg cm2 dmol-1	Table 1	PBS;aromatic_cd=W
+(E4K4)1	GEEEEKKKKGW	Ac	Am	11	7.4	5.0	0.162	helix_percent	14.0		%	Table 1	PBS;aromatic_cd=W
+(K4E4)4	GKKKKEEEEKKKKEEEEKKKKEEEEKKKKEEEEGW	Ac	Am	35	7.4	5.0	0.162	minus_theta222	35479.0		deg cm2 dmol-1	Table 1	PBS;aromatic_cd=W;TM_C=28
+(K4E4)4	GKKKKEEEEKKKKEEEEKKKKEEEEKKKKEEEEGW	Ac	Am	35	7.4	5.0	0.162	helix_percent	91.0		%	Table 1	PBS;aromatic_cd=W;TM_C=28
+(K4E4)3	GKKKKEEEEKKKKEEEEKKKKEEEEGW	Ac	Am	27	7.4	5.0	0.162	minus_theta222	23493.0		deg cm2 dmol-1	Table 1	PBS;aromatic_cd=W
+(K4E4)3	GKKKKEEEEKKKKEEEEKKKKEEEEGW	Ac	Am	27	7.4	5.0	0.162	helix_percent	62.0		%	Table 1	PBS;aromatic_cd=W
+(K4E4)2	GKKKKEEEEKKKKEEEEGW	Ac	Am	19	7.4	5.0	0.162	minus_theta222	7666.0		deg cm2 dmol-1	Table 1	PBS;aromatic_cd=W
+(K4E4)2	GKKKKEEEEKKKKEEEEGW	Ac	Am	19	7.4	5.0	0.162	helix_percent	22.0		%	Table 1	PBS;aromatic_cd=W
+(K4E4)1	GKKKKEEEEGW	Ac	Am	11	7.4	5.0	0.162	minus_theta222	-816.0		deg cm2 dmol-1	Table 1	PBS;aromatic_cd=W
+(K4E4)1	GKKKKEEEEGW	Ac	Am	11	7.4	5.0	0.162	helix_percent	-1.0		%	Table 1	PBS;aromatic_cd=W
+A4(E4K4)3A4	GAAAAEEEEKKKKEEEEKKKKEEEEKKKKAAAAGW	Ac	Am	35	7.4	5.0	0.162	minus_theta222	33934.0		deg cm2 dmol-1	Table 1	PBS;aromatic_cd=W
+A4(E4K4)3A4	GAAAAEEEEKKKKEEEEKKKKEEEEKKKKAAAAGW	Ac	Am	35	7.4	5.0	0.162	helix_percent	87.0		%	Table 1	PBS;aromatic_cd=W
+A4(E4K4)2A4	GAAAAEEEEKKKKEEEEKKKKAAAAGW	Ac	Am	27	7.4	5.0	0.162	minus_theta222	27313.0		deg cm2 dmol-1	Table 1	PBS;aromatic_cd=W
+A4(E4K4)2A4	GAAAAEEEEKKKKEEEEKKKKAAAAGW	Ac	Am	27	7.4	5.0	0.162	helix_percent	72.0		%	Table 1	PBS;aromatic_cd=W
+A4(E4K4)1A4	GAAAAEEEEKKKKAAAAGW	Ac	Am	19	7.4	5.0	0.162	minus_theta222	18885.0		deg cm2 dmol-1	Table 1	PBS;aromatic_cd=W
+A4(E4K4)1A4	GAAAAEEEEKKKKAAAAGW	Ac	Am	19	7.4	5.0	0.162	helix_percent	53.0		%	Table 1	PBS;aromatic_cd=W
+A4(K4E4)3A4	GAAAAKKKKEEEEKKKKEEEEKKKKEEEEAAAAGW	Ac	Am	35	7.4	5.0	0.162	minus_theta222	38166.0		deg cm2 dmol-1	Table 1	PBS;aromatic_cd=W;TM_C=33
+A4(K4E4)3A4	GAAAAKKKKEEEEKKKKEEEEKKKKEEEEAAAAGW	Ac	Am	35	7.4	5.0	0.162	helix_percent	98.0		%	Table 1	PBS;aromatic_cd=W;TM_C=33
+A4(K4E4)2A4	GAAAAKKKKEEEEKKKKEEEEAAAAGW	Ac	Am	27	7.4	5.0	0.162	minus_theta222	29687.0		deg cm2 dmol-1	Table 1	PBS;aromatic_cd=W;TM_C=21
+A4(K4E4)2A4	GAAAAKKKKEEEEKKKKEEEEAAAAGW	Ac	Am	27	7.4	5.0	0.162	helix_percent	78.0		%	Table 1	PBS;aromatic_cd=W;TM_C=21
+A4(K4E4)1A4	GAAAAKKKKEEEEAAAAGW	Ac	Am	19	7.4	5.0	0.162	minus_theta222	21847.0		deg cm2 dmol-1	Table 1	PBS;aromatic_cd=W
+A4(K4E4)1A4	GAAAAKKKKEEEEAAAAGW	Ac	Am	19	7.4	5.0	0.162	helix_percent	61.0		%	Table 1	PBS;aromatic_cd=W
+A4(E4K4)3	GAAAAEEEEKKKKEEEEKKKKEEEEKKKKGW	Ac	Am	31	7.4	5.0	0.162	minus_theta222	33288.0		deg cm2 dmol-1	Table 1	PBS;aromatic_cd=W
+A4(E4K4)3	GAAAAEEEEKKKKEEEEKKKKEEEEKKKKGW	Ac	Am	31	7.4	5.0	0.162	helix_percent	87.0		%	Table 1	PBS;aromatic_cd=W
+(E4K4)3A4	GEEEEKKKKEEEEKKKKEEEEKKKKAAAAGW	Ac	Am	31	7.4	5.0	0.162	minus_theta222	32668.0		deg cm2 dmol-1	Table 1	PBS;aromatic_cd=W
+(E4K4)3A4	GEEEEKKKKEEEEKKKKEEEEKKKKAAAAGW	Ac	Am	31	7.4	5.0	0.162	helix_percent	85.0		%	Table 1	PBS;aromatic_cd=W
+A4(K4E4)3	GAAAAKKKKEEEEKKKKEEEEKKKKEEEEGW	Ac	Am	31	7.4	5.0	0.162	minus_theta222	35177.0		deg cm2 dmol-1	Table 1	PBS;aromatic_cd=W;TM_C=25
+A4(K4E4)3	GAAAAKKKKEEEEKKKKEEEEKKKKEEEEGW	Ac	Am	31	7.4	5.0	0.162	helix_percent	91.0		%	Table 1	PBS;aromatic_cd=W;TM_C=25
+(K4E4)3A4	GKKKKEEEEKKKKEEEEKKKKEEEEAAAAGW	Ac	Am	31	7.4	5.0	0.162	minus_theta222	32796.0		deg cm2 dmol-1	Table 1	PBS;aromatic_cd=W;TM_C=22
+(K4E4)3A4	GKKKKEEEEKKKKEEEEKKKKEEEEAAAAGW	Ac	Am	31	7.4	5.0	0.162	helix_percent	85.0		%	Table 1	PBS;aromatic_cd=W;TM_C=22
+A4(E4K4)1A4(E4K4)1A4	GAAAAEEEEKKKKAAAAEEEEKKKKAAAAGW	Ac	Am	31	7.4	5.0	0.162	minus_theta222	31779.0		deg cm2 dmol-1	Table 1	PBS;aromatic_cd=W;TM_C=24
+A4(E4K4)1A4(E4K4)1A4	GAAAAEEEEKKKKAAAAEEEEKKKKAAAAGW	Ac	Am	31	7.4	5.0	0.162	helix_percent	83.0		%	Table 1	PBS;aromatic_cd=W;TM_C=24
+A4(K4E4)1A4(K4E4)1A4	GAAAAKKKKEEEEAAAAKKKKEEEEAAAAGW	Ac	Am	31	7.4	5.0	0.162	minus_theta222	37155.0		deg cm2 dmol-1	Table 1	PBS;aromatic_cd=W;TM_C=29
+A4(K4E4)1A4(K4E4)1A4	GAAAAKKKKEEEEAAAAKKKKEEEEAAAAGW	Ac	Am	31	7.4	5.0	0.162	helix_percent	97.0		%	Table 1	PBS;aromatic_cd=W;TM_C=29
+(E3K3)4	GEEEKKKEEEKKKEEEKKKEEEKKKGWW	Ac	Am	28	7.4	5.0	0.162	minus_theta222	25428.0		deg cm2 dmol-1	Table 1	PBS;aromatic_cd=WW
+(E3K3)4	GEEEKKKEEEKKKEEEKKKEEEKKKGWW	Ac	Am	28	7.4	5.0	0.162	helix_percent	67.0		%	Table 1	PBS;aromatic_cd=WW
+(K3E3)4	GKKKEEEKKKEEEKKKEEEKKKEEEGWW	Ac	Am	28	7.4	5.0	0.162	minus_theta222	12229.0		deg cm2 dmol-1	Table 1	PBS;aromatic_cd=WW
+(K3E3)4	GKKKEEEKKKEEEKKKEEEKKKEEEGWW	Ac	Am	28	7.4	5.0	0.162	helix_percent	33.0		%	Table 1	PBS;aromatic_cd=WW
+A4(E3K3)4A4	GAAAAEEEKKKEEEKKKEEEKKKEEEKKKAAAAGWW	Ac	Am	36	7.4	5.0	0.162	minus_theta222	31869.0		deg cm2 dmol-1	Table 1	PBS;aromatic_cd=WW;TM_C=21
+A4(E3K3)4A4	GAAAAEEEKKKEEEKKKEEEKKKEEEKKKAAAAGWW	Ac	Am	36	7.4	5.0	0.162	helix_percent	82.0		%	Table 1	PBS;aromatic_cd=WW;TM_C=21
+A4(K3E3)4A4	GAAAAKKKEEEKKKEEEKKKEEEKKKEEEAAAAGWW	Ac	Am	36	7.4	5.0	0.162	minus_theta222	30287.0		deg cm2 dmol-1	Table 1	PBS;aromatic_cd=WW;TM_C=14
+A4(K3E3)4A4	GAAAAKKKEEEKKKEEEKKKEEEKKKEEEAAAAGWW	Ac	Am	36	7.4	5.0	0.162	helix_percent	78.0		%	Table 1	PBS;aromatic_cd=WW;TM_C=14

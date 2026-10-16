@@ -635,5 +635,27 @@
     "ionic_strength_derivation": "DERIVED: stated NaCl + 1 mM each citrate, phosphate, borate at the row's pH (reasoning/evidence/scripts/ionic_strength.py). The stated NaCl is in each row's flags.",
     "why_it_matters": "A 17-mer with four Lys (positions 2, 7, 12, 17) across 0.05-2.5 M NaCl: the salt response of lone-Lys charges and the macrodipole on an acetyl/amide host.",
     "flags_note": "digitised = read from a figure (see transcription_method); seeded = located by hand; hofmeister = above 3 M NaCl; tyr_titration = pH above 9 with a C-terminal Tyr; aromatic_cd = uncorrected Tyr contribution to [theta]222."
+  },
+  "2015_baker_ncb11_table1": {
+    "citation": "Baker, E.G., Bartlett, G.J., Crump, M.P., Sessions, R.B., Linden, N., Faul, C.F.J. & Woolfson, D.N. (2015). Local and macroscopic electrostatic interactions in single alpha-helices. Nat. Chem. Biol. 11, 221-228. doi:10.1038/nchembio.1739",
+    "source_pdf": "doc/2015_baker_Local-and-macroscopic-electrostatic-interactions-in-single-a-helices.pdf",
+    "source_table": "Table 1 ('Peptide designs'): name, sequence, MRE222, fraction helix (%), T_M",
+    "extractor": "reasoning/evidence/scripts/extract_baker2015.py",
+    "transcription_method": "Born-digital PDF. Text layer (PyMuPDF) parsed cell by cell and compared with an eye transcription of page 3 rendered at 170 dpi; the extractor raises on any disagreement.",
+    "validation": "Three checks in the extractor, each able to fail. (1) The text-layer parse equals the eye transcription, 27 rows. (2) NAME CHECK: every sequence equals the one built from its name (A4 = AAAA, (E4K4)3 = (EEEEKKKK)x3, ...) between the N-terminal Gly and the printed C-terminal tail (GW, GYY or GWW). (3) CONVERSION CHECK: every printed % helix reproduces from the printed MRE222 with the paper's formula and n = number of residues, to +-1 point.",
+    "n_peptides": 27,
+    "n_data_rows": 54,
+    "conditions_verified_against_source": true,
+    "conditions_quote": "Table 1 footnote: '(PBS (137 mM NaCl); pH 7.4; 100 uM peptide concentration.)' and 'Names, sequences and mean residue ellipticities at 222 nm (MRE222) and 5 C, corresponding percent helicities, and midpoints of thermal denaturation curves (TM)'. Online Methods: 'CD spectra and thermal denaturation curves were recorded once for each peptide at 100 uM peptide concentration, pH 7.4 in phosphate buffered saline (PBS), comprising Na2HPO4 (8.2 mM), KH2PO4 (1.8 mM), NaCl (137 mM) and KCl (2.7 mM).' Footnote a: '... the E/K regions in all of the peptides for this study were flanked by glycine residues, and capped with acetyl (Ac) and amide groups (NH2) at their N and C termini, respectively. C-terminal tryptophan (W) or tyrosine (Y) residues were included for concentration determination.'",
+    "temperature_C": 5.0,
+    "pH": 7.4,
+    "ionic_strength_M": 0.162,
+    "ionic_strength_derivation": "DERIVED with reasoning/evidence/scripts/ionic_strength.py: 10 mM phosphate at pH 7.4 (pKa2 7.20; +0.0223 M with its cations) plus NaCl 137 mM and KCl 2.7 mM (+0.1397 M). The pH is set by the buffer's own composition (no titrant; 10^-pH + 10^(pH-14) is 3e-7 M). The peptide itself (100 uM, 24-32 charges) adds about 1 mM and is not included, as elsewhere in this corpus.",
+    "conversion_quote": "'Fraction helix (%) = 100([theta]222 - [theta]coil) / (-42,500(1 - (3/n) - [theta]coil)), where [theta]coil = 640-45T = 415 deg cm2 dmol-1 res-1 at 5 C, and n is the number of peptide bonds including the N-terminal acetyl' (Online Methods).",
+    "conversion_note": "Both MRE222 (stored as minus_theta222 = -MRE222) and fraction helix are stored as printed. The printed percentages reproduce from MRE222 with theta_H = -42,500(1 - 3/n), theta_coil = 415 and n = number of residues (the bracket in the printed formula is misplaced; the extractor's check uses the reading that reproduces every row). Values of -1 % are printed for (E2K2)6 and (K4E4)1, whose MRE222 is positive.",
+    "tm_note": "T_M is in the flags (TM_C=...) where printed: 'TM values could only be calculated for peptides that exhibited sigmoidal denaturation curves' and 'The midpoints of thermal transitions (TM) were taken as the maximum of the first derivative of the thermal denaturation curves' (Online Methods). It is not a helicity and is not a two-state midpoint. The melts themselves (Supplementary Fig. 29) are not in doc/.",
+    "error_note": "No errors printed; each spectrum was recorded once.",
+    "flags_note": "aromatic_cd = the C-terminal W, WW or YY included for concentration; they may perturb the 222 nm signal (as warned for W/Y in the Doig papers). PBS = the buffer above.",
+    "design_note": "Glu4/Lys4 (and Glu3/Lys3) blocks between an N-terminal Gly and a C-terminal Gly-Trp, with and without Ala4 flanks at either or both ends. Swapping E4K4 for K4E4 swaps which charge sits in the first and last turns AND the i,i+4 orientation (E->K vs K->E). The one-sided flanks separate the N- and C-terminal effects: (K4E4)3 62 % -> A4(K4E4)3 91 % (N flank) vs (K4E4)3A4 85 % (C flank); (E4K4)3 74 % -> 87 % vs 85 %. Unflanked, E4K4 > K4E4 at every n; with both flanks the order reverses (A4(K4E4)3A4 98 % > A4(E4K4)3A4 87 %). NMR: in (K4E4)3, Lys2-Lys4 are frayed. The authors also compare AGADIR (Supplementary Figs. 41-42, not in doc/): 'the thermal unfolding data were not modeled well by AGADIR, which tended to over predict stabilities'."
   }
 }
