@@ -75,34 +75,39 @@ FEH_FAR_APBS = 0.82
 
 # Side chain-macrodipole laws. "munoz" (default): the law above. "gb": the Generalized Born field of the helix backbone
 # on the charged side chain, tabulated from built poly-Ala helices (params/sidechain_dipole_gb.tsv, made by
-# tools/build_gb_dipole_table.py; params/README.md). Tabulated residues and the sign of their charged form:
+# tools/build_gb_dipole_table.py; params/README.md). Tabulated residues, their table form and the sign of its charge:
 DIPOLE_LAWS = ("munoz", "gb")
+GB_DIPOLE_FORM = {"K": "K", "R": "R", "H": "H+", "D": "D", "E": "E", "C": "C-", "Y": "Y-"}
 GB_DIPOLE_CHARGE = {"K": 1.0, "R": 1.0, "H": 1.0, "D": -1.0, "E": -1.0, "C": -1.0, "Y": -1.0}
+GB_NEAR_CAP = 8   # acetyl / amide cap rows cover the positions this close to the capped end
+GB_BOTH_CAPS = 16  # helices up to this length have rows with both caps
 _GB_TABLE = None
 
 
 def gb_dipole_table() -> dict:
     """
-    params/sidechain_dipole_gb.tsv, loaded once: the kappa grid (1/A), the coil reference per residue, and the helix
-    rows per (residue, L) as (E_in[k], W[k, kappa], n_rot[k]) for k = 0 (N-cap) .. L + 1 (C-cap); n_rot is the number
-    of clash-free structures averaged (0: none, the row is not used).
+    params/sidechain_dipole_gb.tsv, loaded once: the kappa grid (1/A); helix rows by (form, ncap, ccap, L, k) as
+    (E_in, W[kappa], n_rot), where n_rot is the number of sterically allowed chi1 wells averaged (0: none, the row is
+    not used); coil rows by (form, ncap, ccap) as {k: (E_in, W[kappa])} for the 24-residue chains.
     """
     global _GB_TABLE
     if _GB_TABLE is None:
         df = pd.read_csv(files("pyagadir.params").joinpath("sidechain_dipole_gb.tsv"), sep="\t", comment="#")
         wcols = [c for c in df.columns if c.startswith("W_")]
-        coil, helix = {}, {}
-        for aa, g in df.groupby("aa"):
-            key = "H" if aa == "H+" else aa
-            c = g[g["state"] == "coil"].iloc[0]
-            coil[key] = (float(c["E_in"]), c[wcols].to_numpy(float))
-            for L, h in g[g["state"] == "helix"].groupby("L"):
-                h = h.sort_values("k")
-                if list(h["k"]) != list(range(int(L) + 2)):
-                    raise ValueError(f"sidechain_dipole_gb.tsv: {aa} L={L} does not cover k = 0..L+1")
-                helix[(key, int(L))] = (h["E_in"].to_numpy(float), h[wcols].to_numpy(float), h["n_rot"].to_numpy(int))
-        _GB_TABLE = dict(kappa=np.array([float(c[2:]) for c in wcols]), coil=coil, helix=helix,
-                         lmax=max(L for _, L in helix))
+        w = df[wcols].to_numpy(float)
+        helix, coil = {}, {}
+        for i, r in enumerate(df[["form", "state", "ncap", "ccap", "L", "k", "n_rot", "E_in"]].itertuples(index=False)):
+            if r.state == "helix":
+                helix[(r.form, r.ncap, r.ccap, int(r.L), int(r.k))] = (float(r.E_in), w[i], int(r.n_rot))
+            else:
+                coil.setdefault((r.form, r.ncap, r.ccap), {})[int(r.k)] = (float(r.E_in), w[i])
+        for form in GB_DIPOLE_FORM.values():
+            for L in range(4, 41):
+                for k in range(L + 2):
+                    if (form, "res", "res", L, k) not in helix:
+                        raise ValueError(f"sidechain_dipole_gb.tsv: no row for {form} L={L} k={k}")
+        _GB_TABLE = dict(kappa=np.array([float(c[2:]) for c in wcols]), helix=helix, coil=coil,
+                         lmax=max(key[3] for key in helix))
     return _GB_TABLE
 
 
@@ -581,8 +586,12 @@ class PrecomputeParams:
         For Lys, Arg, His+, Asp, Glu, Cys- or Tyr- at position k = 0 (N-cap) .. L + 1 (C-cap) of a helix with L
         helical residues:
 
-            E(kappa, T) = E_in + W(kappa) / eps_w(T)          (the residue's charged form, in each state)
-            potential   = (E_helix(L, k) - E_coil) / z        (z = +1 or -1)
+            E(kappa, T) = E_in + W(kappa) / eps_w(T)                  (the residue's charged form)
+            potential   = (E_helix(L, k) - E_coil(k, L + 1 - k)) / z  (z = +1 or -1)
+
+        Caps: an acetyl or succinyl N-cap token uses the acetyl rows, an amide C-cap token the amide rows, any residue
+        cap the residue rows. The coil reference spans the same residues with the same caps: the mid-chain coil value
+        plus the change near each end (up to eight positions), from the 24-residue coil chains.
 
         W is interpolated linearly on the table's kappa grid (held at its last value above kappa = 0.8 / A, about
         5.6 M at 0 C). The temperature dependence is eps_w(T), so the eps(T) factor is 1 for this law. The value is
@@ -591,8 +600,8 @@ class PrecomputeParams:
         Helices longer than the table take the end-anchored value of the longest tabulated one: a position within
         lmax // 2 of an end takes that position's value, positions farther from both ends its central value.
 
-        Not tabulated, and kept on Muñoz's law times its eps(T) factor: charged residues outside the caps (flanks), and
-        table rows without a clash-free structure (Tyr- at the N-cap).
+        Kept on Muñoz's law times its eps(T) factor: charged residues outside the caps (flanks), and table rows with
+        no sterically allowed structure (n_rot = 0).
 
         The law covers the side chain's electrostatics with the backbone in both states, including the local terms
         Table 1's propensities already contain. Its N-cap..C-cap values must be used with table values transferred to
@@ -601,27 +610,58 @@ class PrecomputeParams:
         """
         aa = self.seq_list[idx]
         ncap_i, ccap_i = int(self.ncap_idx), int(self.ccap_idx)
-        z = GB_DIPOLE_CHARGE.get(aa)
-        if z is None or not ncap_i <= idx <= ccap_i:
-            factor = math.exp(0.004314 * (self.T_kelvin - 273.15))
-            phi_N, phi_C = self._munoz_dipole_potential(idx)
-            return factor * phi_N, factor * phi_C
+        form = GB_DIPOLE_FORM.get(aa)
+        if form is None or not ncap_i <= idx <= ccap_i:
+            return self._munoz_dipole_potential_scaled(idx)
         tab = gb_dipole_table()
-        L, k = ccap_i - ncap_i - 1, idx - ncap_i
+        nt = "Ac" if self.seq_list[ncap_i] in ("Ac", "Sc") else "res"
+        ct = "Am" if self.seq_list[ccap_i] == "Am" else "res"
+        L0, k0 = ccap_i - ncap_i - 1, idx - ncap_i
+        L, k = L0, k0
         if L > tab["lmax"]:
             half, c = tab["lmax"] // 2, L + 1 - k
             k = min(k, half) if k <= c else tab["lmax"] + 1 - min(c, half)
             L = tab["lmax"]
-        e_in, w, n_rot = tab["helix"][(aa, L)]
-        if n_rot[k] == 0:
-            factor = math.exp(0.004314 * (self.T_kelvin - 273.15))
-            phi_N, phi_C = self._munoz_dipole_potential(idx)
-            return factor * phi_N, factor * phi_C
-        c_in, c_w = tab["coil"][aa]
+        c = L + 1 - k
+        if nt == "Ac" and ct == "Am" and L <= GB_BOTH_CAPS:
+            caps = ("Ac", "Am")
+        elif nt == "Ac" and k <= GB_NEAR_CAP:
+            caps = ("Ac", "res")
+        elif ct == "Am" and c <= GB_NEAR_CAP:
+            caps = ("res", "Am")
+        else:
+            caps = ("res", "res")
+        e_in, w, n_rot = tab["helix"][(form, *caps, L, k)]
+        if n_rot == 0:
+            return self._munoz_dipole_potential_scaled(idx)
         kap = self.kappa * 1e-10  # 1/A
-        energy = (e_in[k] - c_in) + (np.interp(kap, tab["kappa"], w[k]) - np.interp(kap, tab["kappa"], c_w)) / self.epsilon_r
-        phi = energy / z
-        return (phi, 0.0) if k <= L + 1 - k else (0.0, phi)
+        energy = e_in + np.interp(kap, tab["kappa"], w) / self.epsilon_r - self._gb_coil(form, nt, ct, k0, L0 + 1 - k0, kap)
+        phi = energy / GB_DIPOLE_CHARGE[aa]
+        return (phi, 0.0) if k0 <= L0 + 1 - k0 else (0.0, phi)
+
+    def _gb_coil(self, form: str, nt: str, ct: str, n_n: int, n_c: int, kap: float) -> float:
+        """Coil reference of the GB law: the residue's energy in the coil over a range with n_n residues before it and
+        n_c after it, with the given caps; the mid-chain value plus each end's change, if within GB_NEAR_CAP."""
+        tab = gb_dipole_table()
+
+        def e(caps, k):
+            e_in, w = tab["coil"][(form, *caps)][k]
+            return e_in + np.interp(kap, tab["kappa"], w) / self.epsilon_r
+        res, cap = ("res", "res"), ("Ac", "Am")
+        top = max(tab["coil"][(form, *res)])  # the chain's C-cap position (25)
+        mid = float(np.mean([e(res, k) for k in range(GB_NEAR_CAP + 1, top - GB_NEAR_CAP)]))
+        out = mid
+        if n_n <= GB_NEAR_CAP:
+            out += e(cap if nt == "Ac" else res, n_n) - mid
+        if n_c <= GB_NEAR_CAP:
+            out += e(cap if ct == "Am" else res, top - n_c) - mid
+        return out
+
+    def _munoz_dipole_potential_scaled(self, idx: int) -> tuple[float, float]:
+        """Muñoz's law with its eps(T) factor applied, for the positions the GB law leaves to it."""
+        factor = math.exp(0.004314 * (self.T_kelvin - 273.15))
+        phi_N, phi_C = self._munoz_dipole_potential(idx)
+        return factor * phi_N, factor * phi_C
 
     def _munoz_dipole_potential(self, idx: int) -> tuple[float, float]:
         """

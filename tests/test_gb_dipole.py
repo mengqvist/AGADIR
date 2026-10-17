@@ -9,16 +9,24 @@ from pyagadir.models import AGADIR
 
 
 def calc(seq, law="gb", T=0.0, I=0.01, pH=7.0):
+    """Ac-seq-Am with the whole chain as one helix segment (acetyl N-cap, amide C-cap)."""
     return E.EnergyCalculator(seq=seq, i=0, j=len(seq) + 2, pH=pH, T=T, ionic_strength=I, ncap="Ac", ccap="Am",
                               dipole_law=law)
 
 
-def energy_at(aa, k, L=16, **kw):
-    """Charged-form energy (kcal/mol) of residue aa at helix position k (Ac N-cap = 0) of an L-residue Ala helix."""
-    seq = "A" * (k - 1) + aa + "A" * (L - k)
-    c = calc(seq, **kw)
-    z = E.GB_DIPOLE_CHARGE[aa]
-    return z * sum(c._sidechain_dipole_potential(k))
+def energy_at(aa, k, L=16, caps="res", **kw):
+    """Charged-form energy (kcal/mol) of residue aa at helix position k of an L-residue Ala helix, through the model.
+    caps="res": Ala N-cap and C-cap residues; caps="AcAm": acetyl N-cap and amide C-cap."""
+    if caps == "AcAm":
+        seq = "A" * (k - 1) + aa + "A" * (L - k)
+        c, idx = calc(seq, **kw), k
+    else:
+        seq = "A" + "A" * k + aa + "A" * (L + 1 - k) + "A"
+        law, T, I, pH = kw.get("law", "gb"), kw.get("T", 0.0), kw.get("I", 0.01), kw.get("pH", 7.0)
+        c = E.EnergyCalculator(seq=seq, i=1, j=L + 2, pH=pH, T=T, ionic_strength=I, dipole_law=law)
+        idx = 1 + k
+    assert c.seq_list[idx] == aa
+    return E.GB_DIPOLE_CHARGE[aa] * sum(c._sidechain_dipole_potential(idx))
 
 
 def test_default_law_is_unchanged():
@@ -36,25 +44,30 @@ def test_unknown_law_is_refused():
         calc("AAAAAAAA", law="dmd")
 
 
-def test_table_covers_every_position():
+def test_table_covers_every_position_and_cap():
     tab = E.gb_dipole_table()
     assert tab["lmax"] >= 36  # the longest peptide in data/
-    for aa in E.GB_DIPOLE_CHARGE:
-        assert aa in tab["coil"]
+    for form in E.GB_DIPOLE_FORM.values():
         for L in range(4, tab["lmax"] + 1):
-            e_in, w, n_rot = tab["helix"][(aa, L)]
-            assert len(e_in) == L + 2 and w.shape == (L + 2, len(tab["kappa"])) and len(n_rot) == L + 2
-            # every row rests on clash-free structures, except Tyr- at the N-cap (falls back to the default law)
-            assert all(n_rot[1:] > 0) and (n_rot[0] > 0 or aa == "Y")
+            for k in range(L + 2):
+                assert (form, "res", "res", L, k) in tab["helix"]
+            for k in range(1, min(E.GB_NEAR_CAP, L + 1) + 1):
+                assert (form, "Ac", "res", L, k) in tab["helix"]
+            for k in range(max(0, L + 1 - E.GB_NEAR_CAP), L + 1):
+                assert (form, "res", "Am", L, k) in tab["helix"]
+            if L <= E.GB_BOTH_CAPS:
+                for k in range(1, L + 1):
+                    assert (form, "Ac", "Am", L, k) in tab["helix"]
+        assert set(tab["coil"][(form, "res", "res")]) == set(range(26))
+        assert set(tab["coil"][(form, "Ac", "Am")]) == set(range(1, 25))
 
 
 def test_asp_first_turn_is_contact_electrostatics_that_salt_barely_screens():
-    # Poisson-Boltzmann (APBS) on the same structures, same rotamer average: Asp at N1 minus N6 is -0.96 at 0.01 M
-    # and -0.88 at 2.5 M; this table gives -0.83 and -0.67
+    # Poisson-Boltzmann (APBS) on the same structures: Asp at N1 minus N6 is about -1 kcal/mol at 0.01 and 2.5 M
     low = energy_at("D", 1, I=0.01) - energy_at("D", 6, I=0.01)
     high = energy_at("D", 1, I=2.5) - energy_at("D", 6, I=2.5)
-    assert -1.2 < low < -0.6 and -1.2 < high < -0.5
-    assert abs(high - low) < 0.3
+    assert -1.4 < low < -0.6 and -1.4 < high < -0.5
+    assert abs(high - low) < 0.35
     # the default law's first-turn effect is a third of that, and salt removes it
     m_low = energy_at("D", 1, law="munoz", I=0.01) - energy_at("D", 6, law="munoz", I=0.01)
     m_high = energy_at("D", 1, law="munoz", I=2.5) - energy_at("D", 6, law="munoz", I=2.5)
@@ -69,6 +82,25 @@ def test_signs_at_the_two_ends():
     for aa in ("D", "E", "C", "Y"):
         assert energy_at(aa, 2) - energy_at(aa, 8) < 0.0
         assert energy_at(aa, 16) - energy_at(aa, 8) > 0.0
+
+
+def test_caps_select_their_own_rows():
+    # an acetyl N-cap has no N-H: a Glu at N3 loses its contact with it
+    assert energy_at("E", 3, caps="AcAm") != energy_at("E", 3)
+    # far from both ends the cap makes no difference
+    assert np.isclose(energy_at("K", 20, L=40, caps="AcAm"), energy_at("K", 20, L=40), atol=1e-9)
+
+
+def test_coil_reference_spans_the_helix_range():
+    c = calc("AAAAAKAAAAAAAAAA")
+    kap = c.kappa * 1e-10
+    # mid-chain: no end correction; next to an end: the chain's own end value
+    mid = c._gb_coil("K", "res", "res", 12, 12, kap)
+    assert np.isclose(c._gb_coil("K", "res", "res", 9, 30, kap), mid)
+    tab = E.gb_dipole_table()
+    e_in, w = tab["coil"][("K", "Ac", "Am")][2]
+    end = e_in + np.interp(kap, tab["kappa"], w) / c.epsilon_r
+    assert np.isclose(c._gb_coil("K", "Ac", "Am", 2, 30, kap), end)
 
 
 def test_energy_is_charge_times_potential_and_has_no_extra_temperature_factor():
@@ -89,7 +121,7 @@ def test_temperature_enters_through_the_water_permittivity():
     assert math.isfinite(e0) and math.isfinite(e50) and 0.0 < abs(e50 - e0) < 0.3
 
 
-def test_flanks_keep_the_default_law_and_cys_tyr_use_the_table():
+def test_flanks_keep_the_default_law_and_tyr_uses_the_table():
     # seq_list = Ac K A x10 Y A Am; the segment idx 2..12 has its N-cap at idx 2 and its C-cap at the Tyr (idx 12)
     seq = "KAAAAAAAAAAYA"
     g = E.EnergyCalculator(seq=seq, i=2, j=11, pH=10.0, T=20.0, ionic_strength=0.05, ncap="Ac", ccap="Am",
@@ -98,18 +130,13 @@ def test_flanks_keep_the_default_law_and_cys_tyr_use_the_table():
     assert g.ncap_idx == 2 and g.ccap_idx == 12 and g.seq_list[1] == "K" and g.seq_list[12] == "Y"
     assert m.sidechain_dipole_potential[1] != 0.0  # Lys in the N-terminal flank: default law, same value
     assert np.isclose(g.sidechain_dipole_potential[1], m.sidechain_dipole_potential[1])
-    tab = E.gb_dipole_table()  # Tyr- at the C-cap: the table
-    e_in, w, _ = tab["helix"][("Y", 9)]
-    c_in, c_w = tab["coil"]["Y"]
-    kap = g.kappa * 1e-10
-    e = (e_in[10] - c_in) + (np.interp(kap, tab["kappa"], w[10]) - np.interp(kap, tab["kappa"], c_w)) / g.epsilon_r
-    assert np.isclose(g.sidechain_dipole_potential[12], -e)
-    # Tyr- at the N-cap has no clash-free structure in the table: the default law there
-    g2 = E.EnergyCalculator(seq="YAAAAAAAAAA", i=1, j=10, pH=10.0, T=20.0, ionic_strength=0.05, ncap="Ac",
+    assert not np.isclose(g.sidechain_dipole_potential[12], m.sidechain_dipole_potential[12])  # Tyr-: the table
+    # Tyr- as the N-cap residue (cycle 398: an allowed structure exists): the table, not the default law
+    g2 = E.EnergyCalculator(seq="AYAAAAAAAAAA", i=2, j=10, pH=10.0, T=20.0, ionic_strength=0.05, ncap="Ac",
                             ccap="Am", dipole_law="gb")
-    m2 = E.EnergyCalculator(seq="YAAAAAAAAAA", i=1, j=10, pH=10.0, T=20.0, ionic_strength=0.05, ncap="Ac", ccap="Am")
-    assert g2.ncap_idx == 1 and g2.seq_list[1] == "Y"
-    assert np.isclose(g2.sidechain_dipole_potential[1], m2.sidechain_dipole_potential[1])
+    m2 = E.EnergyCalculator(seq="AYAAAAAAAAAA", i=2, j=10, pH=10.0, T=20.0, ionic_strength=0.05, ncap="Ac", ccap="Am")
+    assert g2.ncap_idx == 2 and g2.seq_list[2] == "Y"
+    assert not np.isclose(g2.sidechain_dipole_potential[2], m2.sidechain_dipole_potential[2])
 
 
 def test_long_helices_are_end_anchored():

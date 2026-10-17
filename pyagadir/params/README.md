@@ -128,29 +128,32 @@ Far end of the macrodipole (`FEH_FAR_APBS` in energies.py): 0.82. A charged resi
 ## sidechain_dipole_gb (opt-in law, `dipole_law="gb"`)
 The side chain-macrodipole law as continuum electrostatics, selected with `AGADIR(..., dipole_law="gb")`. The default (`"munoz"`) is the law above, and is unchanged. Made by `tools/build_gb_dipole_table.py`; nothing in it is fitted.
 
-What it is: the Generalized Born energy (Still et al. 1990, J. Am. Chem. Soc. 112, 6127; salt as Srinivasan et al. 1999, Theor. Chem. Acc. 101, 426) between a charged side chain (Lys, Arg, His+, Asp, Glu, Cys-, Tyr-) and the backbone atoms (N, H, CA, HA, C, O) of the N-cap, the helix and the C-cap, in the helix and in the coil.
+What it is: the Generalized Born energy (Still et al. 1990, J. Am. Chem. Soc. 112, 6127; salt as Srinivasan et al. 1999, Theor. Chem. Acc. 101, 426) between a charged side chain (Lys, Arg, His+, Asp, Glu, Cys-, Tyr-) and the backbone atoms (N, H, CA, HA, C, O) of the N-cap, the helix and the C-cap, in the helix minus in the coil.
 - Structures: ideal poly-Ala helices built with PeptideBuilder (helix -60/-45, N-cap -167/147, C-cap -60/150).
-- Charges and radii: AMBER, from pdb2pqr. Cys- is AMBER's thiolate. AMBER has no tyrosinate, so Tyr- is AMBER's Tyr without its hydroxyl proton, with the remaining charge spread over the ring and oxygen in the pattern of PARSE's tyrosinate (Sitkoff, Sharp & Honig 1994) and the residue at exactly -1.
+- Caps: each helix row exists with residue caps (an Ala N-cap and C-cap with their neighbours). Near a capped end there are also rows with an acetyl N-cap (no N-H, nothing before it) or an amide C-cap; the model uses them when the segment's cap is the Ac (or Sc) or Am token. The acetyl changes the first turn substantially: a Glu at N3 loses about 1 kcal/mol of contact with the N-cap's N-H, which an acetyl does not have.
+- Charges and radii: AMBER ff14SB, from pdb2pqr; the acetyl and amide caps take AMBER's ACE and NHE values. Cys- is AMBER's thiolate. AMBER has no tyrosinate, so Tyr- is AMBER's Tyr without its hydroxyl proton, with the remaining charge spread over the ring and oxygen in the pattern of PARSE's tyrosinate (Sitkoff, Sharp & Honig 1994) and the residue at exactly -1.
 - Dielectric: interior 4, water eps_w(T).
 - Born radii: each atom's burial in the structure (the r^-6 volume integral of Grycuk 2003 over the solvent-excluded surface, 1.4 A probe).
-- Rotamers: the energy is averaged, with equal weights, over the side chain's chi1 rotamers (-60, 180, 60) that are clash-free in that state. Other dihedrals are 180, except Arg's guanidinium (0/180) and Tyr's ring (chi2 90). Where no rotamer is clash-free (Asp, His+ and Tyr- at the N-cap), chi2 is varied; Tyr- at the N-cap stays without a clash-free structure.
-- What the table holds: the charged form's energy with the backbone, multiplied in the model by the helix-state ionisation, as the default law does with its point charge.
+- Rotamers: each chi1 well (-60, 180, 60) is represented by its nearest sterically allowed member. The canonical member uses other dihedrals 180, except Arg's guanidinium (0/180) and Tyr's ring (chi2 90). If it clashes, chi1 is moved by up to 20 degrees and the second dihedral scanned, in order of distance. Allowed: no heavy-atom contact closer than 2.8 A ("strict" rule). The table averages the allowed wells with equal weights; every row has at least one.
+- Coil reference: the same energy in all-PPII and all-beta chains, over the same residue range with the same caps (the mid-chain value plus the change within eight positions of each end).
+- What the table holds: the charged form's energy, multiplied in the model by the helix-state ionisation, as the default law does with its point charge.
 - Coverage: per residue, helix length L = 4-40 and position k = 0 (N-cap) .. L + 1 (C-cap).
-- Storage: the table holds `E_in` and `W(kappa)`; the model uses E = E_in + W(kappa)/eps_w(T), helix minus the coil mean, divided by the charge. Salt and temperature therefore enter through kappa and eps_w, and the eps(T) factor of the default law is not applied.
+- Storage: the table holds `E_in` and `W(kappa)`; the model uses E = E_in + W(kappa)/eps_w(T). Salt and temperature therefore enter only through kappa and eps_w, and the eps(T) factor of the default law is not applied.
 
 Why: the default law's first-turn field is an empirical 1/d^2 near-end term that salt screens away. Poisson-Boltzmann calculations (APBS) on the same structures show something else.
 - Most of a charged residue's first-turn energy is contact electrostatics with the backbone one turn below (residues k-3 and k-4, about 3 A away, effective dielectric about 20), which is absent at N1-N3.
-- Salt hardly changes it: in APBS, Asp at N1 relative to N6 (helix) is -0.96 kcal/mol at 0.01 M and -0.88 at 2.5 M.
-- The default law gives -0.27 and -0.02; this table gives -0.83 and -0.67.
-- Lys: APBS +0.27 / +0.22, this table +0.29 / +0.21. His+: +0.60 / +0.53 against +0.51 / +0.38.
-- The size depends on the rotamer populations, which equal weights only approximate. With Asp's chi1 at -60 alone, both APBS and GB give about -1.37.
+- Salt hardly changes it. Asp at N1 relative to N6 (helix minus coil, residue caps): this table -1.12 kcal/mol at 0.01 M and -0.95 at 2.5 M; APBS on the canonical structures -0.89 and -0.83; the default law -0.27 and -0.02.
+- Lys at N1: +0.29 / +0.21 (APBS +0.13 / +0.10). His+ at N1: +0.78 / +0.64 (APBS +0.45 / +0.40).
+- The table's values are larger than these APBS figures where its rotamer search finds a well the canonical structures missed (Asp and His+ at N1-N2, chi1 +60). The first-turn size depends on the rotamer populations, which equal weights only approximate.
 
-Against APBS (pdie 4; Lys, Arg, His+, Asp, Glu at helix lengths 10, 16 and 28; 0.01 and 2.5 M):
-- Overall RMS 0.10 kcal/mol, against 0.32 for the default law.
-- First and last turns within about 0.1-0.15.
+Against APBS:
+- Per structure (Lys, Arg, His+, Asp, Glu, Cys-, Tyr-; helix lengths 10, 16 and 28; acetyl and amide caps; coil chains; 0.01 and 2.5 M): RMS 0.10-0.25 kcal/mol, correlation 0.97-0.99.
+- Through the model, against APBS helix-minus-coil targets on the canonical structures, after removing each residue's uniform offset (which the transfer of the interior table value absorbs): RMS 0.10 kcal/mol, against 0.32 for the default law.
 - Known shortfalls: residues 5-7 positions toward the N-terminus get about 60 % of the APBS interaction, and salt screens the far field more than in APBS (ions are allowed up to the molecular surface). The interior gradient is therefore too weak, most of all at high salt.
 
-Not covered, and kept on the default law times its eps(T) factor: charged residues outside the caps, and Tyr- at the N-cap (no clash-free structure at the N-cap's backbone angles for any chi1 and chi2 tried; those table rows have n_rot = 0). Helices longer than 40 residues take the value of the 40-residue helix at the same distance from the nearer end, up to 20 positions; beyond that, its central value. An acetyl or amide cap token in the cap position is treated as an Ala cap.
+Not covered, and kept on the default law times its eps(T) factor: charged residues outside the caps. Helices longer than 40 residues take the value of the 40-residue helix at the same distance from the nearer end, up to 20 positions; beyond that, its central value.
+
+Alternative ensemble: `tools/build_gb_dipole_table.py --derive RAW --rule hbond` allows donor N - O contacts down to 2.5 A (hydrogen bonds). It changes only Asp, whose N-cap and N1-N2 members then H-bond the first-turn N-Hs: Asp at N1 minus N6 becomes -1.51 instead of -1.12. The table's energy contains the side chain's interaction with the backbone but not its own desolvation, which such contacts pay; equal weights would overstate them, so the strict rule is the default.
 
 Status: not the default. The law contains all of the side chain's electrostatics with its backbone, including the local terms that Table 1's measured propensities already hold (the first-turn cells of Asp and Glu, the capping cells, charged Ncen). Used as is, those energies are counted twice. It is meant for use with those table values transferred to it: each value gains z[potential_munoz - potential_gb] at the conditions it was measured under.
 
