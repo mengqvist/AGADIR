@@ -1,0 +1,8 @@
+# dipole_law="gbx": parameters re-derived under the GB law (params/README.md "gbx"). table = a load_params() table name
+# (value in its own units), "first_turn_n2" (row = residue; replaces FIRST_TURN_N2_OFFSET) or "end_cell" (row = residue,
+# column = N1..N3 / C1..C3; kcal/mol added to the Table 1 cell, charge-independent).
+table	row	column	value	source
+table_4b_lacroix	K	E	-27.7	Lys(i)-Glu(i+4): the Glu(i)-Lys(i+4) cell (-20) plus the orientation split of Baker et al. 2015 (PDB salt-bridge occupancy, RT ln[(1-f_KE)/(1-f_EK)] = -0.077 kcal/mol; Poisson-Boltzmann pair electrostatics and Baker's two-state dG agree)
+first_turn_n2	K	N2	0.0	FIRST_TURN_N2_OFFSET Lys: Leu's +0.25 was adopted because Lys at N2 was over-predicted under the default law; the GB law's own first-turn penalty reproduces the Cochran & Doig 2001 N1 and N2 Lys/Arg contrasts without it
+first_turn_n2	R	N2	0.0	FIRST_TURN_N2_OFFSET Arg: as Lys
+first_turn_n2	H	N2	-0.108	FIRST_TURN_N2_OFFSET His by its own procedure (Tsuboyama et al. 2023 N2-minus-interior cost x 0.943 minus the model's electrostatic N2 offset at 25 C, 0.15 M, pH 7.4), with the GB law: +0.059 instead of +0.010

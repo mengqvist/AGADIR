@@ -93,7 +93,8 @@ class AGADIR(object):
             dipole_law (str): Side chain-macrodipole law. 'munoz' (default): Muñoz & Serrano 1995-II eq. 11 for the
                 nearest end plus the far end's half charge. 'gb': the Generalized Born field of the helix backbone
                 (params/README.md); it is meant for use with table values transferred to it, and without them it
-                counts first-turn and capping electrostatics twice.
+                counts first-turn and capping electrostatics twice. 'gbx': GB with those values transferred to it and
+                the parameters that depend on the law re-derived (params/README.md "gbx").
         """
         if dipole_law not in DIPOLE_LAWS:
             raise ValueError(f"dipole_law must be one of {DIPOLE_LAWS}, got {dipole_law!r}")
@@ -350,7 +351,7 @@ class AGADIR(object):
         by summing over all possible helices.
         """
         # one fast snapshot of the parameter tables, shared by every segment
-        params = EnergyCalculator.snapshot_params()
+        params = EnergyCalculator.snapshot_params(self.dipole_law)
 
         for j in range(
             self.min_helix_length, self.result.seq_length + 1

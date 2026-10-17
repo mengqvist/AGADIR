@@ -76,7 +76,12 @@ FEH_FAR_APBS = 0.82
 # Side chain-macrodipole laws. "munoz" (default): the law above. "gb": the Generalized Born field of the helix backbone
 # on the charged side chain, tabulated from built poly-Ala helices (params/sidechain_dipole_gb.tsv, made by
 # tools/build_gb_dipole_table.py; params/README.md). Tabulated residues, their table form and the sign of its charge:
-DIPOLE_LAWS = ("munoz", "gb")
+# "gbx": the GB law with every Table 1 value that was measured with the default law in the loop transferred to it (a
+# potential offset per residue and Table 1 class at that value's reference measurement, params/
+# sidechain_dipole_gb_transfer.tsv, made by tools/build_gb_transfer.py) and the parameters re-derived under it
+# (params/gbx_overrides.tsv). See params/README.md "gbx".
+DIPOLE_LAWS = ("munoz", "gb", "gbx")
+GB_LAWS = ("gb", "gbx")
 GB_DIPOLE_FORM = {"K": "K", "R": "R", "H": "H+", "D": "D", "E": "E", "C": "C-", "Y": "Y-"}
 GB_DIPOLE_CHARGE = {"K": 1.0, "R": 1.0, "H": 1.0, "D": -1.0, "E": -1.0, "C": -1.0, "Y": -1.0}
 GB_NEAR_CAP = 8   # acetyl / amide cap rows cover the positions this close to the capped end
@@ -109,6 +114,52 @@ def gb_dipole_table() -> dict:
         _GB_TABLE = dict(kappa=np.array([float(c[2:]) for c in wcols]), helix=helix, coil=coil,
                          lmax=max(key[3] for key in helix))
     return _GB_TABLE
+
+
+GBX_CAPPING_BOX_NCAPS = ("S", "T", "D", "N")
+_GBX_TABLES = None
+
+
+def gbx_position_class(aa: str, n_dist: int, c_dist: int, ncap_res: str) -> str:
+    """
+    Table 1 class of a charged residue for the gbx transfer, following get_dG_Int's column choice: the N-cap; the
+    C-cap; C1-C3 (whose charged-residue cells equal Ncen); N1-N4 for Asp/Glu, per N-cap type (acetyl/succinyl "N1",
+    residue "N1r"); Ncen otherwise (Lys/Arg/His N1-N4 cells equal Ncen). "N3cb": Glu at N3 behind an S/T/D/N N-cap,
+    the capping box, whose bonus was measured in residue-capped peptides.
+    """
+    if aa == "E" and n_dist == 3 and c_dist > 3 and ncap_res in GBX_CAPPING_BOX_NCAPS:
+        return "N3cb"
+    if n_dist == 0:
+        return "Ncap"
+    if c_dist == 0:
+        return "Ccap"
+    if c_dist <= 3:
+        return "Ncen"
+    if n_dist <= 4 and aa in ("D", "E"):
+        return f"N{n_dist}" + ("" if ncap_res in ("Ac", "Sc") else "r")
+    return "Ncen"
+
+
+def gbx_tables() -> dict:
+    """
+    The gbx law's data, loaded once: transfer offsets {(residue, class): dphi} (kcal/mol per +1 charge,
+    params/sidechain_dipole_gb_transfer.tsv); from params/gbx_overrides.tsv, parameter-table overrides
+    [(table, row, column, value)], first-turn N2 offsets ("first_turn_n2" rows) and end cells
+    {(residue, position): kcal/mol} ("end_cell" rows).
+    """
+    global _GBX_TABLES
+    if _GBX_TABLES is None:
+        t = pd.read_csv(files("pyagadir.params").joinpath("sidechain_dipole_gb_transfer.tsv"), sep="\t", comment="#")
+        o = pd.read_csv(files("pyagadir.params").joinpath("gbx_overrides.tsv"), sep="\t", comment="#")
+        _GBX_TABLES = dict(
+            transfer={(r.residue, r.cls): float(r.dphi) for r in t.itertuples()},
+            overrides=[(r.table, r.row, r.column, float(r.value)) for r in o.itertuples()
+                       if r.table.startswith("table_")],
+            overrides_meta=[(r.table, r.row, r.column, float(r.value)) for r in o.itertuples()
+                            if r.table == "first_turn_n2"],
+            end_cells={(r.row, r.column): float(r.value) for r in o.itertuples() if r.table == "end_cell"},
+        )
+    return _GBX_TABLES
 
 
 class PrecomputeParams:
@@ -232,13 +283,31 @@ class PrecomputeParams:
         return cls._params
 
     @classmethod
-    def snapshot_params(cls) -> dict:
+    def snapshot_params(cls, dipole_law: str = "munoz") -> dict:
         """
         Fast ParamTable copies of load_params(), for passing as params= to many
         instances. Rebuilt on every call (~10 ms), so take one per prediction:
         edits made to the _params DataFrames between predictions are then honoured.
         """
-        return {name: ParamTable(df) for name, df in cls.load_params().items()}
+        return {name: ParamTable(df) for name, df in cls.law_params(dipole_law).items()}
+
+    _law_params = {}
+
+    @classmethod
+    def law_params(cls, dipole_law: str = "munoz") -> dict:
+        """load_params() with the gbx law's parameter overrides applied to copies of the tables they touch
+        (params/gbx_overrides.tsv); the other laws use load_params() itself."""
+        base = cls.load_params()
+        if dipole_law != "gbx":
+            return base
+        if "gbx" not in cls._law_params:
+            out = dict(base)
+            for table, row, col, value in gbx_tables()["overrides"]:
+                if out[table] is base[table]:
+                    out[table] = base[table].copy()
+                out[table].loc[row, col] = value
+            cls._law_params["gbx"] = out
+        return cls._law_params["gbx"]
 
     def __init__(self, seq: str, i: int, j: int, pH: float, T: float, ionic_strength: float, ncap: str = None, ccap: str = None, debug: bool = False, params: dict = None, dipole_law: str = "munoz"):
         """
@@ -254,7 +323,7 @@ class PrecomputeParams:
             ncap (str): N-terminal capping modification (acetylation='Ac', succinylation='Sc').
             ccap (str): C-terminal capping modification (amidation='Am').
             params (dict): Parameter tables from snapshot_params(). If None, load_params() is used.
-            dipole_law (str): side chain-macrodipole law, "munoz" (default) or "gb" (see _sidechain_dipole_potential).
+            dipole_law (str): side chain-macrodipole law, "munoz" (default), "gb" or "gbx" (see _sidechain_dipole_potential).
         """
         self.debug = debug
         if dipole_law not in DIPOLE_LAWS:
@@ -263,7 +332,7 @@ class PrecomputeParams:
 
         # load params
         if params is None:
-            params = self.load_params()
+            params = self.law_params(dipole_law) if dipole_law == "gbx" else self.load_params()
         self.table_1_lacroix = params["table_1_lacroix"]
         self.table_2_lacroix = params["table_2_lacroix"]
         self.table_3_lacroix = params["table_3_lacroix"]
@@ -561,8 +630,8 @@ class PrecomputeParams:
     def dipole_temperature_factor(self) -> float:
         """Muñoz 1995-III eq. (12): the side chain-macrodipole term uses a fixed dielectric and is
         scaled by eps(0 C)/eps(T) = exp(+0.004314 (T - 273.15)) (stronger at higher T).
-        The GB law (dipole_law="gb") carries its temperature dependence in eps_w(T) itself: 1."""
-        if self.dipole_law == "gb":
+        The GB laws (dipole_law="gb" or "gbx") carry their temperature dependence in eps_w(T) itself: 1."""
+        if self.dipole_law in GB_LAWS:
             return 1.0
         return math.exp(0.004314 * (self.T_kelvin - 273.15))
 
@@ -573,9 +642,9 @@ class PrecomputeParams:
         factor (dipole_temperature_factor). get_dG_sidechain_macrodipole multiplies these by the
         residue's charge, and the ionisation solver uses them as the helix-state field, so both see
         one electrostatic model. The law is _munoz_dipole_potential (default) or, with
-        dipole_law="gb", _gb_dipole_potential.
+        dipole_law="gb" or "gbx", _gb_dipole_potential.
         """
-        if self.dipole_law == "gb":
+        if self.dipole_law in GB_LAWS:
             return self._gb_dipole_potential(idx)
         return self._munoz_dipole_potential(idx)
 
@@ -606,7 +675,8 @@ class PrecomputeParams:
         The law covers the side chain's electrostatics with the backbone in both states, including the local terms
         Table 1's propensities already contain. Its N-cap..C-cap values must be used with table values transferred to
         it (new value = old value + z[potential_munoz - potential_gb] at each value's reference conditions), or the
-        first-turn and capping energies are counted twice.
+        first-turn and capping energies are counted twice. dipole_law="gbx" does exactly that: it adds the offset
+        dphi(residue, gbx_position_class) of params/sidechain_dipole_gb_transfer.tsv wherever the table applies.
         """
         aa = self.seq_list[idx]
         ncap_i, ccap_i = int(self.ncap_idx), int(self.ccap_idx)
@@ -637,6 +707,9 @@ class PrecomputeParams:
         kap = self.kappa * 1e-10  # 1/A
         energy = e_in + np.interp(kap, tab["kappa"], w) / self.epsilon_r - self._gb_coil(form, nt, ct, k0, L0 + 1 - k0, kap)
         phi = energy / GB_DIPOLE_CHARGE[aa]
+        if self.dipole_law == "gbx":
+            cls = gbx_position_class(aa, k0, L0 + 1 - k0, self.seq_list[ncap_i])
+            phi += gbx_tables()["transfer"].get((aa, cls), 0.0)
         return (phi, 0.0) if k0 <= L0 + 1 - k0 else (0.0, phi)
 
     def _gb_coil(self, form: str, nt: str, ct: str, n_n: int, n_c: int, kap: float) -> float:
@@ -1371,7 +1444,12 @@ class EnergyCalculator(PrecomputeParams):
             # First-turn N2 offset (FIRST_TURN_N2_OFFSET), after the charged/neutral interpolation so that both
             # charge states pay it; not where the C1-C3 columns apply.
             if n_dist == 2 and c_dist > 3:
-                energy[idx] += FIRST_TURN_N2_OFFSET.get(AA, 0.0)
+                energy[idx] += self._first_turn_n2_offset(AA)
+
+            # gbx: first- and last-turn cells of charged residues re-derived under the GB law (params/gbx_overrides.tsv)
+            if self.dipole_law == "gbx":
+                pos = f"C{c_dist}" if c_dist <= 3 else (f"N{n_dist}" if n_dist <= 3 else None)
+                energy[idx] += gbx_tables()["end_cells"].get((AA, pos), 0.0)
 
         # Munoz & Serrano 1995-III eq. (9): dG_Int = -t (dS_ref + dCp ln(t/t_ref)),
         # i.e. dG_ref * t/t_ref - t * dCp * ln(t/t_ref).  The dCp*(t - t_ref) enthalpy term
@@ -1385,6 +1463,15 @@ class EnergyCalculator(PrecomputeParams):
 
         return energy
     
+    def _first_turn_n2_offset(self, aa: str) -> float:
+        """FIRST_TURN_N2_OFFSET, with the gbx law's re-derived values (params/gbx_overrides.tsv, table
+        "first_turn_n2") where it has them."""
+        if self.dipole_law == "gbx":
+            for table, row, _col, value in gbx_tables()["overrides_meta"]:
+                if table == "first_turn_n2" and row == aa:
+                    return value
+        return FIRST_TURN_N2_OFFSET.get(aa, 0.0)
+
     def get_dG_Hbond(self) -> float:
         """
         Get the free energy contribution for hydrogen bonding for a sequence.
