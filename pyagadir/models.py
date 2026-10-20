@@ -94,7 +94,10 @@ class AGADIR(object):
                 nearest end plus the far end's half charge. 'gb': the Generalized Born field of the helix backbone
                 (params/README.md); it is meant for use with table values transferred to it, and without them it
                 counts first-turn and capping electrostatics twice. 'gbx': GB with those values transferred to it and
-                the parameters that depend on the law re-derived (params/README.md "gbx").
+                the parameters that depend on the law re-derived (params/README.md "gbx"). 'gbp': gbx plus the GB side
+                chain-side chain pair law, every ionisable group coupled to both GB terms through its charged and
+                neutral forms' energies, GB desolvation, the statistical acid-base network, and the values transferred
+                and re-derived under it (params/README.md "gbp").
         """
         if dipole_law not in DIPOLE_LAWS:
             raise ValueError(f"dipole_law must be one of {DIPOLE_LAWS}, got {dipole_law!r}")

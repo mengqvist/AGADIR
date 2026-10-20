@@ -81,6 +81,8 @@ The result object provides several methods to access the predictions:
 
 `AGADIR(..., dipole_law="gb")` replaces the side chain-macrodipole law with a Generalized Born field of the helix backbone, computed from built helices (`pyagadir/params/README.md`). It is experimental and not the default: until the position-specific table values are re-derived under it, it counts some first-turn and capping electrostatics twice.
 
+`dipole_law="gbx"` is that law with the table values transferred to it, and with the parameters that depend on it re-derived. `dipole_law="gbp"` adds Generalized Born side chain-side chain electrostatics against an MD coil ensemble, the coupling of each ionisable group through both its charged and its neutral form, GB desolvation, and acid-base side-chain hydrogen bonds counted as a network. Both are opt-in. The default (`"munoz"`) is the point-charge model. See `pyagadir/params/README.md` for each law's scores and limitations.
+
 ### Terminal Capping
 
 When predicting helix propensity, the charged termini can significantly affect the results. In real proteins, helices are typically part of a larger sequence and don't experience these terminal charges. The package supports three types of terminal modifications to simulate this:

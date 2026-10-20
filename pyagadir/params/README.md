@@ -178,6 +178,89 @@ Re-derived under GB and not changed:
 
 What stays unfixed (against the default model): mean panel RMSE 3.873 against 3.262, residual structure 3.501 against 2.609, while the literature sets improve (pooled RMSE 10.00 against 11.24 helix points, mean over sets 9.37 against 9.91). The panel loss is concentrated in four places. Lacroix et al.'s KR-8f (Fig. 4h, free amine, Ser N-cap, Lys at N1; +4.6): GB's Lys-at-N1 penalty matches Cochran & Doig's N1 host, so the default model fits this peptide through compensation elsewhere. Marqusee & Baldwin's Ac-AKAAEAKAAEAKAAEA-NH2 melt (+4.1): Glu at C2 costs +0.46 kcal/mol under GB against +0.09; the peptide's measured helicity gain from 0.01 to 1 M NaCl (+9.7 points) is followed by "gbx" (+5.6), not by the default model (+1.0), but its level is under-predicted. The CheY fragment (+2.8; under-predicted by 6.4 points already). The Y(AEAAKA)nF melts of Scholtz et al. 1991 (+0.9 to +1.4 at 26-50 residues, over-predicted at low temperature). GB also screens end effects too little at high salt (Asp at C2/C3 of the Huyghues-Despointes walk: -1.7/-1.5 helix points measured at 4.8 M, -3.8/-4.1 under GB), and in proteins (Tsuboyama et al. 2023, 25 C, 0.15 M) Asp and Glu at C1-C3 show no charge effect, where GB gives +0.3 to +1.0 kcal/mol. Literature sets worse by 0.5 or more: Huyghues-Despointes et al. 1993's Glu/Asp-Arg pairs (+1.5), Cochran & Doig's N2 and N1 His titrations (+1.3, +0.9), Zhou et al. 1994 (+1.0), Richardson & Makhatadze 2004 (+0.7), Marqusee et al. 1989 (+0.6), Smith & Scholtz 1998 (+0.6) and the Cochran N1 scan (+0.6, above); better by 1.0 or more: Lyu et al. 1992 (-3.9), Fairman et al. 1989 (-3.6), Shoemaker et al. 1987 (-3.2), Marqusee & Baldwin 1987 (-3.2), Lyu et al. 1990 (-2.5), Baker et al. 2015 (-1.9 Table 1, -1.6 melts), Lyu et al. 1991 (-1.6), Padmanabhan et al. 1996 (-1.4) and Padmanabhan & Baldwin 1994 (-1.1).
 
+## sidechain_pair_gb, sidechain_dipole_gb_neutral, sidechain_dipole_gb_desolv, sidechain_gbp_transfer, gbp_overrides (opt-in law, `dipole_law="gbp"`)
+`"gbx"` plus Generalized Born for the rest of the side-chain electrostatics. Use it with `AGADIR(..., dipole_law="gbp")`. The default law (`"munoz"`, point charges) is unchanged. Compared with `"gbx"`, `"gbp"` changes five things.
+
+1. **Side chain-side chain pairs** (`sidechain_pair_gb.tsv`, `tools/build_gb_pair_table.py --raw --forms`, then `--derive-grid`). Pairs of Lys, Arg, His, Asp and Glu 1-12 residues apart get a GB energy for helix minus coil in place of the point-charge term with Lacroix's Table VI distances.
+   - Each row is a free energy over the allowed chi1-well combinations, F = -RT ln <exp(-E/RT)>. E is the GB cross term plus both side chains' desolvation, at interior dielectric 16.
+   - Rows are tabulated for every pair of protonation forms (K/K0, R, H+/H0, D/D0, E/E0) on a grid of T (0-90 C) and kappa (0-0.8 per A). The model interpolates the grid bilinearly.
+   - Neutral His is the mixture of its two tautomers, N-epsilon2-H : N-delta1-H = 0.8 : 0.2 (Reynolds, Peat, Freedman & Lyerla 1973, J. Am. Chem. Soc. 95, 328).
+   - Excluded combinations: steric contacts under 2.8 A, and salt-bridged ones (cation N to carboxylate-O centroid at most 4 A). A salt bridge's free energy is its Table IV acid-base cell.
+   - Helix rows: ideal helices built by the dipole builder, with three classes (interior; X is the N-cap; Y is the C-cap).
+   - Coil rows: an MD coil ensemble of Ac-A16-NH2 (CHARMM36m with TIP3P, 278 K, 8 replicas of up to 50 ns; the first 10 ns of each discarded; 127 frames). The side chains are threaded onto non-helical stretches by the builder's rotamer rule.
+   - The coil is part of the physics: neighbours interact in the coil too, and a fixed PPII/beta chain puts i, i+3 and i+8 at unphysical separations. The ensemble is P_II-rich: P_II 0.68, beta 0.16, alpha_R 0.16 at 5 C, against 0.60/0.29/0.10 for the Ala dipeptide at 30 C (Grdadolnik, Mohacek-Grosev, Baldwin & Avbelj 2011, PNAS 108, 1794).
+   - The ensemble is 7-25 % more extended than Lacroix's coil distances (Table VI). Those are protein loop and turn segments, not a peptide in water.
+   - Which law applies to a pair:
+     - both residues in the helical segment (N-cap to C-cap): the helix row in the helix state and the coil row in the coil state;
+     - both outside on the same side: the coil row in both states;
+     - one inside and one outside, or straddling the segment: the point law in both states;
+     - pairs with Cys or Tyr, and separations beyond 12: the point law.
+2. **Exact two-state coupling** of every ionisable group to both GB terms (`sidechain_dipole_gb_neutral.tsv`, `tools/build_gb_dipole_table.py --derive RAW --neutral`).
+   - A group's pKa shifts by its charged-minus-neutral energy. The neutral form's energy (K0, D0, E0, the His tautomer mixture) is carried at every charge.
+   - For a pair with ionised fractions theta1, theta2, the energy is theta1 theta2 E_cc + theta1 (1 - theta2) E_cn + (1 - theta1) theta2 E_nc + (1 - theta1)(1 - theta2) E_nn. The self-consistent solver uses the same expression, and with the macrodipole term and the ionisation free energy it equals exact enumeration of the protonation microstates (`tests/test_gbp.py`).
+   - Arg has no neutral form here. Cys and Tyr keep the charged-only coupling, because their Table 1 values are for the neutral forms.
+3. **Desolvation in the side chain-backbone term** (`sidechain_dipole_gb_desolv.tsv`). Every tabulated form's helix energy also carries its GB desolvation, helix minus coil. That is the change in the side chain's own self-energy plus the change it causes in the backbone's, at interior dielectric 4.
+   - It is tabulated by distance from the nearer helix end: N-cap/C-cap 0 up to 4, and an interior row beyond.
+   - It comes from ideal L = 24 helices against the builder's PPII/beta chains, averaged over nine random orientations of the structures (Born-radii grid alignment; standard error per row 0.01-0.02 kcal/mol).
+   - This term pays back the stabilisation that neutral COOH gains from the first-turn amides: on an L = 16 helix, neutral Asp at the N-cap is -0.95 kcal/mol in the cross term and +0.02 with desolvation. Without it, the exact coupling makes neutral Asp too favourable at the N-terminus.
+   - Interior values: Asp 0.40, Glu 0.35, Lys 0.105, His+ 0.06, Arg -0.03, neutral forms within 0.04. Larger costs at the N-cap and at N3 (Glu N3 1.03, Asp N3 0.48, Lys N3 0.34). Lys at N2 is -0.10, where no i-3/i-4 neighbours crowd it.
+4. **Acid-base cells counted statistically.** Under the default rule, a side chain makes one acid-base hydrogen bond, and of competing partners on opposite sides only one counts. Here every candidate keeps its Table IV cell, scaled so that the cells sum to the free energy of the network. That free energy is an exact transfer-matrix partition function over the allowed sets of bridges (`energies.sb_network_free_energy`).
+   - An isolated pair keeps its cell.
+   - For seven alternating Glu-Lys i+3 cells at 2 C, the network gives -0.883, against -0.60 for the one-partner rule and -1.05 if the cells were simply added.
+5. **Transfer and re-derived parameters** (`sidechain_gbp_transfer.tsv`, `tools/build_gbp_transfer.py`; `gbp_overrides.tsv`).
+   - The Table 1 values move to the law as under "gbx": at each value's reference measurement, gbp reproduces the default model's guest-minus-host free energy.
+   - The guest's own interactions with charged host residues are left out of the match on both sides, so the offsets carry only the guest's own electrostatics. The pair law then governs those partners as everywhere else.
+   - Where gbp would make a guest neutral at its reference although the default model has it charged, no per-charge offset can reproduce the value. There the tool matches the guest's site potential and adds a constant at every charge. No current entry needs this; His at the N-cap did before the desolvation term.
+   - The neutral forms take one offset each, at Chakrabartty et al.'s Ncen host at a pH where the guest is neutral (Asp/Glu 2, His 9, Lys 12.5).
+   - Starting values: the tool iterates from the current file's values (all offsets 0 for a first build).
+
+**The two interior dielectrics.** The side chain-backbone term uses 4 and the pair term 16. In continuum electrostatics the interior dielectric stands in for the nuclear reorganisation that the explicit model leaves out (Sitkoff, Lockhart, Sharp & Honig 1994, J. Phys. Chem. 98, 1978). The two terms leave out different things:
+- The side chain-backbone term faces the rigid, hydrogen-bonded backbone.
+- The pair term involves two mobile, solvated side chains on a fixed ideal backbone with equal-prior chi1 wells. Their reorganisation (rotamer populations, water and ions between the charges, helix fluctuations) is not represented. Adding chi2 wells moved the pair term further from the data, so the missing part is not more rotamers.
+
+A single value fails on data at 4, 8 and 16:
+- Cochran & Doig's first-turn Lys/Arg contrasts need 4 for the backbone term: RMS error 0.6-1.9 helix points at 4, against 2.9 and 3.9 at 8 and 16.
+- Baker et al.'s Glu/Lys orientation contrasts need weak side chain-side chain contacts: RMS 17.4 with 4 for both terms, 8.9-9.9 with pairs at 16.
+- With 16 for pairs, GB charges a salt-bridged contact 0.3-0.4 kcal/mol of desolvation; at 4 it charges 1.4-2.1.
+
+**Re-derived acid-base cells.** One rule covers every cell: each is re-derived under gbp from the design that measured it (kcal/mol x 100, published value -> gbp).
+- **Arg pairs** (Huyghues-Despointes, Klingler & Baldwin 1993b orientation designs). For each pair, the joint optimum of the four matched designs' Arg-first minus Arg-second contrasts and of their eight helicities (pH 2.5 and 7, 0.01 and 1 M):
+  - i+3: Glu-Arg -20 -> -20, Arg-Glu -20 -> -35, Asp-Arg -15 -> -20, Arg-Asp +20 -> -10;
+  - i+4: Glu-Arg -45 -> -55, Arg-Glu -40 -> -55, Asp-Arg -30 -> -35, Arg-Asp -20 -> -45.
+- **Lys and His pairs** (Smith & Scholtz 1998, Biochemistry 37, 33: each (i, i+k) peptide against its (i, i+5) partner):
+  - i+3: Glu-Lys -15 -> -21.6, Lys-Glu -15 -> -13.2, Asp-Lys -5 -> -10.1, Lys-Asp +5 -> -4.3, His-Glu -18 -> -19.5, Glu-His 0 -> -16.4;
+  - i+4: Glu-Lys -20 -> -28.5, Asp-Lys -15 -> -15.4, Lys-Asp -24 -> -30.1, His-Glu -21 -> -26.5, Glu-His 0 -> -4.1.
+- **Lys(i)-Glu(i+4)**: -10 -> -36.2. As under "gbx", this cell is the refitted Glu-Lys value plus Baker et al.'s salt-bridge orientation split (-0.077; see "gbx"); the procedure is not applied to it.
+- The gbx first-turn N2 offsets carry over unchanged: Lys and Arg 0, His -0.108.
+
+**Scores** against the default and "gbx" (helix points; same scoring as above):
+
+| | default | gbx | gbp |
+| --- | --- | --- | --- |
+| Mean panel RMSE / residual structure | 3.262 / 2.609 | 3.873 / 3.501 | 4.265 / 3.886 |
+| Literature sets: pooled RMSE / mean over sets | 11.24 / 9.91 | 10.00 / 9.37 | 9.02 / 9.21 |
+| Baker et al. 2015 matched contrasts (RMS error) | 13.3 | 11.6 | 11.0 |
+| Marqusee & Baldwin 1987 matched designs: contrasts / levels | 23.4 / 19.3 | 20.9 / 16.1 | 9.1 / 7.3 |
+| Cochran & Doig first-turn Lys/Arg minus Ala (RMS error) | 5.25 | 0.76 | 3.48 |
+
+**What stays unfixed:**
+- **Mean panel RMSE.** It is 1.0 above the default model's. The loss is concentrated in:
+  - the long Glu/Lys melts: Scholtz et al. 1991 Y(AEAAKA)nF n20-n50, under-predicted by 3-5 points, and Marqusee & Baldwin's i4EK melt, 11.9 against 6.6;
+  - Lacroix et al.'s Fig. 4c (Lys-Arg i+3, over-predicted by 5.3), 4g and 4h;
+  - Huyghues-Despointes et al.'s pH 2 walk, 3.6 against 2.3;
+  - Muñoz & Serrano 1997 Fig. 4B, 3.3 against 0.9.
+- **The first-turn cations, 3.48 against 0.76 under "gbx".** This comes from the desolvation term's end pattern on one static ideal helix: Lys at N2 is 0.2 kcal/mol less desolvated than in the interior, and the Lys N2 contrast is off by +6.7 points.
+- **Cochran & Doig's His titrations.** These are worse than under "gbx".
+- **Baker et al.'s flank gains.** Every model, gbp included, under-predicts them: moving the charged blocks off the helix ends gains 11-29 points measured and -3 to +12 predicted.
+
+Approximations shared by both GB terms:
+- a static ideal helix, with no fraying or backbone fluctuation;
+- equal-prior chi1 wells (chi2 to chi4 canonical);
+- one helix length (24) and residue caps for the desolvation rows;
+- the fixed-chain coil for the side chain-backbone term (MD coil for the pairs). On the MD frames that coil reference shifts each form by a near-uniform 0.1-0.3 kcal/mol, which the transfer absorbs.
+
+Terminal and flank charges stay on the point law.
+
 ## pka_values
 The pKa values for N- and C-termini as well as ionizable side chains when incorporated in a peptide. These are reference (base) pKa values: the pKa of each group in an unstructured peptide, before the model's helix- and coil-state electrostatic shifts are applied. Rule: a value measured in an unstructured peptide at the conditions of the helicity data (0-5 C, low salt) is used where one exists, otherwise the value measured in unstructured alanine pentapeptides.
 

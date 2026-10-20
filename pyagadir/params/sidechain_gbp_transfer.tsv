@@ -1,0 +1,40 @@
+# dipole_law="gbp" transfer (tools/build_gbp_transfer.py): dphi (kcal/mol per +1 charge) added to the GB potential and const (kcal/mol) added at every charge, per Table 1 class; class Neutral: dphi = the offset (kcal/mol) of the neutral form's energy. gbp files: pairs sidechain_pair_gb.tsv, neutral sidechain_dipole_gb_neutral.tsv, desolv sidechain_dipole_gb_desolv.tsv, overrides gbp_overrides.tsv; last max |ddG| 0.0000, |dpsi| 0.0000
+residue	cls	dphi	const	reference	T_C	I_M	pH
+D	Ncap	-1.1871	0.0000	Doig & Baldwin 1995 Table 1	0	1.00001	5
+E	Ncap	-0.0978	0.0000	Doig & Baldwin 1995 Table 1	0	1.00001	5
+K	Ncap	-1.3165	0.0000	Doig & Baldwin 1995 Table 1	0	1.00001	5
+R	Ncap	-1.7057	0.0000	Doig & Baldwin 1995 Table 1	0	1.00001	5
+H	Ncap	-1.9421	0.0000	Doig & Baldwin 1995 Table 1	0	1.00001	5
+C	Ncap	-2.5934	0.0000	Doig & Baldwin 1995 Table 1	0	1.00001	9.55
+Y	Ncap	-1.9896	0.0000	Doig & Baldwin 1995 Table 1	0	1.00001	9.55
+D	Ccap	1.3310	0.0000	Doig & Baldwin 1995 Table 3	0	1.00000	7
+E	Ccap	0.8658	0.0000	Doig & Baldwin 1995 Table 3	0	1.00000	7
+K	Ccap	-0.0025	0.0000	Doig & Baldwin 1995 Table 3	0	1.00000	7
+R	Ccap	0.1771	0.0000	Doig & Baldwin 1995 Table 3	0	1.00000	7
+H	Ccap	0.0709	0.0000	Doig & Baldwin 1995 Table 3	0	1.00000	7
+D	Ncen	0.4987	0.0000	Chakrabartty et al. 1994	0	1.00000	7
+E	Ncen	0.2875	0.0000	Chakrabartty et al. 1994	0	1.00000	7
+K	Ncen	-0.0740	0.0000	Chakrabartty et al. 1994	0	1.00000	7
+R	Ncen	0.0926	0.0000	Chakrabartty et al. 1994	0	1.00000	7
+H	Ncen	-0.0311	0.0000	Chakrabartty et al. 1994	0	1.00000	7
+E	N3cb	1.0715	0.0000	Zhou et al. 1994	4	0.01000	6
+D	N1	-0.7270	0.0000	Petukhov et al. 1998 host	5	0.00887	7
+E	N1	-0.1956	0.0000	Petukhov et al. 1998 host	5	0.00887	7
+D	N1r	-0.8221	0.0000	Petukhov et al. 1998 host, Ala N-cap	5	0.00887	7
+E	N1r	-0.2364	0.0000	Petukhov et al. 1998 host, Ala N-cap	5	0.00887	7
+D	N2	-0.6973	0.0000	Petukhov et al. 1998 host	5	0.00887	7
+E	N2	-0.4068	0.0000	Petukhov et al. 1998 host	5	0.00887	7
+D	N2r	-0.7557	0.0000	Petukhov et al. 1998 host, Ala N-cap	5	0.00887	7
+E	N2r	-0.4333	0.0000	Petukhov et al. 1998 host, Ala N-cap	5	0.00887	7
+D	N3	0.0212	0.0000	Petukhov et al. 1998 host	5	0.00887	7
+E	N3	0.8764	0.0000	Petukhov et al. 1998 host	5	0.00887	7
+D	N3r	0.0979	0.0000	Petukhov et al. 1998 host, Ala N-cap	5	0.00887	7
+E	N3r	1.1126	0.0000	Petukhov et al. 1998 host, Ala N-cap	5	0.00887	7
+D	N4	0.6677	0.0000	Petukhov et al. 1998 host	5	0.00887	7
+E	N4	0.3596	0.0000	Petukhov et al. 1998 host	5	0.00887	7
+D	N4r	0.5738	0.0000	Petukhov et al. 1998 host, Ala N-cap	5	0.00887	7
+E	N4r	0.3960	0.0000	Petukhov et al. 1998 host, Ala N-cap	5	0.00887	7
+D	Neutral	0.1558	0.0000	Chakrabartty et al. 1994	0	1.00000	2
+E	Neutral	0.1558	0.0000	Chakrabartty et al. 1994	0	1.00000	2
+H	Neutral	-0.0858	0.0000	Chakrabartty et al. 1994	0	1.00000	9
+K	Neutral	0.1184	0.0000	Chakrabartty et al. 1994	0	1.00000	12.5

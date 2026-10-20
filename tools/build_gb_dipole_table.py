@@ -395,16 +395,21 @@ def write_supplement(raw, path, workers):
     print("wrote", path, len(js), "wells")
 
 
-def derive(raw, out, rule="strict", supplement=None):
+NEUTRAL = ["K0", "D0", "E0", "H0d", "H0e"]  # the neutral forms of the residues whose Table 1 cells are charged-form
+
+
+def derive(raw, out, rule="strict", supplement=None, forms=None):
     """rule "hbond": wells allowed with the hydrogen-bond allowance (raw margin >= 0). rule "strict": 2.8 A for every
-    pair; a raw member allowed only through the allowance is replaced by the supplement's strict member."""
+    pair; a raw member allowed only through the allowance is replaced by the supplement's strict member.
+    forms: the table's forms (default: the charged forms; NEUTRAL for params/sidechain_dipole_gb_neutral.tsv)."""
     import pandas as pd
+    forms = forms or CHARGED
     d = pd.read_csv(raw, sep="\t")
-    d = d[d.form.isin(CHARGED)]
+    d = d[d.form.isin(forms)]
     if rule == "strict":
         wk = ["state", "conf", "ncap", "ccap", "L", "k", "well"]
         sup = pd.read_csv(supplement, sep="\t")
-        sup = sup[sup.form.isin(CHARGED)]
+        sup = sup[sup.form.isin(forms)]
         swap = d[(d.margin >= 0.0) & (d.old_contact < CLASH)][wk + ["form"]]
         d = d.merge(swap.assign(_swap=True), on=wk + ["form"], how="left")
         d = pd.concat([d[d._swap.isna()].drop(columns="_swap"), sup])
@@ -423,11 +428,13 @@ def derive(raw, out, rule="strict", supplement=None):
     c = c.groupby(keys).agg({"n_rot": "min", "E_in": "mean", **{w: "mean" for w in wc}}).reset_index()
     t = pd.concat([c, h])
     t["n_rot"] = t.n_rot.astype(int)
-    t["order"] = t.form.map({f: i for i, f in enumerate(CHARGED)})
+    t["order"] = t.form.map({f: i for i, f in enumerate(forms)})
     t = t.sort_values(["order", "state", "ncap", "ccap", "L", "k"], ascending=[True, False, True, True, True, True])
     with open(out, "w") as fh:
-        fh.write("# Generalized Born field of the helix backbone on a charged side chain (tools/build_gb_dipole_table.py).\n")
-        fh.write("# E(kappa, T) = E_in + W(kappa) / eps_w(T), kcal/mol, charged form; W columns at kappa in 1/A.\n")
+        fh.write("# Generalized Born field of the helix backbone on a " + ("charged" if forms == CHARGED else "neutral")
+                 + " side chain (tools/build_gb_dipole_table.py).\n")
+        fh.write("# E(kappa, T) = E_in + W(kappa) / eps_w(T), kcal/mol, " + ("charged form" if forms == CHARGED else
+                 "neutral forms " + " ".join(forms)) + "; W columns at kappa in 1/A.\n")
         fh.write("# helix: L helical residues, k = 0 (N-cap) .. L + 1 (C-cap); coil: L = 24 chains, PPII/beta mean.\n")
         fh.write("# ncap/ccap: res = residue cap, Ac = acetyl, Am = amide; n_rot = allowed chi1 wells averaged.\n")
         fh.write(f"# rotamer rule: {rule}" + (" (2.8 A for every heavy-atom pair)" if rule == "strict" else
@@ -446,13 +453,15 @@ def main():
     ap.add_argument("--out", default=str(OUT))
     ap.add_argument("--lmax", type=int, default=40)
     ap.add_argument("--workers", type=int, default=12)
+    ap.add_argument("--neutral", action="store_true", help="--derive the neutral forms (" + " ".join(NEUTRAL) + ") "
+                    "for params/sidechain_dipole_gb_neutral.tsv instead of the charged forms")
     a = ap.parse_args()
     if a.raw:
         write_raw(a.raw, a.lmax, a.workers)
     if a.derive:
         if a.rule == "strict" and not Path(a.supplement).exists():
             write_supplement(a.derive, a.supplement, a.workers)
-        derive(a.derive, a.out, a.rule, a.supplement)
+        derive(a.derive, a.out, a.rule, a.supplement, NEUTRAL if a.neutral else None)
 
 
 if __name__ == "__main__":
