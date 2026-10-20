@@ -26,7 +26,7 @@ electrostatics and the pair law governs its partners in the Table 1 reference ho
 All are solved together by iteration, starting from the current transfer file's values (all 0 for a first build),
 until every |ddG| < 0.0005 kcal/mol and |dpsi| < 0.001.
 Run: python tools/build_gbp_transfer.py [--out pyagadir/params/sidechain_gbp_transfer.tsv]   (the gbp data files in
-energies.GBP_FILES, apart from the transfer itself, must be the ones the offsets are for)
+electrostatics.gb.GBP_FILES, apart from the transfer itself, must be the ones the offsets are for)
 """
 import argparse
 import contextlib
@@ -38,8 +38,9 @@ import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import build_gb_transfer as BT  # noqa: E402
-import pyagadir.energies as E  # noqa: E402
-from pyagadir.energies import EnergyCalculator, gbx_position_class  # noqa: E402
+import pyagadir.electrostatics.gb as GB  # noqa: E402
+from pyagadir.electrostatics.gb import gbx_position_class  # noqa: E402
+from pyagadir.energies import EnergyCalculator  # noqa: E402
 from pyagadir.models import AGADIR  # noqa: E402
 
 OUT = Path(__file__).resolve().parents[1] / "pyagadir/params/sidechain_gbp_transfer.tsv"
@@ -114,7 +115,7 @@ def main():
     a = ap.parse_args()
     global EXCLUDE_PARTNERS
     EXCLUDE_PARTNERS = not a.with_partners
-    tab = E.gbp_tables()
+    tab = GB.gbp_tables()
     work = []  # (kind, cls, aa, ref, pH, seq, host, idx, segs, default ddG part, default psi, default theta)
     for cls, ref in BT.REFS.items():
         for aa in ref["res"]:
@@ -164,9 +165,9 @@ def main():
             print(f"  {aa} {cls}: neutral under gbp at its reference; potential matched + constant", flush=True)
     lines = ["# dipole_law=\"gbp\" transfer (tools/build_gbp_transfer.py): dphi (kcal/mol per +1 charge) added to the GB "
              "potential and const (kcal/mol) added at every charge, per Table 1 class; class Neutral: dphi = the offset "
-             f"(kcal/mol) of the neutral form's energy. gbp files: pairs {Path(str(E.GBP_FILES['pairs'])).name}, "
-             f"neutral {Path(str(E.GBP_FILES['neutral'])).name}, desolv {Path(str(E.GBP_FILES['desolv'])).name}, "
-             f"overrides {Path(str(E.GBP_FILES['overrides'])).name}; "
+             f"(kcal/mol) of the neutral form's energy. gbp files: pairs {Path(str(GB.GBP_FILES['pairs'])).name}, "
+             f"neutral {Path(str(GB.GBP_FILES['neutral'])).name}, desolv {Path(str(GB.GBP_FILES['desolv'])).name}, "
+             f"overrides {Path(str(GB.GBP_FILES['overrides'])).name}; "
              f"last max |ddG| {worst:.4f}, |dpsi| {wpsi:.4f}",
              "residue\tcls\tdphi\tconst\treference\tT_C\tI_M\tpH"]
     for kind, cls, aa, ref, pH, *_ in work:

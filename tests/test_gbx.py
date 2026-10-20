@@ -3,6 +3,7 @@ transferred to it, and the parameters re-derived under it (params/README.md "gbx
 import pytest
 
 import pyagadir.energies as E
+import pyagadir.electrostatics.gb as GB
 from pyagadir.models import AGADIR
 from pyagadir.validation import titrated_ionic_strength
 
@@ -39,11 +40,11 @@ def test_gbx_differs_from_gb_only_by_class_offsets():
     seq = "AAAADAAAAAAAAAAA"
     g = potential(seq, 0, 18, 5, "gb", 0.0, 0.01, 7.0)
     x = potential(seq, 0, 18, 5, "gbx", 0.0, 0.01, 7.0)
-    assert x - g == pytest.approx(E.gbx_tables()["transfer"][("D", "Ncen")], abs=1e-9)
+    assert x - g == pytest.approx(GB.gbx_tables()["transfer"][("D", "Ncen")], abs=1e-9)
 
 
 def test_position_classes():
-    c = E.gbx_position_class
+    c = GB.gbx_position_class
     assert c("D", 0, 9, "Ac") == "Ncap" and c("D", 9, 0, "Ac") == "Ccap"
     assert c("D", 2, 9, "Ac") == "N2" and c("D", 2, 9, "S") == "N2r"
     assert c("E", 3, 9, "S") == "N3cb" and c("E", 3, 9, "A") == "N3r" and c("E", 3, 9, "Ac") == "N3"
@@ -51,7 +52,7 @@ def test_position_classes():
 
 
 def test_overrides_apply_only_under_gbx():
-    tabs = E.gbx_tables()
+    tabs = GB.gbx_tables()
     if not tabs["overrides"]:
         pytest.skip("no table overrides")
     table, row, col, value = tabs["overrides"][0]

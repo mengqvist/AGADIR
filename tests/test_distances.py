@@ -148,7 +148,8 @@ def test_electrostatic_matrix_symmetry(calculator):
 def test_succinyl_ncap_reaches_n2_acid():
     """A succinyl N-cap's carboxylate is 3.95 A from a Glu at N2 in the helix (SUCCINYL_HELIX_DISTANCE), not the
     free-amine Table VI 'N-cap f' distance; an acetyl N-cap peptide keeps the table."""
-    from pyagadir.energies import EnergyCalculator, SUCCINYL_HELIX_DISTANCE
+    from pyagadir.electrostatics.point import SUCCINYL_HELIX_DISTANCE
+    from pyagadir.energies import EnergyCalculator
     sc = EnergyCalculator(seq="AETAAAKFLRAHA", i=0, j=15, pH=5.2, T=3.0, ionic_strength=0.1, ncap="Sc", ccap="Am")
     ac = EnergyCalculator(seq="AETAAAKFLRAHA", i=0, j=15, pH=5.2, T=3.0, ionic_strength=0.1, ncap="Ac", ccap="Am")
     assert sc.terminal_sidechain_distances_nterm[2] == SUCCINYL_HELIX_DISTANCE[("acid", 2)]

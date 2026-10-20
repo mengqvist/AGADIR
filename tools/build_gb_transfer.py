@@ -15,7 +15,7 @@ temperatures). The table-equivalent change of the charged cell is z * dphi (z = 
 
 The guest sits in many helical segments of its host: dphi is the mean over the segments that place it in the class,
 weighted by each segment's statistical weight in the default model (the reference helicity is preserved to first
-order). Classes follow energies.gbx_position_class (get_dG_Int's column choice; N1-N4 per N-cap type; the capping
+order). Classes follow electrostatics.gb.gbx_position_class (get_dG_Int's column choice; N1-N4 per N-cap type; the capping
 box). References:
 - N-cap (D E K R H C Y): Doig & Baldwin 1995 Table 1, NH2-XAKAAAAKAAAAKAAGY-CONH2, 0 C, 1 M NaCl (Cys, Tyr at pH 9.55,
   where they are ionised; the others at pH 5);
@@ -34,7 +34,8 @@ from pathlib import Path
 
 import numpy as np
 
-from pyagadir.energies import EnergyCalculator, gbx_position_class
+from pyagadir.electrostatics.gb import gbx_position_class
+from pyagadir.energies import EnergyCalculator
 from pyagadir.models import AGADIR
 from pyagadir.validation import titrated_ionic_strength
 

@@ -5,6 +5,7 @@ import numpy as np
 import pytest
 
 import pyagadir.energies as E
+import pyagadir.electrostatics.gb as GB
 from pyagadir.models import AGADIR
 
 
@@ -26,7 +27,7 @@ def energy_at(aa, k, L=16, caps="res", **kw):
         c = E.EnergyCalculator(seq=seq, i=1, j=L + 2, pH=pH, T=T, ionic_strength=I, dipole_law=law)
         idx = 1 + k
     assert c.seq_list[idx] == aa
-    return E.GB_DIPOLE_CHARGE[aa] * sum(c._sidechain_dipole_potential(idx))
+    return GB.GB_DIPOLE_CHARGE[aa] * sum(c._sidechain_dipole_potential(idx))
 
 
 def test_default_law_is_unchanged():
@@ -45,17 +46,17 @@ def test_unknown_law_is_refused():
 
 
 def test_table_covers_every_position_and_cap():
-    tab = E.gb_dipole_table()
+    tab = GB.gb_dipole_table()
     assert tab["lmax"] >= 36  # the longest peptide in data/
-    for form in E.GB_DIPOLE_FORM.values():
+    for form in GB.GB_DIPOLE_FORM.values():
         for L in range(4, tab["lmax"] + 1):
             for k in range(L + 2):
                 assert (form, "res", "res", L, k) in tab["helix"]
-            for k in range(1, min(E.GB_NEAR_CAP, L + 1) + 1):
+            for k in range(1, min(GB.GB_NEAR_CAP, L + 1) + 1):
                 assert (form, "Ac", "res", L, k) in tab["helix"]
-            for k in range(max(0, L + 1 - E.GB_NEAR_CAP), L + 1):
+            for k in range(max(0, L + 1 - GB.GB_NEAR_CAP), L + 1):
                 assert (form, "res", "Am", L, k) in tab["helix"]
-            if L <= E.GB_BOTH_CAPS:
+            if L <= GB.GB_BOTH_CAPS:
                 for k in range(1, L + 1):
                     assert (form, "Ac", "Am", L, k) in tab["helix"]
         assert set(tab["coil"][(form, "res", "res")]) == set(range(26))
@@ -97,7 +98,7 @@ def test_coil_reference_spans_the_helix_range():
     # mid-chain: no end correction; next to an end: the chain's own end value
     mid = c._gb_coil("K", "res", "res", 12, 12, kap)
     assert np.isclose(c._gb_coil("K", "res", "res", 9, 30, kap), mid)
-    tab = E.gb_dipole_table()
+    tab = GB.gb_dipole_table()
     e_in, w = tab["coil"][("K", "Ac", "Am")][2]
     end = e_in + np.interp(kap, tab["kappa"], w) / c.epsilon_r
     assert np.isclose(c._gb_coil("K", "Ac", "Am", 2, 30, kap), end)
@@ -109,7 +110,7 @@ def test_energy_is_charge_times_potential_and_has_no_extra_temperature_factor():
     assert c.dipole_temperature_factor() == 1.0
     eN, eC = c.get_dG_sidechain_macrodipole()
     for idx, aa in enumerate(c.seq_list):
-        if aa in E.GB_DIPOLE_CHARGE:
+        if aa in GB.GB_DIPOLE_CHARGE:
             q = float(c.modified_seq_ionization_hel[idx])
             assert np.isclose(eN[idx] + eC[idx], q * sum(c._sidechain_dipole_potential(idx)), atol=1e-12)
             assert np.isclose(c.sidechain_dipole_potential[idx], sum(c._sidechain_dipole_potential(idx)), atol=1e-12)
@@ -140,7 +141,7 @@ def test_flanks_keep_the_default_law_and_tyr_uses_the_table():
 
 
 def test_long_helices_are_end_anchored():
-    tab = E.gb_dipole_table()
+    tab = GB.gb_dipole_table()
     L = tab["lmax"] + 10
     for k in (1, 3):
         assert np.isclose(energy_at("K", k, L=L), energy_at("K", k, L=tab["lmax"]))

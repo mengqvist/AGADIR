@@ -286,7 +286,7 @@ class AGADIR(object):
         elec_temp_factor = self.energy_calculator.dipole_temperature_factor()
 
         # Ionisation free energy of the segment: the part of the mean-field electrostatic free
-        # energy that the q-weighted electrostatic terms below leave out (energies.py,
+        # energy that the q-weighted electrostatic terms below leave out (electrostatics/common.py,
         # _assign_modified_ionization_states).
         dG_ionization = self.energy_calculator.get_dG_ionization()
 

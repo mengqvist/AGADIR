@@ -8,6 +8,7 @@ import numpy as np
 import pytest
 
 import pyagadir.energies as E
+import pyagadir.electrostatics.gb as GB
 from pyagadir.models import AGADIR
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
@@ -24,8 +25,8 @@ def test_pair_energy_is_the_table_value_at_the_residues_charges():
     c = calc("AAAAKAAAEAAAAAA", 7.0)
     i, j = [k for k, aa in enumerate(c.seq_list) if aa in "KE"]
     U, a1, a2, enn = c.gb_pairs[True][(i, j)]
-    row = E.gbp_tables()["pairs"][("K", "E", 4, "helix", "int")]
-    e_cc = E.gb_pair_grid_value(row[("K", "E")], c.T_kelvin, c.kappa * 1e-10)
+    row = GB.gbp_tables()["pairs"][("K", "E", 4, "helix", "int")]
+    e_cc = GB.gb_pair_grid_value(row[("K", "E")], c.T_kelvin, c.kappa * 1e-10)
     assert enn + a1 * 1.0 + a2 * -1.0 + U * -1.0 == pytest.approx(e_cc, abs=1e-12)
 
 
@@ -60,9 +61,9 @@ def test_salt_bridge_network_isolated_pair_and_chain():
     """An isolated pair keeps its cell; the alternating i+3 chain of seven Glu-Lys cells (-0.15 each, 2 C) is the
     exact transfer-matrix free energy, -0.883, not the one-partner rule's -0.60 or the additive -1.05."""
     RT = 1.9872e-3 * 275.15
-    assert E.sb_network_free_energy({(5, 8): -0.15}, RT) == pytest.approx(-0.15, abs=1e-12)
+    assert GB.sb_network_free_energy({(5, 8): -0.15}, RT) == pytest.approx(-0.15, abs=1e-12)
     chain = {(i, i + 3): -0.15 for i in range(0, 21, 3)}
-    assert E.sb_network_free_energy(chain, RT) == pytest.approx(-0.883, abs=0.001)
+    assert GB.sb_network_free_energy(chain, RT) == pytest.approx(-0.883, abs=0.001)
 
 
 def test_point_law_outside_the_gb_pair_range():
@@ -111,7 +112,7 @@ def test_desolvation_row_by_distance_from_the_nearer_end(pos, key):
     seq = "A" * (pos - 1) + "K" + "A" * (16 - pos)
     g, x = calc(seq, 7.0), calc(seq, 7.0, law="gbx")
     idx = g.seq_list.index("K")
-    eg = g._gb_form_energy(E.gb_dipole_table(), "K", idx)
-    ex = x._gb_form_energy(E.gb_dipole_table(), "K", idx)
-    assert eg[0] - ex[0] == pytest.approx(E.gbp_tables()["desolv"][key], abs=1e-12)
+    eg = g._gb_form_energy(GB.gb_dipole_table(), "K", idx)
+    ex = x._gb_form_energy(GB.gb_dipole_table(), "K", idx)
+    assert eg[0] - ex[0] == pytest.approx(GB.gbp_tables()["desolv"][key], abs=1e-12)
     assert eg[1] == pytest.approx(ex[1], abs=1e-12)

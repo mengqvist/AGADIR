@@ -1,4 +1,4 @@
-"""Ionisation solver and electrostatic free energy (energies.py, chemistry.ionization_free_energy)."""
+"""Ionisation solver and electrostatic free energy (electrostatics/common.py, chemistry.ionization_free_energy)."""
 import math
 
 import numpy as np
