@@ -54,7 +54,7 @@ HUYGHUES = Path(__file__).resolve().parents[1] / "data/peptides/1993_huyghues_pr
 
 
 def _huyghues(peptide_id, pH, nacl):
-    """Huyghues-Despointes, Klingler & Baldwin 1993 (Protein Sci. 2, 80): helicity from -[theta]222 with the
+    """Huyghues-Despointes, Scholtz & Baldwin 1993 (Protein Sci. 2, 80): helicity from -[theta]222 with the
     Scholtz 1991 conversion used for this corpus set (theta_H = -40,000(1 - 2.5/n), theta_C = +640)."""
     with HUYGHUES.open() as fh:
         for r in csv.DictReader(fh, delimiter="\t"):

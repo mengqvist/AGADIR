@@ -147,7 +147,7 @@
     "ionic_strength_note": "ADDED at cycle 87 (reasoning/evidence/scripts/ionic_strength.py). The coded values are the NaCl concentrations; the CD buffer's own 1 mM each of sodium citrate, sodium phosphate and sodium borate is not in them. At high salt this is immaterial (4.807 vs 4.8; 1.007 vs 1.0). At LOW salt it is not: I = 0.0172 M against the coded 0.010, i.e. 1.7x. Worse for the purpose these datasets were extracted for, the buffer's own charge is pH-dependent - citrate is ~80% trivalent at pH 7 and essentially protonated at pH 2.25 - so the low-salt rows are I = 0.0172 at pH 7 but I = 0.0107 at pH 2.25. The pH 7 vs pH 2.5 comparison that is the whole point of these papers therefore carries a real 1.6x ionic-strength difference which the coding currently records as no difference at all. Not changed unilaterally; this is the sharpest of the ionic-strength flags."
   },
   "1993_huyghues_protsci2_aspargglurg": {
-    "citation": "Huyghues-Despointes, B.M.P., Klingler, T.M. & Baldwin, R.L. (1993). Helical peptides with three pairs of Asp-Arg and Glu-Arg residues in different orientations and spacings. Protein Sci. 2, 80-85.",
+    "citation": "Huyghues-Despointes, B.M.P., Scholtz, J.M. & Baldwin, R.L. (1993). Helical peptides with three pairs of Asp-Arg and Glu-Arg residues in different orientations and spacings. Protein Sci. 2, 80-85.",
     "source_pdf": "doc/1993_huyghues-despointes_Helical-peptides-with-three-pairs-of-Asp-Arg-and-Glu-Arg-residues-in-different-orientations-and-spacings.pdf",
     "source_table": "Table 1 ('Peptide sequences', repeat notation) joined to Table 2 ('Mean residue ellipticities of Asp-Arg and Glu-Arg peptides')",
     "extractor": "reasoning/evidence/scripts/extract_huyghues1993b.py",

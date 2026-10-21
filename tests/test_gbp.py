@@ -11,7 +11,7 @@ import pyagadir.energies as E
 import pyagadir.electrostatics.gb as GB
 from pyagadir.models import AGADIR
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "gb_pipeline" / "transfer"))
 
 
 def calc(seq, pH, law="gbp", T=25.0, M=0.1, ncap="Ac", ccap="Am"):
@@ -77,9 +77,9 @@ def test_point_law_outside_the_gb_pair_range():
 
 @pytest.mark.parametrize("cls,aa", [("Ncen", "E"), ("Ncap", "D"), ("Neutral", "E")])
 def test_transfer_reproduces_default_at_reference(cls, aa):
-    """At a Table 1 value's reference measurement (tools/build_gb_transfer.REFS), the guest-minus-Ala-host segment
+    """At a Table 1 value's reference measurement (gb_pipeline/transfer/build_gb_transfer.REFS), the guest-minus-Ala-host segment
     free energy under gbp equals the default model's, weighted over the segments that place the guest in the class,
-    with the guest's interactions with charged host residues left out on both sides (tools/build_gbp_transfer.py).
+    with the guest's interactions with charged host residues left out on both sides (gb_pipeline/transfer/build_gbp_transfer.py).
     Class Neutral: Chakrabartty et al.'s Ncen host at a pH where the guest is neutral."""
     T = pytest.importorskip("build_gbp_transfer")
     ref = T.BT.REFS["Ncen" if cls == "Neutral" else cls]

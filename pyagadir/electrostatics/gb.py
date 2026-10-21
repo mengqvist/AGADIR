@@ -3,17 +3,19 @@ Generalized Born electrostatics: dipole_law "gb", "gbx" and "gbp". Opt-in and in
 point-charge law (point.py).
 
 "gb": the Generalized Born field of the helix backbone on the charged side chain, tabulated from built poly-Ala helices
-(params/sidechain_dipole_gb.tsv, made by tools/build_gb_dipole_table.py; params/README.md), in place of the
-point-charge side chain-macrodipole law.
+(params/sidechain_dipole_gb.tsv, made by gb_pipeline/helix_builds/build_gb_dipole_table.py; params/README.md), in place
+of the point-charge side chain-macrodipole law.
 "gbx": the GB law with every Table 1 value that was measured with the default law in the loop transferred to it (a
 potential offset per residue and Table 1 class at that value's reference measurement, params/
-sidechain_dipole_gb_transfer.tsv, made by tools/build_gb_transfer.py) and the parameters re-derived under it
-(params/gbx_overrides.tsv). See params/README.md "gbx".
+sidechain_dipole_gb_transfer.tsv, made by gb_pipeline/transfer/build_gb_transfer.py) and the parameters re-derived
+under it (params/gbx_overrides.tsv). See params/README.md "gbx".
 "gbp": gbx plus the Generalized Born side chain-side chain pair law (params/sidechain_pair_gb.tsv, made by
-tools/build_gb_pair_table.py) in place of the point-charge pair term, the exact two-state coupling of every
-ionisable group to both laws (each protonation form's own GB energy, so a group's pKa shifts by the charged-minus-
-neutral energy), the statistical salt-bridge network for the Table IV acid-base cells, and the Table 1 transfer of
-all of it (params/sidechain_gbp_transfer.tsv, tools/build_gbp_transfer.py). See params/README.md "gbp".
+gb_pipeline/helix_builds/build_gb_pair_table.py) in place of the point-charge pair term, the exact two-state coupling
+of every ionisable group to both laws (each protonation form's own GB energy, so a group's pKa shifts by the
+charged-minus-neutral energy), the statistical salt-bridge network for the Table IV acid-base cells, and the Table 1
+transfer of all of it (params/sidechain_gbp_transfer.tsv, gb_pipeline/transfer/build_gbp_transfer.py). See
+params/README.md "gbp". How every GB table is made, and the structures, MD runs and intermediates behind it:
+gb_pipeline/README.md.
 
 The GB laws keep the point-charge law for the terminal groups, for charged residues outside the caps, for table rows
 with no sterically allowed structure, and (gbp) for pairs the pair table does not cover.
@@ -270,7 +272,7 @@ class GBElectrostatics:
     def _gb_dipole_potential(self, idx: int) -> tuple[float, float]:
         """
         dipole_law="gb": energy (kcal/mol) of a +1 charge on residue idx from the helix backbone, by Generalized Born
-        on built poly-Ala helices (params/sidechain_dipole_gb.tsv, tools/build_gb_dipole_table.py), helix minus coil.
+        on built poly-Ala helices (params/sidechain_dipole_gb.tsv, gb_pipeline/helix_builds/build_gb_dipole_table.py), helix minus coil.
         For Lys, Arg, His+, Asp, Glu, Cys- or Tyr- at position k = 0 (N-cap) .. L + 1 (C-cap) of a helix with L
         helical residues:
 

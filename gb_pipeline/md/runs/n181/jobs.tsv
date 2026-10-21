@@ -1,0 +1,9 @@
+job	variant	state	replica	ns	atoms
+cA16_coil1	cA16	coil	1	50	19048
+cA16_coil2	cA16	coil	2	50	19039
+cA16_coil3	cA16	coil	3	50	19042
+cA16_coil4	cA16	coil	4	50	19033
+cA16_coil5	cA16	coil	5	50	19063
+cA16_coil6	cA16	coil	6	50	19054
+cA16_coil7	cA16	coil	7	50	19042
+cA16_coil8	cA16	coil	8	50	19036

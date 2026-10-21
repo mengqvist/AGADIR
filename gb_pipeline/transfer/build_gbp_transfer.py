@@ -3,10 +3,10 @@ params/sidechain_gbp_transfer.tsv.
 
 gbp changes three things the Table 1 values were measured with: the side chain-macrodipole law (GB, as gbx), the side
 chain-side chain pair law (GB pairs in place of point charges) and the coupling of each ionisable group to both (each
-protonation form's own GB energy). At every reference measurement of tools/build_gb_transfer.REFS (the source's host
+protonation form's own GB energy). At every reference measurement of build_gb_transfer.REFS (the source's host
 with the guest in the class, its temperature, ionic strength and pH), the offsets make the gbp model reproduce the
 default model's guest-minus-host difference of the segment free energy, weighted over the segments that place the
-guest in the class by their statistical weights in the default model (as tools/build_gb_transfer.py):
+guest in the class by their statistical weights in the default model (as gb_pipeline/transfer/build_gb_transfer.py):
     ddG = [dG(gbp) - dG(default)](guest) - [dG(gbp) - dG(default)](Ala host)  ->  0
 The guest's interactions with charged host residues (its pair electrostatics and its i,i+3 / i,i+4 Table IV terms with
 them) are left out of both sides (--with-partners keeps them), so the offsets carry only the guest's own
@@ -25,8 +25,8 @@ electrostatics and the pair law governs its partners in the Table 1 reference ho
   where the guest is neutral (Asp/Glu pH 2, His pH 9, Lys pH 12.5): offset -= ddG / (1 - theta).
 All are solved together by iteration, starting from the current transfer file's values (all 0 for a first build),
 until every |ddG| < 0.0005 kcal/mol and |dpsi| < 0.001.
-Run: python tools/build_gbp_transfer.py [--out pyagadir/params/sidechain_gbp_transfer.tsv]   (the gbp data files in
-electrostatics.gb.GBP_FILES, apart from the transfer itself, must be the ones the offsets are for)
+Run: python gb_pipeline/transfer/build_gbp_transfer.py [--out pyagadir/params/sidechain_gbp_transfer.tsv]
+(the gbp data files in electrostatics.gb.GBP_FILES, apart from the transfer itself, must be the ones the offsets are for)
 """
 import argparse
 import contextlib
@@ -43,7 +43,7 @@ from pyagadir.electrostatics.gb import gbx_position_class  # noqa: E402
 from pyagadir.energies import EnergyCalculator  # noqa: E402
 from pyagadir.models import AGADIR  # noqa: E402
 
-OUT = Path(__file__).resolve().parents[1] / "pyagadir/params/sidechain_gbp_transfer.tsv"
+OUT = Path(__file__).resolve().parents[2] / "pyagadir/params/sidechain_gbp_transfer.tsv"
 NEUTRAL_PH = {"D": 2.0, "E": 2.0, "H": 9.0, "K": 12.5}
 
 
@@ -163,7 +163,7 @@ def main():
     for (cls, aa), m in mode.items():
         if m == "const":
             print(f"  {aa} {cls}: neutral under gbp at its reference; potential matched + constant", flush=True)
-    lines = ["# dipole_law=\"gbp\" transfer (tools/build_gbp_transfer.py): dphi (kcal/mol per +1 charge) added to the GB "
+    lines = ["# dipole_law=\"gbp\" transfer (gb_pipeline/transfer/build_gbp_transfer.py): dphi (kcal/mol per +1 charge) added to the GB "
              "potential and const (kcal/mol) added at every charge, per Table 1 class; class Neutral: dphi = the offset "
              f"(kcal/mol) of the neutral form's energy. gbp files: pairs {Path(str(GB.GBP_FILES['pairs'])).name}, "
              f"neutral {Path(str(GB.GBP_FILES['neutral'])).name}, desolv {Path(str(GB.GBP_FILES['desolv'])).name}, "

@@ -1,6 +1,7 @@
 """Build pyagadir/params/sidechain_pair_gb.tsv: the Generalized Born interaction between two charged side chains in
 the helix and in the coil, for the side chain-side chain electrostatics of the GB laws (the companion of
-tools/build_gb_dipole_table.py, whose structures, charges, rotamer rule and Born radii it uses unchanged).
+gb_pipeline/helix_builds/build_gb_dipole_table.py, whose structures, charges, rotamer rule and Born radii it uses
+unchanged).
 
 Physics (continuum electrostatics, nothing fitted)
 --------------------------------------------------
@@ -50,9 +51,9 @@ dipole_law="gbp" (params/sidechain_pair_gb.tsv, params/README.md "gbp")
   ideal helices of this builder recomputed with all-Ala hydrogens fixed, coil rows from an MD coil ensemble of
   Ac-A16-NH2 (CHARMM36m, 278 K; side chains threaded onto non-helical frames with this builder's rotamer rule).
 Requirements (not package dependencies): PeptideBuilder 1.1, biopython, pdb2pqr 3.7, numpy, scipy, pandas.
-Run:  OMP_NUM_THREADS=1 python tools/build_gb_pair_table.py --raw RAW.tsv.gz --forms [--workers 16]
-      python tools/build_gb_pair_table.py --derive-grid RAW.tsv.gz --eps-in 16 [--helix-md H.npz] [--coil-md C1.npz,...]
-          [--out pyagadir/params/sidechain_pair_gb.tsv]
+Run:  OMP_NUM_THREADS=1 python gb_pipeline/helix_builds/build_gb_pair_table.py --raw RAW.tsv.gz --forms [--workers 16]
+      python gb_pipeline/helix_builds/build_gb_pair_table.py --derive-grid RAW.tsv.gz --eps-in 16 [--helix-md H.npz]
+          [--coil-md C1.npz,...] [--out pyagadir/params/sidechain_pair_gb.tsv]
 """
 import argparse
 import gzip
@@ -70,7 +71,7 @@ import numpy as np
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import build_gb_dipole_table as D  # noqa: E402
 
-OUT = Path(__file__).resolve().parents[1] / "pyagadir/params/sidechain_pair_gb.tsv"
+OUT = Path(__file__).resolve().parents[2] / "pyagadir/params/sidechain_pair_gb.tsv"
 PAIR_RES = {"K": "LYS", "R": "ARG", "H": "HIP", "D": "ASP", "E": "GLU"}
 Z = {"K": 1.0, "R": 1.0, "H": 1.0, "D": -1.0, "E": -1.0}
 KMAX = 12
@@ -528,7 +529,7 @@ def derive(raw, out, eps_in=D.PDIE, desolv=True):
     t["n_comb"] = t.n_comb.astype(int)
     t = t.sort_values(["X", "Y", "k", "state", "cls"])
     with open(out, "w") as fh:
-        fh.write("# Generalized Born interaction of two charged side chains X(i), Y(i+k) (tools/build_gb_pair_table.py).\n")
+        fh.write("# Generalized Born interaction of two charged side chains X(i), Y(i+k) (gb_pipeline/helix_builds/build_gb_pair_table.py).\n")
         fh.write("# E(kappa, T) = E_in + W(kappa) / eps_w(T), kcal/mol, charged forms; W columns at kappa in 1/A.\n")
         fh.write("# helix cls: int (both inside), Ncap (X is the N-cap residue), Ccap (Y is the C-cap residue);\n")
         fh.write("# coil: mean of a PPII and a beta 24-residue chain; n_comb = allowed chi1 well combinations averaged.\n")
@@ -574,7 +575,7 @@ def _grid_free(E, mean):
 def coil_md_rows(npz):
     """Records computed on other backbones (MD coil frames, or helices recomputed with fixed hydrogens; several files
     comma-separated, frames numbered on) as a DataFrame in the raw-forms layout. The records are made by the
-    development frame pipeline (reasoning/evidence/scripts/n181_coil_gb.py, n181_coil_run.py, n181_helix_run.py)."""
+    frame pipeline (gb_pipeline/postprocessing/n181_coil_gb.py, n181_coil_run.py, n181_helix_run.py)."""
     import pandas as pd
     if "," in str(npz):
         parts = [coil_md_rows(p) for p in str(npz).split(",")]
@@ -670,7 +671,7 @@ def derive_grid(raw, out, eps_in=D.PDIE, desolv=True, mean=False, coil_md=None, 
     t = t.sort_values(["X", "Y", "k", "state", "cls", "fX", "fY"])
     with open(out, "w") as fh:
         fh.write("# Generalized Born interaction of two ionisable side chains X(i), Y(i+k), every protonation form "
-                 "(tools/build_gb_pair_table.py --derive-grid).\n")
+                 "(gb_pipeline/helix_builds/build_gb_pair_table.py --derive-grid).\n")
         fh.write(f"# F = -RT ln <exp(-E/RT)> over the allowed rotamer combinations{' (mean, not free energy)' if mean else ''}; "
                  f"E = cross term{' + both residues desolvation' if desolv else ''}, eps_in {eps_in:g}; kcal/mol.\n")
         fh.write("# columns F_<T K>_<kappa 1/A>: the (T, kappa) grid, interpolated linearly. Forms: K K0 R H+ H0 D D0 E E0; "

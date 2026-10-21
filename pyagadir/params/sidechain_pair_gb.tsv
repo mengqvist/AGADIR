@@ -1,4 +1,4 @@
-# Generalized Born interaction of two ionisable side chains X(i), Y(i+k), every protonation form (tools/build_gb_pair_table.py --derive-grid).
+# Generalized Born interaction of two ionisable side chains X(i), Y(i+k), every protonation form (gb_pipeline/helix_builds/build_gb_pair_table.py --derive-grid).
 # F = -RT ln <exp(-E/RT)> over the allowed rotamer combinations; E = cross term + both residues desolvation, eps_in 16; kcal/mol.
 # columns F_<T K>_<kappa 1/A>: the (T, kappa) grid, interpolated linearly. Forms: K K0 R H+ H0 D D0 E E0; H0 = HID/HIE mixture (HIE 0.8).
 # coil: MD coil frames (Ac-A16-NH2, CHARMM36m, 278 K, 8 replicas; params/README.md "gbp"); helix cls: int, Ncap (X is the N-cap), Ccap (Y is the C-cap).

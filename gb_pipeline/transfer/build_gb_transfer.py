@@ -25,7 +25,7 @@ box). References:
   pH 7; residue N-caps ("N1r".."N4r"): the same host with an Ala N-cap and a free N-terminus;
 - N3 behind an S/T/D/N N-cap (Glu, the capping box): Zhou et al. 1994, Ac-YMSEDELKAAEAAFKRHGPT-NH2, 4 C, pH 6,
   0.01 M.
-Run: python tools/build_gb_transfer.py [--out pyagadir/params/sidechain_dipole_gb_transfer.tsv]
+Run: python gb_pipeline/transfer/build_gb_transfer.py [--out pyagadir/params/sidechain_dipole_gb_transfer.tsv]
 """
 import argparse
 import contextlib
@@ -39,7 +39,7 @@ from pyagadir.energies import EnergyCalculator
 from pyagadir.models import AGADIR
 from pyagadir.validation import titrated_ionic_strength
 
-OUT = Path(__file__).resolve().parents[1] / "pyagadir/params/sidechain_dipole_gb_transfer.tsv"
+OUT = Path(__file__).resolve().parents[2] / "pyagadir/params/sidechain_dipole_gb_transfer.tsv"
 Z = {"D": -1, "E": -1, "K": 1, "R": 1, "H": 1, "C": -1, "Y": -1}
 I_PET = titrated_ionic_strength(0.005, 7.0, {"sodium_phosphate_M": 0.005, "prepared_pH": 7.0})
 
@@ -102,7 +102,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", default=str(OUT))
     a = ap.parse_args()
-    lines = ["# dipole_law=\"gbx\" transfer offsets (tools/build_gb_transfer.py): dphi = phi_default - phi_gb (kcal/mol per "
+    lines = ["# dipole_law=\"gbx\" transfer offsets (gb_pipeline/transfer/build_gb_transfer.py): dphi = phi_default - phi_gb (kcal/mol per "
              "+1 charge) at each Table 1 value's reference; table-equivalent cell change = z * dphi",
              "residue\tcls\tdphi\tcell_change\treference\tT_C\tI_M\tpH"]
     for cls, ref in REFS.items():

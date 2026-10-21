@@ -269,8 +269,9 @@ class AGADIR(object):
         dG_electrost_term_term = self.energy_calculator.get_dG_terminal_terminal_electrost()
 
         # Salt effects on the neutral helix (Scholtz et al. 1991, JACS 113:5102; see params/README.md).
-        # Salting-in: the shape of equation 12 of the paper, per helical segment, at the measured
-        # amplitude 0.30 kcal/mol (the paper's 0.15 was fitted without a salting-out term).
+        # Salting-in: the form of equation 12 of the paper, -a (1 - exp(-b I)), per helical segment, with
+        # a = 0.30 kcal/mol (the measured amplitude; the paper's 0.15 was fitted without a salting-out term) and
+        # b = 3 /M (the paper's 6), which keeps the paper's low-salt slope a * b = 0.9 kcal/mol per M.
         alpha = 0.30
         beta = 3.0
         dG_ionic = -alpha * (1 - np.exp(-beta * self.molarity))

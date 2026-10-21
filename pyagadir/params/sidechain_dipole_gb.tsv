@@ -1,4 +1,4 @@
-# Generalized Born field of the helix backbone on a charged side chain (tools/build_gb_dipole_table.py).
+# Generalized Born field of the helix backbone on a charged side chain (gb_pipeline/helix_builds/build_gb_dipole_table.py).
 # E(kappa, T) = E_in + W(kappa) / eps_w(T), kcal/mol, charged form; W columns at kappa in 1/A.
 # helix: L helical residues, k = 0 (N-cap) .. L + 1 (C-cap); coil: L = 24 chains, PPII/beta mean.
 # ncap/ccap: res = residue cap, Ac = acetyl, Am = amide; n_rot = allowed chi1 wells averaged.

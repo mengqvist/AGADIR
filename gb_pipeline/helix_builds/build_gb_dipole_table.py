@@ -61,9 +61,9 @@ does not use). Helix rows: (res, res) for L = 4..40, k = 0..L+1; (Ac, res) for k
 and (Ac, Am), k = 0..25, mean over PPII and beta.
 
 Requirements (not package dependencies): PeptideBuilder 1.1, biopython, pdb2pqr 3.7, numpy, scipy.
-Run:  OMP_NUM_THREADS=1 python tools/build_gb_dipole_table.py --raw RAW.tsv.gz [--workers 12]
-      python tools/build_gb_dipole_table.py --derive RAW.tsv.gz --supplement SUP.tsv.gz [--rule strict]
-             [--out pyagadir/params/sidechain_dipole_gb.tsv]
+Run:  OMP_NUM_THREADS=1 python gb_pipeline/helix_builds/build_gb_dipole_table.py --raw RAW.tsv.gz [--workers 12]
+      python gb_pipeline/helix_builds/build_gb_dipole_table.py --derive RAW.tsv.gz --supplement SUP.tsv.gz
+             [--rule strict] [--out pyagadir/params/sidechain_dipole_gb.tsv]
 """
 import argparse
 import gzip
@@ -77,7 +77,7 @@ from pathlib import Path
 
 import numpy as np
 
-OUT = Path(__file__).resolve().parents[1] / "pyagadir/params/sidechain_dipole_gb.tsv"
+OUT = Path(__file__).resolve().parents[2] / "pyagadir/params/sidechain_dipole_gb.tsv"
 BACKBONE = {"N", "H", "CA", "HA", "C", "O"}
 PDIE, PROBE, RB, H_GRID = 4.0, 1.4, 10.0, 0.3
 CLASH, HBOND_MIN = 2.8, 2.5
@@ -432,7 +432,7 @@ def derive(raw, out, rule="strict", supplement=None, forms=None):
     t = t.sort_values(["order", "state", "ncap", "ccap", "L", "k"], ascending=[True, False, True, True, True, True])
     with open(out, "w") as fh:
         fh.write("# Generalized Born field of the helix backbone on a " + ("charged" if forms == CHARGED else "neutral")
-                 + " side chain (tools/build_gb_dipole_table.py).\n")
+                 + " side chain (gb_pipeline/helix_builds/build_gb_dipole_table.py).\n")
         fh.write("# E(kappa, T) = E_in + W(kappa) / eps_w(T), kcal/mol, " + ("charged form" if forms == CHARGED else
                  "neutral forms " + " ".join(forms)) + "; W columns at kappa in 1/A.\n")
         fh.write("# helix: L helical residues, k = 0 (N-cap) .. L + 1 (C-cap); coil: L = 24 chains, PPII/beta mean.\n")

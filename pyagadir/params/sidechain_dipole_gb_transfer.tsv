@@ -1,4 +1,4 @@
-# dipole_law="gbx" transfer offsets (tools/build_gb_transfer.py): dphi = phi_default - phi_gb (kcal/mol per +1 charge) at each Table 1 value's reference; table-equivalent cell change = z * dphi
+# dipole_law="gbx" transfer offsets (gb_pipeline/transfer/build_gb_transfer.py): dphi = phi_default - phi_gb (kcal/mol per +1 charge) at each Table 1 value's reference; table-equivalent cell change = z * dphi
 residue	cls	dphi	cell_change	reference	T_C	I_M	pH
 D	Ncap	-2.6691	+2.6691	Doig & Baldwin 1995 Table 1	0	1.00001	5
 E	Ncap	-0.8370	+0.8370	Doig & Baldwin 1995 Table 1	0	1.00001	5

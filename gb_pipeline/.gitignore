@@ -1,0 +1,10 @@
+# Non-text and large files stay out of git. MANIFEST.sha256 lists every one of them with its checksum, so a copy
+# restored from an archive can be checked (README.md, "Data").
+data/*.gz
+data/*.npz
+md/results/*.npz
+md/runs/**/*.pdb
+md/runs/**/*.xml
+md/runs/**/*.xml.gz
+md/runs/**/traj/
+__pycache__/

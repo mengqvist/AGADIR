@@ -1,4 +1,4 @@
-# dipole_law="gbp" transfer (tools/build_gbp_transfer.py): dphi (kcal/mol per +1 charge) added to the GB potential and const (kcal/mol) added at every charge, per Table 1 class; class Neutral: dphi = the offset (kcal/mol) of the neutral form's energy. gbp files: pairs sidechain_pair_gb.tsv, neutral sidechain_dipole_gb_neutral.tsv, desolv sidechain_dipole_gb_desolv.tsv, overrides gbp_overrides.tsv; last max |ddG| 0.0000, |dpsi| 0.0000
+# dipole_law="gbp" transfer (gb_pipeline/transfer/build_gbp_transfer.py): dphi (kcal/mol per +1 charge) added to the GB potential and const (kcal/mol) added at every charge, per Table 1 class; class Neutral: dphi = the offset (kcal/mol) of the neutral form's energy. gbp files: pairs sidechain_pair_gb.tsv, neutral sidechain_dipole_gb_neutral.tsv, desolv sidechain_dipole_gb_desolv.tsv, overrides gbp_overrides.tsv; last max |ddG| 0.0000, |dpsi| 0.0000
 residue	cls	dphi	const	reference	T_C	I_M	pH
 D	Ncap	-1.1871	0.0000	Doig & Baldwin 1995 Table 1	0	1.00001	5
 E	Ncap	-0.0978	0.0000	Doig & Baldwin 1995 Table 1	0	1.00001	5
