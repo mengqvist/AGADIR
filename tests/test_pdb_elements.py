@@ -1,6 +1,7 @@
 """pyagadir.pdb_elements on two designs of Rocklin et al. (2017), checked against the values the
 authors computed with Rosetta (study/score_monomeric_designs/scripts/expected_results_for_test_designs.sc).
 """
+import json
 from pathlib import Path
 
 import numpy as np
@@ -166,3 +167,14 @@ def test_incomplete_residue_breaks_the_chain(tmp_path):
     path.write_text("\n".join(kept) + "\n")
     dssp = assign_secondary_structure(read_pdb(path)).dssp
     assert dssp[9] == "X"
+
+
+def test_command_line_writes_json(tmp_path, monkeypatch, capsys):
+    out = tmp_path / "scores.json"
+    pdb = STRUCTURES / "HEEH_rd4_0428.pdb"
+    monkeypatch.setattr("sys.argv", ["pdb_elements", str(pdb), "--no-agadir", "--json", str(out)])
+    pdb_elements.main()
+    data = json.loads(out.read_text())
+    assert data["summary"]["n_residues"] == len(data["residues"]) == 43
+    assert data["buried_unsatisfied"]
+    assert sum(site["free_hydrogens"] for site in data["buried_unsatisfied"]) == data["summary"]["buried_unsat_hydrogens"]

@@ -232,25 +232,6 @@ class PointChargeElectrostatics:
                             modelled[idx] = True
                 hel[idx], rc[idx] = d_hel, d_rc
 
-    def get_terminal_sidechain_distances(self):
-        """
-        Get the helix-state distances between the peptide terminal groups and the charged sidechains.
-        """
-        return self.terminal_sidechain_distances_nterm, self.terminal_sidechain_distances_cterm
-
-    def show_terminal_sidechain_distances(self):
-        """
-        Print out the distances for the peptide terminal residues and the charged sidechains in a nicely formatted way.
-        """
-        print(self._make_box("Terminal sidechain distances (Å)"))
-        print(f'{"sequence:".ljust(self.category_pad)} {"".join([aa.ljust(self.value_pad) for aa in self.seq_list])}')
-        for label, arr in (("nterm hel:", self.terminal_sidechain_distances_nterm),
-                           ("nterm rc:", self.terminal_sidechain_distances_nterm_rc),
-                           ("cterm hel:", self.terminal_sidechain_distances_cterm),
-                           ("cterm rc:", self.terminal_sidechain_distances_cterm_rc)):
-            print(f'{label.ljust(self.category_pad)} {"".join([f"{d:.2f}".ljust(self.value_pad) for d in arr])}')
-        print("")
-
     def _assign_terminal_macrodipole_distances(self):
         """
         Assign the distance between the peptide terminal groups and the helix macrodipole: Lacroix 1998's linear
@@ -260,26 +241,6 @@ class PointChargeElectrostatics:
         """
         self.terminal_macrodipole_distance_nterm = self._calculate_r(self.ncap_idx)
         self.terminal_macrodipole_distance_cterm = self._calculate_r(len(self.seq_list) - 1 - self.ccap_idx)
-
-    def get_terminal_macrodipole_distances(self) -> tuple[float, float]:
-        """
-        Get the distances for the peptide terminal residues and the helix macrodipole.
-        Only computes N-terminal distance to the N-terminal helix dipole and 
-        C-terminal distance to the C-terminal helix dipole.
-
-        Returns:
-            tuple[float, float]: Distances between the peptide N-terminal and C-terminal residues and the helix macrodipole
-        """
-        return self.terminal_macrodipole_distance_nterm, self.terminal_macrodipole_distance_cterm
-    
-    def show_terminal_macrodipole_distances(self):
-        """
-        Print out the distances for the peptide terminal residues and the helix macrodipole in a nicely formatted way.
-        """
-        print(self._make_box("Terminal macrodipole distances (Å)"))
-        print(f'{"nterm:".ljust(self.category_pad)} {self.terminal_macrodipole_distance_nterm:.2f}')
-        print(f'{"cterm:".ljust(self.category_pad)} {self.terminal_macrodipole_distance_cterm:.2f}')
-        print("")
 
     def _assign_sidechain_sidechain_distances(self):
         """
@@ -412,28 +373,6 @@ class PointChargeElectrostatics:
 
             self.sidechain_sidechain_distances_hel[idx1, idx2] = distance_angstrom
             self.sidechain_sidechain_distances_hel[idx2, idx1] = distance_angstrom
-
-    def get_sidechain_sidechain_distances(self):
-        """
-        Get the charged sidechain distances for the sequence, both for helical and random-coil states.
-        """
-        return self.sidechain_sidechain_distances_hel, self.charged_sidechain_distances_rc
-
-    def show_sidechain_sidechain_distances(self):
-        """
-        Print out the charged sidechain distances for the sequence in a nicely formatted way.
-        """
-        print(self._make_box("Charged sidechain distances, helix (Å)"))
-        print(f'{"".ljust(self.category_pad)}{"".join([aa.ljust(self.value_pad) for aa in self.seq_list])}')
-        for i in range(len(self.seq_list)):
-            print(f'{self.seq_list[i].ljust(self.category_pad)}{"".join([f"{d:.2f}".ljust(self.value_pad) for d in self.sidechain_sidechain_distances_hel[i]])}')
-        print("")
-
-        print(self._make_box("Charged sidechain distances, coil (Å)"))
-        print(f'{"".ljust(self.category_pad)}{"".join([aa.ljust(self.value_pad) for aa in self.seq_list])}')
-        for i in range(len(self.seq_list)):
-            print(f'{self.seq_list[i].ljust(self.category_pad)}{"".join([f"{d:.2f}".ljust(self.value_pad) for d in self.charged_sidechain_distances_rc[i]])}')
-        print("")
 
     def _point_pair_energy(self, idx1: int, idx2: int):
         """

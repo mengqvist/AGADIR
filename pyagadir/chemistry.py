@@ -1,5 +1,3 @@
-from typing import Dict
-import warnings
 import math
 
 # Physical constants (CODATA 2018 exact or recommended values); every module takes them from here.
@@ -11,64 +9,6 @@ K_BOLTZMANN = 1.380649e-23  # J/K
 EPSILON_0 = 8.8541878128e-12  # vacuum permittivity, C^2/(N m^2)
 # Reference temperature of the temperature laws (0 C; Munoz & Serrano 1995-III write it as 273 K).
 T_REF = 273.15
-
-
-def calculate_ionic_strength(ion_concentrations: Dict[str, float]) -> float:
-    """
-    Calculate the ionic strength of a solution containing various ions commonly used in biological systems.
-
-    Args:
-        ion_concentrations: A dictionary with ion names as keys and their
-                            concentrations (in M) as values.
-
-    Returns:
-        The ionic strength of the solution in M.
-    """
-    ion_charges = {
-        # Monovalent cations
-        "Na+": 1,
-        "K+": 1,
-        "Li+": 1,
-        "NH4+": 1,
-        # Divalent cations
-        "Ca2+": 2,
-        "Mg2+": 2,
-        "Mn2+": 2,
-        "Fe2+": 2,
-        "Zn2+": 2,
-        "Cu2+": 2,
-        # Monovalent anions
-        "Cl-": -1,
-        "Br-": -1,
-        "I-": -1,
-        "F-": -1,
-        "NO3-": -1,
-        "HCO3-": -1,
-        # Divalent anions
-        "SO42-": -2,
-        "HPO42-": -2,
-        # Trivalent anions
-        "PO43-": -3,
-    }
-
-    # Check for negative or zero concentrations
-    if any(conc <= 0 for conc in ion_concentrations.values()):
-        raise ValueError("Ion concentrations cannot be negative or zero")
-
-    # Check for any unrecognized ions
-    unrecognized = [ion for ion in ion_concentrations if ion not in ion_charges]
-    if unrecognized:
-        warnings.warn(
-            f"The following ions were not recognized and were not included in the calculation: {', '.join(unrecognized)}"
-        )
-
-    inoic_strength = 0.5 * sum(
-        conc * ion_charges[ion] ** 2
-        for ion, conc in ion_concentrations.items()
-        if ion in ion_charges
-    )
-
-    return inoic_strength
 
 
 def adjust_pKa(T: float, pKa_ref: float, deltaG: float, is_basic: bool) -> float:

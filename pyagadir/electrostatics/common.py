@@ -74,21 +74,6 @@ class Electrostatics(GBElectrostatics, PointChargeElectrostatics):
                 self.sidechain_dipole_potential[idx] = factor * sum(self._sidechain_dipole_potential(idx))
         self._assign_gb_neutral_energies()
 
-    def get_sidechain_dipole_potentials(self):
-        """
-        Get the helix-state macrodipole potential on each residue (kcal/mol per +1 charge).
-        """
-        return self.sidechain_dipole_potential
-
-    def show_sidechain_dipole_potentials(self):
-        """
-        Print out the helix-state macrodipole potentials in a nicely formatted way.
-        """
-        print(self._make_box("Sidechain macrodipole potential (kcal/mol per +1)"))
-        print(f'{"sequence:".ljust(self.category_pad)} {"".join([aa.ljust(self.value_pad) for aa in self.seq_list])}')
-        print(f'{"potential:".ljust(self.category_pad)} {"".join([f"{p:.2f}".ljust(self.value_pad) for p in self.sidechain_dipole_potential])}')
-        print("")
-
     def _assign_modified_ionization_states(self):
         """
         Self-consistent mean-field ionisation in the helix and coil ensembles, and the ionisation
@@ -281,29 +266,6 @@ class Electrostatics(GBElectrostatics, PointChargeElectrostatics):
         self.modified_cterm_ionization_rc = rc_c
 
         self.dG_ionization = g_hel - g_rc
-
-    def get_modified_ionization_states(self):
-        """
-        Get the modified ionization states for the sequence.
-        """
-        return self.modified_seq_ionization_hel, self.modified_nterm_ionization_hel, self.modified_cterm_ionization_hel
-
-    def show_modified_ionization_states(self):
-        """
-        Print out the modified ionization states for the sequence in a nicely formatted way.
-        """
-        print(self._make_box("Modified ionization states, helix"))
-        print(f'{"sequence:".ljust(self.category_pad)} {"".join([aa.ljust(self.value_pad) for aa in self.seq_list])}')
-        print(f'{"charge:".ljust(self.category_pad)} {"".join([f"{q:.2f}".ljust(self.value_pad) for q in self.modified_seq_ionization_hel])}')
-        print(f'{"nterm_charge:".ljust(self.category_pad)} {self.modified_nterm_ionization_hel:.2f}')
-        print(f'{"cterm_charge:".ljust(self.category_pad)} {self.modified_cterm_ionization_hel:.2f}')
-        print("")
-        print(self._make_box("Modified ionization states, coil"))
-        print(f'{"sequence:".ljust(self.category_pad)} {"".join([aa.ljust(self.value_pad) for aa in self.seq_list])}')
-        print(f'{"charge:".ljust(self.category_pad)} {"".join([f"{q:.2f}".ljust(self.value_pad) for q in self.modified_seq_ionization_rc])}')
-        print(f'{"nterm_charge:".ljust(self.category_pad)} {self.modified_nterm_ionization_rc:.2f}')
-        print(f'{"cterm_charge:".ljust(self.category_pad)} {self.modified_cterm_ionization_rc:.2f}')
-        print("")
 
     def get_dG_sidechain_macrodipole(self) -> tuple[np.ndarray, np.ndarray]:
         """

@@ -850,7 +850,7 @@ def buried_unsatisfied_polar_atoms(
         to_donor = np.asarray(atoms[i]["N"], float) - amide_h[i]
         to_acceptor = acceptor_xyz - amide_h[i]
         cosine = np.dot(to_donor, to_acceptor) / (np.linalg.norm(to_donor) * np.linalg.norm(to_acceptor))
-        return np.linalg.norm(to_acceptor) <= 2.5 and cosine <= np.cos(np.radians(120.0))
+        return bool(np.linalg.norm(to_acceptor) <= 2.5 and cosine <= np.cos(np.radians(120.0)))
 
     def peptide_bonded(a: Tuple, b: Tuple) -> bool:
         (i, atom_i), (j, atom_j) = a[:2], b[:2]

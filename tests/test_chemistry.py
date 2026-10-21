@@ -2,32 +2,12 @@ import pytest
 import numpy as np
 
 from pyagadir.chemistry import (
-    calculate_ionic_strength,
     adjust_pKa,
     acidic_residue_ionization,
     basic_residue_ionization,
     calculate_permittivity,
     debye_screening_kappa
 )
-
-
-def test_calculate_ionic_strength():
-    # Test with monovalent ions
-    assert calculate_ionic_strength({"Na+": 0.1, "Cl-": 0.1}) == 0.1
-    
-    # Test with divalent ions
-    assert calculate_ionic_strength({"Ca2+": 0.1, "SO42-": 0.1}) == 0.4
-    
-    # Test with mixed ions
-    assert calculate_ionic_strength({"Na+": 0.1, "Ca2+": 0.1, "Cl-": 0.3}) == 0.4
-    
-    # Test warning for unrecognized ions
-    with pytest.warns(UserWarning):
-        calculate_ionic_strength({"Unknown": 0.1})
-    
-    # Test error for negative concentrations
-    with pytest.raises(ValueError):
-        calculate_ionic_strength({"Na+": -0.1})
 
 
 def test_adjust_pKa():

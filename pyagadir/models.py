@@ -153,73 +153,6 @@ class AGADIR(object):
         self.has_amide = False
 
         self.min_helix_length = 6  # default from Lacroix 1998
-        self.debug = False
-
-    def _print_debug_info(self, 
-                          dG_nonH: np.ndarray, 
-                          dG_Int: np.ndarray,
-                          dG_terminals_dipole_N: np.ndarray, 
-                          dG_terminals_dipole_C: np.ndarray, 
-                          dG_sidechain_dipole_N: np.ndarray, 
-                          dG_sidechain_dipole_C: np.ndarray, 
-                          dG_sidechain_dipole: np.ndarray, 
-                          dG_electrost_term_N: np.ndarray,
-                          dG_electrost_term_C: np.ndarray,
-                          dG_electrost_sidechain: np.ndarray,
-                          dG_SD: np.ndarray, 
-                          dG_staple: float, 
-                          dG_schellman: float, 
-                          dG_Hbond: float, 
-                          dG_ionic: float, 
-                          dG_Hel: float, 
-                          i: int, 
-                          j: int) -> None:
-        """
-        Print debug information for a helical segment.
-
-        Args:
-            dG_terminals_dipole_N (np.ndarray): The free energy for the N-terminal capping residue.
-            dG_terminals_dipole_C (np.ndarray): The free energy for the C-terminal capping residue.
-            dG_nonH (np.ndarray): The free energy for the non-hydrogen bond capping residues.
-            dG_Int (np.ndarray): The intrinsic free energy for the helical segment.
-            dG_sidechain_dipole_N (np.ndarray): The free energy for the N-terminal side chain dipole.
-            dG_sidechain_dipole_C (np.ndarray): The free energy for the C-terminal side chain dipole.
-            dG_sidechain_dipole (np.ndarray): The total free energy for the side chain dipoles.
-            dG_electrost_term_N (np.ndarray): The free energy for the electrostatic interactions between N-terminal charges and side chains.
-            dG_electrost_term_C (np.ndarray): The free energy for the electrostatic interactions between C-terminal charges and side chains.
-            dG_electrost_sidechain (np.ndarray): The free energy for the electrostatic interactions between charged side chains.
-            dG_SD (np.ndarray): The free energy for the side chain-side chain interactions.
-            dG_staple (float): The free energy for the hydrophobic staple motif.
-            dG_schellman (float): The free energy for the schellman motif.
-            dG_Hbond (float): The free energy for the main chain-main chain H-bonds.
-            dG_ionic (float): The free energy of the salt terms (salting-in and Hofmeister salting-out).
-            dG_Hel (float): The total free energy for the helical segment.
-            i (int): The starting position of the helical segment.
-            j (int): The length of the helical segment.
-        """
-        # make fancy printout for debugging and development
-        for seq_idx, arr_idx in zip(range(i, i + j), range(j)):
-            print(f"Helix: start= {i+1} end= {i+j}  length=  {j}")
-            print(f"residue index = {seq_idx+1}")
-            print(f"residue = {self.result.seq_list[seq_idx]}")
-            print(f"g dipole terminal N = {dG_terminals_dipole_N[seq_idx]}")
-            print(f"g dipole terminal C = {dG_terminals_dipole_C[seq_idx]}")
-            print(f"g capping =   {dG_nonH[seq_idx]:.4f}")
-            print(f"g intrinsic = {dG_Int[seq_idx]:.4f}")
-            print(f"g dipole sidechain N = {dG_sidechain_dipole_N[seq_idx]:.4f}")
-            print(f"g dipole sidechain C = {dG_sidechain_dipole_C[seq_idx]:.4f}")
-            print(f"g dipole sidechain total = {dG_sidechain_dipole[seq_idx]:.4f}")
-            print(f"gresidue = {dG_terminals_dipole_N[seq_idx] + dG_terminals_dipole_C[seq_idx] + dG_nonH[seq_idx] + dG_Int[seq_idx] + dG_sidechain_dipole[seq_idx]:.4f}")
-            print("****************")
-        print("Additional terms for helical segment")
-        print(f"i,i+3 and i,i+4 side chain-side chain interaction = {sum(dG_SD):.4f}")
-        print(f"g staple = {dG_staple:.4f}")
-        print(f"g schellman = {dG_schellman:.4f}")
-        print(f"dG_electrost = {(np.sum(dG_electrost_sidechain) + np.sum(dG_electrost_term_N) + np.sum(dG_electrost_term_C)):.4f}")
-        print(f"main chain-main chain H-bonds = {dG_Hbond:.4f}")
-        print(f"salt terms (salting-in + Hofmeister) {dG_ionic:.4f}")
-        print(f"total Helix free energy = {dG_Hel:.4f}")
-        print("==============================================")
 
     def _calc_dG_Hel(self, i: int, j: int) -> Tuple[np.float64, Dict[str, float]]:
         """
@@ -316,27 +249,6 @@ class AGADIR(object):
             + dG_ionization
         )
 
-        if self.debug:
-            self._print_debug_info(
-                                dG_nonH=dG_nonH, 
-                                dG_Int=dG_Int, 
-                                dG_terminals_dipole_N=dG_terminals_dipole_N, 
-                                dG_terminals_dipole_C=dG_terminals_dipole_C, 
-                                dG_sidechain_dipole_N=dG_sidechain_dipole_N, 
-                                dG_sidechain_dipole_C=dG_sidechain_dipole_C, 
-                                dG_sidechain_dipole=dG_sidechain_dipole, 
-                                dG_electrost_term_N=dG_electrost_term_N,
-                                dG_electrost_term_C=dG_electrost_term_C,
-                                dG_electrost_sidechain=dG_electrost_sidechain, 
-                                dG_SD=dG_SD, 
-                                dG_staple=dG_staple, 
-                                dG_schellman=dG_schellman, 
-                                dG_Hbond=dG_Hbond, 
-                                dG_ionic=dG_ionic, 
-                                dG_Hel=dG_Hel, 
-                                i=i, 
-                                j=j)
-
         return dG_Hel
 
     def _calc_K(self, dG_Hel: float) -> float:
@@ -415,7 +327,7 @@ class AGADIR(object):
         self.result.percent_helix = float(np.round(np.mean(self.result.helical_propensity[start:end]), 2))
 
 
-    def predict(self, seq: str, ncap: str = None, ccap: str = None, debug: bool = False) -> ModelResult:
+    def predict(self, seq: str, ncap: str = None, ccap: str = None) -> ModelResult:
         """
         Predict helical propensity for a given sequence.
 
@@ -423,7 +335,6 @@ class AGADIR(object):
             seq (str): Input sequence.
             ncap (str): N-terminal capping modification (acetylation='Ac', succinylation='Sc').
             ccap (str): C-terminal capping modification (amidation='Am').
-            debug (bool): Whether to print debug information.
 
         Returns:
             ModelResult: Object containing the predicted helical propensity.
@@ -431,10 +342,6 @@ class AGADIR(object):
         # check for valid sequence
         is_valid_peptide_sequence(seq)
         seq = seq.upper()
-
-        if not isinstance(debug, bool):
-            raise ValueError("Debug must be a boolean")
-        self.debug = debug
 
         # check for valid ncap and ccap
         is_valid_ncap_ccap(ncap, ccap)

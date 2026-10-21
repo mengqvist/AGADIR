@@ -317,10 +317,6 @@ class PrecomputeParams(Electrostatics):
         self.modified_nterm_ionization_rc = None
         self.modified_cterm_ionization_rc = None
 
-        # for printing
-        self.category_pad = 15
-        self.value_pad = 6
-
         # find charged pairs
         self._find_charged_pairs()
 
@@ -348,34 +344,6 @@ class PrecomputeParams(Electrostatics):
             for idx1, idx2 in itertools.combinations(charged_idx, 2)
         ]
 
-    def _make_box(self, title: str):
-        """
-        Make a box with a title in the middle.
-        For making nice looking output when printing.
-        """
-        box_lines = []
-        box_lines.append('+' + '-' * (len(title) + 2) + '+')
-        box_lines.append('|' + f'{title.center(len(title) + 2)}' + '|')
-        box_lines.append('+' + '-' * (len(title) + 2) + '+')
-        return '\n'.join(box_lines)
-
-    def show_inputs(self):
-        """
-        Print out the inputs for the AGADIR model in a nicely formatted way.
-        """
-        print(self._make_box("Inputs"))
-        print(f'seq = {self.seq}, i = {self.i}, j = {self.j}, pH = {self.pH}, T(celcius) = {self.T_celsius}, ionic_strength = {self.ionic_strength}, ncap = {self.ncap}, ccap = {self.ccap}')
-        print("")
-
-    def show_helix(self):
-        """
-        Print out the helix in a nicely formatted way.
-        """
-        print(self._make_box("Helix"))
-        print(f'{"sequence:".ljust(self.category_pad)} {"".join([aa.ljust(self.value_pad) for aa in self.seq_list])}')
-        print(f'{"structure:".ljust(self.category_pad)} {"".join(["He".ljust(self.value_pad) if self.i <= idx < self.i + self.j else "STC".ljust(self.value_pad) for idx, aa in enumerate(self.seq_list)])}')
-        print("")
-
     def _assign_pka_values(self):
         """
         Assign pKa values to the sequence and the terminal residues.
@@ -388,28 +356,6 @@ class PrecomputeParams(Electrostatics):
         if self.ncap is None and f"Nterm_{self.seq_list[0]}" in self.table_pka_values.index:
             self.nterm_pka = float(self.table_pka_values.loc[f"Nterm_{self.seq_list[0]}"]["pKa"])
         self.cterm_pka = float(self.table_pka_values.loc["Cterm"]["pKa"]) if self.ccap is None else np.nan
-
-    def get_pka_values(self):
-        """
-        Get pKa values for the sequence and the terminal residues.
-
-        Returns:
-            np.ndarray: pKa values for the sequence.
-            float: pKa value for the N-terminal capping group.
-            float: pKa value for the C-terminal capping group.
-        """
-        return self.seq_pka, self.nterm_pka, self.cterm_pka
-    
-    def show_pka_values(self):
-        """
-        Print out pKa values for the sequence in a nicely formatted way.
-        """
-        print(self._make_box("pKa values"))
-        print(f'{"sequence:".ljust(self.category_pad)} {"".join([aa.ljust(self.value_pad) for aa in self.seq_list])}')
-        print(f'{"pKa:".ljust(self.category_pad)} {"".join([f"{pka:.2f}".ljust(self.value_pad) for pka in self.seq_pka])}')
-        print(f'{"nterm_pka:".ljust(self.category_pad)} {self.nterm_pka:.2f}')
-        print(f'{"cterm_pka:".ljust(self.category_pad)} {self.cterm_pka:.2f}')
-        print("")
 
     def _assign_ionization_states(self):
         """
@@ -431,42 +377,6 @@ class PrecomputeParams(Electrostatics):
         self.cterm_ionization = (
             acidic_residue_ionization(self.pH, self.cterm_pka) if self.ccap is None else 0.0
         )
-    
-    def get_ionization_states(self):
-        """
-        Get the ionization states for the sequence and the terminal residues.
-
-        Returns:
-            np.ndarray: Ionization states for the sequence.
-            float: Ionization state for the N-terminal capping group.
-            float: Ionization state for the C-terminal capping group.
-        """
-        return self.seq_ionization, self.nterm_ionization, self.cterm_ionization
-
-    def show_ionization_states(self):
-        """
-        Print out ionization states for the sequence in a nicely formatted way.
-        """
-        print(self._make_box("Ionization states"))
-        print(f'{"sequence:".ljust(self.category_pad)} {"".join([aa.ljust(self.value_pad) for aa in self.seq_list])}')
-        print(f'{"charge:".ljust(self.category_pad)} {"".join([f"{q:.2f}".ljust(self.value_pad) for q in self.seq_ionization])}')
-        print(f'{"nterm_charge:".ljust(self.category_pad)} {self.nterm_ionization:.2f}')
-        print(f'{"cterm_charge:".ljust(self.category_pad)} {self.cterm_ionization:.2f}')
-        print("")
-
-    def show_all(self):
-        """
-        Print out all the inputs, helix, pKa values, and ionization states in a nicely formatted way.
-        """
-        self.show_inputs()
-        self.show_helix()
-        self.show_pka_values()
-        self.show_ionization_states()
-        self.show_modified_ionization_states()
-        self.show_terminal_macrodipole_distances()
-        self.show_sidechain_dipole_potentials()
-        self.show_terminal_sidechain_distances()
-        self.show_sidechain_sidechain_distances()
 
 
 class EnergyCalculator(PrecomputeParams):
