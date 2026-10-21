@@ -102,11 +102,11 @@ class Electrostatics(GBElectrostatics, PointChargeElectrostatics):
         terminal-side chain geometry of _assign_terminal_sidechain_distances and the side
         chain-side chain distances of _assign_sidechain_sidechain_distances.
 
-        Point-charge law: psi also carries the derivative of the charge-dependent non-Coulomb terms of the helix
-        state (Table 1 charged/neutral cells, capping rules, Table IV/V, Petukhov and charged-staple motifs) with
-        respect to the group's charged fraction, dG_nonC/dp_a = c_a + sum_b c_ab p_b
-        (_nonCoulomb_charge_coefficients): Lacroix 1998 takes those terms into account in the pKa, and the mean-field
-        free energy is stationary in p only with them. The GB laws leave them out.
+        psi also carries the derivative of the charge-dependent non-Coulomb terms of the helix state (Table 1
+        charged/neutral cells, capping rules, Table IV/V, Petukhov and charged-staple motifs) with respect to the
+        group's charged fraction, dG_nonC/dp_a = c_a + sum_b c_ab p_b (_nonCoulomb_charge_coefficients): Lacroix
+        1998 takes those terms into account in the pKa, and the mean-field free energy is stationary in p only with
+        them.
 
         The energy terms evaluate sum q_i q_j W_ij + sum q_i phi_i at the converged charges. That is
         the mean-field energy, not the free energy: it leaves out the cost of moving each group's
@@ -184,7 +184,7 @@ class Electrostatics(GBElectrostatics, PointChargeElectrostatics):
                 d = self.sidechain_sidechain_distances_hel[idx1, idx2] if helix else self.charged_sidechain_distances_rc[idx1, idx2]
             return 99.0 if np.isnan(d) else float(d)
 
-        nonC_a, nonC_ab = self._nonCoulomb_charge_coefficients() if self._nonCoulomb_in_pKa() else ({}, {})
+        nonC_a, nonC_ab = self._nonCoulomb_charge_coefficients()
         nonC_partners = {}
         for (a, b), c in nonC_ab.items():
             nonC_partners.setdefault(a, []).append((b, c))
@@ -201,13 +201,11 @@ class Electrostatics(GBElectrostatics, PointChargeElectrostatics):
                 # macrodipole: the same terms as get_dG_terminals_macrodipole and
                 # get_dG_sidechain_macrodipole
                 if kind1 == "Nterm":
-                    if self._terminal_dipole_in_range(self.ncap_idx):
-                        psi += self._electrostatic_interaction_energy(
-                            qi=self.mu_helix, qj=q1, r=self.terminal_macrodipole_distance_nterm, factor_pi=4.0)
+                    psi += self._electrostatic_interaction_energy(
+                        qi=self.mu_helix, qj=q1, r=self.terminal_macrodipole_distance_nterm, factor_pi=4.0)
                 elif kind1 == "Cterm":
-                    if self._terminal_dipole_in_range(n - 1 - self.ccap_idx):
-                        psi += self._electrostatic_interaction_energy(
-                            qi=-self.mu_helix, qj=q1, r=self.terminal_macrodipole_distance_cterm, factor_pi=4.0)
+                    psi += self._electrostatic_interaction_energy(
+                        qi=-self.mu_helix, qj=q1, r=self.terminal_macrodipole_distance_cterm, factor_pi=4.0)
                 else:
                     psi += q1 * self.sidechain_dipole_potential[idx1]
             for kind2, idx2 in sites:

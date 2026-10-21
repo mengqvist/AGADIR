@@ -242,6 +242,4 @@ def test_assign_terminal_macrodipole_distances(precompute_instance):
     assert instance4.terminal_macrodipole_distance_cterm is not None
     assert np.isclose(instance4.terminal_macrodipole_distance_nterm, 6.1, atol=0.001)  # succinyl
     assert np.isclose(instance4.terminal_macrodipole_distance_cterm, 6.1, atol=0.001)
-    # the GB laws keep the earlier cubic: _terminal_macrodipole_r(2) ~ 5.45 A
-    assert np.isclose(instance3._terminal_macrodipole_r(2), 5.45, atol=0.01)
 

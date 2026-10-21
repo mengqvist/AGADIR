@@ -105,9 +105,9 @@ From `gb_pipeline/md/scripts` with `.venv-md`:
 `s1b_queue.py` needs a stop time (`--stop-at-uk HH:MM`) or `--max-hours`; a job pauses at a chunk boundary
 and the next call resumes it.
 
-**Status:** replicas 1-6 are complete (50 ns). Replica 7 paused at 14 ns and replica 8 at 20 ns, so they give 2 and 5
-of the 127 frames. Leaving them out changes the coil rows of the pair table by at most 0.002 kcal/mol. Both can be resumed with the queue
-command above.
+**Status:** all eight replicas are complete (50 ns; 160 frames). Replicas 7 and 8 were first paused at 14 and 20 ns and
+resumed on 2026-10-21 (one GPU, about 470-570 ns/day); completing them moved the coil rows of the pair table by at most
+0.006 kcal/mol.
 
 ## Data
 

@@ -18,14 +18,12 @@ def test_r_ladder_matches_lacroix():
 
 def test_terminal_macrodipole_distances_full_length_helix_are_minimum():
     """
-    Full-length helix => N=0 at both ends => r = 2.1 Å at both ends (Lacroix 1998's rule, 2.1 + 2N Å). The GB laws
-    keep the earlier cubic, which gives 2.0 Å at N = 0.
+    Full-length helix => N=0 at both ends => r = 2.1 Å at both ends (Lacroix 1998's rule, 2.1 + 2N Å).
     """
     calc, _, _ = get_calculator(None, None)
 
     assert np.isclose(calc.terminal_macrodipole_distance_nterm, 2.1, atol=1e-6)
     assert np.isclose(calc.terminal_macrodipole_distance_cterm, 2.1, atol=1e-6)
-    assert np.isclose(calc._terminal_macrodipole_r(0), 2.0, atol=1e-6)
 
 
 def test_terminal_macrodipole_energies_match_expectation_NN():

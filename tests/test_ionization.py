@@ -154,9 +154,9 @@ def _solver_mean_field_energy(c, helix):
             E += c._electrostatic_interaction_energy(a[2], b[2], r)
     if helix:
         for kind, k, q in sites:
-            if kind == "N" and c._terminal_dipole_in_range(c.ncap_idx):
+            if kind == "N":
                 E += c._electrostatic_interaction_energy(c.mu_helix, q, c.terminal_macrodipole_distance_nterm)
-            elif kind == "C" and c._terminal_dipole_in_range(n - 1 - c.ccap_idx):
+            elif kind == "C":
                 E += c._electrostatic_interaction_energy(-c.mu_helix, q, c.terminal_macrodipole_distance_cterm)
             elif kind == "S":
                 E += q * c.sidechain_dipole_potential[k]

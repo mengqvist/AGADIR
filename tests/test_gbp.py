@@ -35,12 +35,19 @@ def test_pair_energy_is_the_table_value_at_the_residues_charges():
                                     ("AAAAHAAADAAAAAA", 6.5), ("AAKAEAAAAAAAAAA", 4.0)])
 def test_coupling_matches_exact_microstate_enumeration(seq, pH):
     """The segment's electrostatic free energy (pair term + macrodipole with the neutral forms' energies + ionisation
-    free energy) equals the exact free energy of the four protonation microstates, each with its own GB energies."""
+    free energy) equals the exact free energy of the four protonation microstates, each with its own GB energies. The
+    charge-dependent non-Coulomb terms (here the charged/neutral propensities) are part of both: in the model through
+    the solver's pKa, in each microstate as its own energy (exact: they are bilinear in the charged fractions)."""
     c = calc(seq, pH)
     n, cc = c.get_dG_sidechain_macrodipole()
-    model = np.sum(c.get_dG_sidechain_sidechain_electrost()) + np.sum(n + cc) + c.get_dG_ionization()
-    rt = R_KCAL * c.T_kelvin
     idx = [k for k, aa in enumerate(c.seq_list) if aa in "KEHD"]
+    c_a, c_ab = c._nonCoulomb_charge_coefficients()
+    na = [c_a.get(k, 0.0) for k in idx]
+    nab = c_ab.get((idx[0], idx[1]), 0.0)
+    p = [abs(float(c.modified_seq_ionization_hel[k])) for k in idx]
+    model = (np.sum(c.get_dG_sidechain_sidechain_electrost()) + np.sum(n + cc) + c.get_dG_ionization()
+             + na[0] * p[0] + na[1] * p[1] + nab * p[0] * p[1])
+    rt = R_KCAL * c.T_kelvin
     z = [1.0 if c.seq_list[k] in "KH" else -1.0 for k in idx]
     x = [10 ** ((c.seq_pka[k] - pH) if zz > 0 else (pH - c.seq_pka[k])) for k, zz in zip(idx, z)]
 
@@ -53,6 +60,8 @@ def test_coupling_matches_exact_microstate_enumeration(seq, pH):
             for s2 in (0, 1):
                 q1, q2 = z[0] * s1, z[1] * s2
                 e = enn + q1 * a1 + q2 * a2 + q1 * q2 * U + q1 * phi[0] + q2 * phi[1] + const
+                if helix:
+                    e += s1 * na[0] + s2 * na[1] + s1 * s2 * nab
                 Z += x[0] ** s1 * x[1] ** s2 * math.exp(-e / rt)
         return -rt * math.log(Z)
     assert model == pytest.approx(free_energy(True) - free_energy(False), abs=1e-3)
@@ -77,18 +86,12 @@ def test_point_law_outside_the_gb_pair_range():
 
 
 @pytest.mark.parametrize("cls,aa", [("Ncen", "E"), ("Ncap", "D"), ("Neutral", "E")])
-def test_transfer_reproduces_default_at_reference(cls, aa, monkeypatch):
+def test_transfer_reproduces_default_at_reference(cls, aa):
     """At a Table 1 value's reference measurement (gb_pipeline/transfer/build_gb_transfer.REFS), the guest-minus-Ala-host segment
     free energy under gbp equals the default model's, weighted over the segments that place the guest in the class,
     with the guest's interactions with charged host residues left out on both sides (gb_pipeline/transfer/build_gbp_transfer.py).
-    Class Neutral: Chakrabartty et al.'s Ncen host at a pH where the guest is neutral.
-    The transfer was derived against the point-charge law before its mean-field cleanup (electrostatics/point.py,
-    _solver_consistent_terms and _nonCoulomb_in_pKa), which the GB laws keep; the default side is evaluated that way.
-    Re-derive the transfer if the cleanup is ported to the GB laws."""
+    Class Neutral: Chakrabartty et al.'s Ncen host at a pH where the guest is neutral."""
     T = pytest.importorskip("build_gbp_transfer")
-    from pyagadir.electrostatics.point import PointChargeElectrostatics
-    monkeypatch.setattr(PointChargeElectrostatics, "_solver_consistent_terms", lambda self: False)
-    monkeypatch.setattr(PointChargeElectrostatics, "_nonCoulomb_in_pKa", lambda self: False)
     ref = T.BT.REFS["Ncen" if cls == "Neutral" else cls]
     pH = T.NEUTRAL_PH[aa] if cls == "Neutral" else ref.get("pH_res", {}).get(aa, ref["pH"])
     seq, idx, segs = T.segments("Ncen" if cls == "Neutral" else cls, aa, ref, pH)
