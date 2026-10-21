@@ -4,10 +4,10 @@ import math
 import numpy as np
 import pytest
 
-from pyagadir.chemistry import ionization_free_energy
+from pyagadir.chemistry import R_KCAL, ionization_free_energy
 from pyagadir.energies import EnergyCalculator
 
-RT = 1.9865e-3 * 273.15
+RT = R_KCAL * 273.15
 
 
 @pytest.mark.parametrize("ln_x", [-6.0, -2.3, 0.0, 1.7, 8.0])
@@ -36,8 +36,9 @@ def _calc(seq, ncap, ccap, pH, T=0.0, M=0.01, i=None, j=None):
 
 
 def test_segment_ionization_free_energy_zero_when_groups_fully_charged():
+    """The three Lys at pH 7 are 99.9 % charged in both states; their ionisation cost is ~1e-3 kcal/mol."""
     c = _calc("AKAAAAKAAAAKAAGY", "Ac", "Am", pH=7.0)
-    assert abs(c.get_dG_ionization()) < 1e-3
+    assert abs(c.get_dG_ionization()) < 2e-3
 
 
 def test_segment_ionization_free_energy_positive_for_titrating_acid_pairs():
@@ -91,23 +92,133 @@ def test_his_his_pair_matches_exact_microstate_enumeration(pH):
     distances ("charged pairs not included before"). Its electrostatic segment energy (pair term
     at the solver's fractional charges + macrodipole + ionisation free energy) must equal the
     exact free energy of the four protonation microstates, so no further protonation scaling
-    belongs on the pair term."""
+    belongs on the pair term. The charge-dependent non-Coulomb terms (here the His charged/neutral propensities) are
+    part of both: in the model through the solver's pKa (point-charge law), in each microstate as its own energy."""
     seq = "AAAAAHAAAHAAAAA"
     c = EnergyCalculator(seq=seq, i=0, j=len(seq) + 2, pH=pH, T=25.0, ionic_strength=0.1, ncap="Ac", ccap="Am")
     his = [k for k, aa in enumerate(c.seq_list) if aa == "H"]
     n, cc = c.get_dG_sidechain_macrodipole()
+    c_a, c_ab = c._nonCoulomb_charge_coefficients()
+    p = [abs(float(c.modified_seq_ionization_hel[k])) for k in his]
+    nonC = (sum(c_a.get(k, 0.0) * pk for k, pk in zip(his, p))
+            + c_ab.get((his[0], his[1]), 0.0) * p[0] * p[1])
     model = (np.sum(c.get_dG_sidechain_sidechain_electrost()) + np.sum(n + cc) * c.dipole_temperature_factor()
-             + c.get_dG_ionization())
+             + c.get_dG_ionization() + nonC)
 
-    rt = 1.9865e-3 * c.T_kelvin
+    rt = R_KCAL * c.T_kelvin
     x = [10 ** (c.seq_pka[k] - pH) for k in his]
 
     def free_energy(helix):
         d = (c.sidechain_sidechain_distances_hel if helix else c.charged_sidechain_distances_rc)[his[0], his[1]]
         w = c._electrostatic_interaction_energy(1.0, 1.0, d)
-        phi = [c.sidechain_dipole_potential[k] if helix else 0.0 for k in his]
+        phi = [c.sidechain_dipole_potential[k] + c_a.get(k, 0.0) if helix else 0.0 for k in his]
+        w += c_ab.get((his[0], his[1]), 0.0) if helix else 0.0
         z = sum(x[0] ** s1 * x[1] ** s2 * math.exp(-(s1 * phi[0] + s2 * phi[1] + s1 * s2 * w) / rt)
                 for s1 in (0, 1) for s2 in (0, 1))
         return -rt * math.log(z)
 
     assert model == pytest.approx(free_energy(True) - free_energy(False), abs=0.005)
+
+
+def _solver_mean_field_energy(c, helix):
+    """E = sum_a q_a phi_a + sum_{a<b} q_a q_b W_ab over the sites, distances (< 40 A) and field the ionisation solver
+    uses, at its converged charges for that state."""
+    import itertools
+    n = len(c.seq_list)
+    sites = []  # (kind, idx, charge)
+    if c.seq_list[0] != "Ac":
+        sites.append(("N", None, c.modified_nterm_ionization_hel if helix else c.modified_nterm_ionization_rc))
+    q_sc = c.modified_seq_ionization_hel if helix else c.modified_seq_ionization_rc
+    for k, aa in enumerate(c.seq_list):
+        if aa in c.neg_charge_aa + c.pos_charge_aa:
+            sites.append(("S", k, float(q_sc[k])))
+    if c.seq_list[-1] != "Am":
+        sites.append(("C", None, c.modified_cterm_ionization_hel if helix else c.modified_cterm_ionization_rc))
+
+    def dist(a, b):
+        if a[0] != "S" and b[0] != "S":
+            return c._calculate_r(n - 1)
+        if a[0] != "S" or b[0] != "S":
+            t, k = (a[0], b[1]) if a[0] != "S" else (b[0], a[1])
+            arr = {("N", True): c.terminal_sidechain_distances_nterm, ("N", False): c.terminal_sidechain_distances_nterm_rc,
+                   ("C", True): c.terminal_sidechain_distances_cterm, ("C", False): c.terminal_sidechain_distances_cterm_rc}
+            d = arr[(t, helix)][k]
+        else:
+            d = (c.sidechain_sidechain_distances_hel if helix else c.charged_sidechain_distances_rc)[a[1], b[1]]
+        return 99.0 if np.isnan(d) else float(d)
+
+    E = 0.0
+    for a, b in itertools.combinations(sites, 2):
+        r = dist(a, b)
+        if r < 40.0:
+            E += c._electrostatic_interaction_energy(a[2], b[2], r)
+    if helix:
+        for kind, k, q in sites:
+            if kind == "N" and c._terminal_dipole_in_range(c.ncap_idx):
+                E += c._electrostatic_interaction_energy(c.mu_helix, q, c.terminal_macrodipole_distance_nterm)
+            elif kind == "C" and c._terminal_dipole_in_range(n - 1 - c.ccap_idx):
+                E += c._electrostatic_interaction_energy(-c.mu_helix, q, c.terminal_macrodipole_distance_cterm)
+            elif kind == "S":
+                E += q * c.sidechain_dipole_potential[k]
+    return E
+
+
+@pytest.mark.parametrize("seq,ncap,ccap,pH,M,i,j", [
+    ("KAAAAKAAAAKAAAAY", None, None, 7.0, 0.005, 0, 9),     # Lys1 and its own amine; t-t pair
+    ("AEAAAKAAAAKAAAAD", None, None, 7.0, 0.005, 3, 8),     # side chain pairs without helix geometry
+    ("AKAAAAKAAAAKAAGY", "Ac", "Am", 7.0, 0.01, 3, 8),      # straddling pair
+    ("YGGSAEAAAKAAKRAAAE", None, None, 8.0, 0.005, 8, 9),   # ungated terminus-side chain pairs
+    ("AEAAAKEAAAKEAAAKA", "Sc", "Am", 4.5, 0.01, 0, 9),     # succinyl
+])
+def test_point_energy_terms_are_the_solver_mean_field_energy(seq, ncap, ccap, pH, M, i, j):
+    """Point-charge law: the electrostatic energy terms equal E(helix) - E(coil) of the solver's own pairs and field,
+    so that with dG_ionization they are the mean-field free energy of the coupled titration."""
+    c = EnergyCalculator(seq=seq, i=i, j=j, pH=pH, T=0.0, ionic_strength=M, ncap=ncap, ccap=ccap)
+    tN, tC = c.get_dG_terminals_macrodipole()
+    sN, sC = c.get_dG_sidechain_macrodipole()
+    eN, eC = c.get_dG_terminals_sidechain_electrost()
+    terms = (np.sum(tN) + np.sum(tC) + np.sum(sN + sC) * c.dipole_temperature_factor() + np.sum(eN + eC)
+             + np.sum(c.get_dG_sidechain_sidechain_electrost()) + c.get_dG_terminal_terminal_electrost())
+    assert terms == pytest.approx(_solver_mean_field_energy(c, True) - _solver_mean_field_energy(c, False), abs=1e-9)
+
+
+@pytest.mark.parametrize("seq,ncap,ccap,pH,i,j", [
+    ("SAAEAAAAKAAAAEAAKAQAAD", "Ac", "Am", 4.5, 1, 16),  # capping box Glu at N3, Lys/Glu interpolation
+    ("AAQAADAAAAQAAEAANAAKA", "Ac", "Am", 4.0, 0, 21),   # Table V Gln-Asp-, Gln-Glu-, Glu--Asn
+    ("DAKAAEDAAAKAAAAD", None, None, 4.2, 0, 16),       # free termini, Asp C-cap, Petukhov-type N-terminus
+    ("YGGSHAAAAKAAAAEHAAAKA", "Ac", "Am", 6.3, 4, 15),   # His N-cap and interior His
+])
+def test_point_law_charges_minimise_the_mean_field_free_energy(seq, ncap, ccap, pH, i, j):
+    """Point-charge law: at the solver's helix-state charges, the helix-state mean-field free energy (ionisation
+    entropy + Coulomb energy terms + charge-dependent non-Coulomb terms) is stationary in every side chain's charged
+    fraction, which is what feeding dG_nonC/dp into the pKa achieves (Lacroix 1998: such terms enter the pKa)."""
+    c = EnergyCalculator(seq=seq, i=i, j=j, pH=pH, T=0.0, ionic_strength=0.01, ncap=ncap, ccap=ccap)
+    rt = R_KCAL * c.T_kelvin
+
+    def helix_energy():
+        tN, tC = c.get_dG_terminals_macrodipole()
+        sN, sC = c.get_dG_sidechain_macrodipole()
+        eN, eC = c.get_dG_terminals_sidechain_electrost()
+        return (np.sum(tN) + np.sum(tC) + np.sum(sN + sC) * c.dipole_temperature_factor() + np.sum(eN + eC)
+                + np.sum(c.get_dG_sidechain_sidechain_electrost()) + c.get_dG_terminal_terminal_electrost()
+                + c._charge_dependent_nonCoulomb_energy())
+
+    q0 = c.modified_seq_ionization_hel.copy()
+    for k in range(c.ncap_idx, c.ccap_idx + 1):
+        aa = c.seq_list[k]
+        if aa not in c.neg_charge_aa + c.pos_charge_aa:
+            continue
+        z = -1.0 if aa in c.neg_charge_aa else 1.0
+        p = abs(float(q0[k]))
+        if not 0.02 < p < 0.98:
+            continue
+        h = 1e-4
+        e = []
+        for dp in (h, -h):
+            c.modified_seq_ionization_hel = q0.copy()
+            c.modified_seq_ionization_hel[k] = z * (p + dp)
+            e.append(helix_energy())
+        c.modified_seq_ionization_hel = q0
+        ln_x = (c.seq_pka[k] - pH if z > 0 else pH - c.seq_pka[k]) * math.log(10)
+        grad = rt * math.log(p / (1 - p)) - rt * ln_x + (e[0] - e[1]) / (2 * h)
+        assert abs(grad) < 0.03, (aa, k, grad)

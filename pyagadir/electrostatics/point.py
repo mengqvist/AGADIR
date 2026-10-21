@@ -15,7 +15,7 @@ import math
 
 import numpy as np
 
-from pyagadir.chemistry import calculate_permittivity
+from pyagadir.chemistry import T_REF, calculate_permittivity
 
 POINT_LAW = "munoz"
 
@@ -32,7 +32,8 @@ SUCCINYL_HELIX_DISTANCE = {("acid", 1): 9.33, ("acid", 2): 3.95, ("acid", 3): 5.
 # eq. 11 and the other end as a half charge (Hol, van Duijnen & Berendsen 1978), screened Coulomb in water. Poisson-
 # Boltzmann calculations on built helices (interior dielectric 4; Asp/Glu at N1-N3 and Lys/Arg at C1-C3, helix lengths
 # 6-28) give 0.82 times that half-charge law (least squares through the origin over 72 cases), so the far end is scaled
-# by this factor. The flank half charges are not. See params/README.md.
+# by this factor. The flank half charges are not (params/README.md: the same calculation on flanking residues gives 0.63,
+# but the measured data prefer the unscaled law).
 FEH_FAR_APBS = 0.82
 
 
@@ -41,6 +42,28 @@ class PointChargeElectrostatics:
     The point-charge law: interaction distances, the Coulomb energy, the side chain-macrodipole potential of
     Muñoz & Serrano, and the electrostatic energy terms that only this law provides (terminal groups).
     """
+
+    def _solver_consistent_terms(self) -> bool:
+        """
+        True for the point-charge law. Its electrostatic energy terms then count every pair the ionisation solver
+        counts, at both states' converged charges: E(state) = sum_a q_a phi_a + sum_{a<b} q_a q_b W_ab, so that the
+        terms plus dG_ionization are the mean-field free energy of the solver's own model (common.py). This covers
+        terminus-side chain pairs at every position (including a residue's own terminal group), the
+        terminus-terminus pair, and side chain pairs that have no helix geometry of their own (one residue outside
+        the segment and not at N'/C', or a pair straddling the segment), which keep their coil distance in the helix
+        state. The GB laws keep the earlier terms: terminus-side chain energy for the gated pairs only, at the helix
+        terminal charge and the intrinsic side-chain charge; no energy for pairs at equal distances in both states;
+        side chain pairs without helix geometry absent from the helix state.
+        """
+        return self.dipole_law == POINT_LAW
+
+    def _nonCoulomb_in_pKa(self) -> bool:
+        """
+        True for the point-charge law: the ionisation solver adds the charge-dependent non-Coulomb terms of the
+        helix state to each group's potential (common.py, _assign_modified_ionization_states). The GB laws leave
+        them out.
+        """
+        return self.dipole_law == POINT_LAW
 
     def _calculate_r(self, N: int) -> float:
         """Function to calculate the distance r from the peptide terminal to the helix
@@ -60,20 +83,23 @@ class PointChargeElectrostatics:
         r = 0.1 + (N + 1) * 2
         return r
 
+    def _published_terminal_dipole(self) -> bool:
+        """True for the point-charge law: the terminal group-macrodipole term takes Lacroix 1998's distance rule
+        (2.1 A + 2 A per residue, _calculate_r) without a cutoff. The GB laws keep the earlier cubic distance
+        (_terminal_macrodipole_r) and cutoff at six residues."""
+        return self.dipole_law == POINT_LAW
+
+    def _terminal_dipole_in_range(self, N: int) -> bool:
+        """Whether a free terminus N residues from its cap interacts with the macrodipole. Lacroix 1998 states no
+        cutoff, and the point-charge law applies none; the GB laws keep the earlier cutoff at six residues."""
+        return self._published_terminal_dipole() or N < 6
+
     @staticmethod
     def _terminal_macrodipole_r(N: int) -> float:
-        """Distance from the free terminus to the helix macrodipole pole.
-
-        Uses an empirically fitted polynomial.
-
-        NOTE: Lacroix 1998 states this distance directly as 2.1 A plus 2 A per
-        extra residue (r = 2.1 + 2.0*N); the polynomial grows at ~1.7-1.8 A per
-        residue instead. Replacing it with the paper's rule is a candidate change
-        whose benchmark effect has been measured separately.
-
-        It is NOT replaced here, because doing so alone makes end-to-end
-        agreement worse: another term is compensating for this error. See
-        reasoning/nodes/N045.md for the measurements and what to fix alongside it.
+        """Distance from the free terminus to the helix macrodipole pole, as used by the GB laws for their terminal
+        terms: an empirically fitted cubic. The point-charge law uses Lacroix 1998's rule, 2.1 A plus 2 A per
+        residue between the terminal group and the cap (_calculate_r), which reproduces the paper's quoted energies at
+        a constant ratio; the cubic grows at ~1.7-1.8 A per residue and has no recorded basis.
 
         This function is only used for terminal-macrodipole distances, not
         for random-coil reference distances in the pKa solver or scsc code.
@@ -110,7 +136,7 @@ class PointChargeElectrostatics:
 
     def _munoz_dipole_potential_scaled(self, idx: int) -> tuple[float, float]:
         """Muñoz's law with its eps(T) factor applied, for the positions the GB law leaves to it."""
-        factor = math.exp(0.004314 * (self.T_kelvin - 273.15))
+        factor = math.exp(0.004314 * (self.T_kelvin - T_REF))
         phi_N, phi_C = self._munoz_dipole_potential(idx)
         return factor * phi_N, factor * phi_C
 
@@ -143,7 +169,7 @@ class PointChargeElectrostatics:
         K_DIPOLE = 0.6 * 49.0**2  # eq. 11 with r in 0.1 A units
         # the half-charge terms are evaluated at the 0 C dielectric because the whole side
         # chain-macrodipole term is multiplied by dipole_temperature_factor()
-        eps_to_0C = self.epsilon_r / calculate_permittivity(273.15)
+        eps_to_0C = self.epsilon_r / calculate_permittivity(T_REF)
 
         def dist_n(p):
             key = "Ncap" if p == 0 else (f"N{p}" if 1 <= p <= 13 else None)
@@ -206,9 +232,10 @@ class PointChargeElectrostatics:
           x = 0  the side chain and the terminal group of the same residue: 2.1 A
                  (_calculate_r(0)) in both states. This local geometry shifts the residue's pKa
                  alike in both states (the N-terminal Asp side chain, for example; Doig & Baldwin
-                 1995 Table 2) and contributes no helix-coil energy.
+                 1995 Table 2); its energy changes between the states through the charges only.
 
-        terminal_sidechain_modelled_nterm / _cterm mark the pairs the energy term counts.
+        terminal_sidechain_modelled_nterm / _cterm mark the pairs with a helix geometry of their own (the pairs the
+        GB laws' energy term counts; the point-charge law counts every pair, _solver_consistent_terms).
         """
         n = len(self.seq_list)
         charged = set(self.neg_charge_aa + self.pos_charge_aa)
@@ -279,22 +306,24 @@ class PointChargeElectrostatics:
 
     def _assign_terminal_macrodipole_distances(self):
         """
-        Assign the distance between the peptide terminal residues and the helix macrodipole.
-        Uses the corrected polynomial distance model (_terminal_macrodipole_r) for
-        standard free amine/carboxyl terminals.  Succinylated N-termini (Sc) keep
-        the linear _calculate_r model because the succinyl carboxyl extends beyond
-        the backbone, making its effective distance longer.
+        Assign the distance between the peptide terminal groups and the helix macrodipole: Lacroix 1998's linear
+        rule, 2.1 A when the cap carries the terminal group and 2 A more per residue between them (_calculate_r),
+        for the free amine, the succinyl carboxylate and the free carboxylate. The GB laws keep the earlier
+        cubic (_terminal_macrodipole_r) for the free amine and carboxylate.
         """
+        linear = self._published_terminal_dipole() or self.ncap == 'Sc'
         # N-Terminal Dipole Distance
-        if self.ncap == 'Sc':
-            # Succinyl carboxyl is farther from helix than a backbone amine
+        if linear:
             self.terminal_macrodipole_distance_nterm = self._calculate_r(self.ncap_idx)
         else:
             self.terminal_macrodipole_distance_nterm = self._terminal_macrodipole_r(self.ncap_idx)
 
         # C-Terminal Dipole Distance
         c_separation = len(self.seq_list) - 1 - self.ccap_idx
-        self.terminal_macrodipole_distance_cterm = self._terminal_macrodipole_r(c_separation)
+        if self._published_terminal_dipole():
+            self.terminal_macrodipole_distance_cterm = self._calculate_r(c_separation)
+        else:
+            self.terminal_macrodipole_distance_cterm = self._terminal_macrodipole_r(c_separation)
 
     def get_terminal_macrodipole_distances(self) -> tuple[float, float]:
         """
@@ -331,8 +360,11 @@ class PointChargeElectrostatics:
         1. Both residues in helix: use table 6 helix distances
         2. Both residues in coil: use table 6 coil distances 
         3. One in helix, one in coil: only N' or C' interacts with helical residues, at the
-           table 6 N' / C' (C'G-cap when the C-cap is Gly) distances; other such pairs are
-           not modelled
+           table 6 N' / C' (C'G-cap when the C-cap is Gly) distances; other such pairs have no
+           helix geometry
+        A pair without helix geometry (case 3 other than N'/C', or both outside and straddling the
+        helix) keeps its coil distance in the helix state under the point-charge law
+        (_solver_consistent_terms); the GB laws leave it out of the helix state (99 A).
         Pairs without a row of their own (His-His, and any pair with Tyr or Cys) use the
         HelixRest / RcoilRest rows, which the table caption defines as "all possible charged
         pairs not included before" (helix) and the pairs "not included in Rcoil" (coil).
@@ -437,6 +469,11 @@ class PointChargeElectrostatics:
                         else:
                             distance_angstrom = float(self.table_6_helix_lacroix.loc[row, f"i+{x}"])
                 
+            # A pair within range that has no helix geometry of its own keeps its coil geometry in the helix state
+            # (_solver_consistent_terms): its interaction is unchanged by the helix apart from the charges.
+            if distance_angstrom >= 99 and n_residues_separation < 13 and self._solver_consistent_terms():
+                distance_angstrom = self.charged_sidechain_distances_rc[idx1, idx2]
+
             self.sidechain_sidechain_distances_hel[idx1, idx2] = distance_angstrom
             self.sidechain_sidechain_distances_hel[idx2, idx1] = distance_angstrom
 
@@ -472,12 +509,12 @@ class PointChargeElectrostatics:
         helix_dist = self.sidechain_sidechain_distances_hel[idx1, idx2]
         coil_dist = self.charged_sidechain_distances_rc[idx2, idx1]
 
-        # A pair the helical-state model does not consider is assigned 99 A: of the
-        # residues outside the helix only the caps and N'/C' interact with helical
-        # residues (Lacroix 1998), pairs straddling the helix are not modelled, and
-        # pairs >= 13 apart are out of range.  Such a pair has no modelled change between
-        # the two states, so it contributes nothing.  Subtracting its coil-state energy
-        # alone would charge the helix for an interaction it was never allowed to keep.
+        # 99 A: pairs >= 13 apart are out of range in both states, and under the GB laws a pair without helix
+        # geometry (of the residues outside the helix only the caps and N'/C' have helix distances to helical
+        # residues, Lacroix 1998) is left out of the helix state. Such a pair contributes nothing: subtracting its
+        # coil-state energy alone would charge the helix for an interaction it was never allowed to keep. Under the
+        # point-charge law such a pair keeps its coil distance in the helix state, and contributes only through the
+        # change of the charges (_solver_consistent_terms).
         if helix_dist >= 99:
             return None
 
@@ -504,10 +541,9 @@ class PointChargeElectrostatics:
         N_term = np.zeros(len(self.seq_list))
         C_term = np.zeros(len(self.seq_list))
 
-        # Calculate the interaction energy between the N-terminal and the helix macrodipole.
-        # Distance cutoff: when the terminal is >= 6 coil residues from the helix
-        # start (ncap_idx >= 6), the interaction is zero.
-        if self.ncap_idx < 6:
+        # Calculate the interaction energy between the N-terminal and the helix macrodipole
+        # (GB laws: zero when the terminal is >= 6 coil residues from the helix start; _terminal_dipole_in_range)
+        if self._terminal_dipole_in_range(self.ncap_idx):
             N_term[self.ncap_idx] = self._electrostatic_interaction_energy(
                 qi=self.mu_helix,
                 qj=self.modified_nterm_ionization_hel,
@@ -517,7 +553,7 @@ class PointChargeElectrostatics:
 
         # Calculate the interaction energy between the C-terminal and the helix macrodipole
         c_separation = len(self.seq_list) - 1 - self.ccap_idx
-        if c_separation < 6:
+        if self._terminal_dipole_in_range(c_separation):
             C_term[self.ccap_idx] = self._electrostatic_interaction_energy(
                 qi=-self.mu_helix,
                 qj=self.modified_cterm_ionization_hel,
@@ -529,17 +565,18 @@ class PointChargeElectrostatics:
 
     def get_dG_terminals_sidechain_electrost(self) -> tuple[np.ndarray, np.ndarray]:
         """
-        Calculate electrostatic interaction energies between terminal backbone charges
-        and charged sidechains in the helical segment.
+        Helix-minus-coil electrostatic energy between the free terminal groups (alpha-NH3+, succinyl carboxylate,
+        alpha-COO-) and the charged side chains, at the distances of _assign_terminal_sidechain_distances (Lacroix
+        1998 supplementary Table VI 'f' rows for a local terminus and a helix-interior side chain, RcoilRest
+        otherwise). The energy is booked on the side chain.
 
-        Uses ionization-adjusted sidechain charges (from seq_ionization) so that
-        residues with pKa far from pH contribute proportionally (e.g. Y at pH 4
-        is uncharged → zero interaction).  Terminal charges use pH-dependent
-        ionization from the pKa solver (modified_nterm/cterm_ionization_hel),
-        consistent with the terminal-macrodipole function.
+        Point-charge law (_solver_consistent_terms): every terminus-side chain pair the ionisation solver counts,
+        q_X^h q_k^h W(r^h) - q_X^c q_k^c W(r^c) with each state's converged charges. Pairs at the same distance in both
+        states (a non-local terminus, a side chain outside the helix interior, a residue's own terminal group at
+        2.1 A) contribute through the change of the charges only.
 
-        Only helix-interior charged sidechains participate; flanking coil residues
-        are excluded because their helix/coil geometry is identical → ΔG = 0.
+        GB laws: only the gated pairs (local terminus, interior side chain, tabulated helix distance), at the helix
+        terminal charge and the side chain's intrinsic charge in both states.
 
         Returns:
             tuple[np.ndarray, np.ndarray]: Arrays containing the interaction energies for
@@ -553,6 +590,29 @@ class PointChargeElectrostatics:
         # Presence (Ac/Am remove terminal charges in this model)
         nterm_present = not (n > 0 and self.seq_list[0] == "Ac")
         cterm_present = not (n > 0 and self.seq_list[-1] == "Am")
+
+        if self._solver_consistent_terms():
+            charged = set(self.neg_charge_aa + self.pos_charge_aa)
+
+            def pair(q_t, q_sc, r):
+                return self._electrostatic_interaction_energy(qi=q_t, qj=q_sc, r=r) if r < 40.0 else 0.0
+
+            for idx, aa in enumerate(self.seq_list):
+                if aa not in charged:
+                    continue
+                q_h = float(self.modified_seq_ionization_hel[idx])
+                q_c = float(self.modified_seq_ionization_rc[idx])
+                for present, q_th, q_tc, d_hel, d_rc, out in (
+                    (nterm_present, self.modified_nterm_ionization_hel, self.modified_nterm_ionization_rc,
+                     self.terminal_sidechain_distances_nterm[idx], self.terminal_sidechain_distances_nterm_rc[idx],
+                     energy_N),
+                    (cterm_present, self.modified_cterm_ionization_hel, self.modified_cterm_ionization_rc,
+                     self.terminal_sidechain_distances_cterm[idx], self.terminal_sidechain_distances_cterm_rc[idx],
+                     energy_C),
+                ):
+                    if present:
+                        out[idx] = pair(q_th, q_h, float(d_hel)) - pair(q_tc, q_c, float(d_rc))
+            return energy_N, energy_C
 
         # Locality gate (AGADIR/Lacroix-style): only include terminal-sidechain terms
         # when the terminal is in-helix or is the immediate neighbor (N' / C').
@@ -596,20 +656,26 @@ class PointChargeElectrostatics:
 
     def get_dG_terminal_terminal_electrost(self) -> float:
         """
-        Calculate the electrostatic interaction between the free N-terminal
-        backbone charge (NH3+) and the free C-terminal backbone charge (COO-).
+        Electrostatic interaction between the free N-terminal group (NH3+, or the succinyl carboxylate) and the free
+        C-terminal carboxylate, helix minus coil (kcal/mol).
 
-        No such interaction is modelled, so this is always 0.0.
+        Lacroix 1998 Table VI has no terminus-terminus geometry. The ionisation solver places the two at
+        _calculate_r(L - 1) in both states and drops the pair beyond 40 A (chains of 20 or more positions).
+
+        Point-charge law (_solver_consistent_terms): that pair at each state's converged charges,
+        [q_N^h q_C^h - q_N^c q_C^c] W(r); the macrodipole shifts both termini in the helix, so it is not zero.
+        GB laws: 0.
 
         Returns:
             float: The terminal-terminal electrostatic free energy in kcal/mol.
         """
-        # No terminal-to-terminal interaction is computed.  On free/free poly-alanine,
-        # which has no charged side chains to confuse the comparison, this function
-        # returned -0.12952 where the calibration requires 0.
-        #
-        # This term and the C-terminal/side-chain term were a compensating pair: this one
-        # was spurious, that one was disabled, and on doubly-free peptides the first stood
-        # in for the second (-0.1487 against a required -0.1532 at pH 4).  Removing either
-        # alone made the fit worse.  Both are corrected together.
-        return 0.0
+        n = len(self.seq_list)
+        if not self._solver_consistent_terms() or self.seq_list[0] == "Ac" or self.seq_list[-1] == "Am":
+            return 0.0
+        r = self._calculate_r(n - 1)
+        if r >= 40.0:
+            return 0.0
+        return (self._electrostatic_interaction_energy(qi=self.modified_nterm_ionization_hel,
+                                                       qj=self.modified_cterm_ionization_hel, r=r)
+                - self._electrostatic_interaction_energy(qi=self.modified_nterm_ionization_rc,
+                                                         qj=self.modified_cterm_ionization_rc, r=r))

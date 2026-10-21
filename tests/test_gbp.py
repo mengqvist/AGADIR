@@ -8,6 +8,7 @@ import numpy as np
 import pytest
 
 import pyagadir.energies as E
+from pyagadir.chemistry import R_KCAL
 import pyagadir.electrostatics.gb as GB
 from pyagadir.models import AGADIR
 
@@ -38,7 +39,7 @@ def test_coupling_matches_exact_microstate_enumeration(seq, pH):
     c = calc(seq, pH)
     n, cc = c.get_dG_sidechain_macrodipole()
     model = np.sum(c.get_dG_sidechain_sidechain_electrost()) + np.sum(n + cc) + c.get_dG_ionization()
-    rt = 1.9865e-3 * c.T_kelvin
+    rt = R_KCAL * c.T_kelvin
     idx = [k for k, aa in enumerate(c.seq_list) if aa in "KEHD"]
     z = [1.0 if c.seq_list[k] in "KH" else -1.0 for k in idx]
     x = [10 ** ((c.seq_pka[k] - pH) if zz > 0 else (pH - c.seq_pka[k])) for k, zz in zip(idx, z)]
@@ -76,12 +77,18 @@ def test_point_law_outside_the_gb_pair_range():
 
 
 @pytest.mark.parametrize("cls,aa", [("Ncen", "E"), ("Ncap", "D"), ("Neutral", "E")])
-def test_transfer_reproduces_default_at_reference(cls, aa):
+def test_transfer_reproduces_default_at_reference(cls, aa, monkeypatch):
     """At a Table 1 value's reference measurement (gb_pipeline/transfer/build_gb_transfer.REFS), the guest-minus-Ala-host segment
     free energy under gbp equals the default model's, weighted over the segments that place the guest in the class,
     with the guest's interactions with charged host residues left out on both sides (gb_pipeline/transfer/build_gbp_transfer.py).
-    Class Neutral: Chakrabartty et al.'s Ncen host at a pH where the guest is neutral."""
+    Class Neutral: Chakrabartty et al.'s Ncen host at a pH where the guest is neutral.
+    The transfer was derived against the point-charge law before its mean-field cleanup (electrostatics/point.py,
+    _solver_consistent_terms and _nonCoulomb_in_pKa), which the GB laws keep; the default side is evaluated that way.
+    Re-derive the transfer if the cleanup is ported to the GB laws."""
     T = pytest.importorskip("build_gbp_transfer")
+    from pyagadir.electrostatics.point import PointChargeElectrostatics
+    monkeypatch.setattr(PointChargeElectrostatics, "_solver_consistent_terms", lambda self: False)
+    monkeypatch.setattr(PointChargeElectrostatics, "_nonCoulomb_in_pKa", lambda self: False)
     ref = T.BT.REFS["Ncen" if cls == "Neutral" else cls]
     pH = T.NEUTRAL_PH[aa] if cls == "Neutral" else ref.get("pH_res", {}).get(aa, ref["pH"])
     seq, idx, segs = T.segments("Ncen" if cls == "Neutral" else cls, aa, ref, pH)

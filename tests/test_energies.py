@@ -224,24 +224,24 @@ def test_assign_terminal_macrodipole_distances(precompute_instance):
     # Verify terminal distances are calculated
     assert instance1.terminal_macrodipole_distance_nterm is not None
     assert instance1.terminal_macrodipole_distance_cterm is not None
-    assert np.isclose(instance1.terminal_macrodipole_distance_nterm, 2.0, atol=0.001)
-    assert np.isclose(instance1.terminal_macrodipole_distance_cterm, 2.0, atol=0.001)
+    # Lacroix 1998: 2.1 A when the cap carries the terminal group, +2 A per residue between them
+    assert np.isclose(instance1.terminal_macrodipole_distance_nterm, 2.1, atol=0.001)
+    assert np.isclose(instance1.terminal_macrodipole_distance_cterm, 2.1, atol=0.001)
 
     assert instance2.terminal_macrodipole_distance_nterm is not None
     assert instance2.terminal_macrodipole_distance_cterm is not None
-    assert np.isclose(instance2.terminal_macrodipole_distance_nterm, 2.0, atol=0.001)
-    assert np.isclose(instance2.terminal_macrodipole_distance_cterm, 2.0, atol=0.001)
+    assert np.isclose(instance2.terminal_macrodipole_distance_nterm, 2.1, atol=0.001)
+    assert np.isclose(instance2.terminal_macrodipole_distance_cterm, 2.1, atol=0.001)
 
     assert instance3.terminal_macrodipole_distance_nterm is not None
     assert instance3.terminal_macrodipole_distance_cterm is not None
-    # Corrected polynomial: _terminal_macrodipole_r(2) ≈ 5.45 Å
-    assert np.isclose(instance3.terminal_macrodipole_distance_nterm, 5.45, atol=0.01)
-    assert np.isclose(instance3.terminal_macrodipole_distance_cterm, 5.45, atol=0.01)
+    assert np.isclose(instance3.terminal_macrodipole_distance_nterm, 6.1, atol=0.001)
+    assert np.isclose(instance3.terminal_macrodipole_distance_cterm, 6.1, atol=0.001)
 
     assert instance4.terminal_macrodipole_distance_nterm is not None
     assert instance4.terminal_macrodipole_distance_cterm is not None
-    # Sc N-terminal keeps the old _calculate_r formula (6.1 Å)
-    assert np.isclose(instance4.terminal_macrodipole_distance_nterm, 6.1, atol=0.001)
-    # C-terminal uses corrected polynomial: _terminal_macrodipole_r(2) ≈ 5.45 Å
-    assert np.isclose(instance4.terminal_macrodipole_distance_cterm, 5.45, atol=0.01)
+    assert np.isclose(instance4.terminal_macrodipole_distance_nterm, 6.1, atol=0.001)  # succinyl
+    assert np.isclose(instance4.terminal_macrodipole_distance_cterm, 6.1, atol=0.001)
+    # the GB laws keep the earlier cubic: _terminal_macrodipole_r(2) ~ 5.45 A
+    assert np.isclose(instance3._terminal_macrodipole_r(2), 5.45, atol=0.01)
 

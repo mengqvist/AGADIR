@@ -4,7 +4,8 @@ from importlib.resources import files
 import numpy as np
 import pandas as pd
 
-from pyagadir.chemistry import acidic_residue_ionization, basic_residue_ionization, calculate_permittivity, debye_screening_kappa
+from pyagadir.chemistry import (E_CHARGE, EPSILON_0, N_AVOGADRO, T_REF, acidic_residue_ionization,
+                                basic_residue_ionization, calculate_permittivity, debye_screening_kappa)
 from pyagadir.electrostatics import DIPOLE_LAWS, GB_LAWS, GBX_LAWS, Electrostatics  # noqa: F401
 from pyagadir.utils import is_valid_peptide_sequence, is_valid_ncap_ccap, is_valid_conditions
 
@@ -45,7 +46,7 @@ class ParamTable:
         return self._rows[key]
 
 
-# First-turn offset (kcal/mol at 273 K) added to the Table 1 N2 cell of the residues whose first-turn cells were never
+# First-turn offset (kcal/mol at 0 C) added to the Table 1 N2 cell of the residues whose first-turn cells were never
 # measured in peptides (Lacroix 1998 took the N1-N4 cells from Petukhov's poly-Ala measurements; K, R and H were left
 # at their interior value, C, F, Y and W at round numbers). Lys and Arg take the measured peptide value for Leu at N2
 # (Petukhov et al. 1998, J. Mol. Biol. 278, 279: +0.25 above the interior), which the peptides with Lys at N2 support
@@ -55,10 +56,16 @@ class ParamTable:
 FIRST_TURN_N2_OFFSET = {"K": 0.25, "R": 0.25, "H": -0.059, "C": 0.228, "F": 0.162, "Y": 0.157, "W": 0.141}
 
 # Hydrogen-bond terms share one temperature law (EnergyCalculator._hbond_temperature): Munoz & Serrano 1995-III
-# eq. (8) for the backbone bond, dH_ref = -0.898 kcal/mol per bond at 273 K (Lacroix 1998). Side chains and end groups
+# eq. (8) for the backbone bond, dH_ref = -0.895 kcal/mol per bond at 0 C (Lacroix 1998, Discussion). Side chains and end groups
 # whose capping contribution is a hydrogen bond (Munoz & Serrano 1995-III p. 305), and residues that can form
 # side-chain hydrogen bonds in the Table IV/V pair terms:
-HBOND_DH_REF = -0.898
+HBOND_DH_REF = -0.895
+
+# Table V Gln(i)-Asp-(i+4) side-chain hydrogen bond (Lacroix 1998 supplementary Table V: -0.5 kcal/mol), re-derived from
+# the measurement that isolates it, the Asp walk of Huyghues-Despointes, Scholtz & Baldwin (1993, Protein Sci. 2, 1604):
+# with this model its printed tables are best fitted at -0.15 or weaker and its pH 7 figure at -0.30, and -0.5 is
+# rejected by both (+1.7 and +1.1 helix points RMSE); -0.225 lies between. The other Table V motifs keep their values.
+TABLE_V_GLN_ASP = -0.225
 HBOND_NCAPS = ("S", "T", "N", "D", "Ac", "Sc")
 HBOND_CCAPS = ("K", "R", "H", "N", "D")
 HBOND_POLAR = ("S", "T", "N", "Q", "D", "E", "K", "R", "H")
@@ -285,9 +292,9 @@ class PrecomputeParams(Electrostatics):
         # assign some chemistry constants
         self.kappa = debye_screening_kappa(self.ionic_strength, self.T_kelvin)
         self.epsilon_r = calculate_permittivity(self.T_kelvin) # Relative permittivity of water
-        self.epsilon_0 = 8.854e-12  # Permittivity of free space in C^2/(Nm^2)
-        self.N_A = 6.022e23  # Avogadro's number in mol^-1
-        self.e = 1.602e-19  # Elementary charge in Coulombs
+        self.epsilon_0 = EPSILON_0  # Permittivity of free space in C^2/(Nm^2)
+        self.N_A = N_AVOGADRO  # Avogadro's number in mol^-1
+        self.e = E_CHARGE  # Elementary charge in Coulombs
 
         # assign None to all variables
         self.charged_pairs = None
@@ -466,6 +473,12 @@ class EnergyCalculator(PrecomputeParams):
     """
     Class to calculate the free energy contributions for a peptide sequence.
     """
+    # class attributes: the ionisation solver (run from PrecomputeParams.__init__) evaluates the energy terms below
+    # through _nonCoulomb_charge_coefficients before EnergyCalculator.__init__ has finished
+    _AROMATIC = {"F", "Y", "W"}
+    _ALIPHATIC = {"A", "V", "L", "I", "M"}
+    dCp = -0.0015  # kcal/(mol*K)
+
     def __init__(self, seq: str, i: int, j: int, pH: float, T: float, ionic_strength: float, ncap: str = None, ccap: str = None, params: dict = None, dipole_law: str = "munoz"):
         """
         Initialize the EnergyCalculator for a peptide sequence.
@@ -483,9 +496,51 @@ class EnergyCalculator(PrecomputeParams):
             dipole_law (str): side chain-macrodipole law, "munoz" (default) or "gb".
         """
         super().__init__(seq, i, j, pH, T, ionic_strength, ncap, ccap, params=params, dipole_law=dipole_law)
-        self._AROMATIC = {"F", "Y", "W"}
-        self._ALIPHATIC = {"A", "V", "L", "I", "M"}  # you can expand if you want (e.g. C)
-        self.dCp = -0.0015  # kcal/(mol*K)
+
+    def _charge_dependent_nonCoulomb_energy(self) -> float:
+        """Sum of the helix-state terms that depend on charged fractions other than through Coulomb's law: the Table 1
+        charged/neutral interpolation, the Cys/His N-cap and Asp C-cap rules, the capping box, the Petukhov and
+        charged-staple motifs, and the Table IV (1 - p p) and Table V terms (at the current helix charges)."""
+        return float(np.sum(self.get_dG_Int()) + np.sum(self.get_dG_Ncap()) + np.sum(self.get_dG_Ccap())
+                     + self.get_dG_petukhov_motif() + self.get_dG_charged_staple()
+                     + np.sum(self.get_dG_i3()) + np.sum(self.get_dG_i4()))
+
+    def _nonCoulomb_charge_coefficients(self) -> tuple[dict, dict]:
+        """
+        The charge-dependent non-Coulomb terms of the helix state as G0 + sum_a c_a p_a + sum_{a<b} c_ab p_a p_b in the
+        charged fractions p_a = |q_a^h| of the titratable residues of the segment (N-cap to C-cap). Each term is
+        linear in one fraction or, for the Table IV (1 - p_a p_b) rule, bilinear in two, so the coefficients follow
+        exactly from the terms themselves evaluated at p in {0, 1}: c_a = G(e_a) - G(0) and, for titratable pairs 3 or
+        4 apart, c_ab = G(e_a + e_b) - G(e_a) - G(e_b) + G(0). The ionisation solver adds dG/dp_a = c_a + sum_b c_ab p_b
+        to each group's helix-state potential (common.py).
+
+        Returns:
+            tuple[dict, dict]: {a: c_a}, {(a, b): c_ab} with sequence indices, zero coefficients left out.
+        """
+        charged = set(self.neg_charge_aa + self.pos_charge_aa)
+        titr = [k for k in range(int(self.ncap_idx), int(self.ccap_idx) + 1) if self.seq_list[k] in charged]
+        if not titr:
+            return {}, {}
+        saved = self.modified_seq_ionization_hel
+        n = len(self.seq_list)
+
+        def G(on):
+            self.modified_seq_ionization_hel = np.array([1.0 if k in on else 0.0 for k in range(n)])
+            return self._charge_dependent_nonCoulomb_energy()
+
+        try:
+            g0 = G(())
+            g1 = {a: G((a,)) for a in titr}
+            c_a = {a: g1[a] - g0 for a in titr if abs(g1[a] - g0) > 1e-12}
+            c_ab = {}
+            for a, b in itertools.combinations(titr, 2):
+                if b - a in (3, 4):
+                    c = G((a, b)) - g1[a] - g1[b] + g0
+                    if abs(c) > 1e-12:
+                        c_ab[(a, b)] = c
+        finally:
+            self.modified_seq_ionization_hel = saved
+        return c_a, c_ab
 
     def _dCp_hydroph_kcal(self, aa1: str, aa2: str) -> float:
         """
@@ -498,7 +553,7 @@ class EnergyCalculator(PrecomputeParams):
             return 0.0
 
         T = self.T_kelvin
-        Tref = 273.15
+        Tref = T_REF
 
         if aa1 in self._AROMATIC and aa2 in self._AROMATIC:
             # aromatic-aromatic (smaller magnitude)
@@ -515,7 +570,7 @@ class EnergyCalculator(PrecomputeParams):
         Formula: dG(T) = dG_ref * (T/Tref) - T * dCp * ln(T/Tref)
         """
         T = self.T_kelvin
-        Tref = 273.15  # 0°C reference temperature
+        Tref = T_REF  # 0°C reference temperature
 
         # Entropic scaling of reference energy
         scaled_ref = dG_ref * (T / Tref)
@@ -532,7 +587,9 @@ class EnergyCalculator(PrecomputeParams):
         The first and last residues are considered to be caps unless they are
         the peptide terminal residues with modifications.
         Temperature: equation (9) of Muñoz & Serrano (1995-III), a purely entropic term,
-        dG(t) = dG_ref * t/t_ref - t * dCp * ln(t/t_ref) with t_ref = 273 K.
+        dG(t) = dG_ref * t/t_ref - t * dCp * ln(t/t_ref) with t_ref = 0 C (T_REF); the dCp part on the
+        residues beyond the N1-N4 nucleus only, so that it is counted once per hydrogen bond, as the
+        enthalpy of get_dG_Hbond is.
 
         Returns:
             np.ndarray: The intrinsic free energy contributions for each amino acid in the helical segment.
@@ -554,26 +611,8 @@ class EnergyCalculator(PrecomputeParams):
             n_dist = idx - self.ncap_idx  # 1=N1, 2=N2, ...
             c_dist = self.ccap_idx - idx  # 1=C1, 2=C2, ...
 
-            # Use C-terminal propensities for positions C1, C2, C3 (within 3 of Ccap)
-            # Otherwise use N-terminal propensities
-            if c_dist <= 3 and f"C{c_dist}" in self.table_1_lacroix.columns:
-                col = f"C{c_dist}"
-                val = self.table_1_lacroix.loc[AA, col]
-                if not np.isnan(val):
-                    energy[idx] = val
-                else:
-                    # Fallback to N-terminal value if C-terminal not available
-                    energy[idx] = self.table_1_lacroix.loc[AA, "Ncen"]
-            elif n_dist == 1:
-                energy[idx] = self.table_1_lacroix.loc[AA, "N1"]
-            elif n_dist == 2:
-                energy[idx] = self.table_1_lacroix.loc[AA, "N2"]
-            elif n_dist == 3:
-                energy[idx] = self.table_1_lacroix.loc[AA, "N3"]
-            elif n_dist == 4:
-                energy[idx] = self.table_1_lacroix.loc[AA, "N4"]
-            else:
-                energy[idx] = self.table_1_lacroix.loc[AA, "Ncen"]
+            col = self._int_column(n_dist, c_dist)
+            energy[idx] = self.table_1_lacroix.loc[AA, col]
 
             if AA in self.pos_charge_aa + ["D", "E"]:
                 # Ionization correction for residues that are normally charged at pH 7.
@@ -589,8 +628,8 @@ class EnergyCalculator(PrecomputeParams):
                 energy[idx] = q * basic_energy + (1 - q) * basic_energy_neutral
 
             # First-turn N2 offset (FIRST_TURN_N2_OFFSET), after the charged/neutral interpolation so that both
-            # charge states pay it; not where the C1-C3 columns apply.
-            if n_dist == 2 and c_dist > 3:
+            # charge states pay it, wherever the N2 cell applies.
+            if col == "N2":
                 energy[idx] += self._first_turn_n2_offset(AA)
 
             # gbx/gbp: first- and last-turn cells of charged residues re-derived under the GB law
@@ -599,17 +638,34 @@ class EnergyCalculator(PrecomputeParams):
                 energy[idx] += self._gbx_end_cell(AA, n_dist, c_dist)
 
         # Munoz & Serrano 1995-III eq. (9): dG_Int = -t (dS_ref + dCp ln(t/t_ref)),
-        # i.e. dG_ref * t/t_ref - t * dCp * ln(t/t_ref).  The dCp*(t - t_ref) enthalpy term
-        # belongs to the H-bond (eq. 8), not here.  t_ref = 273.0 K.
-        Tref = 273.0
+        # i.e. dG_ref * t/t_ref - t * dCp * ln(t/t_ref).  t_ref = 0 C (T_REF).
+        # The heat capacity is counted once per backbone hydrogen bond in both of its terms: the enthalpy
+        # dCp (t - t_ref) is in the H-bond term (eq. 8, j - 6 bonds), and the matching entropy -t dCp ln(t/t_ref) is
+        # carried here by the j - 6 helical residues beyond the four-residue nucleus N1-N4, which forms no
+        # hydrogen bond ("the first four residues in a helical conformation do not have mean-residue enthalpic
+        # contribution", Munoz & Serrano 1997). Counting it on all j - 2 residues left the nucleus an unmatched
+        # entropy, a temperature-dependent nucleation penalty (+0.16 kcal/mol per segment at 25 C).
+        Tref = T_REF
         scaled_ref = energy * (T / Tref)
         cp_term = -T * dCp * np.log(T / Tref)
+        beyond_nucleus = np.zeros(len(energy), dtype=bool)
+        beyond_nucleus[self.ncap_idx + 5:self.ccap_idx] = True
 
         # Apply to all non-zero entries (avoid adding energy to caps/zeros)
-        energy = np.where(energy != 0, scaled_ref + cp_term, energy)
+        energy = np.where(energy != 0, scaled_ref + np.where(beyond_nucleus, cp_term, 0.0), energy)
 
         return energy
     
+    def _int_column(self, n_dist: int, c_dist: int) -> str:
+        """
+        Table 1 column of a helical residue n_dist from the N-cap and c_dist from the C-cap (Lacroix 1998 supplementary
+        Table I): N1-N4 in the first turn, Ncen ("between N4 and C-cap") otherwise. The published table has no
+        C-terminal position columns.
+        """
+        if n_dist <= 4:
+            return f"N{n_dist}"
+        return "Ncen"
+
     def _first_turn_n2_offset(self, aa: str) -> float:
         """FIRST_TURN_N2_OFFSET, with the gbx/gbp law's re-derived values (params/gbx_overrides.tsv or
         params/gbp_overrides.tsv, table "first_turn_n2") where it has them."""
@@ -628,10 +684,10 @@ class EnergyCalculator(PrecomputeParams):
         zero net enthalpy since they are nucleating residues.
         This gives a total of 6 residues that don't count toward hydrogen bonding.
 
-        The net H-bond ΔG at 0°C is -0.898 kcal/mol per bond (Lacroix 1998). It is
+        The net H-bond ΔG at 0°C is -0.895 kcal/mol per bond (Lacroix 1998, Discussion). It is
         treated as enthalpic, with the temperature dependence of equation (8) of
         Muñoz & Serrano (1995-III): ΔG(t) = ΔH_ref + ΔCp (t - t_ref), ΔCp = -1.5
-        cal/(mol·K) in the folding direction, t_ref = 273 K (_hbond_temperature, the
+        cal/(mol·K) in the folding direction, t_ref = 0 C (_hbond_temperature, the
         law every hydrogen-bond term uses).
 
         Returns:
@@ -640,7 +696,7 @@ class EnergyCalculator(PrecomputeParams):
         n_hbonds = max((self.j - 6), 0)
 
         # Munoz & Serrano 1995-III eq. (8): dG_HBond = dH_ref + dCp (t - t_ref) per bond,
-        # with dH_ref = -0.898 (Lacroix 1998), dCp = -0.0015 kcal/(mol K), t_ref = 273.0 K.
+        # with dH_ref = HBOND_DH_REF, dCp = -0.0015 kcal/(mol K), t_ref = 0 C (T_REF).
         dG_per_bond = self._hbond_temperature(HBOND_DH_REF)
         return dG_per_bond * n_hbonds
 
@@ -653,17 +709,17 @@ class EnergyCalculator(PrecomputeParams):
 
         Muñoz & Serrano (1995-III) eq. (8) treats a hydrogen-bond term as an enthalpy,
         ΔG(t) = ΔH_ref + ΔCp (t - t_ref), with ΔCp = -1.5 cal/(mol·K) per backbone bond in the
-        folding direction and t_ref = 273 K; the entropy of fixing the backbone is in
+        folding direction and t_ref = 0 C; the entropy of fixing the backbone is in
         get_dG_Int. Other hydrogen bonds take the same law as a relative change,
-        ΔG_ref × (1 + ΔCp (t - t_ref) / ΔH_ref) with the backbone bond's ΔH_ref = -0.898
+        ΔG_ref × (1 + ΔCp (t - t_ref) / ΔH_ref) with the backbone bond's ΔH_ref = -0.895
         kcal/mol, which for the backbone bond is eq. (8) itself. Muñoz & Serrano apply it to the
         hydrogen-bonding caps and the end groups (p. 305) and neglect it for side-chain pairs.
         The term grows more favourable with temperature, as the backbone term does.
 
         Args:
-            dG_ref: free energy at 273 K (float or array), kcal/mol.
+            dG_ref: free energy at 0 C (T_REF; float or array), kcal/mol.
         """
-        return dG_ref * (1.0 + self.dCp * (self.T_kelvin - 273.0) / HBOND_DH_REF)
+        return dG_ref * (1.0 + self.dCp * (self.T_kelvin - T_REF) / HBOND_DH_REF)
 
     def get_dG_Ncap(self) -> np.ndarray:
         """
@@ -793,15 +849,15 @@ class EnergyCalculator(PrecomputeParams):
             else:
                 energy *= 0.5
 
-        # Apply hydrophobic temperature correction to the N'–N4 interaction
-        # N' is the residue BEFORE Ncap
+        # Temperature: the law of the hydrophobic i,i+3 / i,i+4 pairs (get_dG_i3, get_dG_i4), entropic
+        # dG_ref * T / T_REF without a heat-capacity term. Lacroix 1998 (Discussion) gives the staple "a temperature
+        # dependence similar to that for hydrophobic side-chain-side-chain interactions"; Munoz & Serrano 1995-III
+        # require those to become more favourable with temperature, which eq. 18 as printed does not do.
+        # N' is the residue BEFORE Ncap; _dCp_hydroph_kcal is non-zero only for hydrophobic pairs and is the gate.
         if energy != 0.0 and self.ncap_idx > 0:
             Nprime = self.seq_list[self.ncap_idx - 1]
-            N4 = self.N4_AA
-
-            dCp_h = self._dCp_hydroph_kcal(Nprime, N4)
-            if dCp_h != 0.0:
-                energy = self._entropic_cp_correct(energy, dCp_h)
+            if self._dCp_hydroph_kcal(Nprime, self.N4_AA) != 0.0:
+                energy = self._entropic_cp_correct(energy, 0.0)
 
         return energy
 
@@ -1084,24 +1140,15 @@ class EnergyCalculator(PrecomputeParams):
             aro_his = 0.0  # Table V aromatic-His+ motif (a ring-cation contact, not a hydrogen bond)
 
             # --- Table V add-ons (orientation matters: position i -> position i+4) ---
-            # Table V values are G_helix for charged side-chain interactions.
-            # The same interaction exists (weaker) in the coil state. We subtract
-            # the coil contribution using 1/d Coulomb scaling with Table 6 distances:
-            #   ΔG = G_hel × (1 − d_hel / d_coil)
-            # Pairs with one uncharged residue use HelixRest/RcoilRest distances.
-            # Validated on Huyghues-Despointes 1993 Asp-scan: Q-D⁻ gives -0.227
-            # (optimal -0.225, vs paper raw -0.5 which over-stabilises by +8.9%).
-            d_hel_4 = float(self.table_6_helix_lacroix.loc['HelixRest', 'i+4'])
-            d_coil_4 = float(self.table_6_coil_lacroix.loc['RcoilRest', 'i+4'])
-            coil_corr_4 = 1.0 - d_hel_4 / d_coil_4  # ≈ 0.455
+            # Added to Table IV when the residue is charged, weighted by its helix-state charged fraction, as net
+            # (helix-minus-coil) energies like Table IV (Lacroix 1998 supplement). Each is a side-chain contact formed
+            # on one face of the helix and scarcely in the coil. Values as published, except Gln-Asp- (TABLE_V_GLN_ASP),
+            # re-derived from the Asp walk that isolates it.
 
-            # FYW (i) with His+ (i+4): -0.4 kcal/mol when His is at C1 or C-cap; otherwise divide by 3.
-            # No coil subtraction for this motif: the aromatic ring and the imidazolium are in contact only when
-            # both side chains lie on one face of the helix, so the interaction is short-range and scarcely
-            # formed in the coil. The 1/d coil share above assumes a Coulomb interaction that persists in the
-            # coil, which does not describe a contact. With the full value the C-peptide family (Shoemaker et
-            # al. 1987, Fairman et al. 1989, Mitchinson & Baldwin 1986), where Fairman et al. report that His-12+
-            # stabilises the helix through Phe-8, is predicted 0.9-1.7 helix points (RMSE) closer.
+            # FYW (i) with His+ (i+4): -0.4 kcal/mol when His is at C1 or C-cap; otherwise divide by 3. This is the
+            # Phe8...His12+ interaction of the C-peptide (Fairman et al. 1989); with the full value the C-peptide
+            # family (Shoemaker et al. 1987, Fairman et al. 1989, Mitchinson & Baldwin 1986) is predicted 0.9-1.7
+            # helix points (RMSE) closer.
             if AAi in ["F", "Y", "W"] and AAi4 == "H":
                 p_his = abs(self.modified_seq_ionization_hel[idx + 4])  # population of His+
                 # His is "C1" if it is the residue just before C-cap; "C-cap" if it is C-cap itself
@@ -1109,20 +1156,20 @@ class EnergyCalculator(PrecomputeParams):
                 val = -0.4 if his_is_C1_or_Ccap else (-0.4 / 3.0)
                 aro_his += p_his * val
 
-            # Gln (i) with Asp- (i+4): -0.5 kcal/mol (paper Table V)
+            # Gln (i) with Asp- (i+4): TABLE_V_GLN_ASP (published -0.5; re-derived from the Asp walk)
             if AAi == "Q" and AAi4 == "D":
                 p_asp = abs(self.modified_seq_ionization_hel[idx + 4])  # population of Asp-
-                extra += p_asp * (-0.5) * coil_corr_4
+                extra += p_asp * TABLE_V_GLN_ASP
 
-            # Glu- (i) with Asn (i+4): -0.5 kcal/mol
+            # Glu- (i) with Asn (i+4): -0.5 kcal/mol (Table V)
             if AAi == "E" and AAi4 == "N":
                 p_glu = abs(self.modified_seq_ionization_hel[idx])  # population of Glu-
-                extra += p_glu * (-0.5) * coil_corr_4
+                extra += p_glu * (-0.5)
 
-            # Gln (i) with Glu- (i+4): -0.1 kcal/mol
+            # Gln (i) with Glu- (i+4): -0.1 kcal/mol (Table V)
             if AAi == "Q" and AAi4 == "E":
                 p_glu = abs(self.modified_seq_ionization_hel[idx + 4])  # population of Glu-
-                extra += p_glu * (-0.1) * coil_corr_4
+                extra += p_glu * (-0.1)
 
             # the Gln-Asp-, Glu--Asn and Gln-Glu- motifs are side-chain hydrogen bonds: the hydrogen-bond
             # temperature law; the aromatic-His+ contact is temperature-independent

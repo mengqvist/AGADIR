@@ -2,6 +2,16 @@ from typing import Dict
 import warnings
 import math
 
+# Physical constants (CODATA 2018 exact or recommended values); every module takes them from here.
+R_KCAL = 8.314462618 / 4184.0  # gas constant, kcal/(mol K)
+LN10 = math.log(10.0)
+E_CHARGE = 1.602176634e-19  # elementary charge, C
+N_AVOGADRO = 6.02214076e23  # mol^-1
+K_BOLTZMANN = 1.380649e-23  # J/K
+EPSILON_0 = 8.8541878128e-12  # vacuum permittivity, C^2/(N m^2)
+# Reference temperature of the temperature laws (0 C; Munoz & Serrano 1995-III write it as 273 K).
+T_REF = 273.15
+
 
 def calculate_ionic_strength(ion_concentrations: Dict[str, float]) -> float:
     """
@@ -75,9 +85,8 @@ def adjust_pKa(T: float, pKa_ref: float, deltaG: float, is_basic: bool) -> float
     Returns:
         float: Adjusted pKa value.
     """
-    R = 1.9865e-3  # kcal/(mol K)
     gamma = 1 if is_basic else -1
-    return pKa_ref - (gamma * deltaG / (2.303 * R * T))
+    return pKa_ref - (gamma * deltaG / (LN10 * R_KCAL * T))
 
 
 def acidic_residue_ionization(pH: float, pKa: float) -> float:
@@ -142,14 +151,14 @@ def debye_screening_kappa(ionic_strength: float, T: float) -> float:
         float: The inverse of the Debye length (kappa) in m^-1.
     """
     # Constants
-    epsilon_0 = 8.854e-12  # Permittivity of free space in C^2/(Nm^2)
+    epsilon_0 = EPSILON_0
 
     # Temperature dependent relative permittivity of water
     epsilon_r = calculate_permittivity(T)
 
-    N_A = 6.022e23  # Avogadro's number in mol^-1
-    e = 1.602e-19  # Elementary charge in Coulombs
-    k_B = 1.38e-23  # Boltzmann constant in J/K
+    N_A = N_AVOGADRO
+    e = E_CHARGE
+    k_B = K_BOLTZMANN
 
     # Set a minimum ionic strength to account for autoionization of water
     ionic_strength = max(ionic_strength, 1e-7)  # mol/L

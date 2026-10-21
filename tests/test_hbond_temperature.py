@@ -4,6 +4,7 @@ side-chain hydrogen bonds of the Table IV/V pair terms and the Petukhov and char
 import pytest
 
 import pyagadir.energies as E
+from pyagadir.chemistry import T_REF
 
 
 def _calc(seq, T, ncap="Ac", ccap="Am", pH=7.0):
@@ -15,12 +16,11 @@ def _calc(seq, T, ncap="Ac", ccap="Am", pH=7.0):
 def test_backbone_is_eq8(T):
     c = _calc("A" * 14, T)
     n_hb = c.j - 6
-    assert c.get_dG_Hbond() == pytest.approx((-0.898 + c.dCp * (c.T_kelvin - 273.0)) * n_hb, abs=1e-12)
+    assert c.get_dG_Hbond() == pytest.approx((E.HBOND_DH_REF + c.dCp * (c.T_kelvin - T_REF)) * n_hb, abs=1e-12)
 
 
-def test_factor_is_one_at_273_K():
-    c = _calc("A" * 10, 0.0)
-    c.T_kelvin = 273.0  # the law's reference temperature (the constructor does not accept T < 0 C)
+def test_factor_is_one_at_the_reference_temperature():
+    c = _calc("A" * 10, 0.0)  # 0 C = T_REF, the law's reference temperature
     assert c._hbond_temperature(-0.7) == pytest.approx(-0.7, abs=1e-12)
 
 
@@ -50,3 +50,30 @@ def test_polar_pair_takes_the_hbond_law():
     lo, hi = _calc(seq, 0.0), _calc(seq, 60.0)
     i = 4
     assert hi.get_dG_i4()[i] / lo.get_dG_i4()[i] == pytest.approx(hi._hbond_temperature(1.0) / lo._hbond_temperature(1.0))
+
+
+def test_hydrophobic_staple_takes_the_hydrophobic_pair_law():
+    """The N'-N4 hydrophobic staple scales like the hydrophobic pairs, dG_ref * T / T_REF (Lacroix 1998: "similar
+    to that for hydrophobic side-chain-side-chain interactions")."""
+    seq = "ALSAAELAAAAAA"  # Ac A L S A A E L ...: N' = L (index 2), N-cap S (3), N3 = E, N4 = L (7)
+    lo = E.EnergyCalculator(seq=seq, i=3, j=10, pH=7.0, T=0.0, ionic_strength=0.05, ncap="Ac", ccap="Am")
+    hi = E.EnergyCalculator(seq=seq, i=3, j=10, pH=7.0, T=60.0, ionic_strength=0.05, ncap="Ac", ccap="Am")
+    assert lo.seq_list[lo.ncap_idx - 1] == "L" and lo.N4_AA == "L"
+    assert lo.get_dG_staple() < 0.0
+    assert hi.get_dG_staple() / lo.get_dG_staple() == pytest.approx(hi.T_kelvin / lo.T_kelvin)
+
+
+@pytest.mark.parametrize("j", [6, 7, 10, 16])
+def test_heat_capacity_counted_once_per_hydrogen_bond(j):
+    """dCp enters the backbone enthalpy once per hydrogen bond (j - 6, eq. 8) and the residue entropy (eq. 9) the
+    same number of times: the four nucleus residues carry neither."""
+    import math
+    seq = "A" * 16
+    hot = E.EnergyCalculator(seq=seq, i=0, j=j, pH=7.0, T=50.0, ionic_strength=0.05, ncap="Ac", ccap="Am")
+    cold = E.EnergyCalculator(seq=seq, i=0, j=j, pH=7.0, T=0.0, ionic_strength=0.05, ncap="Ac", ccap="Am")
+    T = hot.T_kelvin
+    entropic = cold.get_dG_Int().sum() * T / T_REF
+    cp_entropy = hot.get_dG_Int().sum() - entropic
+    assert cp_entropy == pytest.approx(-(j - 6) * T * hot.dCp * math.log(T / T_REF), abs=1e-12)
+    cp_enthalpy = hot.get_dG_Hbond() - cold.get_dG_Hbond()
+    assert cp_enthalpy == pytest.approx((j - 6) * hot.dCp * (T - T_REF), abs=1e-12)

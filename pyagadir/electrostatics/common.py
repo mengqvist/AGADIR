@@ -6,14 +6,20 @@ The side chain-macrodipole potential and the side chain-side chain pair energy c
 that collect both laws, are the same for all of them.
 """
 import math
+import warnings
 
 import numpy as np
 
-from pyagadir.chemistry import adjust_pKa, acidic_residue_ionization, basic_residue_ionization, ionization_free_energy
+from pyagadir.chemistry import (LN10, R_KCAL, T_REF, adjust_pKa, acidic_residue_ionization, basic_residue_ionization,
+                                ionization_free_energy)
 from pyagadir.electrostatics.gb import GB_LAWS, GBElectrostatics
 from pyagadir.electrostatics.point import POINT_LAW, PointChargeElectrostatics
 
 DIPOLE_LAWS = (POINT_LAW, *GB_LAWS)
+
+
+class IonizationConvergenceWarning(RuntimeWarning):
+    """The helix- or coil-state ionisation did not converge within the sweep limit."""
 
 
 class Electrostatics(GBElectrostatics, PointChargeElectrostatics):
@@ -22,13 +28,20 @@ class Electrostatics(GBElectrostatics, PointChargeElectrostatics):
     energy terms shared by the laws. Mixin of energies.PrecomputeParams.
     """
 
+    def _nonCoulomb_charge_coefficients(self) -> tuple[dict, dict]:
+        """
+        Charge-dependent non-Coulomb terms of the helix state as G0 + sum_a c_a p_a + sum_{a<b} c_ab p_a p_b in the
+        charged fractions p = |q^h| (EnergyCalculator provides them; none here). Returns ({a: c_a}, {(a, b): c_ab}).
+        """
+        return {}, {}
+
     def dipole_temperature_factor(self) -> float:
         """Muñoz 1995-III eq. (12): the side chain-macrodipole term uses a fixed dielectric and is
         scaled by eps(0 C)/eps(T) = exp(+0.004314 (T - 273.15)) (stronger at higher T).
         The GB laws (dipole_law="gb" or "gbx") carry their temperature dependence in eps_w(T) itself: 1."""
         if self.dipole_law in GB_LAWS:
             return 1.0
-        return math.exp(0.004314 * (self.T_kelvin - 273.15))
+        return math.exp(0.004314 * (self.T_kelvin - T_REF))
 
     def _sidechain_dipole_potential(self, idx: int) -> tuple[float, float]:
         """
@@ -89,6 +102,12 @@ class Electrostatics(GBElectrostatics, PointChargeElectrostatics):
         terminal-side chain geometry of _assign_terminal_sidechain_distances and the side
         chain-side chain distances of _assign_sidechain_sidechain_distances.
 
+        Point-charge law: psi also carries the derivative of the charge-dependent non-Coulomb terms of the helix
+        state (Table 1 charged/neutral cells, capping rules, Table IV/V, Petukhov and charged-staple motifs) with
+        respect to the group's charged fraction, dG_nonC/dp_a = c_a + sum_b c_ab p_b
+        (_nonCoulomb_charge_coefficients): Lacroix 1998 takes those terms into account in the pKa, and the mean-field
+        free energy is stationary in p only with them. The GB laws leave them out.
+
         The energy terms evaluate sum q_i q_j W_ij + sum q_i phi_i at the converged charges. That is
         the mean-field energy, not the free energy: it leaves out the cost of moving each group's
         ionisation away from its intrinsic value. At the self-consistent point the mean-field free
@@ -99,7 +118,7 @@ class Electrostatics(GBElectrostatics, PointChargeElectrostatics):
         """
         MAX_ITERATIONS = 50
         CONVERGENCE_THRESHOLD = 0.005
-        RT = 1.9865e-3 * self.T_kelvin  # same R as adjust_pKa
+        RT = R_KCAL * self.T_kelvin  # same R as adjust_pKa
 
         n = len(self.seq_list)
         ionizable_sidechains = set(self.neg_charge_aa + self.pos_charge_aa)
@@ -150,8 +169,8 @@ class Electrostatics(GBElectrostatics, PointChargeElectrostatics):
             """Distance (A) between two ionisable sites; 99 for an unmodelled pair."""
             if kind1 != "SC" and kind2 != "SC":
                 # terminus-terminus: the same distance in both states (_calculate_r over the whole
-                # chain), so it shifts both pKas alike and adds no helix-coil energy
-                # (get_dG_terminal_terminal_electrost models none)
+                # chain); its energy changes between the states through the charges only
+                # (get_dG_terminal_terminal_electrost; point-charge law)
                 return self._calculate_r(n - 1)
             if kind1 != "SC" or kind2 != "SC":
                 term = kind1 if kind1 != "SC" else kind2
@@ -165,19 +184,28 @@ class Electrostatics(GBElectrostatics, PointChargeElectrostatics):
                 d = self.sidechain_sidechain_distances_hel[idx1, idx2] if helix else self.charged_sidechain_distances_rc[idx1, idx2]
             return 99.0 if np.isnan(d) else float(d)
 
+        nonC_a, nonC_ab = self._nonCoulomb_charge_coefficients() if self._nonCoulomb_in_pKa() else ({}, {})
+        nonC_partners = {}
+        for (a, b), c in nonC_ab.items():
+            nonC_partners.setdefault(a, []).append((b, c))
+            nonC_partners.setdefault(b, []).append((a, c))
+
         def site_potential(kind1, idx1, seq_q, nterm_q, cterm_q, helix):
             """Energy psi (kcal/mol) of the fully charged state of a site in its environment."""
             q1 = full_charge(kind1, idx1)
             psi = 0.0
+            if helix and kind1 == "SC" and idx1 in nonC_a:
+                # charge-dependent non-Coulomb terms: dG_nonC / dp at the current charges
+                psi += nonC_a[idx1] + sum(c * abs(float(seq_q[b])) for b, c in nonC_partners.get(idx1, ()))
             if helix:
                 # macrodipole: the same terms as get_dG_terminals_macrodipole and
                 # get_dG_sidechain_macrodipole
                 if kind1 == "Nterm":
-                    if self.ncap_idx < 6:
+                    if self._terminal_dipole_in_range(self.ncap_idx):
                         psi += self._electrostatic_interaction_energy(
                             qi=self.mu_helix, qj=q1, r=self.terminal_macrodipole_distance_nterm, factor_pi=4.0)
                 elif kind1 == "Cterm":
-                    if n - 1 - self.ccap_idx < 6:
+                    if self._terminal_dipole_in_range(n - 1 - self.ccap_idx):
                         psi += self._electrostatic_interaction_energy(
                             qi=-self.mu_helix, qj=q1, r=self.terminal_macrodipole_distance_cterm, factor_pi=4.0)
                 else:
@@ -205,7 +233,8 @@ class Electrostatics(GBElectrostatics, PointChargeElectrostatics):
             nterm_q = self.nterm_ionization if nterm_present else 0.0
             cterm_q = self.cterm_ionization if cterm_present else 0.0
 
-            for _ in range(MAX_ITERATIONS):
+            converged = False
+            for sweep in range(1, MAX_ITERATIONS + 1):
                 old = np.concatenate([seq_q[~np.isnan(seq_q)], [nterm_q, cterm_q]])
                 for kind1, idx1 in sites:
                     psi = site_potential(kind1, idx1, seq_q, nterm_q, cterm_q, helix)
@@ -220,7 +249,14 @@ class Electrostatics(GBElectrostatics, PointChargeElectrostatics):
                         seq_q[idx1] = q_new
                 new = np.concatenate([seq_q[~np.isnan(seq_q)], [nterm_q, cterm_q]])
                 if float(np.max(np.abs(new - old))) < CONVERGENCE_THRESHOLD:
+                    converged = True
                     break
+            self.ionization_sweeps[helix] = sweep
+            if not converged:
+                warnings.warn(
+                    f"{'helix' if helix else 'coil'}-state ionisation of segment i={self.i}, j={self.j} of {self.seq} "
+                    f"not converged after {MAX_ITERATIONS} sweeps (last change {float(np.max(np.abs(new - old))):.3g})",
+                    IonizationConvergenceWarning, stacklevel=2)
 
             g_ion = 0.0
             psis = np.full(n, np.nan)
@@ -229,11 +265,12 @@ class Electrostatics(GBElectrostatics, PointChargeElectrostatics):
                 if kind1 == "SC":
                     psis[idx1] = psi
                 pka = base_pka(kind1, idx1)
-                ln_x = (pka - self.pH if is_basic(kind1, idx1) else self.pH - pka) * math.log(10.0)
+                ln_x = (pka - self.pH if is_basic(kind1, idx1) else self.pH - pka) * LN10
                 q = abs(float(env_charge(kind1, idx1, seq_q, nterm_q, cterm_q)))
                 g_ion += ionization_free_energy(ln_x, psi, q, RT)
             return seq_q, float(nterm_q), float(cterm_q), g_ion, psis
 
+        self.ionization_sweeps = {}  # sweeps used per state (True: helix, False: coil)
         hel_seq, hel_n, hel_c, g_hel, self.site_potential_hel = solve_state(helix=True)
         rc_seq, rc_n, rc_c, g_rc, self.site_potential_rc = solve_state(helix=False)
 

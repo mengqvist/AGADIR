@@ -28,6 +28,8 @@ from importlib.resources import files
 import numpy as np
 import pandas as pd
 
+from pyagadir.chemistry import R_KCAL
+
 GB_LAWS = ("gb", "gbx", "gbp")
 GBX_LAWS = ("gbx", "gbp")  # laws with a Table 1 transfer and parameter overrides
 # Tabulated residues, their table form and the sign of its charge:
@@ -371,7 +373,7 @@ class GBElectrostatics:
             return 0.0
         if len(es) == 1:
             return es[0][0] - es[0][1]
-        RT = 1.9872e-3 * self.T_kelvin
+        RT = R_KCAL * self.T_kelvin
         wts = [GB_HIS_TAUTOMER[f] for f in GB_NEUTRAL_FORMS[aa]]
         mix = [-RT * math.log(sum(wt * math.exp(-e[s] / RT) for wt, e in zip(wts, es))) for s in (0, 1)]
         return mix[0] - mix[1]
@@ -516,5 +518,5 @@ class GBElectrostatics:
         if getattr(self, "_sb_f", None) is None:
             c = self._sb_candidates()
             tot = sum(c.values())
-            self._sb_f = sb_network_free_energy(c, 1.9872e-3 * self.T_kelvin) / tot if tot < 0 else 1.0
+            self._sb_f = sb_network_free_energy(c, R_KCAL * self.T_kelvin) / tot if tot < 0 else 1.0
         return self._sb_f

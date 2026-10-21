@@ -125,10 +125,16 @@ def test_helix_coil_interface_restriction(calculator):
     dist_c_prime = calculator.sidechain_sidechain_distances_hel[5, 8]
     assert dist_c_prime == 12.0, f"Expected row C' (12.0) for C'->Helix, got {dist_c_prime}"
 
-    # Case C: "Phantom" Interaction C''(9) to Helix(5)
-    # 9 is NOT N' or C'. Should be 99 (ignored).
+    # Case C: C''(9) to Helix(5). 9 is NOT N' or C': no helix geometry of its own. The point-charge law keeps the
+    # pair's coil distance in the helix state (mock 20.0; _solver_consistent_terms); the GB laws leave it out (99).
     dist_phantom = calculator.sidechain_sidechain_distances_hel[5, 9]
-    assert dist_phantom == 99.0, f"Expected Phantom Interaction to be 99.0, got {dist_phantom}"
+    assert dist_phantom == calculator.charged_sidechain_distances_rc[5, 9] == 20.0, \
+        f"Expected the coil distance (20.0) for C''->Helix, got {dist_phantom}"
+    calculator.dipole_law = "gb"
+    calculator._assign_sidechain_sidechain_distances()
+    assert calculator.sidechain_sidechain_distances_hel[5, 9] == 99.0
+    calculator.dipole_law = "munoz"
+    calculator._assign_sidechain_sidechain_distances()
 
 def test_electrostatic_matrix_symmetry(calculator):
     """

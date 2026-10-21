@@ -2,8 +2,18 @@ from typing import Dict, Tuple
 
 import numpy as np
 
+from pyagadir.chemistry import R_KCAL
 from pyagadir.energies import DIPOLE_LAWS, EnergyCalculator
 from pyagadir.utils import is_valid_peptide_sequence, is_valid_ncap_ccap
+
+# Salt effects on the neutral helix (Scholtz et al. 1991, JACS 113:5102; see params/README.md).
+# Salting-in: the form of equation 12 of Lacroix et al. 1998, -a (1 - exp(-b I)), per helical segment, with
+# a = 0.30 kcal/mol (the measured amplitude; the paper's 0.15 was fitted without a salting-out term) and
+# b = 3 /M (the paper's 6), which keeps the paper's low-salt slope a * b = 0.9 kcal/mol per M.
+SALTING_IN_ALPHA = 0.30
+SALTING_IN_BETA = 3.0
+# Salting-out (NaCl Hofmeister term): linear in ionic strength, per helical residue (j - 2).
+K_HOFMEISTER = 0.0085
 
 
 class ModelResult:
@@ -268,17 +278,10 @@ class AGADIR(object):
         # get electrostatic energy between N-terminal and C-terminal backbone charges
         dG_electrost_term_term = self.energy_calculator.get_dG_terminal_terminal_electrost()
 
-        # Salt effects on the neutral helix (Scholtz et al. 1991, JACS 113:5102; see params/README.md).
-        # Salting-in: the form of equation 12 of the paper, -a (1 - exp(-b I)), per helical segment, with
-        # a = 0.30 kcal/mol (the measured amplitude; the paper's 0.15 was fitted without a salting-out term) and
-        # b = 3 /M (the paper's 6), which keeps the paper's low-salt slope a * b = 0.9 kcal/mol per M.
-        alpha = 0.30
-        beta = 3.0
-        dG_ionic = -alpha * (1 - np.exp(-beta * self.molarity))
-        # Salting-out (NaCl Hofmeister term): linear in ionic strength, per helical residue
-        # (j - 2: the segment without its N- and C-cap).
-        k_hofmeister = 0.0085
-        dG_ionic += k_hofmeister * self.molarity * (j - 2)
+        # Salt effects on the neutral helix (SALTING_IN_ALPHA, SALTING_IN_BETA, K_HOFMEISTER above): salting-in per
+        # segment, salting-out per helical residue (j - 2: the segment without its N- and C-cap).
+        dG_ionic = -SALTING_IN_ALPHA * (1 - np.exp(-SALTING_IN_BETA * self.molarity))
+        dG_ionic += K_HOFMEISTER * self.molarity * (j - 2)
 
         # Muñoz 1995 III eq. (12): electrostatic interactions scale with
         # the temperature-dependent dielectric constant of water.
@@ -346,8 +349,7 @@ class AGADIR(object):
         Returns:
             float: The equilibrium constant K.
         """
-        R = 1.987204258e-3  # kcal/mol/K
-        return np.exp(-dG_Hel / (R * self.T_kelvin))
+        return np.exp(-dG_Hel / (R_KCAL * self.T_kelvin))
 
     def _calc_partition_fxn(self) -> None:
         """

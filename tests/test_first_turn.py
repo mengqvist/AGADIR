@@ -3,6 +3,7 @@ of the segment (not N1, N3, the interior or C1-C3), and the same for the charged
 import pytest
 
 import pyagadir.energies as E
+from pyagadir.chemistry import T_REF
 
 
 def _int_energy(seq, pH, monkeypatch=None, off=None):
@@ -19,7 +20,7 @@ def test_lys_n2_offset_charge_independent(pH, monkeypatch):
     with_off = _int_energy(seq, pH)
     without = _int_energy(seq, pH, monkeypatch, {})
     d = with_off - without
-    assert d[2] == pytest.approx(k_off * 273.15 / 273.0, abs=1e-9)
+    assert d[2] == pytest.approx(k_off * 273.15 / T_REF, abs=1e-9)
     assert abs(d).sum() == pytest.approx(abs(d[2]), abs=1e-12)
 
 
