@@ -7,7 +7,10 @@ the side chain's electrostatics with the backbone, so used as is it counts that 
 at its reference measurement (the source's host peptide with the residue in the class, at the source's temperature
 and ionic strength):
 
-    dphi(X, class) = phi_default - phi_gb      (kcal/mol per +1 charge, EnergyCalculator.sidechain_dipole_potential)
+    dphi(X, class) = phi_default - phi_gb      (kcal/mol per +1 charge; phi_default: EnergyCalculator.
+                                               sidechain_dipole_potential; phi_gb: the GB field alone,
+                                               GBElectrostatics._gb_field_potential, which was the potential of the
+                                               former dipole_law="gb")
 
 and dipole_law="gbx" uses phi_gb + dphi(X, class) wherever the GB table applies, so energy and ionisation equal the
 default model at each reference while the GB law governs elsewhere (other positions in the class, salts, lengths,
@@ -86,12 +89,16 @@ def transfer(cls, aa, ref):
     for (i, j), K in m.weights.items():
         if not i <= idx <= i + j - 1 or gbx_position_class(aa, idx - i, i + j - 1 - idx, sl[i]) != cls:
             continue
-        phi = {}
-        for law in ("munoz", "gb"):
-            ec = EnergyCalculator(seq, i, j, pH, ref["T"], ref["I"], ncap=ref["ncap"], ccap=ref["ccap"],
-                                  params=params, dipole_law=law)
-            phi[law] = float(ec.sidechain_dipole_potential[idx])
-        num += K * (phi["munoz"] - phi["gb"])
+        # phi_default from the default law's segment; phi_gb, the GB field without any transfer, from a gbx segment
+        # (the field does not depend on the transfer table it is measured for). dipole_temperature_factor is 1 for the
+        # GB laws: phi_gb is sidechain_dipole_potential as the former law "gb" stored it.
+        ec = EnergyCalculator(seq, i, j, pH, ref["T"], ref["I"], ncap=ref["ncap"], ccap=ref["ccap"], params=params,
+                              dipole_law="munoz")
+        phi_default = float(ec.sidechain_dipole_potential[idx])
+        ec = EnergyCalculator(seq, i, j, pH, ref["T"], ref["I"], ncap=ref["ncap"], ccap=ref["ccap"],
+                              params=EnergyCalculator.snapshot_params("gbx"), dipole_law="gbx")
+        phi_gb = float(ec.dipole_temperature_factor() * sum(ec._gb_field_potential(idx)))
+        num += K * (phi_default - phi_gb)
         den += K
     if den == 0.0:
         raise RuntimeError(f"no segment places {aa} in class {cls}")

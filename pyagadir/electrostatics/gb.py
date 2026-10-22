@@ -1,11 +1,14 @@
 """
-Generalized Born electrostatics: dipole_law "gb", "gbx" and "gbp". Opt-in and in development; the default law is the
+Generalized Born electrostatics: dipole_law "gbx" and "gbp". Opt-in and in development; the default law is the
 point-charge law (point.py).
 
-"gb": the Generalized Born field of the helix backbone on the charged side chain, tabulated from built poly-Ala helices
-(params/sidechain_dipole_gb.tsv, made by gb_pipeline/helix_builds/build_gb_dipole_table.py; params/README.md), in place
-of the point-charge side chain-macrodipole law.
-"gbx": the GB law with every Table 1 value that was measured with the default law in the loop transferred to it (a
+Both laws rest on the Generalized Born field of the helix backbone on the charged side chain, tabulated from built
+poly-Ala helices (params/sidechain_dipole_gb.tsv, made by gb_pipeline/helix_builds/build_gb_dipole_table.py;
+params/README.md), in place of the point-charge side chain-macrodipole law. The field alone was once the law "gb";
+it was removed (owner, 2026-10-22) because used alone it counts twice the first-turn and capping electrostatics
+that Table 1's measured values already hold (_gb_dipole_potential). _gb_field_potential still gives it, for the
+transfer that removes that double count (gb_pipeline/transfer/build_gb_transfer.py).
+"gbx": the GB field with every Table 1 value that was measured with the default law in the loop transferred to it (a
 potential offset per residue and Table 1 class at that value's reference measurement, params/
 sidechain_dipole_gb_transfer.tsv, made by gb_pipeline/transfer/build_gb_transfer.py) and the parameters re-derived
 under it (params/gbx_overrides.tsv). See params/README.md "gbx".
@@ -30,7 +33,7 @@ import pandas as pd
 
 from pyagadir.chemistry import R_KCAL
 
-GB_LAWS = ("gb", "gbx", "gbp")
+GB_LAWS = ("gbx", "gbp")
 GBX_LAWS = ("gbx", "gbp")  # laws with a Table 1 transfer and parameter overrides
 # Tabulated residues, their table form and the sign of its charge:
 GB_DIPOLE_FORM ={"K": "K", "R": "R", "H": "H+", "D": "D", "E": "E", "C": "C-", "Y": "Y-"}
@@ -271,9 +274,37 @@ class GBElectrostatics:
             cls._law_params[dipole_law] = out
         return cls._law_params[dipole_law]
 
+    def _gb_dipole_energy(self, idx: int):
+        """
+        Helix-minus-coil Generalized Born energy (kcal/mol) of residue idx's charged form with the helix backbone,
+        E_helix(L, k) - E_coil(k, L + 1 - k) of _gb_dipole_potential, or None where the table does not apply: a residue
+        that is not tabulated, one outside the caps, or a row with no sterically allowed structure (n_rot = 0).
+        """
+        form = GB_DIPOLE_FORM.get(self.seq_list[idx])
+        if form is None or not int(self.ncap_idx) <= idx <= int(self.ccap_idx):
+            return None
+        e = self._gb_form_energy(gb_dipole_table(), form, idx)
+        if e is None:
+            return None
+        return e[0] - e[1]
+
+    def _gb_field_potential(self, idx: int) -> tuple[float, float]:
+        """
+        The GB field alone: _gb_dipole_potential without a law's transfer offset or gbp's neutral form, as
+        (N-end, C-end) like _sidechain_dipole_potential, and Muñoz's law where the table does not apply. It is the
+        potential the Table 1 transfer is measured against (gb_pipeline/transfer/build_gb_transfer.py: dphi =
+        phi_default - phi_field); it was the potential of the removed law dipole_law="gb".
+        """
+        energy = self._gb_dipole_energy(idx)
+        if energy is None:
+            return self._munoz_dipole_potential_scaled(idx)
+        k0, L0 = idx - int(self.ncap_idx), int(self.ccap_idx) - int(self.ncap_idx) - 1
+        phi = energy / GB_DIPOLE_CHARGE[self.seq_list[idx]]
+        return (phi, 0.0) if k0 <= L0 + 1 - k0 else (0.0, phi)
+
     def _gb_dipole_potential(self, idx: int) -> tuple[float, float]:
         """
-        dipole_law="gb": energy (kcal/mol) of a +1 charge on residue idx from the helix backbone, by Generalized Born
+        The GB laws: energy (kcal/mol) of a +1 charge on residue idx from the helix backbone, by Generalized Born
         on built poly-Ala helices (params/sidechain_dipole_gb.tsv, gb_pipeline/helix_builds/build_gb_dipole_table.py), helix minus coil.
         For Lys, Arg, His+, Asp, Glu, Cys- or Tyr- at position k = 0 (N-cap) .. L + 1 (C-cap) of a helix with L
         helical residues:
@@ -309,13 +340,9 @@ class GBElectrostatics:
         """
         aa = self.seq_list[idx]
         ncap_i, ccap_i = int(self.ncap_idx), int(self.ccap_idx)
-        form = GB_DIPOLE_FORM.get(aa)
-        if form is None or not ncap_i <= idx <= ccap_i:
+        energy = self._gb_dipole_energy(idx)
+        if energy is None:  # not tabulated, outside the caps, or no allowed structure: Muñoz's law
             return self._munoz_dipole_potential_scaled(idx)
-        e = self._gb_form_energy(gb_dipole_table(), form, idx)
-        if e is None:
-            return self._munoz_dipole_potential_scaled(idx)
-        energy = e[0] - e[1]
         k0, L0 = idx - ncap_i, ccap_i - ncap_i - 1
         if self.dipole_law == "gbp" and aa in GB_NEUTRAL_FORMS:
             energy -= self._gb_neutral_energy(idx) + gbp_tables()["neutral_offset"].get(aa, 0.0)

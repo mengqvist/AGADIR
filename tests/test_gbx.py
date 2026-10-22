@@ -36,9 +36,12 @@ def test_ncap_reproduces_default_at_reference(aa):
     assert b == pytest.approx(a, abs=0.03)
 
 
-def test_gbx_differs_from_gb_only_by_class_offsets():
+def test_gbx_differs_from_the_gb_field_only_by_class_offsets():
+    """gbx = the GB field alone (_gb_field_potential, the former law "gb") + the transfer offset of the residue's class."""
     seq = "AAAADAAAAAAAAAAA"
-    g = potential(seq, 0, 18, 5, "gb", 0.0, 0.01, 7.0)
+    ec = E.EnergyCalculator(seq=seq, i=0, j=18, pH=7.0, T=0.0, ionic_strength=0.01, ncap="Ac", ccap="Am",
+                            dipole_law="gbx")
+    g = sum(ec._gb_field_potential(5))
     x = potential(seq, 0, 18, 5, "gbx", 0.0, 0.01, 7.0)
     assert x - g == pytest.approx(GB.gbx_tables()["transfer"][("D", "Ncen")], abs=1e-9)
 

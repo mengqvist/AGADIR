@@ -3,7 +3,7 @@ from typing import Dict, Tuple
 import numpy as np
 
 from pyagadir.chemistry import R_KCAL
-from pyagadir.electrostatics.common import SEGMENT_BATCH_SIZE, SegmentBatch
+from pyagadir.electrostatics.common import SEGMENT_BATCH_SIZE
 from pyagadir.electrostatics.point import POINT_LAW
 from pyagadir.energies import DIPOLE_LAWS, EnergyCalculator
 from pyagadir.utils import is_valid_peptide_sequence, is_valid_ncap_ccap
@@ -103,10 +103,10 @@ class AGADIR(object):
             T (float): Temperature in Celsius. Default is 4.0.
             M (float): Ionic strength in Molar (M, mol/L). Default is 0.15.
             dipole_law (str): Side chain-macrodipole law. 'munoz' (default): Muñoz & Serrano 1995-II eq. 11 for the
-                nearest end plus the far end's half charge. 'gb': the Generalized Born field of the helix backbone
-                (params/README.md); it is meant for use with table values transferred to it, and without them it
-                counts first-turn and capping electrostatics twice. 'gbx': GB with those values transferred to it and
-                the parameters that depend on the law re-derived (params/README.md "gbx"). 'gbp': gbx plus the GB side
+                nearest end plus the far end's half charge. 'gbx': the Generalized Born field of the helix backbone
+                (params/README.md) with the Table 1 values transferred to it (the field alone, the former 'gb', counts
+                first-turn and capping electrostatics twice) and the parameters that depend on the law re-derived
+                (params/README.md "gbx"). 'gbp': gbx plus the GB side
                 chain-side chain pair law, every ionisable group coupled to both GB terms through its charged and
                 neutral forms' energies, GB desolvation, the statistical acid-base network, and the values transferred
                 and re-derived under it (params/README.md "gbp").
@@ -285,10 +285,10 @@ class AGADIR(object):
 
     def _calc_partition_fxn_per_segment(self, params: dict) -> None:
         """
-        The partition function with one EnergyCalculator per helical segment, each solving its own ionisation (the GB
-        laws; for the default law, the reference that _calc_partition_fxn_batched reproduces, tests/test_segment_batch.py).
-        Code that patches the per-segment solver of the default law (Electrostatics._assign_modified_ionization_states)
-        calls this method, since predict() runs the batched one for that law.
+        The partition function with one EnergyCalculator per helical segment, each solving its own ionisation: the GB
+        laws, with the per-segment solver. For the default law each segment is then a batch of one, the check that
+        tests/test_segment_batch.py makes of _calc_partition_fxn_batched. To be removed (owner, 2026-10-22) once the GB
+        law that is kept is ported to SegmentBatch.
         """
         for j in range(
             self.min_helix_length, self.result.seq_length + 1
@@ -338,9 +338,9 @@ class AGADIR(object):
                                     ionic_strength=self.molarity, ncap=self.n_cap, ccap=self.c_cap, params=params,
                                     dipole_law=self.dipole_law, batch=batch)
 
-        # The reference segment is built without a batch, so it runs the per-segment solver: the batch takes the
-        # peptide's tables and its coil state from it.
-        batch = SegmentBatch(calculator(*segments[0]))
+        # The first segment, built on its own, is a batch of one (energies.PrecomputeParams): its batch holds the
+        # peptide's tables and coil state, and serves every segment.
+        batch = calculator(*segments[0]).segment_batch
         for start in range(0, len(segments), SEGMENT_BATCH_SIZE):
             chunk = segments[start:start + SEGMENT_BATCH_SIZE]
             # the chunk's segments: their setup (without the ionisation), then their helix ionisation in one solve

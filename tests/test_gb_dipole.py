@@ -1,4 +1,6 @@
-"""The opt-in Generalized Born side chain-macrodipole law (dipole_law="gb"; params/README.md)."""
+"""The Generalized Born field of the helix backbone (params/sidechain_dipole_gb.tsv; params/README.md), on which the
+opt-in laws dipole_law="gbx" and "gbp" are built: the table, the field alone (_gb_field_potential; it was the law "gb",
+removed on 2026-10-22) and how the GB laws use it."""
 import math
 
 import numpy as np
@@ -9,25 +11,27 @@ import pyagadir.electrostatics.gb as GB
 from pyagadir.models import AGADIR
 
 
-def calc(seq, law="gb", T=0.0, I=0.01, pH=7.0):
+def calc(seq, law="gbx", T=0.0, I=0.01, pH=7.0):
     """Ac-seq-Am with the whole chain as one helix segment (acetyl N-cap, amide C-cap)."""
     return E.EnergyCalculator(seq=seq, i=0, j=len(seq) + 2, pH=pH, T=T, ionic_strength=I, ncap="Ac", ccap="Am",
                               dipole_law=law)
 
 
 def energy_at(aa, k, L=16, caps="res", **kw):
-    """Charged-form energy (kcal/mol) of residue aa at helix position k of an L-residue Ala helix, through the model.
+    """Charged-form energy (kcal/mol) of residue aa at helix position k of an L-residue Ala helix, through the model:
+    the GB field alone (law="gbx", the default here) or the default law (law="munoz").
     caps="res": Ala N-cap and C-cap residues; caps="AcAm": acetyl N-cap and amide C-cap."""
     if caps == "AcAm":
         seq = "A" * (k - 1) + aa + "A" * (L - k)
         c, idx = calc(seq, **kw), k
     else:
         seq = "A" + "A" * k + aa + "A" * (L + 1 - k) + "A"
-        law, T, I, pH = kw.get("law", "gb"), kw.get("T", 0.0), kw.get("I", 0.01), kw.get("pH", 7.0)
+        law, T, I, pH = kw.get("law", "gbx"), kw.get("T", 0.0), kw.get("I", 0.01), kw.get("pH", 7.0)
         c = E.EnergyCalculator(seq=seq, i=1, j=L + 2, pH=pH, T=T, ionic_strength=I, dipole_law=law)
         idx = 1 + k
     assert c.seq_list[idx] == aa
-    return GB.GB_DIPOLE_CHARGE[aa] * sum(c._sidechain_dipole_potential(idx))
+    pot = c._gb_field_potential(idx) if c.dipole_law in GB.GB_LAWS else c._sidechain_dipole_potential(idx)
+    return GB.GB_DIPOLE_CHARGE[aa] * sum(pot)
 
 
 def test_default_law_is_unchanged():
@@ -43,6 +47,16 @@ def test_unknown_law_is_refused():
         AGADIR(dipole_law="dmd")
     with pytest.raises(ValueError):
         calc("AAAAAAAA", law="dmd")
+
+
+def test_the_field_alone_is_not_a_law():
+    """dipole_law="gb" (the GB field without the Table 1 transfer, which counts first-turn and capping electrostatics
+    twice) was removed on 2026-10-22."""
+    assert "gb" not in GB.GB_LAWS
+    with pytest.raises(ValueError):
+        AGADIR(dipole_law="gb")
+    with pytest.raises(ValueError):
+        calc("AAAAAAAA", law="gb")
 
 
 def test_table_covers_every_position_and_cap():
@@ -126,18 +140,21 @@ def test_flanks_keep_the_default_law_and_tyr_uses_the_table():
     # seq_list = Ac K A x10 Y A Am; the segment idx 2..12 has its N-cap at idx 2 and its C-cap at the Tyr (idx 12)
     seq = "KAAAAAAAAAAYA"
     g = E.EnergyCalculator(seq=seq, i=2, j=11, pH=10.0, T=20.0, ionic_strength=0.05, ncap="Ac", ccap="Am",
-                           dipole_law="gb")
+                           dipole_law="gbx")
     m = E.EnergyCalculator(seq=seq, i=2, j=11, pH=10.0, T=20.0, ionic_strength=0.05, ncap="Ac", ccap="Am")
     assert g.ncap_idx == 2 and g.ccap_idx == 12 and g.seq_list[1] == "K" and g.seq_list[12] == "Y"
     assert m.sidechain_dipole_potential[1] != 0.0  # Lys in the N-terminal flank: default law, same value
+    assert g._gb_dipole_energy(1) is None
     assert np.isclose(g.sidechain_dipole_potential[1], m.sidechain_dipole_potential[1])
-    assert not np.isclose(g.sidechain_dipole_potential[12], m.sidechain_dipole_potential[12])  # Tyr-: the table
+    assert g._gb_dipole_energy(12) is not None  # Tyr- at the C-cap: the table
+    assert not np.isclose(sum(g._gb_field_potential(12)), m.sidechain_dipole_potential[12])
     # Tyr- as the N-cap residue (cycle 398: an allowed structure exists): the table, not the default law
     g2 = E.EnergyCalculator(seq="AYAAAAAAAAAA", i=2, j=10, pH=10.0, T=20.0, ionic_strength=0.05, ncap="Ac",
-                            ccap="Am", dipole_law="gb")
+                            ccap="Am", dipole_law="gbx")
     m2 = E.EnergyCalculator(seq="AYAAAAAAAAAA", i=2, j=10, pH=10.0, T=20.0, ionic_strength=0.05, ncap="Ac", ccap="Am")
     assert g2.ncap_idx == 2 and g2.seq_list[2] == "Y"
-    assert not np.isclose(g2.sidechain_dipole_potential[2], m2.sidechain_dipole_potential[2])
+    assert g2._gb_dipole_energy(2) is not None
+    assert not np.isclose(sum(g2._gb_field_potential(2)), m2.sidechain_dipole_potential[2])
 
 
 def test_long_helices_are_end_anchored():
@@ -146,10 +163,3 @@ def test_long_helices_are_end_anchored():
     for k in (1, 3):
         assert np.isclose(energy_at("K", k, L=L), energy_at("K", k, L=tab["lmax"]))
     assert np.isclose(energy_at("E", L, L=L), energy_at("E", tab["lmax"], L=tab["lmax"]))
-
-
-def test_agadir_runs_with_the_gb_law():
-    seq = "AEAAAKEAAAKEAAAKA"
-    p_gb = AGADIR(T=0.0, M=0.01, dipole_law="gb").predict(seq, ncap="Ac", ccap="Am").get_percent_helix()
-    p_mu = AGADIR(T=0.0, M=0.01).predict(seq, ncap="Ac", ccap="Am").get_percent_helix()
-    assert 0.0 <= p_gb <= 100.0 and p_gb != p_mu

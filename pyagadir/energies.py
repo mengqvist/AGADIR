@@ -7,6 +7,8 @@ import pandas as pd
 from pyagadir.chemistry import (E_CHARGE, EPSILON_0, N_AVOGADRO, T_REF, acidic_residue_ionization,
                                 basic_residue_ionization, calculate_permittivity, debye_screening_kappa)
 from pyagadir.electrostatics import DIPOLE_LAWS, GB_LAWS, GBX_LAWS, Electrostatics  # noqa: F401
+from pyagadir.electrostatics.common import SegmentBatch
+from pyagadir.electrostatics.point import POINT_LAW
 from pyagadir.utils import is_valid_peptide_sequence, is_valid_ncap_ccap, is_valid_conditions
 
 # The electrostatics are in pyagadir/electrostatics/: point.py (the default point-charge law), gb.py (the Generalized
@@ -214,7 +216,7 @@ class PrecomputeParams(Electrostatics):
             ncap (str): N-terminal capping modification (acetylation='Ac', succinylation='Sc').
             ccap (str): C-terminal capping modification (amidation='Am').
             params (dict): Parameter tables from snapshot_params(). If None, load_params() is used.
-            dipole_law (str): side chain-macrodipole law, "munoz" (default), "gb", "gbx" or "gbp" (see
+            dipole_law (str): side chain-macrodipole law, "munoz" (default), "gbx" or "gbp" (see
                 _sidechain_dipole_potential; "gbp" also replaces the side chain-side chain pair law).
             batch (SegmentBatch): default law only. The peptide's shared tables and coil solution
                 (electrostatics/common.py): the setup takes them instead of recomputing them, the pair lists cover the
@@ -351,7 +353,14 @@ class PrecomputeParams(Electrostatics):
         self._assign_terminal_sidechain_distances()
         self._assign_sidechain_sidechain_distances()
         self._assign_gb_pairs()
-        self._assign_modified_ionization_states()
+        if dipole_law == POINT_LAW:
+            # The default law solves its ionisation in a SegmentBatch (electrostatics/common.py); a segment built on its
+            # own is a batch of one. models.AGADIR reuses this segment's batch for all the segments of a prediction.
+            self.segment_batch = SegmentBatch(self)
+            self.segment_batch.solve_helix([self])
+        else:
+            # the GB laws: the per-segment solver, until the GB law that is kept is ported to SegmentBatch
+            self._assign_modified_ionization_states()
 
     def _find_charged_pairs(self) -> list[tuple[str, int, int]]:
         """
@@ -426,7 +435,7 @@ class EnergyCalculator(PrecomputeParams):
             ncap (str): N-terminal capping modification (acetylation='Ac', succinylation='Sc').
             ccap (str): C-terminal capping modification (amidation='Am').
             params (dict): Parameter tables from snapshot_params(). If None, load_params() is used.
-            dipole_law (str): side chain-macrodipole law, "munoz" (default) or "gb".
+            dipole_law (str): side chain-macrodipole law, "munoz" (default), "gbx" or "gbp".
             batch (SegmentBatch): default law only; see PrecomputeParams.
         """
         super().__init__(seq, i, j, pH, T, ionic_strength, ncap, ccap, params=params, dipole_law=dipole_law,
@@ -442,6 +451,11 @@ class EnergyCalculator(PrecomputeParams):
 
     def _nonCoulomb_charge_coefficients(self) -> tuple[dict, dict]:
         """
+        To be removed (owner, 2026-10-22) with the per-segment solver (Electrostatics._assign_modified_ionization_states),
+        its only user, once the GB law that is kept is ported to SegmentBatch. _nonCoulomb_charge_coefficients_local
+        replaces it; tests/test_segment_batch.py compares the two. Before deleting it, keep its explanation of the
+        coefficients (below) with the local version.
+
         The charge-dependent non-Coulomb terms of the helix state as G0 + sum_a c_a p_a + sum_{a<b} c_ab p_a p_b in the
         charged fractions p_a = |q_a^h| of the titratable residues of the segment (N-cap to C-cap). Each term is
         linear in one fraction or, for the Table IV (1 - p_a p_b) rule, bilinear in two, so the coefficients follow

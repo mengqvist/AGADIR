@@ -1,5 +1,6 @@
 """Build pyagadir/params/sidechain_dipole_gb.tsv: the Generalized Born field of the helix backbone on a charged side
-chain, for the side chain-macrodipole law selected by dipole_law="gb".
+chain, on which the side chain-macrodipole laws dipole_law="gbx" and "gbp" are built (the field alone was the former
+law "gb", removed on 2026-10-22: it counts first-turn and capping electrostatics twice without the Table 1 transfer).
 
 Stages:
   --raw OUT.tsv.gz   the expensive part: build every structure, compute its energies, write one row per structure

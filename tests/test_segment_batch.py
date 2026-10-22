@@ -1,7 +1,8 @@
 """The default law's batched segments (electrostatics/common.py SegmentBatch, models.AGADIR._calc_partition_fxn_batched):
-the same predictions as the per-segment solver (AGADIR._calc_partition_fxn_per_segment, the GB laws' path), the
-premises they rest on (every interacting pair within PAIR_RANGE residues; a segment-independent coil state), and the
-local non-Coulomb coefficients."""
+the same predictions as one segment at a time (AGADIR._calc_partition_fxn_per_segment, each segment a batch of one),
+the same ionisation as the per-segment solver it replaces (Electrostatics._assign_modified_ionization_states, kept for
+the GB laws), the premises they rest on (every interacting pair within PAIR_RANGE residues; a segment-independent coil
+state), and the local non-Coulomb coefficients."""
 import contextlib
 import io
 
@@ -32,7 +33,7 @@ CASES = [
 def _predict(case, batched):
     seq, nc, cc, pH, T, M = case
     model = models.AGADIR(method="1s", T=T, M=M, pH=pH)
-    if not batched:  # the reference: each segment solves its own ionisation
+    if not batched:  # one segment at a time, each a batch of one
         params = EnergyCalculator.snapshot_params("munoz")
         model._calc_partition_fxn = lambda: model._calc_partition_fxn_per_segment(params)
     with contextlib.redirect_stdout(io.StringIO()):
@@ -55,6 +56,26 @@ def test_batched_segments_reproduce_the_per_segment_solver(case):
     assert a.percent_helix == b.percent_helix
     assert np.max(np.abs(a.helical_propensity - b.helical_propensity)) < 1e-9
     assert abs(a.K_tot - b.K_tot) <= 1e-12 * max(1.0, abs(a.K_tot))
+
+
+@pytest.mark.parametrize("case", CASES, ids=lambda c: f"{c[0]}-{c[3]}")
+def test_every_segment_matches_the_per_segment_solver(case):
+    """Each segment's ionisation from its SegmentBatch (a batch of one) against the per-segment solver
+    (_assign_modified_ionization_states, kept until the GB laws are ported): the coil state to the last bit, the
+    helix state to rounding (the solver's whole-energy non-Coulomb coefficients differ from the local ones there)."""
+    for c in _segments(case):
+        batch = (c.modified_seq_ionization_hel.copy(), c.modified_nterm_ionization_hel, c.modified_cterm_ionization_hel,
+                 c.site_potential_hel.copy(), c.modified_seq_ionization_rc.copy(), c.modified_nterm_ionization_rc,
+                 c.modified_cterm_ionization_rc, c.site_potential_rc.copy(), c.dG_ionization, dict(c.ionization_sweeps))
+        c._assign_modified_ionization_states()
+        assert np.array_equal(c.modified_seq_ionization_rc, batch[4]), (c.i, c.j)
+        assert (c.modified_nterm_ionization_rc, c.modified_cterm_ionization_rc) == batch[5:7], (c.i, c.j)
+        assert np.array_equal(c.site_potential_rc, batch[7], equal_nan=True), (c.i, c.j)
+        assert np.allclose(c.modified_seq_ionization_hel, batch[0], rtol=0, atol=1e-12), (c.i, c.j)
+        assert abs(c.modified_nterm_ionization_hel - batch[1]) < 1e-12 and abs(c.modified_cterm_ionization_hel - batch[2]) < 1e-12
+        assert np.allclose(c.site_potential_hel, batch[3], rtol=0, atol=1e-12, equal_nan=True), (c.i, c.j)
+        assert abs(c.dG_ionization - batch[8]) < 1e-12, (c.i, c.j)
+        assert c.ionization_sweeps == batch[9], (c.i, c.j)
 
 
 @pytest.mark.parametrize("case", CASES, ids=lambda c: f"{c[0]}-{c[3]}")
