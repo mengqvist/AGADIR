@@ -30,40 +30,53 @@ CASES = [
 ]
 
 
-def _predict(case, batched):
+# (case, law): every case under the default law, a subset under gbx (the GB field instead of Muñoz's)
+LAW_CASES = [(c, "munoz") for c in CASES] + [(c, "gbx") for c in (CASES[0], CASES[2], CASES[3], CASES[6], CASES[8],
+                                                                    CASES[-1])]
+
+
+def _predict(case, batched, law="munoz"):
     seq, nc, cc, pH, T, M = case
-    model = models.AGADIR(method="1s", T=T, M=M, pH=pH)
+    model = models.AGADIR(method="1s", T=T, M=M, pH=pH, dipole_law=law)
     if not batched:  # one segment at a time, each a batch of one
-        params = EnergyCalculator.snapshot_params("munoz")
+        params = EnergyCalculator.snapshot_params(law)
         model._calc_partition_fxn = lambda: model._calc_partition_fxn_per_segment(params)
     with contextlib.redirect_stdout(io.StringIO()):
         return model.predict(seq, ncap=nc, ccap=cc)
 
 
-def _segments(case):
+def _segments(case, law="munoz"):
     seq, nc, cc, pH, T, M = case
     L = len(seq) + (nc is not None) + (cc is not None)
+    params = EnergyCalculator.snapshot_params(law)
     for j in range(6, L + 1):
         for i in range(0, L - j + 1):
-            yield EnergyCalculator(seq=seq, i=i, j=j, pH=pH, T=T, ionic_strength=M, ncap=nc, ccap=cc)
+            yield EnergyCalculator(seq=seq, i=i, j=j, pH=pH, T=T, ionic_strength=M, ncap=nc, ccap=cc, params=params,
+                                   dipole_law=law)
 
 
-@pytest.mark.parametrize("case", CASES, ids=lambda c: f"{c[0]}-{c[3]}")
-def test_batched_segments_reproduce_the_per_segment_solver(case):
+def _ids(cl):
+    return f"{cl[1]}-{cl[0][0]}-{cl[0][3]}"
+
+
+@pytest.mark.parametrize("cl", LAW_CASES, ids=_ids)
+def test_batched_segments_reproduce_the_per_segment_solver(cl):
     """Identical % helix; per-residue helicity equal to rounding (the local coefficients differ at the last bit)."""
-    a = _predict(case, False)
-    b = _predict(case, True)
+    case, law = cl
+    a = _predict(case, False, law)
+    b = _predict(case, True, law)
     assert a.percent_helix == b.percent_helix
     assert np.max(np.abs(a.helical_propensity - b.helical_propensity)) < 1e-9
     assert abs(a.K_tot - b.K_tot) <= 1e-12 * max(1.0, abs(a.K_tot))
 
 
-@pytest.mark.parametrize("case", CASES, ids=lambda c: f"{c[0]}-{c[3]}")
-def test_every_segment_matches_the_per_segment_solver(case):
+@pytest.mark.parametrize("cl", LAW_CASES, ids=_ids)
+def test_every_segment_matches_the_per_segment_solver(cl):
     """Each segment's ionisation from its SegmentBatch (a batch of one) against the per-segment solver
     (_assign_modified_ionization_states, kept until the GB laws are ported): the coil state to the last bit, the
     helix state to rounding (the solver's whole-energy non-Coulomb coefficients differ from the local ones there)."""
-    for c in _segments(case):
+    case, law = cl
+    for c in _segments(case, law):
         batch = (c.modified_seq_ionization_hel.copy(), c.modified_nterm_ionization_hel, c.modified_cterm_ionization_hel,
                  c.site_potential_hel.copy(), c.modified_seq_ionization_rc.copy(), c.modified_nterm_ionization_rc,
                  c.modified_cterm_ionization_rc, c.site_potential_rc.copy(), c.dG_ionization, dict(c.ionization_sweeps))
@@ -78,9 +91,10 @@ def test_every_segment_matches_the_per_segment_solver(case):
         assert c.ionization_sweeps == batch[9], (c.i, c.j)
 
 
-@pytest.mark.parametrize("case", CASES, ids=lambda c: f"{c[0]}-{c[3]}")
-def test_local_noncoulomb_coefficients_equal_the_whole_energy_differences(case):
-    for c in _segments(case):
+@pytest.mark.parametrize("cl", LAW_CASES, ids=_ids)
+def test_local_noncoulomb_coefficients_equal_the_whole_energy_differences(cl):
+    case, law = cl
+    for c in _segments(case, law):
         a, ab = c._nonCoulomb_charge_coefficients()
         la, lab = c._nonCoulomb_charge_coefficients_local()
         assert set(a) == set(la) and set(ab) == set(lab), (c.i, c.j)

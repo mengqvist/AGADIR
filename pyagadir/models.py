@@ -4,7 +4,6 @@ import numpy as np
 
 from pyagadir.chemistry import R_KCAL
 from pyagadir.electrostatics.common import SEGMENT_BATCH_SIZE
-from pyagadir.electrostatics.point import POINT_LAW
 from pyagadir.energies import DIPOLE_LAWS, EnergyCalculator
 from pyagadir.utils import is_valid_peptide_sequence, is_valid_ncap_ccap
 
@@ -106,10 +105,9 @@ class AGADIR(object):
                 nearest end plus the far end's half charge. 'gbx': the Generalized Born field of the helix backbone
                 (params/README.md) with the Table 1 values transferred to it (the field alone, the former 'gb', counts
                 first-turn and capping electrostatics twice) and the parameters that depend on the law re-derived
-                (params/README.md "gbx"). 'gbp': gbx plus the GB side
-                chain-side chain pair law, every ionisable group coupled to both GB terms through its charged and
-                neutral forms' energies, GB desolvation, the statistical acid-base network, and the values transferred
-                and re-derived under it (params/README.md "gbp").
+                (params/README.md "gbx"). 'gbp' (gbx plus the GB side chain-side chain pair law, every ionisable
+                group coupled to both GB terms through its charged and neutral forms' energies, GB desolvation and the
+                statistical acid-base network) was retired on 2026-10-22 (params/README.md "Retired: gbp").
         """
         if dipole_law not in DIPOLE_LAWS:
             raise ValueError(f"dipole_law must be one of {DIPOLE_LAWS}, got {dipole_law!r}")
@@ -270,25 +268,21 @@ class AGADIR(object):
         Calculate partition function for helical segments
         by summing over all possible helices.
 
-        The default law solves the ionisation of many helical segments at once (_calc_partition_fxn_batched,
+        Both laws solve the ionisation of many helical segments at once (_calc_partition_fxn_batched,
         electrostatics/common.py SegmentBatch): the same results as one EnergyCalculator solving its own segment
         (identical % helix, per-residue helicity within 1e-12), at a cost that grows as n^3 with the length instead of
-        n^4. The GB laws still solve each segment on its own (_calc_partition_fxn_per_segment).
+        n^4.
         """
         # one fast snapshot of the parameter tables, shared by every segment
         params = EnergyCalculator.snapshot_params(self.dipole_law)
 
-        if self.dipole_law == POINT_LAW:
-            self._calc_partition_fxn_batched(params)
-        else:
-            self._calc_partition_fxn_per_segment(params)
+        self._calc_partition_fxn_batched(params)
 
     def _calc_partition_fxn_per_segment(self, params: dict) -> None:
         """
-        The partition function with one EnergyCalculator per helical segment, each solving its own ionisation: the GB
-        laws, with the per-segment solver. For the default law each segment is then a batch of one, the check that
-        tests/test_segment_batch.py makes of _calc_partition_fxn_batched. To be removed (owner, 2026-10-22) once the GB
-        law that is kept is ported to SegmentBatch.
+        The partition function with one EnergyCalculator per helical segment, each a batch of one: the check that
+        tests/test_segment_batch.py makes of _calc_partition_fxn_batched. predict() does not use it. To be removed
+        (owner, 2026-10-22) with the per-segment solver.
         """
         for j in range(
             self.min_helix_length, self.result.seq_length + 1
@@ -325,7 +319,7 @@ class AGADIR(object):
 
     def _calc_partition_fxn_batched(self, params: dict) -> None:
         """
-        _calc_partition_fxn for the default law with the ionisation of SEGMENT_BATCH_SIZE segments solved at once
+        _calc_partition_fxn with the ionisation of SEGMENT_BATCH_SIZE segments solved at once
         (SegmentBatch); the segments, their energies and the sums are those of the per-segment loop, in its order.
         """
         # Every helical segment (i: index of its N-cap, j: its length with both caps), in the per-segment loop's order,

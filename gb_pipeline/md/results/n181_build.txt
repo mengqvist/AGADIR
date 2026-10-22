@@ -1,8 +1,0 @@
-cA16_coil1	atoms=19048	water=6293	ions=0	peptide_q=-0	draws=1	N:ALA-ACE_1 C:ALA-CT2_1	seq=AAAAAAAAAAAAAAAA	ns=50
-cA16_coil2	atoms=19039	water=6290	ions=0	peptide_q=-0	draws=1	N:ALA-ACE_1 C:ALA-CT2_1	seq=AAAAAAAAAAAAAAAA	ns=50
-cA16_coil3	atoms=19042	water=6291	ions=0	peptide_q=-0	draws=3	N:ALA-ACE_1 C:ALA-CT2_1	seq=AAAAAAAAAAAAAAAA	ns=50
-cA16_coil4	atoms=19033	water=6288	ions=0	peptide_q=-0	draws=3	N:ALA-ACE_1 C:ALA-CT2_1	seq=AAAAAAAAAAAAAAAA	ns=50
-cA16_coil5	atoms=19063	water=6298	ions=0	peptide_q=-0	draws=2	N:ALA-ACE_1 C:ALA-CT2_1	seq=AAAAAAAAAAAAAAAA	ns=50
-cA16_coil6	atoms=19054	water=6295	ions=0	peptide_q=-0	draws=1	N:ALA-ACE_1 C:ALA-CT2_1	seq=AAAAAAAAAAAAAAAA	ns=50
-cA16_coil7	atoms=19042	water=6291	ions=0	peptide_q=-0	draws=2	N:ALA-ACE_1 C:ALA-CT2_1	seq=AAAAAAAAAAAAAAAA	ns=50
-cA16_coil8	atoms=19036	water=6289	ions=0	peptide_q=-0	draws=1	N:ALA-ACE_1 C:ALA-CT2_1	seq=AAAAAAAAAAAAAAAA	ns=50

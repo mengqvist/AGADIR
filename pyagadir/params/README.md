@@ -131,8 +131,8 @@ Far end of the macrodipole (`FEH_FAR_APBS` in electrostatics/point.py): 0.82. A 
 
 Flanks: not scaled. A charged residue 1-9 positions outside a cap feels that end's half charge at Lacroix et al.'s flank distance (6 A at N'/C', +3 A per position), screened Coulomb in water, at full strength. The far-end factor 0.82 was computed for residues inside the helix; the same Poisson-Boltzmann procedure on flanking residues (interior dielectric 4; Asp, Glu, Lys, Arg one to three positions outside either cap of a 12-residue helix, extended flanks; helix minus PPII, rotamer-averaged; 0.005 M, 278 K; 24 cases) gives 0.63 times the half-charge law (least squares through the origin; rms against the calculation 0.113 -> 0.085 kcal/mol), weaker at the N-terminal flank (0.35) than at the C-terminal one (0.91). The measured data prefer the unscaled law: with 0.63 the mean panel RMSE is 0.045 higher and the literature pooled RMSE 0.12 higher, and separate N- and C-flank factors fit worse still. The data want more flank stabilisation than continuum electrostatics gives, as found when this flank law replaced Munoz & Serrano's stronger Table 3 values. The flank law is therefore kept as published, unscaled; the discrepancy is unexplained.
 
-## sidechain_dipole_gb (the Generalized Born table of `dipole_law="gbx"` and `"gbp"`)
-The side chain-macrodipole law as continuum electrostatics: the table on which the opt-in laws `gbx` and `gbp` are built. The default (`"munoz"`) is the law above, and is unchanged. Made by `gb_pipeline/helix_builds/build_gb_dipole_table.py`; nothing in it is fitted. Until 2026-10-22 the table could also be selected on its own, as `dipole_law="gb"`; that option was removed for the reason given under Status below.
+## sidechain_dipole_gb (the Generalized Born table of `dipole_law="gbx"`)
+The side chain-macrodipole law as continuum electrostatics: the table on which the opt-in law `gbx` is built (and, until 2026-10-22, `gbp`). The default (`"munoz"`) is the law above, and is unchanged. Made by `gb_pipeline/helix_builds/build_gb_dipole_table.py`; nothing in it is fitted. Until 2026-10-22 the table could also be selected on its own, as `dipole_law="gb"`; that option was removed for the reason given under Status below.
 
 What it is: the Generalized Born energy (Still et al. 1990, J. Am. Chem. Soc. 112, 6127; salt as Srinivasan et al. 1999, Theor. Chem. Acc. 101, 426) between a charged side chain (Lys, Arg, His+, Asp, Glu, Cys-, Tyr-) and the backbone atoms (N, H, CA, HA, C, O) of the N-cap, the helix and the C-cap, in the helix minus in the coil.
 - Structures: ideal poly-Ala helices built with PeptideBuilder (helix -60/-45, N-cap -167/147, C-cap -60/150).
@@ -161,7 +161,7 @@ Not covered, and kept on the default law times its eps(T) factor: charged residu
 
 Alternative ensemble: `gb_pipeline/helix_builds/build_gb_dipole_table.py --derive RAW --rule hbond` allows donor N - O contacts down to 2.5 A (hydrogen bonds). It changes only Asp, whose N-cap and N1-N2 members then H-bond the first-turn N-Hs: Asp at N1 minus N6 becomes -1.51 instead of -1.12. The table's energy contains the side chain's interaction with the backbone but not its own desolvation, which such contacts pay; equal weights would overstate them, so the strict rule is the default.
 
-Status: used only through `gbx` and `gbp`. The table contains all of the side chain's electrostatics with its backbone, including the local terms that Table 1's measured propensities already hold (the first-turn cells of Asp and Glu, the capping cells, charged Ncen). Used as is, those energies are counted twice, which is why the table alone (`"gb"`) is no longer offered as a law. It must be used with those table values transferred to it: each value gains z[potential_munoz - potential_gb] at the conditions it was measured under (`gbx`, below), potential_gb being the table's field alone (`_gb_field_potential` in `electrostatics/gb.py`).
+Status: used only through `gbx`. The table contains all of the side chain's electrostatics with its backbone, including the local terms that Table 1's measured propensities already hold (the first-turn cells of Asp and Glu, the capping cells, charged Ncen). Used as is, those energies are counted twice, which is why the table alone (`"gb"`) is no longer offered as a law. It must be used with those table values transferred to it: each value gains z[potential_munoz - potential_gb] at the conditions it was measured under (`gbx`, below), potential_gb being the table's field alone (`_gb_field_potential` in `electrostatics/gb.py`).
 
 ## sidechain_dipole_gb_transfer, gbx_overrides (opt-in law, `dipole_law="gbx"`)
 The GB law (`sidechain_dipole_gb`) with every value that was measured or chosen with the default law in the loop moved to it. The bare table is not offered as a law of its own (see its Status above).
@@ -184,7 +184,69 @@ Re-derived under GB and not changed:
 
 What stays unfixed (against the default model): mean panel RMSE 3.873 against 3.262, residual structure 3.501 against 2.609, while the literature sets improve (pooled RMSE 10.00 against 11.24 helix points, mean over sets 9.37 against 9.91). The panel loss is concentrated in four places. Lacroix et al.'s KR-8f (Fig. 4h, free amine, Ser N-cap, Lys at N1; +4.6): GB's Lys-at-N1 penalty matches Cochran & Doig's N1 host, so the default model fits this peptide through compensation elsewhere. Marqusee & Baldwin's Ac-AKAAEAKAAEAKAAEA-NH2 melt (+4.1): Glu at C2 costs +0.46 kcal/mol under GB against +0.09; the peptide's measured helicity gain from 0.01 to 1 M NaCl (+9.7 points) is followed by "gbx" (+5.6), not by the default model (+1.0), but its level is under-predicted. The CheY fragment (+2.8; under-predicted by 6.4 points already). The Y(AEAAKA)nF melts of Scholtz et al. 1991 (+0.9 to +1.4 at 26-50 residues, over-predicted at low temperature). GB also screens end effects too little at high salt (Asp at C2/C3 of the Huyghues-Despointes walk: -1.7/-1.5 helix points measured at 4.8 M, -3.8/-4.1 under GB), and in proteins (Tsuboyama et al. 2023, 25 C, 0.15 M) Asp and Glu at C1-C3 show no charge effect, where GB gives +0.3 to +1.0 kcal/mol. Literature sets worse by 0.5 or more: Huyghues-Despointes et al. 1993's Glu/Asp-Arg pairs (+1.5), Cochran & Doig's N2 and N1 His titrations (+1.3, +0.9), Zhou et al. 1994 (+1.0), Richardson & Makhatadze 2004 (+0.7), Marqusee et al. 1989 (+0.6), Smith & Scholtz 1998 (+0.6) and the Cochran N1 scan (+0.6, above); better by 1.0 or more: Lyu et al. 1992 (-3.9), Fairman et al. 1989 (-3.6), Shoemaker et al. 1987 (-3.2), Marqusee & Baldwin 1987 (-3.2), Lyu et al. 1990 (-2.5), Baker et al. 2015 (-1.9 Table 1, -1.6 melts), Lyu et al. 1991 (-1.6), Padmanabhan et al. 1996 (-1.4) and Padmanabhan & Baldwin 1994 (-1.1).
 
-## sidechain_pair_gb, sidechain_dipole_gb_neutral, sidechain_dipole_gb_desolv, sidechain_gbp_transfer, gbp_overrides (opt-in law, `dipole_law="gbp"`)
+## Retired: gbp (sidechain_pair_gb, sidechain_dipole_gb_neutral, sidechain_dipole_gb_desolv, sidechain_gbp_transfer, gbp_overrides)
+Retired on 2026-10-22. The owner kept one Generalized Born law, `gbx`, and removed `gbp`. gbp is gbx plus GB side
+chain-side chain pairs, the exact two-state coupling of every group through its neutral form, GB desolvation, the
+statistical acid-base network and its own transfer and refits. Why it was retired:
+- it needed an MD coil ensemble and two interior dielectrics;
+- its open problems pointed to more MD (a sampled helix);
+- on data it traded against gbx rather than improving on it (better on Marqusee 1987, the Huyghues-Despointes
+  Asp/Glu-Arg sets and the corpus as a whole; worse on Lyu 1992, Marqusee 1989, Smith & Scholtz 1998 and the Doig
+  first turn).
+
+The files, code, tests and pipeline steps it used were removed and can be recovered with
+`git show 5a6e3f8:<path>`:
+- the five parameter files above;
+- `pyagadir/electrostatics/gb.py` (gbp functions);
+- `tests/test_gbp.py`;
+- `gb_pipeline/helix_builds/build_gb_pair_table.py`, `gb_pipeline/transfer/build_gbp_transfer.py`,
+  `gb_pipeline/postprocessing/`, `gb_pipeline/md/`, `gb_pipeline/env/md.txt`, `gb_pipeline/data/n181_*`.
+
+Its development record is in the notes (N180, N181, N182). The section below is kept as it stood, for its findings
+and references.
+
+What the removed code itself recorded (its docstrings and comments, 5a6e3f8):
+- **Pair law coverage:** Lys, Arg, His, Asp and Glu pairs 1-12 apart.
+  - Both in the segment: the helix row (Ncap if i is the N-cap, Ccap if j is the C-cap, else int) against the coil
+    row.
+  - Both outside on one side: the coil row in both states.
+  - Straddling the segment, or with Cys or Tyr, or beyond 12: the point-charge law.
+  - So gbp's coil state depended on the segment, unlike the default's and gbx's.
+- **Two-state coupling of a pair:** with q = z theta, E = E_nn + q1 a1 + q2 a2 + q1 q2 U, from the four
+  protonation-state free energies E(theta1, theta2) = theta1 theta2 E_cc + theta1 (1 - theta2) E_cn + (1 - theta1)
+  theta2 E_nc + (1 - theta1)(1 - theta2) E_nn. Arg has no neutral form, so its neutral states' energies are 0. Pair
+  free energies were interpolated bilinearly on a (T, kappa) grid.
+- **Neutral forms with the backbone:** every ionisable residue N-cap..C-cap carried its neutral form's GB energy
+  (helix minus coil) at any charge. Neutral His was its tautomers' mixture, -RT ln sum_t w_t exp(-E_t / RT), with
+  N-delta1-H : N-epsilon2-H = 0.2 : 0.8. Source: tau:pi about 4:1 in water (Reynolds, Peat, Freedman & Lyerla 1973,
+  J. Am. Chem. Soc. 95, 328, 13C NMR of L-histidine in basic solution).
+- **Desolvation:** the side chain's own GB self-energy plus the backbone's self-energy change it causes, helix minus
+  coil. Separate rows for the positions within 4 of the nearer end (0 = the cap); beyond that, the interior row.
+- **Statistical acid-base network:** each Table IV acid-base cell is a two-state free energy, cell = -RT ln(1 + K), so
+  K = exp(-cell/RT) - 1.
+  - A side chain bridges toward the C-terminus (as i) or toward the N-terminus (as j), not both; partners on one side
+    may share it.
+  - Z = sum over the allowed sets of bridged pairs of prod K, by a transfer matrix over residues whose state records
+    which of the last four residues are bridged to an earlier partner. -RT ln Z is the cell itself for an isolated
+    pair.
+  - Every candidate cell (i,i+3 and i,i+4 acid-base pairs inside the helix, caps excluded, favourable at the
+    temperature) was scaled by G_network / sum(cells).
+  - This counting does not depend on GB. It is a candidate for the charge-dense E/K peptides under gbx (notes N202,
+    mechanism M2).
+- **Coil MD** (the pair table's coil reference): eight replicas of Ac-A16-NH2 in CHARMM36m with CHARMM TIP3P
+  (OpenMM 8.6.1).
+  - Caps merged into residues 1 and 16; coil starts drawn from PPII/beta (backbone span <= 5.0 nm, clash-free).
+  - Rhombic dodecahedron d = 6.5 nm, no ions; PME 1.2 nm (switch 1.0 nm); HBonds constraints, hydrogen mass 3 amu,
+    4 fs; Langevin middle integrator 1/ps; 278 K; Monte Carlo barostat 1 bar after 1 ns NVT.
+  - 50 ns per replica, the first 10 ns discarded, frames every 2 ns (160 frames). About 5 h per replica at
+    246 ns/day on an RTX 2080 Ti.
+  - Environment (`gb_pipeline/env/md.txt`): OpenMM 8.6.1 with its CUDA 12 platform, openmmforcefields 0.15.1
+    (CHARMM36m, `charmm36_2024.xml`), mdtraj 1.11.2, PeptideBuilder 1.1.0.
+- **gbp's transfer** (`sidechain_gbp_transfer.tsv`) was a fixed point solved to |ddG| < 0.0005 and |dpsi| < 0.001
+  and written to 4 decimals. A re-run from the package values could move a value by one unit in the last digit
+  (His N-cap dphi -1.9420 against -1.9421), so the pipeline compared it within 1e-4.
+
+### The gbp section as it stood (5a6e3f8)
 `"gbx"` plus Generalized Born for the rest of the side-chain electrostatics. Use it with `AGADIR(..., dipole_law="gbp")`. The default law (`"munoz"`, point charges) is unchanged. Compared with `"gbx"`, `"gbp"` changes five things.
 
 1. **Side chain-side chain pairs** (`sidechain_pair_gb.tsv`, `gb_pipeline/helix_builds/build_gb_pair_table.py --raw --forms`, then `--derive-grid`). Pairs of Lys, Arg, His, Asp and Glu 1-12 residues apart get a GB energy for helix minus coil in place of the point-charge term with Lacroix's Table VI distances.

@@ -8,15 +8,13 @@ from pyagadir.chemistry import (E_CHARGE, EPSILON_0, N_AVOGADRO, T_REF, acidic_r
                                 basic_residue_ionization, calculate_permittivity, debye_screening_kappa)
 from pyagadir.electrostatics import DIPOLE_LAWS, GB_LAWS, GBX_LAWS, Electrostatics  # noqa: F401
 from pyagadir.electrostatics.common import SegmentBatch
-from pyagadir.electrostatics.point import POINT_LAW
 from pyagadir.utils import is_valid_peptide_sequence, is_valid_ncap_ccap, is_valid_conditions
 
 # The electrostatics are in pyagadir/electrostatics/: point.py (the default point-charge law), gb.py (the Generalized
-# Born laws) and common.py (the law switch and what the laws share). Their public names stay importable from here.
+# Born law gbx) and common.py (the law switch and what the laws share). Their public names stay importable from here.
 from pyagadir.electrostatics.gb import (  # noqa: F401
-    GB_BOTH_CAPS, GB_DESOLV_RANGE, GB_DIPOLE_CHARGE, GB_DIPOLE_FORM, GB_HIS_TAUTOMER, GB_NEAR_CAP, GB_NEUTRAL_FORMS,
-    GB_PAIR_CHARGE, GB_PAIR_KMAX, GB_PAIR_NEUTRAL, GBP_FILES, GBX_CAPPING_BOX_NCAPS, gb_dipole_table,
-    gb_pair_grid_value, gbp_reset, gbp_tables, gbx_position_class, gbx_tables, law_tables, sb_network_free_energy)
+    GB_BOTH_CAPS, GB_DIPOLE_CHARGE, GB_DIPOLE_FORM, GB_NEAR_CAP, GBX_CAPPING_BOX_NCAPS, gb_dipole_table,
+    gbx_position_class, gbx_tables, law_tables)
 from pyagadir.electrostatics.point import FEH_FAR_APBS, SUCCINYL_HELIX_DISTANCE  # noqa: F401
 
 
@@ -216,15 +214,13 @@ class PrecomputeParams(Electrostatics):
             ncap (str): N-terminal capping modification (acetylation='Ac', succinylation='Sc').
             ccap (str): C-terminal capping modification (amidation='Am').
             params (dict): Parameter tables from snapshot_params(). If None, load_params() is used.
-            dipole_law (str): side chain-macrodipole law, "munoz" (default), "gbx" or "gbp" (see
-                _sidechain_dipole_potential; "gbp" also replaces the side chain-side chain pair law).
-            batch (SegmentBatch): default law only. The peptide's shared tables and coil solution
+            dipole_law (str): side chain-macrodipole law, "munoz" (default) or "gbx" (see
+                _sidechain_dipole_potential).
+            batch (SegmentBatch): The peptide's shared tables and coil solution
                 (electrostatics/common.py): the setup takes them instead of recomputing them, the pair lists cover the
                 interacting pairs only, and the helix-state ionisation is left to batch.solve_helix.
         """
         self.debug = debug
-        if batch is not None and dipole_law != "munoz":
-            raise ValueError("a SegmentBatch is for the default law only")
         self.segment_batch = batch
         if dipole_law not in DIPOLE_LAWS:
             raise ValueError(f"dipole_law must be one of {DIPOLE_LAWS}, got {dipole_law!r}")
@@ -326,7 +322,7 @@ class PrecomputeParams(Electrostatics):
         self.modified_cterm_ionization_rc = None
 
         if batch is not None:
-            # Default law, segments of one prediction solved together (electrostatics/common.py SegmentBatch). The
+            # Default law or gbx, segments of one prediction solved together (electrostatics/common.py SegmentBatch). The
             # pair list (only the pairs within PAIR_RANGE), the pKa and the intrinsic ionisation are the peptide's and
             # come from the batch. What depends on the segment (macrodipole distances and potentials, terminal group
             # distances, helix pair distances) is assigned as usual. The ionisation is left to batch.solve_helix,
@@ -339,7 +335,6 @@ class PrecomputeParams(Electrostatics):
             self._assign_sidechain_dipole_potentials()
             self._assign_terminal_sidechain_distances()
             self._assign_sidechain_sidechain_distances()
-            self._assign_gb_pairs()
             return
 
         # find charged pairs
@@ -352,15 +347,10 @@ class PrecomputeParams(Electrostatics):
         self._assign_sidechain_dipole_potentials()
         self._assign_terminal_sidechain_distances()
         self._assign_sidechain_sidechain_distances()
-        self._assign_gb_pairs()
-        if dipole_law == POINT_LAW:
-            # The default law solves its ionisation in a SegmentBatch (electrostatics/common.py); a segment built on its
-            # own is a batch of one. models.AGADIR reuses this segment's batch for all the segments of a prediction.
-            self.segment_batch = SegmentBatch(self)
-            self.segment_batch.solve_helix([self])
-        else:
-            # the GB laws: the per-segment solver, until the GB law that is kept is ported to SegmentBatch
-            self._assign_modified_ionization_states()
+        # Every law solves its ionisation in a SegmentBatch (electrostatics/common.py); a segment built on its own is a
+        # batch of one. models.AGADIR reuses this segment's batch for all the segments of a prediction.
+        self.segment_batch = SegmentBatch(self)
+        self.segment_batch.solve_helix([self])
 
     def _find_charged_pairs(self) -> list[tuple[str, int, int]]:
         """
@@ -435,8 +425,8 @@ class EnergyCalculator(PrecomputeParams):
             ncap (str): N-terminal capping modification (acetylation='Ac', succinylation='Sc').
             ccap (str): C-terminal capping modification (amidation='Am').
             params (dict): Parameter tables from snapshot_params(). If None, load_params() is used.
-            dipole_law (str): side chain-macrodipole law, "munoz" (default), "gbx" or "gbp".
-            batch (SegmentBatch): default law only; see PrecomputeParams.
+            dipole_law (str): side chain-macrodipole law, "munoz" (default) or "gbx".
+            batch (SegmentBatch): see PrecomputeParams.
         """
         super().__init__(seq, i, j, pH, T, ionic_strength, ncap, ccap, params=params, dipole_law=dipole_law,
                          batch=batch)
@@ -667,8 +657,8 @@ class EnergyCalculator(PrecomputeParams):
             if col == "N2":
                 energy[idx] += self._first_turn_n2_offset(AA)
 
-            # gbx/gbp: first- and last-turn cells of charged residues re-derived under the GB law
-            # (params/gbx_overrides.tsv, params/gbp_overrides.tsv)
+            # gbx: first- and last-turn cells of charged residues re-derived under the GB law
+            # (params/gbx_overrides.tsv)
             if self.dipole_law in GBX_LAWS:
                 energy[idx] += self._gbx_end_cell(AA, n_dist, c_dist)
 
@@ -702,8 +692,8 @@ class EnergyCalculator(PrecomputeParams):
         return "Ncen"
 
     def _first_turn_n2_offset(self, aa: str) -> float:
-        """FIRST_TURN_N2_OFFSET, with the gbx/gbp law's re-derived values (params/gbx_overrides.tsv or
-        params/gbp_overrides.tsv, table "first_turn_n2") where it has them."""
+        """FIRST_TURN_N2_OFFSET, with the gbx law's re-derived values (params/gbx_overrides.tsv, table
+        "first_turn_n2") where it has them."""
         if self.dipole_law in GBX_LAWS:
             value = self._gbx_first_turn_n2_offset(aa)
             if value is not None:
@@ -1012,9 +1002,6 @@ class EnergyCalculator(PrecomputeParams):
         """
         if getattr(self, "_ab_hbonds", None) is not None:
             return self._ab_hbonds
-        if self.dipole_law == "gbp":  # statistical network (_sb_network_factor): every candidate carries its cell
-            self._ab_hbonds = set(self._sb_candidates())
-            return self._ab_hbonds
         cands = []
         interior = set(self.helix_indices[1:-1])
         for k, table in ((3, self.table_4a_lacroix), (4, self.table_4b_lacroix)):
@@ -1097,8 +1084,6 @@ class EnergyCalculator(PrecomputeParams):
             # acid-base and polar pairs are side-chain hydrogen bonds: the hydrogen-bond temperature law
             elif base < 0.0 and (acid_base or (AAi in HBOND_POLAR and AAi3 in HBOND_POLAR)):
                 base = self._hbond_temperature(base)
-            if acid_base and base < 0.0 and self.dipole_law == "gbp":
-                base *= self._sb_network_factor()
 
             energy[idx] = base
 
@@ -1168,8 +1153,6 @@ class EnergyCalculator(PrecomputeParams):
             # acid-base and polar pairs are side-chain hydrogen bonds: the hydrogen-bond temperature law
             elif base < 0.0 and (acid_base or (AAi in HBOND_POLAR and AAi4 in HBOND_POLAR)):
                 base = self._hbond_temperature(base)
-            if acid_base and base < 0.0 and self.dipole_law == "gbp":
-                base *= self._sb_network_factor()
 
             extra = 0.0  # Table V hydrogen-bond motifs
             aro_his = 0.0  # Table V aromatic-His+ motif (a ring-cation contact, not a hydrogen bond)

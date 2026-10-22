@@ -43,7 +43,7 @@ class Electrostatics(GBElectrostatics, PointChargeElectrostatics):
     def dipole_temperature_factor(self) -> float:
         """Muñoz 1995-III eq. (12): the side chain-macrodipole term uses a fixed dielectric and is
         scaled by eps(0 C)/eps(T) = exp(+0.004314 (T - 273.15)) (stronger at higher T).
-        The GB laws (dipole_law="gbx" or "gbp") carry their temperature dependence in eps_w(T) itself: 1."""
+        The GB law (dipole_law="gbx") carries its temperature dependence in eps_w(T) itself: 1."""
         if self.dipole_law in GB_LAWS:
             return 1.0
         return math.exp(0.004314 * (self.T_kelvin - T_REF))
@@ -55,7 +55,7 @@ class Electrostatics(GBElectrostatics, PointChargeElectrostatics):
         factor (dipole_temperature_factor). get_dG_sidechain_macrodipole multiplies these by the
         residue's charge, and the ionisation solver uses them as the helix-state field, so both see
         one electrostatic model. The law is _munoz_dipole_potential (default) or, with
-        a GB law ("gbx" or "gbp"), _gb_dipole_potential.
+        the GB law ("gbx"), _gb_dipole_potential.
         """
         if self.dipole_law in GB_LAWS:
             return self._gb_dipole_potential(idx)
@@ -66,7 +66,6 @@ class Electrostatics(GBElectrostatics, PointChargeElectrostatics):
         Helix-state macrodipole field on every charged residue (kcal/mol per +1 charge, including
         the eps(T) factor): the potential the ionisation solver uses for the helix state. It is
         the same law the side chain-macrodipole energy applies (_sidechain_dipole_potential).
-        Also the gbp law's neutral-form energies (_assign_gb_neutral_energies; zero for the other laws).
         """
         n = len(self.seq_list)
         if int(self.ccap_idx) - int(self.ncap_idx) + 1 <= 5:
@@ -77,7 +76,6 @@ class Electrostatics(GBElectrostatics, PointChargeElectrostatics):
         for idx, aa in enumerate(self.seq_list):
             if aa in charged:
                 self.sidechain_dipole_potential[idx] = factor * sum(self._sidechain_dipole_potential(idx))
-        self._assign_gb_neutral_energies()
 
     def _ionizable_sites(self):
         """
@@ -137,9 +135,10 @@ class Electrostatics(GBElectrostatics, PointChargeElectrostatics):
 
     def _assign_modified_ionization_states(self):
         """
-        The per-segment solver. To be removed (owner, 2026-10-22): the default law solves in SegmentBatch, and the GB
-        laws call this only until the GB law that is kept is ported there (reasoning/nodes/N201.md). Before deleting
-        it, move the references and reasoning in this docstring and its comments into SegmentBatch.
+        The per-segment solver. To be removed (owner, 2026-10-22): every law solves in SegmentBatch, so nothing in the
+        package calls this any more; tests/test_segment_batch.py keeps it as the reference until it is deleted
+        (reasoning/nodes/N201.md). Before deleting it, move the references and reasoning in this docstring and its
+        comments into SegmentBatch.
 
         Self-consistent mean-field ionisation in the helix and coil ensembles, and the ionisation
         free energy of the helical segment.
@@ -219,12 +218,6 @@ class Electrostatics(GBElectrostatics, PointChargeElectrostatics):
             for kind2, idx2 in sites:
                 if kind2 == kind1 and idx2 == idx1:
                     continue
-                if kind1 == "SC" and kind2 == "SC":  # gbp: the exact two-state GB pair coupling
-                    c = self.gb_pairs[helix].get((min(idx1, idx2), max(idx1, idx2)))
-                    if c is not None:
-                        q2 = env_charge(kind2, idx2, seq_q, nterm_q, cterm_q)
-                        psi += q1 * ((c[1] if idx1 < idx2 else c[2]) + q2 * c[0])
-                        continue
                 r = pair_distance(kind1, idx1, kind2, idx2, helix)
                 if r < 40.0:
                     q2 = env_charge(kind2, idx2, seq_q, nterm_q, cterm_q)
@@ -331,9 +324,6 @@ class Electrostatics(GBElectrostatics, PointChargeElectrostatics):
         for idx in range(max(0, ncap_i - 9), min(n, ccap_i + 10)):
             if self.seq_list[idx] not in charged:
                 continue
-            if self.gb_neutral_energy[idx] != 0.0:  # gbp: the neutral form's energy, at every charge (N-cap..C-cap)
-                k0, c0 = idx - ncap_i, ccap_i - idx
-                (energy_N if k0 <= c0 else energy_C)[idx] += self.gb_neutral_energy[idx]
             q = float(self.modified_seq_ionization_hel[idx])
             if abs(q) < 1e-6:
                 continue
@@ -362,8 +352,7 @@ class Electrostatics(GBElectrostatics, PointChargeElectrostatics):
         inside and outside the helical segment, using Lacroix et al. (1998) equations.
         Half of the energy is added to each of the charged sidechain residues.
 
-        Each pair takes the GB pair law where it covers the pair (gbp, _gb_pair_energy) and the
-        point-charge law otherwise (_point_pair_energy).
+        Each pair takes the point-charge law (_point_pair_energy).
 
         Returns:
             np.ndarray: n x n symmetric matrix of pairwise electrostatic free energy contributions,
@@ -376,9 +365,7 @@ class Electrostatics(GBElectrostatics, PointChargeElectrostatics):
             # Skip if not in upper triangle
             if idx2 <= idx1:
                 continue
-            dG = self._gb_pair_energy(idx1, idx2)
-            if dG is None:
-                dG = self._point_pair_energy(idx1, idx2)
+            dG = self._point_pair_energy(idx1, idx2)
             if dG is None:  # no modelled change between the states
                 continue
 
@@ -398,13 +385,14 @@ SEGMENT_BATCH_SIZE = 512
 
 class SegmentBatch:
     """
-    The default law's ionisation, for every helical segment of a prediction at once (models.AGADIR) or for a single
-    segment (an EnergyCalculator built on its own is a batch of one). Same results as the per-segment solver of
-    Electrostatics._assign_modified_ionization_states, kept for the GB laws until they are ported:
+    The ionisation of every helical segment of a prediction at once (models.AGADIR), or of a single segment (an
+    EnergyCalculator built on its own is a batch of one), under both laws (the default and gbx). Same results as the
+    per-segment solver of Electrostatics._assign_modified_ionization_states, which is to be removed:
 
-    - the coil state does not depend on the segment under this law (coil distances by sequence separation, the
-      intrinsic charges as the start, no macrodipole and no non-Coulomb term), so it is solved once, here, and every
-      segment takes that solution;
+    - the coil state does not depend on the segment (coil distances by sequence separation, the intrinsic charges as
+      the start, the point-charge pair law, no macrodipole and no non-Coulomb term), so it is solved once, here, and
+      every segment takes that solution. gbx differs from the default only in its side chain-macrodipole field (the
+      GB table, read through each segment's sidechain_dipole_potential) and in table values;
     - pair lists, distance tables and the sums cover the pairs within PAIR_RANGE residues, the only ones that
       interact;
     - each state's Gauss-Seidel sweep runs for all segments at once: one array operation per site update, over the

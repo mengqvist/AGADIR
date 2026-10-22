@@ -4,8 +4,8 @@ EnergyCalculator(dipole_law=...)):
 
   point.py   "munoz" (default): point charges at tabulated distances, screened Coulomb, and the side chain-macrodipole
              law of Muñoz & Serrano 1995. Also the terminal groups' terms for every law.
-  gb.py      "gbx", "gbp" (opt-in, in development): Generalized Born, tabulated from built helices and coil chains,
-             with the Table 1 values and parameters transferred to it and, in gbp, the GB pair law.
+  gb.py      "gbx" (opt-in, in development): Generalized Born, tabulated from built helices and coil chains, with
+             the Table 1 values and parameters transferred to it. ("gbp" was retired on 2026-10-22.)
   common.py  the switch between them, the self-consistent ionisation solver, and the energy terms both laws feed.
 
 Each module holds a mixin of energies.PrecomputeParams, which inherits Electrostatics (common.py).
