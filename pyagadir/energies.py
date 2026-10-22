@@ -200,7 +200,7 @@ class PrecomputeParams(Electrostatics):
         """
         return {name: ParamTable(df) for name, df in cls.law_params(dipole_law).items()}
 
-    def __init__(self, seq: str, i: int, j: int, pH: float, T: float, ionic_strength: float, ncap: str = None, ccap: str = None, debug: bool = False, params: dict = None, dipole_law: str = "munoz"):
+    def __init__(self, seq: str, i: int, j: int, pH: float, T: float, ionic_strength: float, ncap: str = None, ccap: str = None, debug: bool = False, params: dict = None, dipole_law: str = "munoz", batch=None):
         """
         Initialize the PrecomputedParams for a peptide sequence.
 
@@ -216,8 +216,14 @@ class PrecomputeParams(Electrostatics):
             params (dict): Parameter tables from snapshot_params(). If None, load_params() is used.
             dipole_law (str): side chain-macrodipole law, "munoz" (default), "gb", "gbx" or "gbp" (see
                 _sidechain_dipole_potential; "gbp" also replaces the side chain-side chain pair law).
+            batch (SegmentBatch): default law only. The peptide's shared tables and coil solution
+                (electrostatics/common.py): the setup takes them instead of recomputing them, the pair lists cover the
+                interacting pairs only, and the helix-state ionisation is left to batch.solve_helix.
         """
         self.debug = debug
+        if batch is not None and dipole_law != "munoz":
+            raise ValueError("a SegmentBatch is for the default law only")
+        self.segment_batch = batch
         if dipole_law not in DIPOLE_LAWS:
             raise ValueError(f"dipole_law must be one of {DIPOLE_LAWS}, got {dipole_law!r}")
         self.dipole_law = dipole_law
@@ -317,6 +323,23 @@ class PrecomputeParams(Electrostatics):
         self.modified_nterm_ionization_rc = None
         self.modified_cterm_ionization_rc = None
 
+        if batch is not None:
+            # Default law, segments of one prediction solved together (electrostatics/common.py SegmentBatch). The
+            # pair list (only the pairs within PAIR_RANGE), the pKa and the intrinsic ionisation are the peptide's and
+            # come from the batch. What depends on the segment (macrodipole distances and potentials, terminal group
+            # distances, helix pair distances) is assigned as usual. The ionisation is left to batch.solve_helix,
+            # which models.AGADIR calls for many segments at once; the modified_* attributes stay None until then.
+            self.charged_pairs = batch.charged_pairs
+            self.seq_pka, self.nterm_pka, self.cterm_pka = batch.seq_pka, batch.nterm_pka, batch.cterm_pka
+            self.seq_ionization = batch.seq_ionization.copy()  # a copy: the segment owns its arrays
+            self.nterm_ionization, self.cterm_ionization = batch.nterm_ionization, batch.cterm_ionization
+            self._assign_terminal_macrodipole_distances()
+            self._assign_sidechain_dipole_potentials()
+            self._assign_terminal_sidechain_distances()
+            self._assign_sidechain_sidechain_distances()
+            self._assign_gb_pairs()
+            return
+
         # find charged pairs
         self._find_charged_pairs()
 
@@ -389,7 +412,7 @@ class EnergyCalculator(PrecomputeParams):
     _ALIPHATIC = {"A", "V", "L", "I", "M"}
     dCp = -0.0015  # kcal/(mol*K)
 
-    def __init__(self, seq: str, i: int, j: int, pH: float, T: float, ionic_strength: float, ncap: str = None, ccap: str = None, params: dict = None, dipole_law: str = "munoz"):
+    def __init__(self, seq: str, i: int, j: int, pH: float, T: float, ionic_strength: float, ncap: str = None, ccap: str = None, params: dict = None, dipole_law: str = "munoz", batch=None):
         """
         Initialize the EnergyCalculator for a peptide sequence.
 
@@ -404,8 +427,10 @@ class EnergyCalculator(PrecomputeParams):
             ccap (str): C-terminal capping modification (amidation='Am').
             params (dict): Parameter tables from snapshot_params(). If None, load_params() is used.
             dipole_law (str): side chain-macrodipole law, "munoz" (default) or "gb".
+            batch (SegmentBatch): default law only; see PrecomputeParams.
         """
-        super().__init__(seq, i, j, pH, T, ionic_strength, ncap, ccap, params=params, dipole_law=dipole_law)
+        super().__init__(seq, i, j, pH, T, ionic_strength, ncap, ccap, params=params, dipole_law=dipole_law,
+                         batch=batch)
 
     def _charge_dependent_nonCoulomb_energy(self) -> float:
         """Sum of the helix-state terms that depend on charged fractions other than through Coulomb's law: the Table 1
@@ -450,6 +475,92 @@ class EnergyCalculator(PrecomputeParams):
                         c_ab[(a, b)] = c
         finally:
             self.modified_seq_ionization_hel = saved
+        return c_a, c_ab
+
+    def _nonCoulomb_charge_coefficients_local(self) -> tuple[dict, dict]:
+        """
+        The coefficients of _nonCoulomb_charge_coefficients from seven evaluations of the terms per segment, whatever
+        its length, instead of one per titratable residue and one per i+3/i+4 pair.
+
+        Each charge-dependent entry of the terms reads at most two helix charges, at most 4 residues apart:
+        get_dG_Int[k] reads p_k; get_dG_Ncap[ncap] p_ncap and p_ncap+3; get_dG_Ccap[ccap] p_ccap; the Petukhov and
+        charged-staple motifs p_ncap+4; get_dG_i3[k] p_k and p_k+3; get_dG_i4[k] p_k and p_k+4. So with the titratable
+        residues of one class mod 5 switched on, an entry sees at most one of them, and with all of them on, a pair
+        entry sees both of its residues. c_a is the sum, over the entries that read a, of their value with a's class on
+        minus their value with none on; c_ab = (all on) - (a's class) - (b's class) + (none) on the entries that read
+        both. The terms are the same functions; the result differs from the whole-energy differences only in
+        rounding (about 1e-14 kcal/mol). Used by the default law's SegmentBatch.
+
+        Returns:
+            tuple[dict, dict]: {a: c_a}, {(a, b): c_ab} with sequence indices, zero coefficients left out.
+        """
+        charged = set(self.neg_charge_aa + self.pos_charge_aa)
+        nc, cc = int(self.ncap_idx), int(self.ccap_idx)
+        titr = [k for k in range(nc, cc + 1) if self.seq_list[k] in charged]  # the segment's titratable residues
+        if not titr:
+            return {}, {}
+        saved = self.modified_seq_ionization_hel
+        n = len(self.seq_list)
+
+        def terms(on):
+            """The seven charge-dependent terms, each kept per entry, with the helix charged fraction 1 for the residues
+            in on and 0 for all others (the patterns of _nonCoulomb_charge_coefficients, which sums them)."""
+            on = set(on)
+            self.modified_seq_ionization_hel = np.array([1.0 if k in on else 0.0 for k in range(n)])
+            return {"Int": self.get_dG_Int(), "Ncap": self.get_dG_Ncap(), "Ccap": self.get_dG_Ccap(),
+                    "pet": self.get_dG_petukhov_motif(), "sta": self.get_dG_charged_staple(),
+                    "i3": self.get_dG_i3(), "i4": self.get_dG_i4()}
+
+        # The seven patterns: none on; the titratable residues of one class mod 5 on (two residues of a class are at
+        # least 5 apart, more than any entry's reach of 4, so no entry sees two of them); all on.
+        try:
+            t0 = terms(())
+            tc = {r: terms([k for k in titr if k % 5 == r]) for r in range(5) if any(k % 5 == r for k in titr)}
+            tall = terms(titr)
+        finally:
+            self.modified_seq_ionization_hel = saved
+
+        def val(t, term, k):
+            """One entry of one pattern's terms: element k of an array term, or a scalar term (k None)."""
+            return float(t[term]) if k is None else float(t[term][k])
+
+        def entries(a):
+            """The charge-dependent entries that read residue a: (term, index; None for a scalar term)."""
+            e = [("Int", a), ("i3", a), ("i4", a)]  # its own Table 1 cell; the i+3 and i+4 pairs it starts
+            if a >= 3:
+                e.append(("i3", a - 3))  # the i+3 pair it ends
+            if a >= 4:
+                e.append(("i4", a - 4))  # the i+4 pair it ends
+            if a in (nc, nc + 3):
+                e.append(("Ncap", nc))  # a Cys/His N-cap, or the Glu of a capping box at N3
+            if a == cc:
+                e.append(("Ccap", cc))  # an Asp C-cap
+            if a == nc + 4:
+                e += [("pet", None), ("sta", None)]  # the N4 residue of the Petukhov and charged-staple motifs
+            return e
+
+        # c_a: in the pattern of a's class, a is the only "on" residue that the entries reading a can see, so each
+        # such entry's change from the all-off pattern is its response to p_a alone.
+        c_a, c_ab = {}, {}
+        for a in titr:
+            ta = tc[a % 5]
+            c = sum(val(ta, *key) - val(t0, *key) for key in entries(a))
+            if abs(c) > 1e-12:
+                c_a[a] = c
+        # c_ab, for titratable pairs 3 or 4 apart: the entries that read both a and b (the i+3 or i+4 entry at a, and
+        # the N-cap entry for the pair N-cap, N3) see both on in the all-on pattern and one of them in each class
+        # pattern, so (both) - (a) - (b) + (none) is their pair coupling.
+        tset = set(titr)
+        for a in titr:
+            for d in (3, 4):
+                b = a + d
+                if b not in tset:
+                    continue
+                keys = [("i3" if d == 3 else "i4", a)] + ([("Ncap", nc)] if d == 3 and a == nc else [])
+                ta, tb = tc[a % 5], tc[b % 5]
+                c = sum(val(tall, *k) - val(ta, *k) - val(tb, *k) + val(t0, *k) for k in keys)
+                if abs(c) > 1e-12:
+                    c_ab[(a, b)] = c
         return c_a, c_ab
 
     def _dCp_hydroph_kcal(self, aa1: str, aa2: str) -> float:

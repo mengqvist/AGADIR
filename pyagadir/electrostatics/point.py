@@ -266,11 +266,19 @@ class PointChargeElectrostatics:
         HelixRest / RcoilRest rows, which the table caption defines as "all possible charged
         pairs not included before" (helix) and the pairs "not included in Rcoil" (coil).
         """
-        self.sidechain_sidechain_distances_hel = np.full((len(self.seq_list), len(self.seq_list)), np.nan)
-        self.charged_sidechain_distances_rc = np.full((len(self.seq_list), len(self.seq_list)), np.nan)
+        batch = getattr(self, "segment_batch", None)
+        if batch is not None:
+            # default law, many segments (common.SegmentBatch): the coil distances are the peptide's, and the pairs
+            # beyond PAIR_RANGE (99 A in both states) are in the template; self.charged_pairs holds the others
+            self.charged_sidechain_distances_rc = batch.coil_distances
+            self.sidechain_sidechain_distances_hel = batch.helix_distance_template.copy()
+        else:
+            self.sidechain_sidechain_distances_hel = np.full((len(self.seq_list), len(self.seq_list)), np.nan)
+            self.charged_sidechain_distances_rc = np.full((len(self.seq_list), len(self.seq_list)), np.nan)
 
         ### Assign distances to coil state ###
-        for AA1, AA2, idx1, idx2 in self.charged_pairs:
+        # (with a batch the coil matrix is already the peptide's, assigned once by the reference segment: skipped)
+        for AA1, AA2, idx1, idx2 in (self.charged_pairs if batch is None else ()):
             n_residues_separation = idx2 - idx1
             distance_key = f"i+{n_residues_separation}"
                         
@@ -286,6 +294,7 @@ class PointChargeElectrostatics:
             self.charged_sidechain_distances_rc[idx2, idx1] = distance_angstrom
             
         ### Assign distances to helix state ###
+        hel = set(self.helix_indices)  # the segment's residues, N-cap to C-cap (a set for the membership tests)
         for AA1, AA2, idx1, idx2 in self.charged_pairs:
             n_residues_separation = idx2 - idx1
             distance_key = f"i+{n_residues_separation}"          
@@ -295,7 +304,7 @@ class PointChargeElectrostatics:
 
             else:
                 # (A) Both residues in helix
-                if idx1 in self.helix_indices and idx2 in self.helix_indices:
+                if idx1 in hel and idx2 in hel:
                     # Check if either residue is at a cap position — use cap-specific
                     # Table 6 rows instead of AA-pair rows (Lacroix 1998: cap positions
                     # have modeled non-helical backbone angles giving different distances).
@@ -324,7 +333,7 @@ class PointChargeElectrostatics:
                         distance_angstrom = self.table_6_helix_lacroix.loc[pair, distance_key]
                 
                 # (B) Both residues in coil part of a peptide that (at a different position) contains the helix
-                elif idx1 not in self.helix_indices and idx2 not in self.helix_indices:
+                elif idx1 not in hel and idx2 not in hel:
                     straddles_helix = (idx1 < self.ncap_idx) and (idx2 > self.ccap_idx)
 
                     if not straddles_helix:
@@ -338,7 +347,7 @@ class PointChargeElectrostatics:
                 # (C) One residue in helix, one in coil
                 else:
                     # Identify which is coil
-                    coil_idx = idx1 if idx1 not in self.helix_indices else idx2
+                    coil_idx = idx1 if idx1 not in hel else idx2
                     
                     # [PATCH] Lacroix 1998 Restriction:
                     # Only calculate distance if the coil residue is N' (ncap_idx - 1) or C' (ccap_idx + 1)
@@ -355,7 +364,7 @@ class PointChargeElectrostatics:
                         # helical residue i-x), and row C'G-cap for C' when the C-cap is a Gly
                         # (the row's name; its printed caption, "when C' is a Gly", cannot apply
                         # to a charged C').  Beyond the table the pair is not modelled.
-                        helix_idx = idx1 if idx1 in self.helix_indices else idx2
+                        helix_idx = idx1 if idx1 in hel else idx2
                         x = abs(coil_idx - helix_idx)
                         if is_N_prime:
                             row = "N’"
@@ -399,7 +408,16 @@ class PointChargeElectrostatics:
         # Calculate electrostatic interaction energies with adjusted ionization states, Lacroix Eq 6.
         # factor_pi=4.0: calibrated from YGGS AA reference (scsc-only segments).
         G_hel = self._electrostatic_interaction_energy(qi=q1_hel, qj=q2_hel, r=helix_dist, factor_pi=4.0)
-        G_rc = self._electrostatic_interaction_energy(qi=q1_rc, qj=q2_rc, r=coil_dist, factor_pi=4.0)
+        batch = getattr(self, "segment_batch", None)
+        if batch is None:
+            G_rc = self._electrostatic_interaction_energy(qi=q1_rc, qj=q2_rc, r=coil_dist, factor_pi=4.0)
+        else:
+            # The coil-state energy depends on the coil charges and coil distance only, both the peptide's
+            # (common.SegmentBatch): computed for the first segment that needs it and reused by the others.
+            G_rc = batch.coil_pair_energy.get((idx1, idx2))
+            if G_rc is None:
+                G_rc = batch.coil_pair_energy[(idx1, idx2)] = self._electrostatic_interaction_energy(
+                    qi=q1_rc, qj=q2_rc, r=coil_dist, factor_pi=4.0)
         return G_hel - G_rc
 
     def get_dG_terminals_macrodipole(self) -> tuple[np.ndarray, np.ndarray]:
