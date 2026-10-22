@@ -32,12 +32,7 @@ class Electrostatics(GBElectrostatics, PointChargeElectrostatics):
         """
         Charge-dependent non-Coulomb terms of the helix state as G0 + sum_a c_a p_a + sum_{a<b} c_ab p_a p_b in the
         charged fractions p = |q^h| (EnergyCalculator provides them; none here). Returns ({a: c_a}, {(a, b): c_ab}).
-        To be removed with the per-segment solver (_assign_modified_ionization_states).
         """
-        return {}, {}
-
-    def _nonCoulomb_charge_coefficients_local(self) -> tuple[dict, dict]:
-        """The same coefficients for SegmentBatch (EnergyCalculator provides them; none here)."""
         return {}, {}
 
     def dipole_temperature_factor(self) -> float:
@@ -133,157 +128,6 @@ class Electrostatics(GBElectrostatics, PointChargeElectrostatics):
             d = self.sidechain_sidechain_distances_hel[idx1, idx2] if helix else self.charged_sidechain_distances_rc[idx1, idx2]
         return 99.0 if np.isnan(d) else float(d)
 
-    def _assign_modified_ionization_states(self):
-        """
-        The per-segment solver. To be removed (owner, 2026-10-22): every law solves in SegmentBatch, so nothing in the
-        package calls this any more; tests/test_segment_batch.py keeps it as the reference until it is deleted
-        (reasoning/nodes/N201.md). Before deleting it, move the references and reasoning in this docstring and its
-        comments into SegmentBatch.
-
-        Self-consistent mean-field ionisation in the helix and coil ensembles, and the ionisation
-        free energy of the helical segment.
-
-        Each titratable group's pKa is shifted by the electrostatic potential psi it feels as a
-        fully charged probe (Lacroix 1998, eqs 8-11): the macrodipole (helix state only) and every
-        other ionisable group at its current fractional charge, at helix or coil distances. The
-        interaction model is the one the energy terms use: the side chain-macrodipole law
-        (_sidechain_dipole_potential), the terminal-macrodipole term with its locality gate, the
-        terminal-side chain geometry of _assign_terminal_sidechain_distances and the side
-        chain-side chain distances of _assign_sidechain_sidechain_distances.
-
-        psi also carries the derivative of the charge-dependent non-Coulomb terms of the helix state (Table 1
-        charged/neutral cells, capping rules, Table IV/V, Petukhov and charged-staple motifs) with respect to the
-        group's charged fraction, dG_nonC/dp_a = c_a + sum_b c_ab p_b (_nonCoulomb_charge_coefficients): Lacroix
-        1998 takes those terms into account in the pKa, and the mean-field free energy is stationary in p only with
-        them.
-
-        The energy terms evaluate sum q_i q_j W_ij + sum q_i phi_i at the converged charges. That is
-        the mean-field energy, not the free energy: it leaves out the cost of moving each group's
-        ionisation away from its intrinsic value. At the self-consistent point the mean-field free
-        energy is that energy plus, per group, ionization_free_energy(ln x_i, psi_i, q_i) >= 0
-        (chemistry.py). dG_ionization = sum(helix) - sum(coil) supplies it; it is zero for groups
-        that stay fully charged or fully neutral. Checked against exact enumeration of all
-        protonation microstates (reasoning/nodes/N096.md).
-        """
-        MAX_ITERATIONS = 50
-        CONVERGENCE_THRESHOLD = 0.005
-        RT = R_KCAL * self.T_kelvin  # same R as adjust_pKa
-
-        n = len(self.seq_list)
-        sites, nterm_present, cterm_present, _ = self._ionizable_sites()
-        full_charge = self._site_full_charge
-        base_pka = self._site_base_pka
-
-        def is_basic(kind, idx):
-            return full_charge(kind, idx) > 0
-
-        def ionization(kind, idx, pka):
-            if is_basic(kind, idx):
-                return basic_residue_ionization(self.pH, pka)
-            return acidic_residue_ionization(self.pH, pka)
-
-        def env_charge(kind, idx, seq_q, nterm_q, cterm_q):
-            if kind == "Nterm":
-                return nterm_q
-            if kind == "Cterm":
-                return cterm_q
-            return seq_q[idx]
-
-        pair_distance = self._site_pair_distance
-
-        nonC_a, nonC_ab = self._nonCoulomb_charge_coefficients()
-        nonC_partners = {}
-        for (a, b), c in nonC_ab.items():
-            nonC_partners.setdefault(a, []).append((b, c))
-            nonC_partners.setdefault(b, []).append((a, c))
-
-        def site_potential(kind1, idx1, seq_q, nterm_q, cterm_q, helix):
-            """Energy psi (kcal/mol) of the fully charged state of a site in its environment."""
-            q1 = full_charge(kind1, idx1)
-            psi = 0.0
-            if helix and kind1 == "SC" and idx1 in nonC_a:
-                # charge-dependent non-Coulomb terms: dG_nonC / dp at the current charges
-                psi += nonC_a[idx1] + sum(c * abs(float(seq_q[b])) for b, c in nonC_partners.get(idx1, ()))
-            if helix:
-                # macrodipole: the same terms as get_dG_terminals_macrodipole and
-                # get_dG_sidechain_macrodipole
-                if kind1 == "Nterm":
-                    psi += self._electrostatic_interaction_energy(
-                        qi=self.mu_helix, qj=q1, r=self.terminal_macrodipole_distance_nterm, factor_pi=4.0)
-                elif kind1 == "Cterm":
-                    psi += self._electrostatic_interaction_energy(
-                        qi=-self.mu_helix, qj=q1, r=self.terminal_macrodipole_distance_cterm, factor_pi=4.0)
-                else:
-                    psi += q1 * self.sidechain_dipole_potential[idx1]
-            for kind2, idx2 in sites:
-                if kind2 == kind1 and idx2 == idx1:
-                    continue
-                r = pair_distance(kind1, idx1, kind2, idx2, helix)
-                if r < 40.0:
-                    q2 = env_charge(kind2, idx2, seq_q, nterm_q, cterm_q)
-                    psi += self._electrostatic_interaction_energy(qi=q1, qj=q2, r=r)
-            if np.isnan(psi):
-                raise ValueError("psi became NaN; check distance tables / assignments.")
-            return psi
-
-        def solve_state(helix: bool):
-            """Mean-field fixed point for one ensemble; returns charges and the ionisation free energy."""
-            seq_q = self.seq_ionization.copy()
-            nterm_q = self.nterm_ionization if nterm_present else 0.0
-            cterm_q = self.cterm_ionization if cterm_present else 0.0
-
-            converged = False
-            for sweep in range(1, MAX_ITERATIONS + 1):
-                old = np.concatenate([seq_q[~np.isnan(seq_q)], [nterm_q, cterm_q]])
-                for kind1, idx1 in sites:
-                    psi = site_potential(kind1, idx1, seq_q, nterm_q, cterm_q, helix)
-                    pka = adjust_pKa(T=self.T_kelvin, pKa_ref=base_pka(kind1, idx1), deltaG=psi,
-                                     is_basic=is_basic(kind1, idx1))
-                    q_new = ionization(kind1, idx1, pka)
-                    if kind1 == "Nterm":
-                        nterm_q = q_new
-                    elif kind1 == "Cterm":
-                        cterm_q = q_new
-                    else:
-                        seq_q[idx1] = q_new
-                new = np.concatenate([seq_q[~np.isnan(seq_q)], [nterm_q, cterm_q]])
-                if float(np.max(np.abs(new - old))) < CONVERGENCE_THRESHOLD:
-                    converged = True
-                    break
-            self.ionization_sweeps[helix] = sweep
-            if not converged:
-                warnings.warn(
-                    f"{'helix' if helix else 'coil'}-state ionisation of segment i={self.i}, j={self.j} of {self.seq} "
-                    f"not converged after {MAX_ITERATIONS} sweeps (last change {float(np.max(np.abs(new - old))):.3g})",
-                    IonizationConvergenceWarning, stacklevel=2)
-
-            g_ion = 0.0
-            psis = np.full(n, np.nan)
-            for kind1, idx1 in sites:
-                psi = site_potential(kind1, idx1, seq_q, nterm_q, cterm_q, helix)
-                if kind1 == "SC":
-                    psis[idx1] = psi
-                pka = base_pka(kind1, idx1)
-                ln_x = (pka - self.pH if is_basic(kind1, idx1) else self.pH - pka) * LN10
-                q = abs(float(env_charge(kind1, idx1, seq_q, nterm_q, cterm_q)))
-                g_ion += ionization_free_energy(ln_x, psi, q, RT)
-            return seq_q, float(nterm_q), float(cterm_q), g_ion, psis
-
-        self.ionization_sweeps = {}  # sweeps used per state (True: helix, False: coil)
-        hel_seq, hel_n, hel_c, g_hel, self.site_potential_hel = solve_state(helix=True)
-        rc_seq, rc_n, rc_c, g_rc, self.site_potential_rc = solve_state(helix=False)
-
-        self.modified_seq_ionization_hel = hel_seq
-        self.modified_nterm_ionization_hel = hel_n
-        self.modified_cterm_ionization_hel = hel_c
-
-        self.modified_seq_ionization_rc = rc_seq
-        self.modified_nterm_ionization_rc = rc_n
-        self.modified_cterm_ionization_rc = rc_c
-
-        self.dG_ionization = g_hel - g_rc
-        self.ionization_free_energy_states = {True: g_hel, False: g_rc}
-
     def get_dG_sidechain_macrodipole(self) -> tuple[np.ndarray, np.ndarray]:
         """
         Calculate the interaction energy between charged side-chains and the helix macrodipole.
@@ -342,7 +186,7 @@ class Electrostatics(GBElectrostatics, PointChargeElectrostatics):
         """
         Ionisation free energy of the helical segment relative to the coil (kcal/mol): the part of
         the mean-field electrostatic free energy that the q-weighted energy terms leave out (see
-        _assign_modified_ionization_states). Not scaled by temperature beyond RT.
+        SegmentBatch). Not scaled by temperature beyond RT.
         """
         return float(self.dG_ionization)
 
@@ -385,9 +229,32 @@ SEGMENT_BATCH_SIZE = 512
 
 class SegmentBatch:
     """
-    The ionisation of every helical segment of a prediction at once (models.AGADIR), or of a single segment (an
-    EnergyCalculator built on its own is a batch of one), under both laws (the default and gbx). Same results as the
-    per-segment solver of Electrostatics._assign_modified_ionization_states, which is to be removed:
+    Self-consistent mean-field ionisation in the helix and coil ensembles, and the ionisation free energy, of every
+    helical segment of a prediction at once (models.AGADIR) or of a single segment (an EnergyCalculator built on its
+    own is a batch of one), under both laws (the default and gbx).
+
+    The model. Each titratable group's pKa is shifted by the electrostatic potential psi it feels as a fully charged
+    probe (Lacroix 1998, eqs 8-11): the macrodipole (helix state only) and every other ionisable group at its current
+    fractional charge, at helix or coil distances. The interaction model is the one the energy terms use: the side
+    chain-macrodipole law (_sidechain_dipole_potential), the terminal-macrodipole term, the terminal-side chain
+    geometry of _assign_terminal_sidechain_distances and the side chain-side chain distances of
+    _assign_sidechain_sidechain_distances (_site_pair_distance). psi also carries the derivative of the
+    charge-dependent non-Coulomb terms of the helix state (Table 1 charged/neutral cells, capping rules, Table IV/V,
+    Petukhov and charged-staple motifs) with respect to the group's charged fraction, dG_nonC/dp_a = c_a + sum_b c_ab
+    p_b (EnergyCalculator._nonCoulomb_charge_coefficients): Lacroix 1998 takes those terms into account in the pKa,
+    and the mean-field free energy is stationary in p only with them.
+
+    The energy terms evaluate sum q_i q_j W_ij + sum q_i phi_i at the converged charges. That is the mean-field energy,
+    not the free energy: it leaves out the cost of moving each group's ionisation away from its intrinsic value. At
+    the self-consistent point the mean-field free energy is that energy plus, per group, ionization_free_energy(ln
+    x_i, psi_i, q_i) >= 0 (chemistry.py). dG_ionization = sum(helix) - sum(coil) supplies it; it is zero for groups
+    that stay fully charged or fully neutral. Checked against exact enumeration of all protonation microstates
+    (reasoning/nodes/N096.md; tests/test_ionization.py). The fixed point is found by Gauss-Seidel sweeps from the
+    intrinsic charges, the sites in order, until no charge moves by CONVERGENCE_THRESHOLD in a sweep (at most
+    MAX_ITERATIONS sweeps).
+
+    How (reasoning/nodes/N201.md). It replaced, with the same results, a solver that ran once per segment and state
+    (deleted on 2026-10-22; its results for the test peptides are kept in tests/data/segment_batch_reference.json.gz):
 
     - the coil state does not depend on the segment (coil distances by sequence separation, the intrinsic charges as
       the start, the point-charge pair law, no macrodipole and no non-Coulomb term), so it is solved once, here, and
@@ -399,9 +266,10 @@ class SegmentBatch:
       segments, never over the sites (the 0.005 stopping rule makes the result depend on the iteration path), each
       segment with its own start, potentials and stopping sweep. The pair energies repeat
       _electrostatic_interaction_energy's operations in its order and the transcendental functions are evaluated per
-      element, so a segment's charges are the per-segment solver's to the last bit for the same inputs;
-    - the non-Coulomb coefficients come from EnergyCalculator._nonCoulomb_charge_coefficients_local, equal to the
-      whole-energy differences of _nonCoulomb_charge_coefficients up to rounding (about 1e-14 kcal/mol).
+      element, so a segment's charges were the per-segment solver's to the last bit for the same inputs;
+    - the non-Coulomb coefficients take seven evaluations of the terms per segment
+      (EnergyCalculator._nonCoulomb_charge_coefficients), equal to the per-segment solver's whole-energy differences up
+      to rounding (about 1e-14 kcal/mol).
 
     ref is a segment of this peptide (an EnergyCalculator) whose setup is complete; its ionisation is not used.
     """
@@ -414,7 +282,7 @@ class SegmentBatch:
         # Everything here is the peptide's: it does not depend on which segment is helical.
         self.n = len(ref.seq_list)
         self.seq = ref.seq
-        # The titratable sites in the per-segment solver's order (N-terminus, side chains, C-terminus). Per site: the
+        # The titratable sites in the solver's order (N-terminus, side chains, C-terminus). Per site: the
         # charge of its fully ionised state (+1 or -1), its intrinsic pKa, whether it is a base, and its intrinsic
         # charged fraction at this pH, which is where every sweep starts.
         self.sites, self.nterm_present, self.cterm_present, _ = ref._ionizable_sites()
@@ -437,17 +305,16 @@ class SegmentBatch:
         # Coil distances depend on the pair's residues and separation only: one matrix serves every segment.
         self.coil_distances = ref.charged_sidechain_distances_rc
         # A segment's helix distance matrix starts as a copy of this template: NaN, except 99 A for the charged pairs
-        # beyond PAIR_RANGE, as the per-segment assignment writes them. The segment's setup fills in the pairs within
+        # beyond PAIR_RANGE, as the full assignment writes them. The segment's setup fills in the pairs within
         # range (point.py _assign_sidechain_sidechain_distances).
         self.helix_distance_template = np.full((self.n, self.n), np.nan)
         for _, _, i1, i2 in ref.charged_pairs:
             if i2 - i1 > PAIR_RANGE:
                 self.helix_distance_template[i1, i2] = self.helix_distance_template[i2, i1] = 99
         self.coil_pair_energy = {}  # (idx1, idx2) -> coil-state pair energy (point.py _point_pair_energy)
-        # Site k's partners: the sites whose Coulomb term the per-segment solver can add to k's potential, in its order
-        # (by site index). That is every other site except side chains more than PAIR_RANGE apart, which are always
-        # at 99 A and dropped by the 40 A cutoff. Pairs with a terminal group are all kept and left to the cutoff,
-        # as in the solver.
+        # Site k's partners: the sites whose Coulomb term can enter k's potential, in site order. That is every other
+        # site except side chains more than PAIR_RANGE apart, which are always at 99 A and dropped by the 40 A cutoff.
+        # Pairs with a terminal group are all kept and left to the cutoff.
         self.partners = [[m for m in range(K) if m != k and (
             self.sites[k][0] != "SC" or self.sites[m][0] != "SC" or abs(self.sites[k][1] - self.sites[m][1]) <= PAIR_RANGE)]
             for k in range(K)]
@@ -475,8 +342,8 @@ class SegmentBatch:
         self.r_tt = ref._calculate_r(self.n - 1)  # the terminus-terminus distance (_site_pair_distance)
         sc_site = {ix: m for m, (kd, ix) in enumerate(self.sites) if kd == "SC"}
         # The non-Coulomb term of a side chain i couples it to the side chains at i-4, i-3, i+3 and i+4 (Table IV
-        # pairs): their site indices, None where that residue is not titratable, in the order the per-segment solver
-        # sums them (its nonC_partners list for i holds i-4, i-3, i+3, i+4 in that order).
+        # pairs): their site indices, None where that residue is not titratable, summed in this order (the order of the
+        # per-segment solver, whose results tests/test_segment_batch.py checks to the last bit).
         self.nonC_partners = [[sc_site.get(ix + d) if kd == "SC" else None for d in (-4, -3, 3, 4)]
                               for kd, ix in self.sites]
 
@@ -508,7 +375,7 @@ class SegmentBatch:
 
     def _sweep(self, S, r, helix_terms, label):
         """
-        The per-segment solver's solve_state for S segments at once. r: site k's partner distances (_slot_distances);
+        The mean-field fixed point of one state for S segments at once. r: site k's partner distances (_slot_distances);
         helix_terms: None for the coil state, else the helix state's charge-independent terms (const, has_a, ca, cp;
         solve_helix); label(s_i): the name of segment s_i in a non-convergence warning. Returns the converged charges
         and site potentials (segment, site), each segment's ionisation free energy, and its number of sweeps.
@@ -533,12 +400,13 @@ class SegmentBatch:
 
         def psi_of(k, q):
             """
-            Potential (kcal/mol) of site k's fully charged state in every segment, at the charges q (S x K): the
-            per-segment solver's site_potential, term by term and in its order. np.where(mask, psi + x, psi) adds x
-            only in the segments where the per-segment solver adds it, and leaves the other sums untouched.
+            Potential psi (kcal/mol) of site k's fully charged state in its environment, in every segment, at the
+            charges q (S x K), term by term in a fixed order: the non-Coulomb derivative and the macrodipole (helix
+            state), then the partners' Coulomb terms. np.where(mask, psi + x, psi) adds x only in the segments that have
+            the term, and leaves the other sums untouched.
             """
             psi = np.zeros(S)
-            if helix_terms is not None:  # the helix state only, as in the per-segment solver
+            if helix_terms is not None:  # the helix state only
                 const, has_a, ca, cp = helix_terms
                 tot = np.zeros(S)  # the solver's sum() of the Table IV partners starts at 0
                 for o, m in enumerate(self.nonC_partners[k]):
@@ -558,7 +426,7 @@ class SegmentBatch:
             f = basic_residue_ionization if basic[k] else acidic_residue_ionization
             return np.array([f(pH, float(x)) for x in pka])
 
-        # Gauss-Seidel sweeps, as in the per-segment solver: from the intrinsic charges, the sites in order, each
+        # Gauss-Seidel sweeps: from the intrinsic charges, the sites in order, each
         # site's charge updated from its potential at the charges as they stand (including the sites already updated
         # in this sweep). One array operation updates site k in all segments. A segment stops at the end of the first
         # sweep in which every charge moved by less than CONVERGENCE_THRESHOLD; it is then inactive and keeps its
@@ -585,7 +453,7 @@ class SegmentBatch:
         # At the converged charges: each site's potential, and the state's ionisation free energy, the sum over the
         # sites in order of ionization_free_energy (chemistry.py), the cost of each group's ionisation departing from
         # its intrinsic value.
-        RT = R_KCAL * self.T_kelvin
+        RT = R_KCAL * self.T_kelvin  # the same R as adjust_pKa
         g = np.zeros(S)
         psis = np.zeros((S, K))
         for k in range(K):
@@ -597,7 +465,7 @@ class SegmentBatch:
         return q, psis, g, sweeps
 
     def _per_residue(self, q_row, psi_row):
-        """One segment's site charges and potentials as the per-segment solver stores them: the charged fraction per
+        """One segment's site charges and potentials as the energy terms read them: the charged fraction per
         residue (non-titratable residues keep 0), the terminal groups' charges (0 for a capped end), and the side
         chains' potentials per residue (NaN elsewhere)."""
         seq_q = self.seq_ionization.copy()
@@ -621,8 +489,9 @@ class SegmentBatch:
         q1 = self.q1
 
         # Per segment, the parts of each site's helix-state potential that do not depend on the charges:
-        #    const        the macrodipole term (a terminal group: its energy with the macrodipole; a side chain: its
-        #                 charge times the macrodipole potential at its position);
+        #    const        the macrodipole term, the same terms as get_dG_terminals_macrodipole and
+        #                 get_dG_sidechain_macrodipole (a terminal group: its energy with the macrodipole; a side
+        #                 chain: its charge times the macrodipole potential at its position);
         #    has_a, ca    the non-Coulomb term's own coefficient c_a, where the segment has one;
         #    cp           its Table IV couplings c_ab to the partners at -4, -3, +3, +4 (0 where absent, which adds
         #                 exactly 0 to the sum).
@@ -631,7 +500,7 @@ class SegmentBatch:
         ca = np.zeros((S, K))
         cp = np.zeros((S, K, 4))
         for s_i, c in enumerate(calcs):
-            nonC_a, nonC_ab = c._nonCoulomb_charge_coefficients_local()
+            nonC_a, nonC_ab = c._nonCoulomb_charge_coefficients()
             for k, (kd, ix) in enumerate(self.sites):
                 if kd == "Nterm":
                     const[s_i, k] = c._electrostatic_interaction_energy(
@@ -653,7 +522,7 @@ class SegmentBatch:
             S, r, (const, has_a, ca, cp),
             lambda s_i: f"helix-state ionisation of segment i={calcs[s_i].i}, j={calcs[s_i].j} of {self.seq}")
 
-        # Give each segment the attributes the per-segment solver sets: the helix state from this solve, the coil
+        # Give each segment the attributes the energy terms read: the helix state from this solve, the coil
         # state from the peptide's (copies, so that no segment's arrays are another's), dG_ionization = helix minus
         # coil.
         rc_seq, rc_n, rc_c, rc_psi, g_rc, rc_sweeps = self.coil

@@ -224,7 +224,7 @@ class AGADIR(object):
 
         # Ionisation free energy of the segment: the part of the mean-field electrostatic free
         # energy that the q-weighted electrostatic terms below leave out (electrostatics/common.py,
-        # _assign_modified_ionization_states).
+        # SegmentBatch).
         dG_ionization = self.energy_calculator.get_dG_ionization()
 
         # sum all components
@@ -268,62 +268,16 @@ class AGADIR(object):
         Calculate partition function for helical segments
         by summing over all possible helices.
 
-        Both laws solve the ionisation of many helical segments at once (_calc_partition_fxn_batched,
-        electrostatics/common.py SegmentBatch): the same results as one EnergyCalculator solving its own segment
-        (identical % helix, per-residue helicity within 1e-12), at a cost that grows as n^3 with the length instead of
-        n^4.
+        The ionisation of SEGMENT_BATCH_SIZE segments is solved at once (electrostatics/common.py SegmentBatch), with
+        the same results as solving each segment on its own (identical % helix, per-residue helicity within 1e-12) at
+        a cost that grows as n^3 with the length instead of n^4. The segments, their energies and the sums are
+        computed in the order j (length) then i (position).
         """
         # one fast snapshot of the parameter tables, shared by every segment
         params = EnergyCalculator.snapshot_params(self.dipole_law)
 
-        self._calc_partition_fxn_batched(params)
-
-    def _calc_partition_fxn_per_segment(self, params: dict) -> None:
-        """
-        The partition function with one EnergyCalculator per helical segment, each a batch of one: the check that
-        tests/test_segment_batch.py makes of _calc_partition_fxn_batched. predict() does not use it. To be removed
-        (owner, 2026-10-22) with the per-segment solver.
-        """
-        for j in range(
-            self.min_helix_length, self.result.seq_length + 1
-        ):  # helix lengths (including capping residues)
-            for i in range(
-                0, self.result.seq_length - j + 1
-            ):  # helical segment positions
-
-                # create energy calculator instance
-                self.energy_calculator = EnergyCalculator(
-                    seq=self.result.seq,
-                    i=i,
-                    j=j,
-                    pH=self.pH,
-                    T=self.T_celsius,
-                    ionic_strength=self.molarity,
-                    ncap=self.n_cap,
-                    ccap=self.c_cap,
-                    params=params,
-                    dipole_law=self.dipole_law,
-                )
-
-                # calculate dG_Hel and dG_dict
-                dG_Hel = self._calc_dG_Hel(i=i, j=j)
-
-                # calculate the partition function K
-                K = self._calc_K(dG_Hel)
-
-                # add the partition function to the total partition function
-                self.result.K_tot_array[
-                    i + 1 : i + j - 1
-                ] += K  # method='r', by definition helical region does not include capping residues, hence i+1 and i+j-1
-                self.result.K_tot += K  # method='1s'
-
-    def _calc_partition_fxn_batched(self, params: dict) -> None:
-        """
-        _calc_partition_fxn with the ionisation of SEGMENT_BATCH_SIZE segments solved at once
-        (SegmentBatch); the segments, their energies and the sums are those of the per-segment loop, in its order.
-        """
-        # Every helical segment (i: index of its N-cap, j: its length with both caps), in the per-segment loop's order,
-        # so that K_tot and K_tot_array accumulate in the same order.
+        # Every helical segment (i: index of its N-cap, j: its length with both caps), lengths outer and positions
+        # inner, so that K_tot and K_tot_array accumulate in that order.
         L = self.result.seq_length
         segments = [(i, j) for j in range(self.min_helix_length, L + 1) for i in range(0, L - j + 1)]
 
@@ -332,21 +286,28 @@ class AGADIR(object):
                                     ionic_strength=self.molarity, ncap=self.n_cap, ccap=self.c_cap, params=params,
                                     dipole_law=self.dipole_law, batch=batch)
 
-        # The first segment, built on its own, is a batch of one (energies.PrecomputeParams): its batch holds the
-        # peptide's tables and coil state, and serves every segment.
-        batch = calculator(*segments[0]).segment_batch
-        for start in range(0, len(segments), SEGMENT_BATCH_SIZE):
-            chunk = segments[start:start + SEGMENT_BATCH_SIZE]
-            # the chunk's segments: their setup (without the ionisation), then their helix ionisation in one solve
-            calcs = [calculator(i, j, batch) for i, j in chunk]
-            batch.solve_helix(calcs)
-            # then each segment's energy and equilibrium constant, as in the per-segment loop
-            for (i, j), calc in zip(chunk, calcs):
-                self.energy_calculator = calc
-                K = self._calc_K(self._calc_dG_Hel(i=i, j=j))
-                # method='r': the helical region excludes the capping residues, hence i+1 and i+j-1
-                self.result.K_tot_array[i + 1 : i + j - 1] += K
-                self.result.K_tot += K  # method='1s'
+        # The first segment, built on its own, is a batch of one (energies.PrecomputeParams) and is solved with it; its
+        # batch holds the peptide's tables and coil state for the other segments.
+        first = calculator(*segments[0])
+        batch = first.segment_batch
+
+        def solved():
+            """The segments in order with their ionisation solved: the first, then the others SEGMENT_BATCH_SIZE at a
+            time (their setup without the ionisation, then their helix ionisation in one solve)."""
+            yield segments[0], first
+            for start in range(1, len(segments), SEGMENT_BATCH_SIZE):
+                chunk = segments[start:start + SEGMENT_BATCH_SIZE]
+                calcs = [calculator(i, j, batch) for i, j in chunk]
+                batch.solve_helix(calcs)
+                yield from zip(chunk, calcs)
+
+        # each segment's energy and equilibrium constant
+        for (i, j), calc in solved():
+            self.energy_calculator = calc
+            K = self._calc_K(self._calc_dG_Hel(i=i, j=j))
+            # method='r': the helical region excludes the capping residues, hence i+1 and i+j-1
+            self.result.K_tot_array[i + 1 : i + j - 1] += K
+            self.result.K_tot += K  # method='1s'
 
     def _calc_helical_propensity(self) -> None:
         """

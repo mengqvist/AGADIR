@@ -405,8 +405,8 @@ class EnergyCalculator(PrecomputeParams):
     """
     Class to calculate the free energy contributions for a peptide sequence.
     """
-    # class attributes: the ionisation solver (run from PrecomputeParams.__init__) evaluates the energy terms below
-    # through _nonCoulomb_charge_coefficients before EnergyCalculator.__init__ has finished
+    # class attributes: the ionisation solver (SegmentBatch, run from PrecomputeParams.__init__) evaluates the energy
+    # terms below through _nonCoulomb_charge_coefficients before EnergyCalculator.__init__ has finished
     _AROMATIC = {"F", "Y", "W"}
     _ALIPHATIC = {"A", "V", "L", "I", "M"}
     dCp = -0.0015  # kcal/(mol*K)
@@ -431,69 +431,37 @@ class EnergyCalculator(PrecomputeParams):
         super().__init__(seq, i, j, pH, T, ionic_strength, ncap, ccap, params=params, dipole_law=dipole_law,
                          batch=batch)
 
-    def _charge_dependent_nonCoulomb_energy(self) -> float:
-        """Sum of the helix-state terms that depend on charged fractions other than through Coulomb's law: the Table 1
-        charged/neutral interpolation, the Cys/His N-cap and Asp C-cap rules, the capping box, the Petukhov and
-        charged-staple motifs, and the Table IV (1 - p p) and Table V terms (at the current helix charges)."""
-        return float(np.sum(self.get_dG_Int()) + np.sum(self.get_dG_Ncap()) + np.sum(self.get_dG_Ccap())
-                     + self.get_dG_petukhov_motif() + self.get_dG_charged_staple()
-                     + np.sum(self.get_dG_i3()) + np.sum(self.get_dG_i4()))
+    def _charge_dependent_nonCoulomb_terms(self) -> dict:
+        """The helix-state terms that depend on charged fractions other than through Coulomb's law, at the current helix
+        charges, each kept per entry: the Table 1 charged/neutral interpolation (get_dG_Int), the Cys/His N-cap rule and
+        the capping box (get_dG_Ncap), the Asp C-cap rule (get_dG_Ccap), the Petukhov and charged-staple motifs, and the
+        Table IV (1 - p p) and Table V terms (get_dG_i3, get_dG_i4). Their sum is the charge-dependent non-Coulomb
+        energy of the segment; _nonCoulomb_charge_coefficients reads its charge dependence from them."""
+        return {"Int": self.get_dG_Int(), "Ncap": self.get_dG_Ncap(), "Ccap": self.get_dG_Ccap(),
+                "pet": self.get_dG_petukhov_motif(), "sta": self.get_dG_charged_staple(),
+                "i3": self.get_dG_i3(), "i4": self.get_dG_i4()}
 
     def _nonCoulomb_charge_coefficients(self) -> tuple[dict, dict]:
         """
-        To be removed (owner, 2026-10-22) with the per-segment solver (Electrostatics._assign_modified_ionization_states),
-        its only user, once the GB law that is kept is ported to SegmentBatch. _nonCoulomb_charge_coefficients_local
-        replaces it; tests/test_segment_batch.py compares the two. Before deleting it, keep its explanation of the
-        coefficients (below) with the local version.
+        The charge-dependent non-Coulomb terms of the helix state (_charge_dependent_nonCoulomb_terms) as G0 + sum_a c_a
+        p_a + sum_{a<b} c_ab p_a p_b in the charged fractions p_a = |q_a^h| of the titratable residues of the segment
+        (N-cap to C-cap). Each term is linear in one fraction or, for the Table IV (1 - p_a p_b) rule, bilinear in two,
+        so the coefficients follow exactly from the terms themselves evaluated at p in {0, 1}: c_a = G(e_a) - G(0) and,
+        for titratable pairs 3 or 4 apart, c_ab = G(e_a + e_b) - G(e_a) - G(e_b) + G(0). The ionisation solver
+        (SegmentBatch) adds dG/dp_a = c_a + sum_b c_ab p_b to each group's helix-state potential.
 
-        The charge-dependent non-Coulomb terms of the helix state as G0 + sum_a c_a p_a + sum_{a<b} c_ab p_a p_b in the
-        charged fractions p_a = |q_a^h| of the titratable residues of the segment (N-cap to C-cap). Each term is
-        linear in one fraction or, for the Table IV (1 - p_a p_b) rule, bilinear in two, so the coefficients follow
-        exactly from the terms themselves evaluated at p in {0, 1}: c_a = G(e_a) - G(0) and, for titratable pairs 3 or
-        4 apart, c_ab = G(e_a + e_b) - G(e_a) - G(e_b) + G(0). The ionisation solver adds dG/dp_a = c_a + sum_b c_ab p_b
-        to each group's helix-state potential (common.py).
-
-        Returns:
-            tuple[dict, dict]: {a: c_a}, {(a, b): c_ab} with sequence indices, zero coefficients left out.
-        """
-        charged = set(self.neg_charge_aa + self.pos_charge_aa)
-        titr = [k for k in range(int(self.ncap_idx), int(self.ccap_idx) + 1) if self.seq_list[k] in charged]
-        if not titr:
-            return {}, {}
-        saved = self.modified_seq_ionization_hel
-        n = len(self.seq_list)
-
-        def G(on):
-            self.modified_seq_ionization_hel = np.array([1.0 if k in on else 0.0 for k in range(n)])
-            return self._charge_dependent_nonCoulomb_energy()
-
-        try:
-            g0 = G(())
-            g1 = {a: G((a,)) for a in titr}
-            c_a = {a: g1[a] - g0 for a in titr if abs(g1[a] - g0) > 1e-12}
-            c_ab = {}
-            for a, b in itertools.combinations(titr, 2):
-                if b - a in (3, 4):
-                    c = G((a, b)) - g1[a] - g1[b] + g0
-                    if abs(c) > 1e-12:
-                        c_ab[(a, b)] = c
-        finally:
-            self.modified_seq_ionization_hel = saved
-        return c_a, c_ab
-
-    def _nonCoulomb_charge_coefficients_local(self) -> tuple[dict, dict]:
-        """
-        The coefficients of _nonCoulomb_charge_coefficients from seven evaluations of the terms per segment, whatever
-        its length, instead of one per titratable residue and one per i+3/i+4 pair.
+        Seven evaluations of the terms per segment give them all, whatever its length. Until 2026-10-22 the solver
+        evaluated the whole sum once per titratable residue and once per i+3/i+4 pair; this method agrees with that
+        to about 1e-14 kcal/mol (tests/test_segment_batch.py).
 
         Each charge-dependent entry of the terms reads at most two helix charges, at most 4 residues apart:
         get_dG_Int[k] reads p_k; get_dG_Ncap[ncap] p_ncap and p_ncap+3; get_dG_Ccap[ccap] p_ccap; the Petukhov and
-        charged-staple motifs p_ncap+4; get_dG_i3[k] p_k and p_k+3; get_dG_i4[k] p_k and p_k+4. So with the titratable
+        charged-staple motifs p_ncap+4; get_dG_i3[k] p_k and p_k+3; get_dG_i4[k] p_k and p_k+4 (including the Gln/Glu
+        side chain-main chain bond of the poly-q branch, acceptor at k, donor at k+4). So with the titratable
         residues of one class mod 5 switched on, an entry sees at most one of them, and with all of them on, a pair
         entry sees both of its residues. c_a is the sum, over the entries that read a, of their value with a's class on
         minus their value with none on; c_ab = (all on) - (a's class) - (b's class) + (none) on the entries that read
-        both. The terms are the same functions; the result differs from the whole-energy differences only in
-        rounding (about 1e-14 kcal/mol). Used by the default law's SegmentBatch.
+        both.
 
         Returns:
             tuple[dict, dict]: {a: c_a}, {(a, b): c_ab} with sequence indices, zero coefficients left out.
@@ -507,13 +475,10 @@ class EnergyCalculator(PrecomputeParams):
         n = len(self.seq_list)
 
         def terms(on):
-            """The seven charge-dependent terms, each kept per entry, with the helix charged fraction 1 for the residues
-            in on and 0 for all others (the patterns of _nonCoulomb_charge_coefficients, which sums them)."""
+            """The charge-dependent terms with the helix charged fraction 1 for the residues in on, 0 for all others."""
             on = set(on)
             self.modified_seq_ionization_hel = np.array([1.0 if k in on else 0.0 for k in range(n)])
-            return {"Int": self.get_dG_Int(), "Ncap": self.get_dG_Ncap(), "Ccap": self.get_dG_Ccap(),
-                    "pet": self.get_dG_petukhov_motif(), "sta": self.get_dG_charged_staple(),
-                    "i3": self.get_dG_i3(), "i4": self.get_dG_i4()}
+            return self._charge_dependent_nonCoulomb_terms()
 
         # The seven patterns: none on; the titratable residues of one class mod 5 on (two residues of a class are at
         # least 5 apart, more than any entry's reach of 4, so no entry sees two of them); all on.

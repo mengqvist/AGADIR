@@ -201,7 +201,7 @@ def test_point_law_charges_minimise_the_mean_field_free_energy(seq, ncap, ccap, 
         eN, eC = c.get_dG_terminals_sidechain_electrost()
         return (np.sum(tN) + np.sum(tC) + np.sum(sN + sC) * c.dipole_temperature_factor() + np.sum(eN + eC)
                 + np.sum(c.get_dG_sidechain_sidechain_electrost()) + c.get_dG_terminal_terminal_electrost()
-                + c._charge_dependent_nonCoulomb_energy())
+                + sum(float(np.sum(v)) for v in c._charge_dependent_nonCoulomb_terms().values()))
 
     q0 = c.modified_seq_ionization_hel.copy()
     for k in range(c.ncap_idx, c.ccap_idx + 1):

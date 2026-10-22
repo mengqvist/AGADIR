@@ -1,6 +1,7 @@
 import pytest
 import numpy as np
 from pyagadir.energies import PrecomputeParams
+from pyagadir.electrostatics.common import SegmentBatch
 
 @pytest.fixture
 def precompute_instance():
@@ -180,8 +181,8 @@ def test_assign_ionization_states(precompute_instance):
     assert np.isclose(instance4.nterm_ionization, -1.0, atol=0.001) # Sc is acidic and charged!
     assert np.isclose(instance4.cterm_ionization, 0.0, atol=0.001)
 
-def test_assign_modified_ionization_states(precompute_instance):
-    """Test the _assign_modified_ionization_states method."""
+def test_modified_ionization_states(precompute_instance):
+    """The ionisation each segment gets from its SegmentBatch (electrostatics/common.py) at construction."""
     instance1, instance2, instance3, instance4 = precompute_instance
 
     # Test instance 1
@@ -212,9 +213,9 @@ def test_assign_modified_ionization_states(precompute_instance):
     # Sc at N-term should be negatively charged
     assert np.isclose(instance4.modified_nterm_ionization_hel, -1.0, atol=0.1)
 
-    # Ensure convergence of iterative modification
-    prev_states = instance1.modified_seq_ionization_hel
-    instance1._assign_modified_ionization_states()  # Recompute
+    # Ensure convergence of iterative modification: solving again reproduces the charges
+    prev_states = instance1.modified_seq_ionization_hel.copy()
+    SegmentBatch(instance1).solve_helix([instance1])  # Recompute
     assert np.allclose(instance1.modified_seq_ionization_hel, prev_states, atol=0.01)
 
 def test_assign_terminal_macrodipole_distances(precompute_instance):
