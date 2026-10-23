@@ -456,8 +456,7 @@ class EnergyCalculator(PrecomputeParams):
 
         Each charge-dependent entry of the terms reads at most two helix charges, at most 4 residues apart:
         get_dG_Int[k] reads p_k; get_dG_Ncap[ncap] p_ncap and p_ncap+3; get_dG_Ccap[ccap] p_ccap; the Petukhov and
-        charged-staple motifs p_ncap+4; get_dG_i3[k] p_k and p_k+3; get_dG_i4[k] p_k and p_k+4 (including the Gln/Glu
-        side chain-main chain bond of the poly-q branch, acceptor at k, donor at k+4). So with the titratable
+        charged-staple motifs p_ncap+4; get_dG_i3[k] p_k and p_k+3; get_dG_i4[k] p_k and p_k+4. So with the titratable
         residues of one class mod 5 switched on, an entry sees at most one of them, and with all of them on, a pair
         entry sees both of its residues. c_a is the sum, over the entries that read a, of their value with a's class on
         minus their value with none on; c_ab = (all on) - (a's class) - (b's class) + (none) on the entries that read
