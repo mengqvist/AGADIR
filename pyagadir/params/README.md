@@ -66,7 +66,7 @@ The interaction free energies correspond to those between non-charged residues, 
 
 Three hydrophobic i,i+3 cells of table 4a depart from the published table: Leu-Leu -35 -> -16, Val(i)-Leu(i+3) -20 -> -3 and Ile(i)-Leu(i+3) -26 -> -7 (kcal/mol x 100; row = residue i). The published side-chain values were derived from a mean-force potential over NMR data on protein fragments (Munoz & Serrano 1994, Nat. Struct. Biol. 1, 399), not from peptide energetics. Two independent determinations show these i,i+3 values are too strong, and each new value is their mean. (1) Measured: Padmanabhan & Baldwin (1994, Protein Sci. 3, 1992) compared i,i+3 and i,i+4 placements of the same pairs in Ac-YKAAA...K-NH2. Holding the published i,i+4 cells, their measured i,i+4 minus i,i+3 helicity differences imply i,i+3 energies of -0.18 (Leu-Leu), -0.01 (Val-Leu) and -0.01 (Ile-Leu). (2) Computed: Creamer & Rose (1995, Protein Sci. 4, 1305, Table 7) give -0.13, -0.05 and -0.13 by Boltzmann-weighted modelling. The two sources agree only when Leu is the C-terminal residue of the pair, so the Leu(i)-X(i+3) cells and all i,i+4 cells are unchanged.
 
-In this implementation (tables 4a and 4b), a pair of an acidic (Asp, Glu) and a basic (Lys, Arg, His) residue is treated differently: its value is the side-chain hydrogen bond, which is present whether or not the acid is charged and does not depend on salt (Scholtz et al. 1993, Biochemistry 32, 9668; Smith & Scholtz 1998, Biochemistry 37, 33), so it is applied in every ionisation state. The ionic part of such a pair is the Coulomb term.
+In this implementation (tables 4a and 4b), a pair of an acidic (Asp, Glu) and a basic (Lys, Arg, His) residue is treated differently: its value is the side-chain hydrogen bond, which is present whether or not the acid is charged and does not depend on salt (Scholtz et al. 1993, Biochemistry 32, 9668; Smith & Scholtz 1998, Biochemistry 37, 33), so it is applied in every ionisation state. The ionic part of such a pair is the Coulomb term. Since 2026-10-23 the default law (`pair_rule="contacts"`) also gives the bond to the pairs `_acid_base_hbonds` does not select, weighted by the probability that they are not doubly charged, and makes the salt bridges' close-range Coulomb term exclusive: see "Charged side-chain pairs" below.
 
 Three acid-base cells depart from the published tables: His(i)-Glu(i+3) 0 -> -18 (table 4a), His(i)-Glu(i+4) 0 -> -21 and Lys(i)-Asp(i+4) -40 -> -24 (table 4b) (kcal/mol x 100; row = residue i). They come from Smith & Scholtz (1998, Biochemistry 37, 33), one of the sources of the published Table IV. Smith & Scholtz measured Glu/Asp-Lys and Glu-His pairs in both orientations at i,i+3, i,i+4 and i,i+5 in the host Ac-AAQAAAAQAAAAQAAY-NH2, with the acid neutral and charged, at 0.01, 1.0 and 2.5 M NaCl. Their (i,i+5) peptides carry no interaction, so the difference between an (i,i+k) peptide and its (i,i+5) partner cancels the charge-macrodipole terms. Each new value is the cell value for which this model reproduces those differences, averaged over salt concentrations and ionisation states (6-9 conditions per cell, standard deviation 0.05-0.11 kcal/mol). The same procedure returns the published value for the Glu-Lys, Lys-Glu and Asp-Lys cells at i+3 and i+4 within 0.03 kcal/mol, which is the check that it is sound. The published table has no His-Glu interaction. The measured one persists when His is neutral (pH 8.5), as expected for a hydrogen bond. The data are `data/peptides/1998_smith_biochem37_table3.tsv`.
 
@@ -370,6 +370,60 @@ The ionisation states of all titratable groups are solved self-consistently in t
 - The electrostatic terms charge sum q_i q_j W_ij + sum q_i phi_i at the converged charges. That is the mean-field energy; the free energy also contains the cost of moving each group's ionisation away from its intrinsic value. The segment energy therefore includes the ionisation free energy, sum over groups of -RT ln[(1 + x e^(-psi/RT)) / (1 + x)] - q psi, helix minus coil (`chemistry.ionization_free_energy`). It vanishes for groups that stay fully charged or fully neutral; for partly ionised groups the energy alone over-counts the interaction (for Asp next to Arg at pH 2.5, by a factor of 1.8). With it (and with every solver pair and every charge-dependent term counted, above), the model's electrostatic free energy is the mean-field free energy of its own titration model exactly, and it matches exact enumeration of all protonation states to within 0.03 kcal/mol in the test segments (0.003 for weakly coupled pairs).
 - Terminal group-macrodipole distance (every law): Lacroix 1998's rule, 2.1 A when the cap carries the free amine, carboxylate or succinyl, and 2 A more per residue between them ("2.1 A ..., then 4.1 A, 6.1 A"), with no cutoff (the paper states none). Lacroix et al.'s quoted energies (0.81, 0.36, 0.21, 0.14 kcal/mol at 50 mM, 273 K) follow this rule at a constant ratio with the 4 pi Coulomb law. An empirically fitted cubic, 2.0 + 1.80167 N - 0.045 N^2 + 0.00333 N^3, zero beyond six residues, was used before; it had no recorded basis. Effect: mean panel RMSE -0.012 (Lacroix +0.09 on the free-N titrations, Munoz & Serrano 1995 -0.09, the CheY helix-2 fragment -1.1), literature pooled RMSE -0.04.
 - Physical constants: CODATA 2018 (chemistry.py: R, e, N_A, k_B, eps_0); ln 10 exactly in the pKa shift; 0 C = 273.15 K as the reference temperature of every temperature law. The Coulomb prefactor is 332.06 kcal A/mol.
+
+## Charged side-chain pairs (`pair_rule`, no table)
+Default with `dipole_law="munoz"` since 2026-10-23 (`pair_rule="contacts"`; `"additive"` is the rule before it and stays
+the default with `gbx`). No new constant: the rule uses Table IV, Table VI and the Coulomb law as they are.
+
+*Mechanism.* An acid-base pair three or four residues apart interacts through two channels with different geometry.
+The hydrogen bond is a contact: its strength does not depend on salt (Scholtz et al. 1993, Biochemistry 32, 9668: "the
+major part of the interaction observed in 10 mM NaCl, pH 7, is still present in 2.5 M NaCl"), and a carboxylate's two
+oxygens let one rotamer reach both the i+3 and i+4 partner on one side (`_acid_base_hbonds`, HBX2). The Coulomb
+attraction is an average over where the charges are, and salt screens it. Two consequences of the desolvation a charged
+group pays to leave water (owner's mechanism, reasoning N202/N204):
+- *A pair with a neutral partner hydrogen-bonds on any side.* The one-direction limit of HBX2 belongs to the salt bridge,
+  whose two charged groups pay a large desolvation; a protonated carboxylate or a neutral amine is cheap to desolvate.
+  A pair HBX2 does not select therefore takes its Table IV value weighted by (1 - p_i p_j), the probability that it is
+  not doubly charged: AGADIR's form for the other titratable pairs (`get_dG_i3`, `get_dG_i4`). Scholtz et al. 1993:
+  "the ionization of one side chain increases the strength of the hydrogen bond". Fossat et al. (2023, ChemPhysChem 24,
+  e202200746), from potentiometry and CD: (E4K4)3 with every Glu neutral (net +12) is as helical as with every group
+  charged, which the additive rule cannot give.
+- *The salt bridge's close-range Coulomb term is exclusive.* The Table VI helix distance of an acid-base pair is that
+  of a pair that sits close because it attracts (Glu-Lys i+4 5.9 A against 7.8 / 8.2 A for Glu-Glu / Lys-Lys). A charged
+  side chain sits at that distance from one partner at a time, so in a charge-dense block (EEEEKKKK) the additive rule
+  counts the close-range attraction several times over. `electrostatics/contacts.py`: each charged side chain is free
+  or in one contact with a charged candidate partner (three or four residues apart, both inside the helix, caps
+  excluded, a favourable Table IV cell); a pair in contact has its Table VI Coulomb term, a candidate pair not in
+  contact the open geometry (the mean of the two like-pair Table VI rows at that separation). The contact state's free
+  energy is set so that an isolated pair reproduces its Table VI Coulomb term exactly in every salt and temperature,
+  exp(-G_contact/RT) = exp(-G_TableVI/RT) - exp(-G_open/RT). The charge and contact states are summed exactly by a
+  transfer matrix for every pair within four residues, with a mean field beyond (once refined), and the segment's free
+  energy changes by that free energy minus the additive mean-field one. The coil state has no contacts.
+
+*Checks.* Peptides without acid-base pairs three or four apart are unchanged (not computed). Isolated pairs keep their
+values (Smith & Scholtz 1998 within 0.05 helix points; the calibration holds to 1e-12). The transfer matrix equals
+brute-force enumeration of the charge states and contact sets to 1e-9 (`tests/test_salt_bridge_contacts.py`).
+
+*Effect* (corpus guard and scored panels against the model before it, 2026-10-23):
+- scored panels: ALL 3.426 -> 3.260; Muñoz 1995 4.739 -> 4.362; Muñoz 1997 1.278 -> 1.344; Huyghues and Lacroix
+  unchanged; residual structure 3.045 -> 2.986;
+- corpus: Lyu et al. 1990 23.98 -> 20.59, 1991 24.36 -> 21.81, 1992 16.91 -> 13.81; Bradley et al. 1990 10.20 -> 9.68;
+  Zhou et al. 1994 6.95 -> 6.47; Petukhov et al. 1996 13.18 -> 13.04; Fossat et al. 2023 (not in the guard; CDSSTR
+  helicity) 17.5 -> 10.8; every single-pair and chain set unchanged;
+- the pH response of the Glu/Lys blocks (helicity lost on protonating the acids, four peptides, model minus measured):
+  bias -35.0 -> -17.7 helix points; Lyu et al. (1992) E4K4 at pH 1.5: 18.8 -> 41.5 % (measured 46.7); single pairs,
+  like-charge and other pH switches unchanged;
+- worse: Baker et al. (2015) melts 8.83 -> 12.90 and Table 1 12.76 -> 14.85. The short unflanked block peptides
+  improve (Table 1 bias +3.9 -> -0.3); the loss is in the Ala-flanked and 35-residue peptides, which the earlier rule
+  already under-predicted (bias -5.7 to -13): the rule removes over-counted attraction uniformly and exposes that
+  deficit, which is open (reasoning N205).
+
+*Limitations.* Lyu et al.'s E4K4 host stays about 15 helix points too helical at 0.01-1 M at neutral pH; the
+long or flanked Baker peptides above; `gbx` keeps the additive rule until it is re-derived for its field.
+
+*Solver note (same date).* `SegmentBatch.solve_helix` now feeds a site's Table IV/V pair couplings into its pKa also
+when the site has no non-Coulomb coefficient of its own (a (1 - p p) term has none). Before, only Cys and His sites ever
+had couplings without one (the Cys/His N-cap rule); including them moves those peptides by <= 0.01 in % helix.
 
 ## Salt terms (constants in `models.py`, no table)
 Two terms describe how salt acts on the helix itself, separately from the Debye-Hückel screening of charge interactions. Both constants come from the NaCl series of Scholtz, York, Stewart & Baldwin (1991) J. Am. Chem. Soc. 113, 5102 (Figure 2): Ac-(AAQAA)3Y-NH2, 0 C, pH 7. That peptide has no charged groups, so its helicity against salt concentration isolates these two terms from everything else in the model.

@@ -492,7 +492,7 @@ class SegmentBatch:
         #    const        the macrodipole term, the same terms as get_dG_terminals_macrodipole and
         #                 get_dG_sidechain_macrodipole (a terminal group: its energy with the macrodipole; a side
         #                 chain: its charge times the macrodipole potential at its position);
-        #    has_a, ca    the non-Coulomb term's own coefficient c_a, where the segment has one;
+        #    has_a, ca    the non-Coulomb term's own coefficient c_a (0 if none) where the segment has c_a or a c_ab;
         #    cp           its Table IV couplings c_ab to the partners at -4, -3, +3, +4 (0 where absent, which adds
         #                 exactly 0 to the sum).
         const = np.zeros((S, K))
@@ -510,11 +510,14 @@ class SegmentBatch:
                         qi=-c.mu_helix, qj=float(q1[k]), r=c.terminal_macrodipole_distance_cterm, factor_pi=4.0)
                 else:
                     const[s_i, k] = float(q1[k]) * c.sidechain_dipole_potential[ix]
-                    if ix in nonC_a:
+                    for o, d in enumerate((-4, -3, 3, 4)):
+                        cp[s_i, k, o] = nonC_ab.get((ix + d, ix) if d < 0 else (ix, ix + d), 0.0)
+                    # a site takes the non-Coulomb derivative when it has an own coefficient or a pair coupling
+                    # (a (1 - p_a p_b) term has no own coefficient: before 2026-10-23 every site with a coupling
+                    # also had one through its Table 1 charged/neutral cell, so the coupling alone never occurred)
+                    if ix in nonC_a or cp[s_i, k].any():
                         has_a[s_i, k] = True
-                        ca[s_i, k] = nonC_a[ix]
-                        for o, d in enumerate((-4, -3, 3, 4)):
-                            cp[s_i, k, o] = nonC_ab.get((ix + d, ix) if d < 0 else (ix, ix + d), 0.0)
+                        ca[s_i, k] = nonC_a.get(ix, 0.0)
         # the helix-state distances of every partner slot, from each segment's own tables
         r = self._slot_distances([(c.sidechain_sidechain_distances_hel, c.terminal_sidechain_distances_nterm,
                                    c.terminal_sidechain_distances_cterm) for c in calcs])

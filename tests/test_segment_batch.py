@@ -1,7 +1,8 @@
 """The segments' ionisation solved together (electrostatics/common.py SegmentBatch, models.AGADIR._calc_partition_fxn):
 the results of the per-segment solver it replaced (deleted on 2026-10-22; its results for these peptides are in
-tests/data/segment_batch_reference.json.gz, recorded at commit 0b7b056), the premises the batch rests on (every
-interacting pair within PAIR_RANGE residues; a segment-independent coil state), and the non-Coulomb coefficients."""
+tests/data/segment_batch_reference.json.gz, recorded at commit 0b7b056 under the additive acid-base pair rule, which
+these tests therefore select), the premises the batch rests on (every interacting pair within PAIR_RANGE residues; a
+segment-independent coil state), and the non-Coulomb coefficients."""
 import contextlib
 import gzip
 import io
@@ -51,7 +52,8 @@ def _reference(case, law):
 def _predict(case, law="munoz"):
     seq, nc, cc, pH, T, M = case
     with contextlib.redirect_stdout(io.StringIO()):
-        return models.AGADIR(method="1s", T=T, M=M, pH=pH, dipole_law=law).predict(seq, ncap=nc, ccap=cc)
+        return models.AGADIR(method="1s", T=T, M=M, pH=pH, dipole_law=law, pair_rule="additive").predict(
+            seq, ncap=nc, ccap=cc)
 
 
 def _segments(case, law="munoz"):
@@ -61,20 +63,33 @@ def _segments(case, law="munoz"):
     for j in range(6, L + 1):
         for i in range(0, L - j + 1):
             yield EnergyCalculator(seq=seq, i=i, j=j, pH=pH, T=T, ionic_strength=M, ncap=nc, ccap=cc, params=params,
-                                   dipole_law=law)
+                                   dipole_law=law, pair_rule="additive")
 
 
 def _ids(cl):
     return f"{cl[1]}-{cl[0][0]}-{cl[0][3]}"
 
 
+# Since 2026-10-23 the solver feeds a site's Table IV/V pair couplings into its pKa also when the site has no own
+# non-Coulomb coefficient (electrostatics/common.py, SegmentBatch.solve_helix). The per-segment solver recorded here
+# dropped them, which only the Cys and His sites of these two peptides ever had (the Cys/His N-cap rule, Table IV/V
+# couplings): helix-state charges of short segments move by up to 0.1 and a segment's ionisation free energy by up to
+# 0.14 kcal/mol (measured 0.072 / 0.048 default law, 0.094 / 0.138 gbx), and predictions by <= 0.02 helix points per
+# residue and <= 0.01 in % helix. All other reference peptides stay exact.
+COUPLING_FIX = {"ACAAEKAAKHAAEAAY", "AQAAADKAAEFAAHKAAEAARY"}
+
+
 @pytest.mark.parametrize("cl", LAW_CASES, ids=_ids)
 def test_predictions_reproduce_the_per_segment_solver(cl):
     """Identical % helix; per-residue helicity equal to rounding (the coefficients differ from the per-segment solver's
-    whole-energy differences at the last bit)."""
+    whole-energy differences at the last bit). COUPLING_FIX peptides: within the fix's documented size."""
     case, law = cl
     ref = _reference(case, law)
     r = _predict(case, law)
+    if case[0] in COUPLING_FIX:
+        assert abs(r.percent_helix - ref["percent_helix"]) <= 0.011
+        assert np.max(np.abs(r.helical_propensity - np.array(ref["helical_propensity"]))) < 0.05
+        return
     assert r.percent_helix == ref["percent_helix"]
     assert np.max(np.abs(r.helical_propensity - np.array(ref["helical_propensity"]))) < 1e-9
 
@@ -97,9 +112,13 @@ def test_every_segment_matches_the_per_segment_solver(cl):
             cq = c.modified_cterm_ionization_hel if helix else c.modified_cterm_ionization_rc
             return [float(nq) if k == "Nterm" else float(cq) if k == "Cterm" else float(seq_q[i]) for k, i in sites]
         assert site_q(False) == ref["q_coil"], (c.i, c.j)
-        assert np.allclose(site_q(True), g["q_hel"], rtol=0, atol=1e-12), (c.i, c.j)
-        assert abs(c.dG_ionization - g["dG_ionization"]) < 1e-12, (c.i, c.j)
-        assert [c.ionization_sweeps[True], c.ionization_sweeps[False]] == g["sweeps"], (c.i, c.j)
+        if case[0] in COUPLING_FIX:  # the helix state's His couplings now enter the pKa (see COUPLING_FIX)
+            assert np.allclose(site_q(True), g["q_hel"], rtol=0, atol=0.15), (c.i, c.j)
+            assert abs(c.dG_ionization - g["dG_ionization"]) < 0.15, (c.i, c.j)
+        else:
+            assert np.allclose(site_q(True), g["q_hel"], rtol=0, atol=1e-12), (c.i, c.j)
+            assert abs(c.dG_ionization - g["dG_ionization"]) < 1e-12, (c.i, c.j)
+            assert [c.ionization_sweeps[True], c.ionization_sweeps[False]] == g["sweeps"], (c.i, c.j)
         n_seen += 1
     assert n_seen == len(segs)
 

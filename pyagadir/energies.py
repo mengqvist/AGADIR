@@ -200,7 +200,7 @@ class PrecomputeParams(Electrostatics):
         """
         return {name: ParamTable(df) for name, df in cls.law_params(dipole_law).items()}
 
-    def __init__(self, seq: str, i: int, j: int, pH: float, T: float, ionic_strength: float, ncap: str = None, ccap: str = None, debug: bool = False, params: dict = None, dipole_law: str = "munoz", batch=None):
+    def __init__(self, seq: str, i: int, j: int, pH: float, T: float, ionic_strength: float, ncap: str = None, ccap: str = None, debug: bool = False, params: dict = None, dipole_law: str = "munoz", batch=None, pair_rule: str = None):
         """
         Initialize the PrecomputedParams for a peptide sequence.
 
@@ -225,6 +225,12 @@ class PrecomputeParams(Electrostatics):
         if dipole_law not in DIPOLE_LAWS:
             raise ValueError(f"dipole_law must be one of {DIPOLE_LAWS}, got {dipole_law!r}")
         self.dipole_law = dipole_law
+        # Acid-base side-chain pairs (see get_dG_i3 and electrostatics/contacts.py): "contacts", the default law's rule
+        # since 2026-10-23 (salt bridges one-direction and positionally exclusive, a pair with a neutral partner
+        # hydrogen-bonds on any side), or "additive", the rule before it (kept for the gbx law and for comparisons).
+        self.pair_rule = pair_rule or ("contacts" if dipole_law == "munoz" else "additive")
+        if self.pair_rule not in ("contacts", "additive"):
+            raise ValueError(f"pair_rule must be 'contacts' or 'additive', not {pair_rule!r}")
 
         # load params
         if params is None:
@@ -411,7 +417,7 @@ class EnergyCalculator(PrecomputeParams):
     _ALIPHATIC = {"A", "V", "L", "I", "M"}
     dCp = -0.0015  # kcal/(mol*K)
 
-    def __init__(self, seq: str, i: int, j: int, pH: float, T: float, ionic_strength: float, ncap: str = None, ccap: str = None, params: dict = None, dipole_law: str = "munoz", batch=None):
+    def __init__(self, seq: str, i: int, j: int, pH: float, T: float, ionic_strength: float, ncap: str = None, ccap: str = None, params: dict = None, dipole_law: str = "munoz", batch=None, pair_rule: str = None):
         """
         Initialize the EnergyCalculator for a peptide sequence.
 
@@ -429,7 +435,7 @@ class EnergyCalculator(PrecomputeParams):
             batch (SegmentBatch): see PrecomputeParams.
         """
         super().__init__(seq, i, j, pH, T, ionic_strength, ncap, ccap, params=params, dipole_law=dipole_law,
-                         batch=batch)
+                         batch=batch, pair_rule=pair_rule)
 
     def _charge_dependent_nonCoulomb_terms(self) -> dict:
         """The helix-state terms that depend on charged fractions other than through Coulomb's law, at the current helix
@@ -1029,7 +1035,19 @@ class EnergyCalculator(PrecomputeParams):
             # of the pair is the Coulomb term.
             acid_base = bool({AAi, AAi3} & {"D", "E"} and {AAi, AAi3} & {"K", "R", "H"})
             if acid_base and base < 0 and (idx, idx + 3) not in self._acid_base_hbonds():
-                base = 0.0
+                if self.pair_rule == "contacts":
+                    # The one-direction limit belongs to the salt bridge: two charged groups pay a large
+                    # desolvation and bond toward one side. A pair with a neutral partner (COOH or NH2, cheap to
+                    # desolvate) hydrogen-bonds on any side, so a pair _acid_base_hbonds does not select keeps its
+                    # Table IV bond in the states that are not doubly charged, (1 - p_i p_j), AGADIR's form for
+                    # the other titratable pairs. Scholtz et al. (1993): "the ionization of one side chain
+                    # increases the strength of the hydrogen bond"; Fossat et al. (2023, ChemPhysChem 24,
+                    # e202200746): (E4K4)3 with all Glu neutral (net +12) is as helical as with all charged.
+                    p_i = abs(self.modified_seq_ionization_hel[idx])
+                    p_j = abs(self.modified_seq_ionization_hel[idx + 3])
+                    base = base * (1.0 - p_i * p_j)
+                else:
+                    base = 0.0
 
             # Other titratable pairs: Table IV applies to the states that are not both charged.
             if not acid_base and (AAi in (self.pos_charge_aa + self.neg_charge_aa)) and (AAi3 in (self.pos_charge_aa + self.neg_charge_aa)):
@@ -1098,7 +1116,19 @@ class EnergyCalculator(PrecomputeParams):
             # of the pair is the Coulomb term.
             acid_base = bool({AAi, AAi4} & {"D", "E"} and {AAi, AAi4} & {"K", "R", "H"})
             if acid_base and base < 0 and (idx, idx + 4) not in self._acid_base_hbonds():
-                base = 0.0
+                if self.pair_rule == "contacts":
+                    # The one-direction limit belongs to the salt bridge: two charged groups pay a large
+                    # desolvation and bond toward one side. A pair with a neutral partner (COOH or NH2, cheap to
+                    # desolvate) hydrogen-bonds on any side, so a pair _acid_base_hbonds does not select keeps its
+                    # Table IV bond in the states that are not doubly charged, (1 - p_i p_j), AGADIR's form for
+                    # the other titratable pairs. Scholtz et al. (1993): "the ionization of one side chain
+                    # increases the strength of the hydrogen bond"; Fossat et al. (2023, ChemPhysChem 24,
+                    # e202200746): (E4K4)3 with all Glu neutral (net +12) is as helical as with all charged.
+                    p_i = abs(self.modified_seq_ionization_hel[idx])
+                    p_j = abs(self.modified_seq_ionization_hel[idx + 4])
+                    base = base * (1.0 - p_i * p_j)
+                else:
+                    base = 0.0
 
             # Other titratable pairs: suppress Table IV in the both-charged microstate.
             if not acid_base and (AAi in (self.pos_charge_aa + self.neg_charge_aa)) and (AAi4 in (self.pos_charge_aa + self.neg_charge_aa)):

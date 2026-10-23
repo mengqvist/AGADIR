@@ -4,6 +4,7 @@ import numpy as np
 
 from pyagadir.chemistry import R_KCAL
 from pyagadir.electrostatics.common import SEGMENT_BATCH_SIZE
+from pyagadir.electrostatics.contacts import SaltBridgeContacts
 from pyagadir.energies import DIPOLE_LAWS, EnergyCalculator
 from pyagadir.utils import is_valid_peptide_sequence, is_valid_ncap_ccap
 
@@ -90,7 +91,8 @@ class AGADIR(object):
     """
 
     def __init__(
-        self, method: str = "1s", T: float = 4.0, M: float = 0.15, pH: float = 7.0, dipole_law: str = "munoz"
+        self, method: str = "1s", T: float = 4.0, M: float = 0.15, pH: float = 7.0, dipole_law: str = "munoz",
+        pair_rule: str = None,
     ):
         """
         Initialize AGADIR object.
@@ -108,10 +110,19 @@ class AGADIR(object):
                 (params/README.md "gbx"). 'gbp' (gbx plus the GB side chain-side chain pair law, every ionisable
                 group coupled to both GB terms through its charged and neutral forms' energies, GB desolvation and the
                 statistical acid-base network) was retired on 2026-10-22 (params/README.md "Retired: gbp").
+            pair_rule (str): Acid-base side-chain pairs three or four residues apart. 'contacts' (the default with the
+                'munoz' law): a salt bridge is one-direction and positionally exclusive (each charged side chain in at
+                most one contact; electrostatics/contacts.py), and a pair with a neutral partner hydrogen-bonds on any
+                side (energies.get_dG_i3 / get_dG_i4). 'additive' (the default with 'gbx', and the rule before
+                2026-10-23): every pair's Coulomb term at its Table VI distance, Table IV bonds in one direction only.
+                params/README.md, "Charged side-chain pairs".
         """
         if dipole_law not in DIPOLE_LAWS:
             raise ValueError(f"dipole_law must be one of {DIPOLE_LAWS}, got {dipole_law!r}")
         self.dipole_law = dipole_law
+        self.pair_rule = pair_rule or ("contacts" if dipole_law == "munoz" else "additive")
+        if self.pair_rule not in ("contacts", "additive"):
+            raise ValueError(f"pair_rule must be 'contacts' or 'additive', got {pair_rule!r}")
         self.method_options = ["r", "1s"]
         if method not in self.method_options:
             raise ValueError(
@@ -227,6 +238,11 @@ class AGADIR(object):
         # SegmentBatch).
         dG_ionization = self.energy_calculator.get_dG_ionization()
 
+        # Salt-bridge contacts (pair_rule 'contacts'): the charge-dependent free energy with each charged side chain in
+        # at most one salt-bridge contact, minus the additive mean-field one above (electrostatics/contacts.py; 0 for
+        # a peptide without acid-base pairs three or four residues apart)
+        dG_contacts = self._contacts.segment_correction(self.energy_calculator) if self._contacts is not None else 0.0
+
         # sum all components
         dG_Hel = (
             sum(dG_Int)
@@ -247,6 +263,7 @@ class AGADIR(object):
             + np.sum(dG_electrost_sidechain)
             + dG_electrost_term_term
             + dG_ionization
+            + dG_contacts
         )
 
         return dG_Hel
@@ -284,7 +301,7 @@ class AGADIR(object):
         def calculator(i, j, batch=None):
             return EnergyCalculator(seq=self.result.seq, i=i, j=j, pH=self.pH, T=self.T_celsius,
                                     ionic_strength=self.molarity, ncap=self.n_cap, ccap=self.c_cap, params=params,
-                                    dipole_law=self.dipole_law, batch=batch)
+                                    dipole_law=self.dipole_law, batch=batch, pair_rule=self.pair_rule)
 
         # The first segment, built on its own, is a batch of one (energies.PrecomputeParams) and is solved with it; its
         # batch holds the peptide's tables and coil state for the other segments.
@@ -386,6 +403,8 @@ class AGADIR(object):
 
         # initialize the result object
         self.result = ModelResult(seq, ncap=self.n_cap, ccap=self.c_cap)
+        # salt-bridge contacts (pair_rule 'contacts'): the coil terms are computed once per prediction
+        self._contacts = SaltBridgeContacts(seq) if self.pair_rule == "contacts" else None
 
         # calculate the partition function and helical propensity
         self._calc_partition_fxn()

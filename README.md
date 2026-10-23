@@ -43,9 +43,9 @@ print(result.get_helical_propensity().round(1))  # helicity of each position, %
 
 ```text
 Predicting helical propensity for sequence: ILKSLEEFLKVTLRSTRQT, method: 1s, T(C): 4.0, M: 0.15, pH: 7.0, ncap: Ac, ccap: Am
-32.18
-[ 0.   3.1  3.3  3.5  3.8 65.1 65.3 65.5 65.7 65.2 61.2 55.8 52.5 48.7
- 24.8 11.7  8.5  5.3  1.5  0.8  0. ]
+31.74
+[ 0.   3.   3.1  3.4  3.6 64.3 64.6 64.7 64.9 64.5 60.3 55.  51.7 48.
+ 24.4 11.5  8.4  5.2  1.5  0.8  0. ]
 ```
 
 - **Units.** Both results are percentages (0-100). The per-position array includes the Ac and Am positions, so it has two more entries than the sequence. `get_percent_helix()` averages over the amino acids only. `predict()` prints the conditions it ran at, as shown above.
@@ -58,6 +58,18 @@ Predicting helical propensity for sequence: ILKSLEEFLKVTLRSTRQT, method: 1s, T(C
 The default, `dipole_law="munoz"`, is the published treatment: the helix macrodipole acts on a charged side chain as a point charge at each helix end (Muñoz & Serrano 1995, paper II). That is a far-field approximation. It breaks down for charges in the first and last turn, which sit 3-7 Å from the backbone N-H and C=O groups (Baker et al. 2015). Measured walks of a single charge along a helix show stronger effects near the ends, and less salt screening of them, than the point-charge law gives.
 
 `AGADIR(dipole_law="gbx")` is being developed to fix this. It replaces the point charges with a Generalized Born calculation of each charged side chain against the backbone atoms of built helices (the table itself has no fitted parameters). The published table values that were measured with the point-charge law are moved over to it. It reproduces those charge walks better, and the Glu-Lys salt-bridge peptides of Marqusee & Baldwin (1987) and Baker et al. (2015). It is still less accurate than the default on the validation figures below, so it is experimental and not the default. Its derivation, scores and known shortfalls are in [`pyagadir/params/README.md`](pyagadir/params/README.md).
+
+### Charged side-chain pairs
+
+An acid-base pair three or four residues apart interacts through a hydrogen bond (a contact, not screened by salt) and
+through the Coulomb attraction of the two charges (screened). By default (`pair_rule="contacts"`, with the default
+`dipole_law`), a charged side chain makes at most one salt bridge, chosen by the statistical weight of the
+alternatives, and pays the published close-range attraction only in that contact. A pair with a neutral partner
+(protonated Glu, deprotonated Lys) hydrogen-bonds on either side. An isolated pair keeps its published value
+exactly, so the rule only changes peptides in which side chains compete for partners, such as Glu/Lys block repeats
+(EEEEKKKK). It gives these blocks their measured stability at low and high pH (Lyu et al. 1992; Fossat et al. 2023)
+without changing single pairs. `pair_rule="additive"` gives the rule used before (and still used with `gbx`); the
+derivation and its tests are in [`pyagadir/params/README.md`](pyagadir/params/README.md), "Charged side-chain pairs".
 
 ### Energy terms of one helical segment
 
