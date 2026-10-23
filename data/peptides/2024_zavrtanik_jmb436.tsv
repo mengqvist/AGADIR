@@ -1,0 +1,19 @@
+peptide_id	sequence	ncap	ccap	n_res	pH	T_C	ionic_strength_M	quantity	value	error	unit	source_table	flags
+HigA2	NRDLFAELSSALVEAKQHSEG			21	7.0	25	0.1855	helix_fraction	0.112		fraction	Table S1	printed;Table S1 coded conditions 25/7.4/0.17
+Ccda	RRLRAERWKAENQEGMAEVARFIEMN			26	7.0	25	0.1855	helix_fraction	0.135		fraction	Table S1	printed;Table S1 coded conditions 25/7.4/0.17
+Phd4	WASLFDTLDSTNKELVNR			18	7.0	25	0.1855	helix_fraction	0.105		fraction	Table S1	printed;Table S1 coded conditions 25/7.4/0.17
+Phd5	WTLDSTNKELVNR			13	7.0	25	0.1855	helix_fraction	0.164		fraction	Table S1	printed;Table S1 coded conditions 25/7.4/0.17
+RelA_NLS	DDRHRIEEKRKRTYETFKSIMKKS			24	7.0	25	0.1855	helix_fraction	0.16		fraction	Table S1	printed;Table S1 coded conditions 25/7.4/0.17
+FCP1	YGSEADEMAKALEAELN			17	7.0	25	0.1855	helix_fraction	0.352		fraction	Table S1	printed;Table S1 coded conditions 25/7.4/0.17;internal_conflict
+MLL	PSDIMDFVLKNTPY	Ac	Am	14	7.0	25	0.1855	helix_fraction	0.283		fraction	Table S1	printed;Table S1 coded conditions 25/7.4/0.17
+HigA22G*	NRDLFGELSSALGEAKQHSEGW			22	7.0	25	0.1855	helix_fraction	0.068		fraction	Table S1	printed;Table S1 coded conditions 25/7.4/0.17
+HigA24G*	NRDLFGELSGALGEAKGHSEGW			22	7.0	25	0.1855	helix_fraction	0.044		fraction	Table S1	printed;Table S1 coded conditions 25/7.4/0.17
+HigA26G*	NRDLFGELGGALGEAKGHGEGW			22	7.0	25	0.1855	helix_fraction	0.032		fraction	Table S1	printed;Table S1 coded conditions 25/7.4/0.17
+PaaA2 1	EQENSYNEWLRAKVATSLA			19	7.0	25	0.1855	helix_fraction	0.233		fraction	Table S1	printed;Table S1 coded conditions 25/7.4/0.17
+PaaA2 2	DPRPAIPHDEVERRMAERFAKMRKERSKQW			30	7.0	25	0.1855	helix_fraction	0.369		fraction	Table S1	printed;Table S1 coded conditions 25/7.4/0.17
+FCP1	YGSEADEMAKALEAELN			17	7.0	25	0.1855	helix_percent	21		%	Text (Fig. 5B, 5C)	printed;text_value_rounded;internal_conflict
+FCP1-II	YGSEADEMAKAIEAEIN			17	7.0	25	0.1855	helix_percent	17		%	Text (Fig. 5B, 5C)	printed;text_value_rounded
+FCP1-VV	YGSEADEMAKAVEAEVN			17	7.0	25	0.1855	helix_percent	12		%	Text (Fig. 5B, 5C)	printed;text_value_rounded
+HigA2	NRDLFAELSSALVEAKQHSEGW			22	7.0	25	0.1855	helix_percent	14		%	Text (Fig. 5B, 5C)	printed;text_value_rounded
+HigA2-II	NRDIFAEISSALVEAKQHSEGW			22	7.0	25	0.1855	helix_percent	13		%	Text (Fig. 5B, 5C)	printed;text_value_rounded
+HigA2-VV	NRDVFAEVSSALVEAKQHSEGW			22	7.0	25	0.1855	helix_percent	10		%	Text (Fig. 5B, 5C)	printed;text_value_rounded

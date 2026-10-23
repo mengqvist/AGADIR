@@ -1,0 +1,68 @@
+peptide_id	sequence	ncap	ccap	n_res	pH	T_C	ionic_strength_M	quantity	value	error	unit	source_table	flags
+GGCH	GGCAAAAARAAAARAAAARAA	Ac	Am	21	3.65	25	0.0019	minus_theta222	18056		deg cm2 dmol-1	Fig. 2	digitised;KCl 0 M
+GGCPH	GGCPAAAARAAAARAAAARAA	Ac	Am	21	3.7	25	0.0019	minus_theta222	15050		deg cm2 dmol-1	Fig. 2	digitised;KCl 0 M
+CH	CAAAAAAAARAAAARAAAARAA	Ac	Am	22	4.3	25	0.0024	minus_theta222	22388		deg cm2 dmol-1	Fig. 2	digitised;KCl 0 M
+GGCH	GGCAAAAARAAAARAAAARAA	Ac	Am	21	4.3	25	0.0024	minus_theta222	18056		deg cm2 dmol-1	Fig. 2	digitised;KCl 0 M
+CAP-CH	GGFCAAQLARAAAARAAAARAA	Ac	Am	22	4.45	25	0.0026	minus_theta222	17322		deg cm2 dmol-1	Fig. 2	digitised;KCl 0 M;aromatic_cd
+GGCPH	GGCPAAAARAAAARAAAARAA	Ac	Am	21	4.6	25	0.0028	minus_theta222	15213		deg cm2 dmol-1	Fig. 2	digitised;KCl 0 M
+CH	CAAAAAAAARAAAARAAAARAA	Ac	Am	22	5.25	25	0.0037	minus_theta222	22337		deg cm2 dmol-1	Fig. 2	digitised;KCl 0 M
+GGCPH	GGCPAAAARAAAARAAAARAA	Ac	Am	21	5.3	25	0.0038	minus_theta222	15437		deg cm2 dmol-1	Fig. 2	digitised;KCl 0 M
+GGCH	GGCAAAAARAAAARAAAARAA	Ac	Am	21	5.5	25	0.004	minus_theta222	18107		deg cm2 dmol-1	Fig. 2	digitised;KCl 0 M
+CH	CAAAAAAAARAAAARAAAARAA	Ac	Am	22	5.8	25	0.0045	minus_theta222	22439		deg cm2 dmol-1	Fig. 2	digitised;KCl 0 M
+GGCPH	GGCPAAAARAAAARAAAARAA	Ac	Am	21	5.9	25	0.0047	minus_theta222	15906		deg cm2 dmol-1	Fig. 2	digitised;KCl 0 M
+CH	CAAAAAAAARAAAARAAAARAA	Ac	Am	22	6.2	25	0.0053	minus_theta222	22520		deg cm2 dmol-1	Fig. 2	digitised;KCl 0 M
+CAP-CH	GGFCAAQLARAAAARAAAARAA	Ac	Am	22	6.2	25	0.0053	minus_theta222	17475		deg cm2 dmol-1	Fig. 2	digitised;KCl 0 M;aromatic_cd
+GGCH	GGCAAAAARAAAARAAAARAA	Ac	Am	21	6.45	25	0.0059	minus_theta222	18331		deg cm2 dmol-1	Fig. 2	digitised;KCl 0 M
+GGCPH	GGCPAAAARAAAARAAAARAA	Ac	Am	21	6.4	25	0.0057	minus_theta222	16772		deg cm2 dmol-1	Fig. 2	digitised;KCl 0 M
+CH	CAAAAAAAARAAAARAAAARAA	Ac	Am	22	6.65	25	0.0063	minus_theta222	22602		deg cm2 dmol-1	Fig. 2	digitised;KCl 0 M
+GGCPH	GGCPAAAARAAAARAAAARAA	Ac	Am	21	6.95	25	0.0071	minus_theta222	18556		deg cm2 dmol-1	Fig. 2	digitised;KCl 0 M
+CH	CAAAAAAAARAAAARAAAARAA	Ac	Am	22	7.05	25	0.0073	minus_theta222	22877		deg cm2 dmol-1	Fig. 2	digitised;KCl 0 M
+CAP-CH	GGFCAAQLARAAAARAAAARAA	Ac	Am	22	7.3	25	0.0078	minus_theta222	18566		deg cm2 dmol-1	Fig. 2	digitised;KCl 0 M;aromatic_cd
+CH	CAAAAAAAARAAAARAAAARAA	Ac	Am	22	7.6	25	0.0083	minus_theta222	23529		deg cm2 dmol-1	Fig. 2	digitised;KCl 0 M
+GGCPH	GGCPAAAARAAAARAAAARAA	Ac	Am	21	7.55	25	0.0082	minus_theta222	21409		deg cm2 dmol-1	Fig. 2	digitised;KCl 0 M
+GGCH	GGCAAAAARAAAARAAAARAA	Ac	Am	21	7.6	25	0.0083	minus_theta222	20329		deg cm2 dmol-1	Fig. 2	digitised;KCl 0 M
+CAP-CH	GGFCAAQLARAAAARAAAARAA	Ac	Am	22	8.2	25	0.0089	minus_theta222	20747		deg cm2 dmol-1	Fig. 2	digitised;KCl 0 M;aromatic_cd
+CH	CAAAAAAAARAAAARAAAARAA	Ac	Am	22	8.5	25	0.009	minus_theta222	24548		deg cm2 dmol-1	Fig. 2	digitised;KCl 0 M
+GGCPH	GGCPAAAARAAAARAAAARAA	Ac	Am	21	8.7	25	0.0091	minus_theta222	23478		deg cm2 dmol-1	Fig. 2	digitised;KCl 0 M
+GGCH	GGCAAAAARAAAARAAAARAA	Ac	Am	21	8.7	25	0.0091	minus_theta222	21685		deg cm2 dmol-1	Fig. 2	digitised;KCl 0 M
+CH	CAAAAAAAARAAAARAAAARAA	Ac	Am	22	9.15	25	0.0094	minus_theta222	24671		deg cm2 dmol-1	Fig. 2	digitised;KCl 0 M
+CAP-CH	GGFCAAQLARAAAARAAAARAA	Ac	Am	22	9.15	25	0.0094	minus_theta222	21593		deg cm2 dmol-1	Fig. 2	digitised;KCl 0 M;aromatic_cd
+GGCPH	GGCPAAAARAAAARAAAARAA	Ac	Am	21	9.25	25	0.0095	minus_theta222	23560		deg cm2 dmol-1	Fig. 2	digitised;KCl 0 M
+GGCH	GGCAAAAARAAAARAAAARAA	Ac	Am	21	9.4	25	0.0096	minus_theta222	21807		deg cm2 dmol-1	Fig. 2	digitised;KCl 0 M
+CH	CAAAAAAAARAAAARAAAARAA	Ac	Am	22	9.65	25	0.0097	minus_theta222	24671		deg cm2 dmol-1	Fig. 2	digitised;KCl 0 M
+CAP-CH	GGFCAAQLARAAAARAAAARAA	Ac	Am	22	9.75	25	0.0098	minus_theta222	21532		deg cm2 dmol-1	Fig. 2	digitised;KCl 0 M;aromatic_cd
+GGCH	GGCAAAAARAAAARAAAARAA	Ac	Am	21	10.0	25	0.0099	minus_theta222	21664		deg cm2 dmol-1	Fig. 2	digitised;KCl 0 M
+GGCH	GGCAAAAARAAAARAAAARAA	Ac	Am	21	6.95	25	0.0071	minus_theta222	19004		deg cm2 dmol-1	Fig. 2	digitised;KCl 0 M;seeded
+CAP-CH	GGFCAAQLARAAAARAAAARAA	Ac	Am	22	6.75	25	0.0066	minus_theta222	17883		deg cm2 dmol-1	Fig. 2	digitised;KCl 0 M;seeded;aromatic_cd
+CAP-CH	GGFCAAQLARAAAARAAAARAA	Ac	Am	22	3.65	25	0.0019	minus_theta222	17159		deg cm2 dmol-1	Fig. 2	digitised;KCl 0 M;seeded;aromatic_cd
+CAP-CH	GGFCAAQLARAAAARAAAARAA	Ac	Am	22	5.55	25	0.0041	minus_theta222	17322		deg cm2 dmol-1	Fig. 2	digitised;KCl 0 M;seeded;aromatic_cd
+CH	CAAAAAAAARAAAARAAAARAA	Ac	Am	22	3.0	25	0.0013	minus_theta222	22099		deg cm2 dmol-1	Fig. 4	digitised;KCl 0 M;fig4_only_point
+HC	AARAAAARAAAARAAAAAAAAC	Ac	Am	22	6.2	25	0.0053	minus_theta222	23007		deg cm2 dmol-1	Fig. 4	digitised;KCl 0 M
+HC	AARAAAARAAAARAAAAAAAAC	Ac	Am	22	6.65	25	0.0063	minus_theta222	23066		deg cm2 dmol-1	Fig. 4	digitised;KCl 0 M
+HC	AARAAAARAAAARAAAAAAAAC	Ac	Am	22	7.1	25	0.0074	minus_theta222	22913		deg cm2 dmol-1	Fig. 4	digitised;KCl 0 M
+HC	AARAAAARAAAARAAAAAAAAC	Ac	Am	22	7.75	25	0.0085	minus_theta222	22718		deg cm2 dmol-1	Fig. 4	digitised;KCl 0 M
+HC	AARAAAARAAAARAAAAAAAAC	Ac	Am	22	8.75	25	0.0092	minus_theta222	20767		deg cm2 dmol-1	Fig. 4	digitised;KCl 0 M
+HC	AARAAAARAAAARAAAAAAAAC	Ac	Am	22	9.4	25	0.0096	minus_theta222	18358		deg cm2 dmol-1	Fig. 4	digitised;KCl 0 M
+HC	AARAAAARAAAARAAAAAAAAC	Ac	Am	22	9.95	25	0.0098	minus_theta222	16932		deg cm2 dmol-1	Fig. 4	digitised;KCl 0 M
+HC	AARAAAARAAAARAAAAAAAAC	Ac	Am	22	10.45	25	0.01	minus_theta222	16406		deg cm2 dmol-1	Fig. 4	digitised;KCl 0 M
+HC	AARAAAARAAAARAAAAAAAAC	Ac	Am	22	11.0	25	0.0101	minus_theta222	16304		deg cm2 dmol-1	Fig. 4	digitised;KCl 0 M
+HC	AARAAAARAAAARAAAAAAAAC	Ac	Am	22	11.6	25	0.0104	minus_theta222	16364		deg cm2 dmol-1	Fig. 4	digitised;KCl 0 M
+CH	CAAAAAAAARAAAARAAAARAA	Ac	Am	22	3.5	25	0.0017	minus_theta222	22286		deg cm2 dmol-1	Fig. 4	digitised;KCl 0 M;seeded;fig4_only_point
+CH	CAAAAAAAARAAAARAAAARAA	Ac	Am	22	10.1	25	0.0099	minus_theta222	24644		deg cm2 dmol-1	Fig. 4	digitised;KCl 0 M;seeded;fig4_only_point
+CH	CAAAAAAAARAAAARAAAARAA	Ac	Am	22	10.5	25	0.01	minus_theta222	24534		deg cm2 dmol-1	Fig. 4	digitised;KCl 0 M;seeded;fig4_only_point
+CH	CAAAAAAAARAAAARAAAARAA	Ac	Am	22	4.0	25	0.0022	helix_percent	76.2		%	Table 3	printed;hh_plateau;thiol_SH;hh_limit
+CH	CAAAAAAAARAAAARAAAARAA	Ac	Am	22	10.0	25	0.0099	helix_percent	85.2		%	Table 3	printed;hh_plateau;thiol_S-;hh_limit
+CH	CAAAAAAAARAAAARAAAARAA	Ac	Am	22	4.0	5	0.0022	helix_percent	97.5		%	Table 3	printed;hh_plateau;thiol_SH;hh_limit
+CH	CAAAAAAAARAAAARAAAARAA	Ac	Am	22	10.0	5	0.0099	helix_percent	98		%	Table 3	printed;hh_plateau;thiol_S-;hh_limit
+GGCH	GGCAAAAARAAAARAAAARAA	Ac	Am	21	4.0	25	0.0022	helix_percent	54.6		%	Table 3	printed;hh_plateau;thiol_SH;hh_limit
+GGCH	GGCAAAAARAAAARAAAARAA	Ac	Am	21	10.0	25	0.0099	helix_percent	66.2		%	Table 3	printed;hh_plateau;thiol_S-;hh_limit
+GGCH	GGCAAAAARAAAARAAAARAA	Ac	Am	21	4.0	5	0.0022	helix_percent	80.2		%	Table 3	printed;hh_plateau;thiol_SH
+GGCH	GGCAAAAARAAAARAAAARAA	Ac	Am	21	10.0	5	0.0099	helix_percent	82.9		%	Table 3	printed;hh_plateau;thiol_S-
+GGCPH	GGCPAAAARAAAARAAAARAA	Ac	Am	21	4.0	25	0.0022	helix_percent	45.7		%	Table 3	printed;hh_plateau;thiol_SH;hh_limit
+GGCPH	GGCPAAAARAAAARAAAARAA	Ac	Am	21	10.0	25	0.0099	helix_percent	71.8		%	Table 3	printed;hh_plateau;thiol_S-;hh_limit
+GGCPH	GGCPAAAARAAAARAAAARAA	Ac	Am	21	4.0	5	0.0022	helix_percent	71.3		%	Table 3	printed;hh_plateau;thiol_SH
+GGCPH	GGCPAAAARAAAARAAAARAA	Ac	Am	21	10.0	5	0.0099	helix_percent	91.2		%	Table 3	printed;hh_plateau;thiol_S-
+CAP-CH	GGFCAAQLARAAAARAAAARAA	Ac	Am	22	4.0	25	0.0022	helix_percent	51.6		%	Table 3	printed;hh_plateau;thiol_SH;hh_limit;aromatic_cd
+CAP-CH	GGFCAAQLARAAAARAAAARAA	Ac	Am	22	10.0	25	0.0099	helix_percent	65.1		%	Table 3	printed;hh_plateau;thiol_S-;hh_limit;aromatic_cd
+CAP-CH	GGFCAAQLARAAAARAAAARAA	Ac	Am	22	4.0	5	0.0022	helix_percent	71.4		%	Table 3	printed;hh_plateau;thiol_SH;aromatic_cd
+CAP-CH	GGFCAAQLARAAAARAAAARAA	Ac	Am	22	10.0	5	0.0099	helix_percent	75.0		%	Table 3	printed;hh_plateau;thiol_S-;aromatic_cd
