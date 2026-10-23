@@ -967,8 +967,12 @@ class EnergyCalculator(PrecomputeParams):
         A side chain is in one rotamer at a time: it can reach partners on its N-terminal side
         (i-3, i-4) or on its C-terminal side (i+3, i+4), not both.  Partners on the same side can
         share that rotamer.  Candidates are the i,i+3 and i,i+4 pairs inside the helix (caps
-        excluded) with a favourable Table IV value; the strongest are taken first.  The ionic
-        part of each pair (the Coulomb term) is not restricted.
+        excluded) with a favourable Table IV value.  The helix takes the set of bonds with the
+        largest summed Table IV value that these directions allow; where taking the strongest bond
+        first already reaches that sum, that set is kept.  Taking the strongest first alone can
+        miss it: in (K4E4)2 the central Glu->Lys i+4 bonds (-0.20) would exclude both Lys->Glu
+        blocks (8 x -0.10 and 6 x -0.15 at i+3), -1.25 against -1.70 kcal/mol.  The ionic part of
+        each pair (the Coulomb term) is not restricted.
         """
         if getattr(self, "_ab_hbonds", None) is not None:
             return self._ab_hbonds
@@ -992,8 +996,42 @@ class EnergyCalculator(PrecomputeParams):
                 continue
             direction[i], direction[j] = "up", "down"
             chosen.add((i, j))
+        best = self._best_hbond_set(cands)
+        weight = {(i, j): -v for v, i, j in cands}
+        if sum(weight[p] for p in best) > sum(weight[p] for p in chosen) + 1e-9:
+            chosen = best
         self._ab_hbonds = chosen
         return chosen
+
+    @staticmethod
+    def _best_hbond_set(cands) -> set:
+        """The compatible set of acid-base bonds with the largest summed |Table IV| (exact).
+
+        Each side chain points up (bonding partners at i+3/i+4) or down (partners at i-3/i-4); a pair
+        (i, j) is bonded when i points up and j down.  Dynamic programming along the chain, the state
+        being the directions of the last four residues, since partners are at most four apart.
+        """
+        if not cands:
+            return set()
+        weight = {(i, j): -v for v, i, j in cands}
+        lo, hi = min(i for _, i, _ in cands), max(j for _, _, j in cands)
+        best = {(): (0.0, ())}  # directions of the last four residues -> (score, all directions so far)
+        for p in range(lo, hi + 1):
+            new = {}
+            for state, (score, path) in best.items():
+                for up in (True, False):
+                    gain = 0.0
+                    if not up:
+                        for k in (3, 4):
+                            if len(state) >= k and state[-k] and (p - k, p) in weight:
+                                gain += weight[(p - k, p)]
+                    key = (state + (up,))[-4:]
+                    if key not in new or score + gain > new[key][0] + 1e-12:
+                        new[key] = (score + gain, path + (up,))
+            best = new
+        _, path = max(best.values(), key=lambda t: t[0])
+        up = {lo + n: d for n, d in enumerate(path)}
+        return {(i, j) for (i, j) in weight if up[i] and not up[j]}
 
     def get_dG_i3(self) -> np.ndarray:
         """

@@ -78,6 +78,11 @@ def _ids(cl):
 # residue and <= 0.01 in % helix. All other reference peptides stay exact.
 COUPLING_FIX = {"ACAAEKAAKHAAEAAY", "AQAAADKAAEFAAHKAAEAARY"}
 
+# Since 2026-10-23 the acid-base H-bond set is the best compatible one (energies._acid_base_hbonds), not strongest-first.
+# Of these peptides only the (AEEEKKK)4 repeat gets a different set: +0.18 % helix (default law) and +0.19 (gbx), at
+# most 0.54 / 0.81 helix points per residue. The solver itself is unchanged.
+HBOND_SET_CHANGE = {"AEEEKKKAEEEKKKAEEEKKKAEEEKKKAW": 0.2}
+
 
 @pytest.mark.parametrize("cl", LAW_CASES, ids=_ids)
 def test_predictions_reproduce_the_per_segment_solver(cl):
@@ -89,6 +94,10 @@ def test_predictions_reproduce_the_per_segment_solver(cl):
     if case[0] in COUPLING_FIX:
         assert abs(r.percent_helix - ref["percent_helix"]) <= 0.011
         assert np.max(np.abs(r.helical_propensity - np.array(ref["helical_propensity"]))) < 0.05
+        return
+    if case[0] in HBOND_SET_CHANGE:
+        assert 0.0 < r.percent_helix - ref["percent_helix"] <= HBOND_SET_CHANGE[case[0]]
+        assert np.max(np.abs(r.helical_propensity - np.array(ref["helical_propensity"]))) < 1.0
         return
     assert r.percent_helix == ref["percent_helix"]
     assert np.max(np.abs(r.helical_propensity - np.array(ref["helical_propensity"]))) < 1e-9

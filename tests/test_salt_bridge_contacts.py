@@ -116,3 +116,46 @@ def test_blocks_keep_their_helicity_with_the_acids_neutral():
     f = _helix("G" + "EEEEKKKK" * 3 + "GW", "Ac", "Am", 20.0, 0.015, 2.5, "contacts")
     lyu = _helix("YSEEEEKKKKEEEEKKKK", "Sc", "Am", 4.0, 0.0416, 1.5, "contacts")
     assert f > 35.0 and lyu > 35.0
+
+
+def _hbond_calc(seq):
+    return EnergyCalculator(seq=seq, i=0, j=len(seq), pH=7.0, T=5.0, ionic_strength=0.15, ncap="Ac", ccap="Am",
+                            params=EnergyCalculator.snapshot_params("munoz"))
+
+
+def _bond_sum(calc, pairs):
+    return sum(float((calc.table_4a_lacroix if j - i == 3 else calc.table_4b_lacroix)
+                     .loc[calc.seq_list[i], calc.seq_list[j]]) / 100.0 for i, j in pairs)
+
+
+def test_hbond_set_is_the_best_compatible_set():
+    """_acid_base_hbonds returns the compatible set with the largest summed Table IV value: every side chain bonds on
+    one side only, and no assignment of sides does better (brute force over all of them)."""
+    rng = np.random.default_rng(7)
+    for _ in range(60):
+        seq = "".join(rng.choice(list("AAEEKKDRH"), size=int(rng.integers(8, 15))))
+        c = _hbond_calc(seq)
+        chosen = c._acid_base_hbonds()
+        side = {}
+        for i, j in chosen:
+            assert side.setdefault(i, "up") == "up" and side.setdefault(j, "down") == "down"
+        interior = set(c.helix_indices[1:-1])
+        w = {}
+        for k, table in ((3, c.table_4a_lacroix), (4, c.table_4b_lacroix)):
+            for i in interior:
+                a, b = c.seq_list[i], c.seq_list[i + k] if i + k < len(c.seq_list) else "A"
+                if i + k in interior and {a, b} & {"D", "E"} and {a, b} & {"K", "R", "H"}:
+                    if float(table.loc[a, b]) < 0:
+                        w[(i, i + k)] = float(table.loc[a, b]) / 100.0
+        res = sorted({r for p in w for r in p})
+        best = min((sum(v for (i, j), v in w.items() if d[res.index(i)] and not d[res.index(j)])
+                    for d in itertools.product((True, False), repeat=len(res))), default=0.0)
+        assert _bond_sum(c, chosen) == pytest.approx(best, abs=1e-9)
+
+
+def test_hbond_set_keeps_both_lys_glu_blocks_in_k4e4_2():
+    """Ac-GA4(K4E4)2A4GW-NH2: the central Glu->Lys i+4 bonds (-0.20 each) would exclude both Lys->Glu blocks if taken
+    first (-1.25 kcal/mol); the two blocks together are -1.70."""
+    c = _hbond_calc("GAAAAKKKKEEEEKKKKEEEEAAAAGW")
+    assert _bond_sum(c, c._acid_base_hbonds()) == pytest.approx(-1.70)
+    assert len(c._acid_base_hbonds()) == 14

@@ -378,7 +378,10 @@ the default with `gbx`). No new constant: the rule uses Table IV, Table VI and t
 *Mechanism.* An acid-base pair three or four residues apart interacts through two channels with different geometry.
 The hydrogen bond is a contact: its strength does not depend on salt (Scholtz et al. 1993, Biochemistry 32, 9668: "the
 major part of the interaction observed in 10 mM NaCl, pH 7, is still present in 2.5 M NaCl"), and a carboxylate's two
-oxygens let one rotamer reach both the i+3 and i+4 partner on one side (`_acid_base_hbonds`, HBX2). The Coulomb
+oxygens let one rotamer reach both the i+3 and i+4 partner on one side (`_acid_base_hbonds`, HBX2; since 2026-10-23
+the helix takes the compatible set of bonds with the largest summed Table IV value, found exactly, rather than the
+strongest bond first: in (K4E4)2 strongest-first keeps the central Glu->Lys i+4 bonds and loses both Lys->Glu blocks,
+-1.25 against -1.70 kcal/mol; the scored panels do not change). The Coulomb
 attraction is an average over where the charges are, and salt screens it. Two consequences of the desolvation a charged
 group pays to leave water (owner's mechanism, reasoning N202/N204):
 - *A pair with a neutral partner hydrogen-bonds on any side.* The one-direction limit of HBX2 belongs to the salt bridge,
