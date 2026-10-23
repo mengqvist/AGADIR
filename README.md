@@ -1,173 +1,108 @@
-# α-helix probability model (pyAGADIR)
+# pyAGADIR: α-helix prediction for peptides
 
-## Model Description
+pyAGADIR is a Python implementation of AGADIR, the statistical-mechanical model of α-helix formation in monomeric peptides by Muñoz & Serrano (1994, 1995, 1997) and Lacroix et al. (1998). From a peptide sequence and the solution conditions (temperature, pH, ionic strength), it predicts the helicity of each residue and of the whole peptide.
 
-An open-source, Python implementation of Munoz & Serrano's AGADIR model of α-helix formation. This model uses statistical mechanics and energy parameters trained on a database of over 400 peptides to predict the α-helical tendency (probability) per residue for a given peptide (see references).
-
-The energy parameters used in this model were extracted from the supplementary material of Lacroix, E., Viguera, A. R., & Serrano, L. (1998). Elucidating the folding problem of α-helices: local motifs, long-range electrostatics, ionic-strength dependence and prediction of NMR parameters. Journal of molecular biology, 284(1), 173-191. https://doi.org/10.1006/jmbi.1998.2145 Where a value departs from the published tables, `pyagadir/params/README.md` gives the change and the measurements behind it.
-
-The paper uses the terminology of Richardson & Richardson (1988) where STC (S, strand; T, turn; and C, coil) indicates a non-helical conformation and He is a helical residue. Positions are 0-based (Python) indices into the sequence, and a helical segment is specified by the index i of its N-cap and its length j, which counts both caps. The first and last residues of the specified helical segments act as "capping" residues (Ncap and Ccap). 
-
-In the following example, the helical segment is specified by i=2 and j=14.
-```text
-Sequence:  I    L    K     S    L    E    E    F    L    K    V    T    L    R    S    T    R    Q  
-Name:      N''  N'   Ncap  N1   N2   N3   N4   N5.............C5   C4   C3   C2   C1   Ccap C'   C''  
-Structure: STC  STC  STC---He---He---He---He---He---He---He---He---He---He---He---He---STC  STC  STC
-Index:     0    1    2     3    4    5    6    7    8    9    10   11   12   13   14   15   16   17
-```
-
-The N- and C-terminal residues can optionally be modified with acetylation, succinylation, or amidation. This is done to remove the influence of the terminal charges on the helical propensity. The model accounts for these modifications and treats them as indexable positions in the sequence. 
-
-In the following example, the sequence is acetylated at the N-terminal and amidated at the C-terminal, with the helical segment specified by i=1 and j=6.
-```text
-Sequence:  Ac   K     S    L    E    E    F    L    K    V    T    L    R    S    T    R    Am 
-Name:      N'   Ncap  N1   N2   C2   C1   Ccap C'   C''  
-Structure: STC  STC---He---He---He---He---STC  STC  STC  STC  STC  STC  STC  STC  STC  STC  STC
-Index:     0    1     2    3    4    5    6    7    8    9    10   11   12   13   14   15   16
-```
-
-For predicting the helical propensity of a sequence, the model uses the partition function, which is the sum of the statistical weights of all possible helix conformations of the sequence (the coil state has weight 1); the model iterates over all possible i, j pairs and calculates the weight of each. The helical propensity of a residue is then the summed weight of the conformations in which it is helical, divided by the partition function.
+The energy parameters come from the supplementary tables of Lacroix et al. (1998). Where a value departs from the published tables, [`pyagadir/params/README.md`](pyagadir/params/README.md) gives the change and the measurements behind it.
 
 
 ## Installation
 
-pyagadir needs Python 3.10 or later, and its only dependencies are NumPy and pandas. Install it from GitHub with pip:
+pyAGADIR needs Python 3.10 or later. Its only dependencies are NumPy and pandas. Install it from GitHub:
 
 ```bash
 pip install git+https://github.com/mengqvist/AGADIR.git
-```
-
-or add it to a [uv](https://docs.astral.sh/uv/) project:
-
-```bash
+# or, in a uv project:
 uv add git+https://github.com/mengqvist/AGADIR.git
 ```
 
-### Development
+Do not run `pip install pyagadir`: the package of that name on PyPI is the original 2023 version this project was forked from (see [License](#license)), not this one.
 
-Clone the repository and let uv create the environment. `uv sync` installs pyagadir in editable mode, together with pytest and matplotlib (for the validation plots):
+### Development
 
 ```bash
 git clone https://github.com/mengqvist/AGADIR.git
 cd AGADIR
-uv sync
-uv run pytest
+uv sync          # editable install plus pytest, matplotlib and the analysis tools
+uv run pytest    # about 2 minutes
 ```
 
-Without uv, `pip install -e . pytest matplotlib` sets up the same thing in any virtual environment.
+Without uv, `pip install -e . pytest matplotlib` in a virtual environment does the same for the package and tests.
 
-## Usage
 
-The most simple way to use this package is to import and invoke the `AGADIR` model directly:
-```python
-from pyagadir.models import AGADIR
-
-# Initialize model with custom parameters
-model = AGADIR(
-    method='1s',   # Method for partition function: 'r' (residue) or '1s' (one-sequence)
-    T=4.0,         # Temperature in Celsius
-    M=0.15,        # Ionic strength in mol/L
-    pH=7.0         # pH of solution
-)
-
-# Predict helical propensity
-result = model.predict('ILKSLEEFLKVTLRSTRQT')
-```
-
-The result object provides several methods to access the predictions:
-- `get_sequence()`: Returns the input peptide sequence
-- `get_percent_helix()`: Returns the mean helical propensity (float)
-- `get_helical_propensity()`: Returns the helix percentage at each position (numpy array; includes the cap positions when `ncap`/`ccap` are given)
-
-`AGADIR(..., dipole_law="gbx")` replaces the side chain-macrodipole law with a Generalized Born field of the helix backbone, computed from built helices (`pyagadir/params/README.md`), with the position-specific table values transferred to it and the parameters that depend on it re-derived. It is experimental and not the default. The field is not offered on its own: without the transfer it counts some first-turn and capping electrostatics twice. The default (`"munoz"`) is the point-charge model. See `pyagadir/params/README.md` for each law's scores and limitations. A second GB law, `dipole_law="gbp"` (GB side chain-side chain electrostatics against an MD coil ensemble, the coupling of each ionisable group through both its charged and its neutral form, GB desolvation, and acid-base side-chain hydrogen bonds counted as a network), was retired on 2026-10-22; its record is in `pyagadir/params/README.md` ("Retired: gbp"). The code for each law is in `pyagadir/electrostatics/`: `point.py` (the point-charge model), `gb.py` (the Generalized Born law) and `common.py` (the switch between them and the ionisation solver they share).
-
-With either law, `AGADIR` solves the helix-state ionisation of many helical segments at once, the coil state once per peptide, and only the pairs of ionisable groups that interact, those within 12 residues (`SegmentBatch` in `common.py`). The cost of a prediction then grows as the cube of the peptide length instead of its fourth power: a 50-residue peptide takes about 3 s instead of 25 s, and a 98-residue one about 20 s instead of 5.6 min. The results are those of the per-segment solver it replaced (removed on 2026-10-22) to rounding: identical % helix, per-residue helicity within 1e-12. An `EnergyCalculator` built for a single segment solves it the same way, as a batch of one.
-
-### Terminal Capping
-
-When predicting helix propensity, the charged termini can significantly affect the results. In real proteins, helices are typically part of a larger sequence and don't experience these terminal charges. The package supports three types of terminal modifications to simulate this:
-
-- N-terminal modifications (ncap):
-  - `'Ac'`: Acetylation - can act as a helix capping residue and neutralizes the positive N-terminal backbone charge.
-  - `'Sc'`: Succinylation - can act as a helix capping residue, neutralizes the positive N-terminal backbone charge, BUT is treated as negatively charged.
-- C-terminal modification (ccap):
-  - `'Am'`: Amidation - can act as a helix capping residue and neutralizes the negative C-terminal backbone charge.
-
-These modifications are particularly important when analyzing helices extracted from larger proteins. For example, if you're predicting the helical propensity of a segment taken from a crystal structure, you should consider adding these caps to better simulate the actual environment where the helix exists within the protein:
+## Predicting helicity
 
 ```python
-# Analyzing a helix segment from a protein structure
-segment = "ILKSLEEFLKVTLRSTRQT"
-model = AGADIR(method='1s', T=4.0, pH=7.0)
-result = model.predict(segment, 
-                       ncap='Ac', 
-                       ccap='Am'
-                       )  # Add caps to simulate internal protein environment
+from pyagadir import AGADIR
+
+model = AGADIR(T=4.0, M=0.15, pH=7.0)  # °C, ionic strength in mol/L, pH (these are the defaults)
+result = model.predict("ILKSLEEFLKVTLRSTRQT", ncap="Ac", ccap="Am")
+
+print(result.get_percent_helix())                # mean helicity of the peptide, %
+print(result.get_helical_propensity().round(1))  # helicity of each position, %
 ```
 
-### Energy Calculations
+```text
+Predicting helical propensity for sequence: ILKSLEEFLKVTLRSTRQT, method: 1s, T(C): 4.0, M: 0.15, pH: 7.0, ncap: Ac, ccap: Am
+32.18
+[ 0.   3.1  3.3  3.5  3.8 65.1 65.3 65.5 65.7 65.2 61.2 55.8 52.5 48.7
+ 24.8 11.7  8.5  5.3  1.5  0.8  0. ]
+```
 
-For detailed analysis, you can use the `EnergyCalculator` class directly to examine specific energy contributions. This class is used internally by the `AGADIR` model to calculate the partition function, but can also be used to calculate the energy contributions for a given sequence. It is important to note that the `EnergyCalculator` class only calculates the energy contributions for a single helix segment (a single i, j pair for a given sequence), and does not calculate the partition function.
+- **Units.** Both results are percentages (0-100). The per-position array includes the Ac and Am positions, so it has two more entries than the sequence. `get_percent_helix()` averages over the amino acids only. `predict()` prints the conditions it ran at, as shown above.
+- **Input.** Sequences use the 20 standard one-letter codes, in either case. Together with its caps, a peptide must span at least 6 positions. The temperature must be at least 0 °C, the pH between 0 and 14, and the ionic strength 0 or more.
+- **Terminal modifications.** `ncap="Ac"` (acetyl) or `"Sc"` (succinyl), and `ccap="Am"` (amide). Each one occupies a position in the sequence and can act as a capping residue. Acetyl and amide remove the terminal charge; succinyl removes the amine's positive charge but adds a negative one. Use them to match capped synthetic peptides. For a helix cut out of a protein, use Ac and Am: the helix in the protein has no free terminal charges.
+- **Method.** `method="1s"` (the default) is AGADIR's one-sequence approximation, which allows at most one helical segment per molecule. A residue's helicity is the summed statistical weight of the segments in which it is helical, divided by the partition function (the weights of all segments, with the coil counting 1). `method="r"` divides by each residue's own sum instead and ignores the competition between segments, so it always gives equal or higher values. It is kept for comparison; the validation below uses `"1s"`.
+
+### Helix-dipole electrostatics (in development)
+
+The default, `dipole_law="munoz"`, is the published treatment: the helix macrodipole acts on a charged side chain as a point charge at each helix end (Muñoz & Serrano 1995, paper II). That is a far-field approximation. It breaks down for charges in the first and last turn, which sit 3-7 Å from the backbone N-H and C=O groups (Baker et al. 2015). Measured walks of a single charge along a helix show stronger effects near the ends, and less salt screening of them, than the point-charge law gives.
+
+`AGADIR(dipole_law="gbx")` is being developed to fix this. It replaces the point charges with a Generalized Born calculation of each charged side chain against the backbone atoms of built helices (the table itself has no fitted parameters). The published table values that were measured with the point-charge law are moved over to it. It reproduces those charge walks better, and the Glu-Lys salt-bridge peptides of Marqusee & Baldwin (1987) and Baker et al. (2015). It is still less accurate than the default on the validation figures below, so it is experimental and not the default. Its derivation, scores and known shortfalls are in [`pyagadir/params/README.md`](pyagadir/params/README.md).
+
+### Energy terms of one helical segment
+
+`EnergyCalculator` gives the free-energy terms of a single helical segment, the quantities AGADIR sums over all segments. Energies are in kcal/mol, and negative values favour the helix. A segment is given by `i`, the index of its N-cap, and `j`, its length including both caps. Indices are 0-based and count the Ac/Sc and Am positions. For `Ac-ILKSLEEFLKVTLRSTRQT-Am` with `i=1, j=10`:
+
+```text
+index     0   1     2   3   4   5   6   7   8   9   10    11  ...  20
+residue   Ac  I     L   K   S   L   E   E   F   L   K     V   ...  Am
+role      N'  Ncap  N1  N2  N3  N4  C4  C3  C2  C1  Ccap  C'
+```
 
 ```python
 from pyagadir.energies import EnergyCalculator
 
-seq = "ILKSLEEFLKVTLRSTRQT"
-
-# Initialize calculator for one helical segment. i is the segment's N-cap index and j its
-# length including both caps, counted in the sequence with any terminal modifications added
-# (here Ac at index 0 and Am at the end, so i=0, j=len(seq)+2 spans the whole peptide).
-calc = EnergyCalculator(
-    seq=seq,
-    i=0,
-    j=len(seq) + 2,
-    pH=7.0,  # pH of solution
-    T=4.0,  # Temperature in Celsius
-    ionic_strength=0.15,  # Ionic strength in mol/L
-    ncap='Ac',  # N-terminal acetylation
-    ccap='Am'  # C-terminal amidation
-)
-
-# Basic helix energies
-intrinsic_energy = calc.get_dG_Int()  # Returns: np.ndarray
-hbond_energy = calc.get_dG_Hbond()    # Returns: float
-
-# Capping energies
-ncap_energy = calc.get_dG_Ncap()      # Returns: np.ndarray
-ccap_energy = calc.get_dG_Ccap()      # Returns: np.ndarray
-
-# Special motif energies
-staple_energy = calc.get_dG_staple()    # Returns: float
-schellman_energy = calc.get_dG_schellman()  # Returns: float
-
-# Side chain interactions
-i3_interactions = calc.get_dG_i3()    # Returns: np.ndarray
-i4_interactions = calc.get_dG_i4()    # Returns: np.ndarray
-
-# Electrostatic and dipole interactions
-sidechain_pairs = calc.get_dG_sidechain_sidechain_electrost()  # Returns: np.ndarray (pair matrix)
-term_n, term_c = calc.get_dG_terminals_sidechain_electrost()  # Returns: tuple[np.ndarray, np.ndarray]
-n_term_macro, c_term_macro = calc.get_dG_terminals_macrodipole()  # Returns: tuple[np.ndarray, np.ndarray]
-dipole_n, dipole_c = calc.get_dG_sidechain_macrodipole()  # Returns: tuple[np.ndarray, np.ndarray]
+calc = EnergyCalculator("ILKSLEEFLKVTLRSTRQT", i=1, j=10, pH=7.0, T=4.0, ionic_strength=0.15,
+                        ncap="Ac", ccap="Am")
+calc.get_dG_Int()    # intrinsic helix propensity of each position
+calc.get_dG_Hbond()  # main chain-main chain hydrogen bonds
 ```
 
-Each energy term represents a different contribution to helix stability:
-- Intrinsic energies: Base propensities for each residue
-- H-bond energy: Main chain-main chain hydrogen bonds
-- Capping energies: N- and C-terminal capping effects
-- Staple motif: Hydrophobic interactions between N' and N4 residues
-- Schellman motif: Special C-terminal capping interaction with glycine
-- i,i+3 and i,i+4 interactions: Side chain interactions
-- Electrostatic: Charged side chain pairs, and terminal charges with charged side chains
-- Macrodipole: Interactions between charged residues and the helix dipole
+| Method | Term | Returns |
+| --- | --- | --- |
+| `get_dG_Int()` | Intrinsic helix propensities | array, per position |
+| `get_dG_Hbond()` | Main chain-main chain hydrogen bonds | float |
+| `get_dG_Ncap()`, `get_dG_Ccap()` | N- and C-capping | array |
+| `get_dG_staple()` | Hydrophobic staple (N'-N4) | float |
+| `get_dG_schellman()` | Schellman motif (C-terminal Gly) | float |
+| `get_dG_petukhov_motif()` | Free N-terminus, capping box and Asp/Glu at N4 | float |
+| `get_dG_charged_staple()` | Lys/Arg at N4 behind a Ser/Thr N-cap | float |
+| `get_dG_i3()`, `get_dG_i4()` | Side chain-side chain, i,i+3 and i,i+4 | array |
+| `get_dG_sidechain_sidechain_electrost()` | Charged side-chain pairs | matrix |
+| `get_dG_terminals_sidechain_electrost()` | Terminal charges with side chains | (N, C) arrays |
+| `get_dG_terminals_macrodipole()` | Terminal charges with the helix dipole | (N, C) arrays |
+| `get_dG_sidechain_macrodipole()` | Side chains with the helix dipole | (N, C) arrays |
 
-### Protein Structures: Helices, Strands and Loops
 
-`pyagadir.pdb_elements` splits one chain of a PDB file into helix, sheet, loop/turn and other elements (DSSP H; E; T, S and coil; G, I and B) and scores each one. Helices are scored with AGADIR as isolated peptides with two flanking residues on each side (N' and N-cap, C-cap and C', which the capping motifs need) and Ac/Am ends. Strands and loops get the empirical scores of `pyagadir.element_scores`, transferred from studies of designed mini-proteins (Rocklin et al. 2017; Kim et al. 2022): ABEGO sequence-backbone compatibility, an exposed-strand amino-acid score (measured effects from Tsuboyama et al. 2023, kcal/mol), core participation of each helix and strand, the contacts and connectivity of the hydrophobic core, buried and exposed nonpolar surface area (united-atom ProtOr radii; the buried area of hydrophobic residues was the main stability determinant in both studies), and buried polar atoms without a hydrogen-bond partner. No external programs are needed; the secondary structure is assigned by a built-in DSSP implementation.
+## Protein structures
+
+`pyagadir.pdb_elements` splits one chain of a PDB file into helices, strands, loops and other elements and scores each one. Secondary structure comes from a built-in DSSP, so no external programs are needed. Helices get AGADIR's helicity as isolated peptides, with two flanking residues on each side and Ac/Am ends. Strands and loops get empirical features from studies of designed mini-proteins (Rocklin et al. 2017; Kim et al. 2022; Tsuboyama et al. 2023). These are in their sources' units (log-odds, kcal/mol, Å²), not folding free energies. The top of [`pyagadir/element_scores.py`](pyagadir/element_scores.py) describes each score.
 
 ```bash
-python -m pyagadir.pdb_elements protein.pdb --chain A --T 25 --pH 7 --M 0.15 --json scores.json
+python -m pyagadir.pdb_elements protein.pdb --chain A --json scores.json
 ```
+
+`--T`, `--pH` and `--M` set the AGADIR conditions (defaults 25 °C, pH 7, 0.15 M), and `--help` lists the other options. From Python:
 
 ```python
 from pyagadir.pdb_elements import score_structure
@@ -178,58 +113,65 @@ for element in report["elements"]:
 print(report["summary"])
 ```
 
-The strand and loop scores are features in the units of their source (log-odds, kcal/mol, square angstrom), not folding free energies. The surface areas track Rosetta's closely (r = 0.86-0.98 on the published designs, Rosetta's about 20% larger because it counts explicit hydrogens); the buried-unsatisfied count is a geometric approximation that agrees only loosely with Rosetta's filter.
+A clone of the repository has two example structures in `tests/data/structures/`.
 
 
 ## Validation
 
-The implementation has been validated against the original AGADIR paper results. The validation datasets are in `data/`, so run the validation from a clone of the repository set up as described under Development:
+The validation data are in `data/`, so these commands run from a clone set up as under [Development](#development). Each takes about 2 minutes.
 
 ```bash
-uv run python -m pyagadir.validation
+uv run python -m pyagadir.validation             # writes the comparison plots to figures/
+uv run python -m pyagadir.scoring --metric rmse  # one score per panel; also mse, mae, pearsonr
 ```
 
-This will generate comparison plots in the `figures/` directory.
+`score_all()` and the `score_*` functions in `pyagadir/scoring.py` take the same `metric=` argument and can be called from an optimiser. The reference data were digitised from the papers with WebPlotDigitizer.
 
-To get numerical scores instead of plots, run the scoring script:
+Lacroix et al. (1998), Fig. 3b: pH dependence of helicity.
 
-```bash
-uv run python -m pyagadir.scoring --metric rmse
-```
+<img src="figures/lacroix_figure_3b.png" width="400" alt="Lacroix et al. 1998, Figure 3b">
 
-Available metrics are `mse`, `rmse`, `mae`, and `pearsonr`. The script prints one score per subplot, keyed by figure name. The individual `score_*` functions and `score_all()` in `pyagadir/scoring.py` accept a `metric=` argument and can be called directly from an optimiser.
+Lacroix et al. (1998), Fig. 4a-h: pH titrations.
 
-Below is a validation plot for Figure 3b with reference data extracted from the original paper (Lacroix et al., 1998, using WebPlotDigitizer), showing the pH dependence of helix content:
+<img src="figures/lacroix_figure_4.png" width="800" alt="Lacroix et al. 1998, Figure 4">
 
-<img src="figures/lacroix_figure_3b.png" width="400" alt="Figure 3b Validation">
+Huyghues-Despointes et al. (1993), Fig. 1: a single Asp at each position, at pH 2 and pH 7.
 
-Below is a validation plot for Figure 4 with reference data extracted from the original paper (Lacroix et al., 1998, using WebPlotDigitizer), showing the pH dependence of helix content:
+<img src="figures/huygues_despointes_figure_1a.png" width="800" alt="Huyghues-Despointes et al. 1993, Figure 1">
 
-<img src="figures/lacroix_figure_4.png" width="800" alt="Figure 4 Validation">
+Muñoz & Serrano (1997), Fig. 4A-C: repeats of AAQAA, AAKAA and AEAAKA.
 
-Below is a validation plot for Figure 1A and 1B from Huyghues-Despointes et al. (1993), showing peptides with Asp at different positions, at two pH values:
+<img src="figures/munoz_1997_figure_4.png" width="400" alt="Muñoz & Serrano 1997, Figure 4">
 
-<img src="figures/huygues_despointes_figure_1a.png" width="800" alt="Figure 1A Validation">
+Muñoz & Serrano (1995, paper III), Fig. 3: temperature dependence. Panel 3D is replaced by the designed peptides of Scholtz et al. (1991) and Marqusee & Baldwin (1987).
 
-Below is a validation plot for Figure 4A-C from Munoz & Serrano (1997), showing repeats of the peptides AAQAA, AAKAA and AEAAKA:
-
-<img src="figures/munoz_1997_figure_4.png" width="400" alt="Figure 4 Validation">
-
-Below is a validation plot for Figure 3 from Munoz & Serrano (1995), with panel 3D replaced by the designed peptides of Scholtz et al. (1991) and Marqusee & Baldwin (1987), showing temperature dependence of peptide helicity:
-
-<img src="figures/munoz_1995_figure_3.png" width="800" alt="Figure 3 Validation">
+<img src="figures/munoz_1995_figure_3.png" width="800" alt="Muñoz & Serrano 1995, Figure 3">
 
 
+## References
 
-## Citations
+**AGADIR**
 
-Muñoz, V., & Serrano, L. (1994). Elucidating the folding problem of helical peptides using empirical parameters. Nature structural biology, 1(6), 399-409. https://doi.org/10.1038/nsb0694-399
+- Muñoz, V. & Serrano, L. (1994). Elucidating the folding problem of helical peptides using empirical parameters. *Nat. Struct. Biol.* 1, 399-409. https://doi.org/10.1038/nsb0694-399
+- Muñoz, V. & Serrano, L. (1995). Elucidating the folding problem of helical peptides using empirical parameters. II. Helix macrodipole effects and rational modification of the helical content of natural peptides. *J. Mol. Biol.* 245, 275-296. https://doi.org/10.1006/jmbi.1994.0023
+- Muñoz, V. & Serrano, L. (1995). Elucidating the folding problem of helical peptides using empirical parameters. III. Temperature and pH dependence. *J. Mol. Biol.* 245, 297-308. https://doi.org/10.1006/jmbi.1994.0024
+- Muñoz, V. & Serrano, L. (1997). Development of the multiple sequence approximation within the AGADIR model of α-helix formation: comparison with Zimm-Bragg and Lifson-Roig formalisms. *Biopolymers* 41, 495-509. https://doi.org/10.1002/(SICI)1097-0282(19970415)41:5%3C495::AID-BIP2%3E3.0.CO;2-H
+- Lacroix, E., Viguera, A. R. & Serrano, L. (1998). Elucidating the folding problem of α-helices: local motifs, long-range electrostatics, ionic-strength dependence and prediction of NMR parameters. *J. Mol. Biol.* 284, 173-191. https://doi.org/10.1006/jmbi.1998.2145
 
-Munoz, V., & Serrano, L. (1995). Elucidating the folding problem of helical peptides using empirical parameters. II†. Helix macrodipole effects and rational modification of the helical content of natural peptides. Journal of molecular biology, 245(3), 275-296. https://doi.org/10.1006/jmbi.1994.0023
+**Validation data and electrostatics**
 
-Muñoz, V., & Serrano, L. (1995). Elucidating the Folding Problem of Helical Peptides using Empirical Parameters. III. Temperature and pH Dependence. Journal of molecular biology, 245(3), 297-308. https://doi.org/10.1006/jmbi.1994.0024
+- Baker, E. G. et al. (2015). Local and macroscopic electrostatic interactions in single α-helices. *Nat. Chem. Biol.* 11, 221-228. https://doi.org/10.1038/nchembio.1739
+- Huyghues-Despointes, B. M. P., Scholtz, J. M. & Baldwin, R. L. (1993). Effect of a single aspartate on helix stability at different positions in a neutral alanine-based peptide. *Protein Sci.* 2, 1604-1611. https://doi.org/10.1002/pro.5560021006
+- Marqusee, S. & Baldwin, R. L. (1987). Helix stabilization by Glu-...Lys+ salt bridges in short peptides of de novo design. *Proc. Natl. Acad. Sci. USA* 84, 8898-8902. https://doi.org/10.1073/pnas.84.24.8898
+- Scholtz, J. M., Qian, H., York, E. J., Stewart, J. M. & Baldwin, R. L. (1991). Parameters of helix-coil transition theory for alanine-based peptides of varying chain lengths in water. *Biopolymers* 31, 1463-1470. https://doi.org/10.1002/bip.360311304
 
-Lacroix, E., Viguera, A. R., & Serrano, L. (1998). Elucidating the folding problem of α-helices: local motifs, long-range electrostatics, ionic-strength dependence and prediction of NMR parameters. Journal of molecular biology, 284(1), 173-191. https://doi.org/10.1006/jmbi.1998.2145
+**Structure scores**
 
-Munoz, V., & Serrano, L. (1997). Development of the multiple sequence approximation within the AGADIR model of α‐helix formation: Comparison with Zimm‐Bragg and Lifson‐Roig formalisms. Biopolymers: Original Research on Biomolecules, 41(5), 495-509. [https://doi.org/10.1002/(SICI)1097-0282(19970415)41:5<495::AID-BIP2>3.0.CO;2-H](https://doi.org/10.1002/(SICI)1097-0282(19970415)41:5<495::AID-BIP2>3.0.CO;2-H)
+- Rocklin, G. J. et al. (2017). Global analysis of protein folding using massively parallel design, synthesis, and testing. *Science* 357, 168-175. https://doi.org/10.1126/science.aan0693
+- Kim, T.-E. et al. (2022). Dissecting the stability determinants of a challenging de novo protein fold using massively parallel design and experimentation. *Proc. Natl. Acad. Sci. USA* 119, e2122676119. https://doi.org/10.1073/pnas.2122676119
+- Tsuboyama, K. et al. (2023). Mega-scale experimental analysis of protein folding stability in biology and design. *Nature* 620, 434-444. https://doi.org/10.1038/s41586-023-06328-6
 
+
+## License
+
+MIT; see [LICENSE](LICENSE). pyAGADIR began as a fork of Alex Reis's 2023 implementation, [reisalex/AGADIR](https://github.com/reisalex/AGADIR).
