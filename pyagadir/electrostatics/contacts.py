@@ -133,8 +133,12 @@ def _contacts(calc, m):
             g_cur = zz * calc._electrostatic_interaction_energy(1.0, 1.0, float(calc.sidechain_sidechain_distances_hel[i, j]))
             g_open = zz * calc._electrostatic_interaction_energy(1.0, 1.0, _open_distance(calc, A, B, k))
             x = math.exp(-g_cur / RT) - math.exp(-g_open / RT)
+            if x <= 0:
+                # Table VI does not hold this pair closer than its open geometry (Asp(i)-His(i+4): 8.3 against
+                # 6.85 A), so there is no attraction-biased contact to share: the pair keeps its Table VI term.
+                continue
             m["zzW"][a, b] = m["zzW"][b, a] = g_open
-            out[(a, b)] = (-RT * math.log(x) - g_open) if x > 0 else math.inf
+            out[(a, b)] = -RT * math.log(x) - g_open
     return out
 
 

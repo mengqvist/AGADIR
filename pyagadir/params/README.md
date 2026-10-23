@@ -401,7 +401,9 @@ group pays to leave water (owner's mechanism, reasoning N202/N204):
   energy changes by that free energy minus the additive mean-field one. The coil state has no contacts.
 
 *Checks.* Peptides without acid-base pairs three or four apart are unchanged (not computed). Isolated pairs keep their
-values (Smith & Scholtz 1998 within 0.05 helix points; the calibration holds to 1e-12). The transfer matrix equals
+values: Smith & Scholtz 1998, and every Asp/Glu x Lys/Arg/His type at i+3 and i+4 in both orders, within 0.05 helix
+points; the calibration holds to 1e-12. A type whose Table VI distance is not shorter than its open geometry (only
+Asp(i)-His(i+4) among the candidates: 8.3 against 6.85 A) has no contact state and keeps its Table VI term. The transfer matrix equals
 brute-force enumeration of the charge states and contact sets to 1e-9 (`tests/test_salt_bridge_contacts.py`).
 
 *Effect* (corpus guard and scored panels against the model before it, 2026-10-23):

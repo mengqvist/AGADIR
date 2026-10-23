@@ -40,6 +40,16 @@ def test_an_isolated_salt_bridge_keeps_its_value(seq, pH, M):
     assert abs(a - b) < 0.05
 
 
+@pytest.mark.parametrize("X,Y", [(a, b) for a in "DE" for b in "KRH"] + [(b, a) for a in "DE" for b in "KRH"])
+@pytest.mark.parametrize("k", [3, 4])
+def test_every_isolated_acid_base_pair_type_keeps_its_value(X, Y, k):
+    """Every acid-base type at i+3 and i+4, including the ones Table VI does not hold closer than the open geometry
+    (Asp(i)-His(i+4)), which then have no contact state and keep their Table VI term."""
+    seq = "AAQAA" + X + "A" * (k - 1) + Y + "AAQAAY"
+    for pH, M in ((5.0, 0.005), (7.0, 0.005), (3.0, 0.1)):
+        assert abs(_helix(seq, "Ac", "Am", 0.0, M, pH, "contacts") - _helix(seq, "Ac", "Am", 0.0, M, pH, "additive")) < 0.05
+
+
 def _brute(m, contacts):
     """-RT ln Z by enumeration of the charge states and of every set of contacts in which each charged site has at most
     one partner, all pairs exact, no long-range field (the transfer matrix's model with EXACT_RANGE covering all)."""
