@@ -1,0 +1,168 @@
+peptide_id	sequence	ncap	ccap	n_res	pH	T_C	ionic_strength_M	quantity	value	error	unit	source_table	flags
+HD3	KAAAAHAADAAAAAAKGY	Ac	Am	18	2.0	0.0	0.0105	minus_theta222	8200		deg cm2 dmol-1	Table 2	printed;NaCl 0.01 M
+HD3	KAAAAHAADAAAAAAKGY	Ac	Am	18	2.0	0.0	0.0105	helix_fraction	0.24		fraction	Table 2	printed;NaCl 0.01 M
+HD4	KAAAAHAAADAAAAAKGY	Ac	Am	18	2.0	0.0	0.0105	minus_theta222	10800		deg cm2 dmol-1	Table 2	printed;NaCl 0.01 M
+HD4	KAAAAHAAADAAAAAKGY	Ac	Am	18	2.0	0.0	0.0105	helix_fraction	0.31		fraction	Table 2	printed;NaCl 0.01 M
+HD5	KAAAAHAAAADAAAAKGY	Ac	Am	18	2.0	0.0	0.0105	minus_theta222	5900		deg cm2 dmol-1	Table 2	printed;NaCl 0.01 M
+HD5	KAAAAHAAAADAAAAKGY	Ac	Am	18	2.0	0.0	0.0105	helix_fraction	0.18		fraction	Table 2	printed;NaCl 0.01 M
+DH3	KAAAAAADAAHAAAAKGY	Ac	Am	18	2.0	0.0	0.0105	minus_theta222	9400		deg cm2 dmol-1	Table 2	printed;NaCl 0.01 M
+DH3	KAAAAAADAAHAAAAKGY	Ac	Am	18	2.0	0.0	0.0105	helix_fraction	0.27		fraction	Table 2	printed;NaCl 0.01 M
+DH4	KAAAAADAAAHAAAAKGY	Ac	Am	18	2.0	0.0	0.0105	minus_theta222	9600		deg cm2 dmol-1	Table 2	printed;NaCl 0.01 M
+DH4	KAAAAADAAAHAAAAKGY	Ac	Am	18	2.0	0.0	0.0105	helix_fraction	0.27		fraction	Table 2	printed;NaCl 0.01 M
+DH5	KAAAADAAAAHAAAAKGY	Ac	Am	18	2.0	0.0	0.0105	minus_theta222	9500		deg cm2 dmol-1	Table 2	printed;NaCl 0.01 M
+DH5	KAAAADAAAAHAAAAKGY	Ac	Am	18	2.0	0.0	0.0105	helix_fraction	0.27		fraction	Table 2	printed;NaCl 0.01 M
+HD3	KAAAAHAADAAAAAAKGY	Ac	Am	18	5.5	0.0	0.014	minus_theta222	10600		deg cm2 dmol-1	Table 2	printed;NaCl 0.01 M
+HD3	KAAAAHAADAAAAAAKGY	Ac	Am	18	5.5	0.0	0.014	helix_fraction	0.3		fraction	Table 2	printed;NaCl 0.01 M
+HD4	KAAAAHAAADAAAAAKGY	Ac	Am	18	5.5	0.0	0.014	minus_theta222	12000		deg cm2 dmol-1	Table 2	printed;NaCl 0.01 M
+HD4	KAAAAHAAADAAAAAKGY	Ac	Am	18	5.5	0.0	0.014	helix_fraction	0.34		fraction	Table 2	printed;NaCl 0.01 M
+HD5	KAAAAHAAAADAAAAKGY	Ac	Am	18	5.5	0.0	0.014	minus_theta222	5600		deg cm2 dmol-1	Table 2	printed;NaCl 0.01 M
+HD5	KAAAAHAAAADAAAAKGY	Ac	Am	18	5.5	0.0	0.014	helix_fraction	0.17		fraction	Table 2	printed;NaCl 0.01 M
+DH3	KAAAAAADAAHAAAAKGY	Ac	Am	18	5.5	0.0	0.014	minus_theta222	10800		deg cm2 dmol-1	Table 2	printed;NaCl 0.01 M
+DH3	KAAAAAADAAHAAAAKGY	Ac	Am	18	5.5	0.0	0.014	helix_fraction	0.31		fraction	Table 2	printed;NaCl 0.01 M
+DH4	KAAAAADAAAHAAAAKGY	Ac	Am	18	5.5	0.0	0.014	minus_theta222	12900		deg cm2 dmol-1	Table 2	printed;NaCl 0.01 M
+DH4	KAAAAADAAAHAAAAKGY	Ac	Am	18	5.5	0.0	0.014	helix_fraction	0.36		fraction	Table 2	printed;NaCl 0.01 M
+DH5	KAAAADAAAAHAAAAKGY	Ac	Am	18	5.5	0.0	0.014	minus_theta222	11300		deg cm2 dmol-1	Table 2	printed;NaCl 0.01 M
+DH5	KAAAADAAAAHAAAAKGY	Ac	Am	18	5.5	0.0	0.014	helix_fraction	0.32		fraction	Table 2	printed;NaCl 0.01 M
+HD3	KAAAAHAADAAAAAAKGY	Ac	Am	18	9.0	0.0	0.0193	minus_theta222	13000		deg cm2 dmol-1	Table 2	printed;NaCl 0.01 M
+HD3	KAAAAHAADAAAAAAKGY	Ac	Am	18	9.0	0.0	0.0193	helix_fraction	0.37		fraction	Table 2	printed;NaCl 0.01 M
+HD4	KAAAAHAAADAAAAAKGY	Ac	Am	18	9.0	0.0	0.0193	minus_theta222	9600		deg cm2 dmol-1	Table 2	printed;NaCl 0.01 M
+HD4	KAAAAHAAADAAAAAKGY	Ac	Am	18	9.0	0.0	0.0193	helix_fraction	0.27		fraction	Table 2	printed;NaCl 0.01 M
+HD5	KAAAAHAAAADAAAAKGY	Ac	Am	18	9.0	0.0	0.0193	minus_theta222	8700		deg cm2 dmol-1	Table 2	printed;NaCl 0.01 M
+HD5	KAAAAHAAAADAAAAKGY	Ac	Am	18	9.0	0.0	0.0193	helix_fraction	0.25		fraction	Table 2	printed;NaCl 0.01 M
+DH3	KAAAAAADAAHAAAAKGY	Ac	Am	18	9.0	0.0	0.0193	minus_theta222	11300		deg cm2 dmol-1	Table 2	printed;NaCl 0.01 M
+DH3	KAAAAAADAAHAAAAKGY	Ac	Am	18	9.0	0.0	0.0193	helix_fraction	0.32		fraction	Table 2	printed;NaCl 0.01 M
+DH4	KAAAAADAAAHAAAAKGY	Ac	Am	18	9.0	0.0	0.0193	minus_theta222	12000		deg cm2 dmol-1	Table 2	printed;NaCl 0.01 M
+DH4	KAAAAADAAAHAAAAKGY	Ac	Am	18	9.0	0.0	0.0193	helix_fraction	0.34		fraction	Table 2	printed;NaCl 0.01 M
+DH5	KAAAADAAAAHAAAAKGY	Ac	Am	18	9.0	0.0	0.0193	minus_theta222	13300		deg cm2 dmol-1	Table 2	printed;NaCl 0.01 M
+DH5	KAAAADAAAAHAAAAKGY	Ac	Am	18	9.0	0.0	0.0193	helix_fraction	0.37		fraction	Table 2	printed;NaCl 0.01 M
+HD3	KAAAAHAADAAAAAAKGY	Ac	Am	18	2.1	0.0	0.0106	minus_theta222	8204		deg cm2 dmol-1	Fig. 1A	digitised;NaCl 0.01 M
+HD3	KAAAAHAADAAAAAAKGY	Ac	Am	18	2.85	0.0	0.0112	minus_theta222	8426		deg cm2 dmol-1	Fig. 1A	digitised;NaCl 0.01 M
+HD3	KAAAAHAADAAAAAAKGY	Ac	Am	18	3.2	0.0	0.0115	minus_theta222	8843		deg cm2 dmol-1	Fig. 1A	digitised;NaCl 0.01 M
+HD3	KAAAAHAADAAAAAAKGY	Ac	Am	18	3.45	0.0	0.0117	minus_theta222	8843		deg cm2 dmol-1	Fig. 1A	digitised;NaCl 0.01 M
+HD3	KAAAAHAADAAAAAAKGY	Ac	Am	18	3.85	0.0	0.012	minus_theta222	9636		deg cm2 dmol-1	Fig. 1A	digitised;NaCl 0.01 M
+HD3	KAAAAHAADAAAAAAKGY	Ac	Am	18	4.4	0.0	0.0126	minus_theta222	10317		deg cm2 dmol-1	Fig. 1A	digitised;NaCl 0.01 M
+HD3	KAAAAHAADAAAAAAKGY	Ac	Am	18	4.8	0.0	0.0131	minus_theta222	10233		deg cm2 dmol-1	Fig. 1A	digitised;NaCl 0.01 M
+HD3	KAAAAHAADAAAAAAKGY	Ac	Am	18	5.4	0.0	0.0139	minus_theta222	10595		deg cm2 dmol-1	Fig. 1A	digitised;NaCl 0.01 M
+HD3	KAAAAHAADAAAAAAKGY	Ac	Am	18	5.7	0.0	0.0143	minus_theta222	10817		deg cm2 dmol-1	Fig. 1A	digitised;NaCl 0.01 M
+HD3	KAAAAHAADAAAAAAKGY	Ac	Am	18	5.95	0.0	0.0148	minus_theta222	11040		deg cm2 dmol-1	Fig. 1A	digitised;NaCl 0.01 M
+HD3	KAAAAHAADAAAAAAKGY	Ac	Am	18	6.3	0.0	0.0155	minus_theta222	11276		deg cm2 dmol-1	Fig. 1A	digitised;NaCl 0.01 M
+HD3	KAAAAHAADAAAAAAKGY	Ac	Am	18	6.5	0.0	0.016	minus_theta222	11888		deg cm2 dmol-1	Fig. 1A	digitised;NaCl 0.01 M
+HD3	KAAAAHAADAAAAAAKGY	Ac	Am	18	6.8	0.0	0.0167	minus_theta222	11999		deg cm2 dmol-1	Fig. 1A	digitised;NaCl 0.01 M
+HD3	KAAAAHAADAAAAAAKGY	Ac	Am	18	6.95	0.0	0.0171	minus_theta222	12082		deg cm2 dmol-1	Fig. 1A	digitised;NaCl 0.01 M
+HD3	KAAAAHAADAAAAAAKGY	Ac	Am	18	7.25	0.0	0.0177	minus_theta222	12402		deg cm2 dmol-1	Fig. 1A	digitised;NaCl 0.01 M
+HD3	KAAAAHAADAAAAAAKGY	Ac	Am	18	7.45	0.0	0.018	minus_theta222	12624		deg cm2 dmol-1	Fig. 1A	digitised;NaCl 0.01 M
+HD3	KAAAAHAADAAAAAAKGY	Ac	Am	18	7.65	0.0	0.0183	minus_theta222	12736		deg cm2 dmol-1	Fig. 1A	digitised;NaCl 0.01 M
+HD3	KAAAAHAADAAAAAAKGY	Ac	Am	18	7.9	0.0	0.0186	minus_theta222	12958		deg cm2 dmol-1	Fig. 1A	digitised;NaCl 0.01 M
+HD3	KAAAAHAADAAAAAAKGY	Ac	Am	18	8.35	0.0	0.0189	minus_theta222	13167		deg cm2 dmol-1	Fig. 1A	digitised;NaCl 0.01 M
+HD4	KAAAAHAAADAAAAAKGY	Ac	Am	18	2.1	0.0	0.0106	minus_theta222	11707		deg cm2 dmol-1	Fig. 1A	digitised;NaCl 0.01 M
+HD4	KAAAAHAAADAAAAAKGY	Ac	Am	18	2.3	0.0	0.0107	minus_theta222	11387		deg cm2 dmol-1	Fig. 1A	digitised;NaCl 0.01 M
+HD4	KAAAAHAAADAAAAAKGY	Ac	Am	18	2.75	0.0	0.0111	minus_theta222	11220		deg cm2 dmol-1	Fig. 1A	digitised;NaCl 0.01 M
+HD4	KAAAAHAAADAAAAAKGY	Ac	Am	18	3.15	0.0	0.0115	minus_theta222	11276		deg cm2 dmol-1	Fig. 1A	digitised;NaCl 0.01 M
+HD4	KAAAAHAAADAAAAAKGY	Ac	Am	18	3.4	0.0	0.0117	minus_theta222	11457		deg cm2 dmol-1	Fig. 1A	digitised;NaCl 0.01 M
+HD4	KAAAAHAAADAAAAAKGY	Ac	Am	18	3.85	0.0	0.012	minus_theta222	11540		deg cm2 dmol-1	Fig. 1A	digitised;NaCl 0.01 M
+HD4	KAAAAHAAADAAAAAKGY	Ac	Am	18	4.2	0.0	0.0123	minus_theta222	11596		deg cm2 dmol-1	Fig. 1A	digitised;NaCl 0.01 M
+HD4	KAAAAHAAADAAAAAKGY	Ac	Am	18	4.55	0.0	0.0127	minus_theta222	11693		deg cm2 dmol-1	Fig. 1A	digitised;NaCl 0.01 M
+HD4	KAAAAHAAADAAAAAKGY	Ac	Am	18	4.85	0.0	0.0132	minus_theta222	11874		deg cm2 dmol-1	Fig. 1A	digitised;NaCl 0.01 M
+HD4	KAAAAHAAADAAAAAKGY	Ac	Am	18	5.2	0.0	0.0136	minus_theta222	11832		deg cm2 dmol-1	Fig. 1A	digitised;NaCl 0.01 M
+HD4	KAAAAHAAADAAAAAKGY	Ac	Am	18	5.95	0.0	0.0148	minus_theta222	11804		deg cm2 dmol-1	Fig. 1A	digitised;NaCl 0.01 M
+HD4	KAAAAHAAADAAAAAKGY	Ac	Am	18	6.15	0.0	0.0152	minus_theta222	11763		deg cm2 dmol-1	Fig. 1A	digitised;NaCl 0.01 M
+HD4	KAAAAHAAADAAAAAKGY	Ac	Am	18	6.5	0.0	0.016	minus_theta222	11638		deg cm2 dmol-1	Fig. 1A	digitised;NaCl 0.01 M
+HD4	KAAAAHAAADAAAAAKGY	Ac	Am	18	6.75	0.0	0.0166	minus_theta222	11457		deg cm2 dmol-1	Fig. 1A	digitised;NaCl 0.01 M
+HD4	KAAAAHAAADAAAAAKGY	Ac	Am	18	7.05	0.0	0.0173	minus_theta222	11109		deg cm2 dmol-1	Fig. 1A	digitised;NaCl 0.01 M
+HD4	KAAAAHAAADAAAAAKGY	Ac	Am	18	7.3	0.0	0.0178	minus_theta222	10498		deg cm2 dmol-1	Fig. 1A	digitised;NaCl 0.01 M
+HD4	KAAAAHAAADAAAAAKGY	Ac	Am	18	7.35	0.0	0.0179	minus_theta222	10803		deg cm2 dmol-1	Fig. 1A	digitised;NaCl 0.01 M
+HD4	KAAAAHAAADAAAAAKGY	Ac	Am	18	8.15	0.0	0.0188	minus_theta222	10108		deg cm2 dmol-1	Fig. 1A	digitised;NaCl 0.01 M
+HD4	KAAAAHAAADAAAAAKGY	Ac	Am	18	8.45	0.0	0.019	minus_theta222	10025		deg cm2 dmol-1	Fig. 1A	digitised;NaCl 0.01 M
+HD5	KAAAAHAAAADAAAAKGY	Ac	Am	18	2.1	0.0	0.0106	minus_theta222	6786		deg cm2 dmol-1	Fig. 1A	digitised;NaCl 0.01 M
+HD5	KAAAAHAAAADAAAAKGY	Ac	Am	18	2.5	0.0	0.0109	minus_theta222	6661		deg cm2 dmol-1	Fig. 1A	digitised;NaCl 0.01 M
+HD5	KAAAAHAAAADAAAAKGY	Ac	Am	18	3.0	0.0	0.0113	minus_theta222	6591		deg cm2 dmol-1	Fig. 1A	digitised;NaCl 0.01 M
+HD5	KAAAAHAAAADAAAAKGY	Ac	Am	18	3.4	0.0	0.0117	minus_theta222	6494		deg cm2 dmol-1	Fig. 1A	digitised;NaCl 0.01 M
+HD5	KAAAAHAAAADAAAAKGY	Ac	Am	18	3.85	0.0	0.012	minus_theta222	6244		deg cm2 dmol-1	Fig. 1A	digitised;NaCl 0.01 M
+HD5	KAAAAHAAAADAAAAKGY	Ac	Am	18	4.1	0.0	0.0122	minus_theta222	6077		deg cm2 dmol-1	Fig. 1A	digitised;NaCl 0.01 M
+HD5	KAAAAHAAAADAAAAKGY	Ac	Am	18	4.45	0.0	0.0126	minus_theta222	5910		deg cm2 dmol-1	Fig. 1A	digitised;NaCl 0.01 M
+HD5	KAAAAHAAAADAAAAKGY	Ac	Am	18	4.8	0.0	0.0131	minus_theta222	5882		deg cm2 dmol-1	Fig. 1A	digitised;NaCl 0.01 M
+HD5	KAAAAHAAAADAAAAKGY	Ac	Am	18	5.1	0.0	0.0135	minus_theta222	5868		deg cm2 dmol-1	Fig. 1A	digitised;NaCl 0.01 M
+HD5	KAAAAHAAAADAAAAKGY	Ac	Am	18	5.5	0.0	0.014	minus_theta222	5938		deg cm2 dmol-1	Fig. 1A	digitised;NaCl 0.01 M
+HD5	KAAAAHAAAADAAAAKGY	Ac	Am	18	6.25	0.0	0.0154	minus_theta222	6549		deg cm2 dmol-1	Fig. 1A	digitised;NaCl 0.01 M
+HD5	KAAAAHAAAADAAAAKGY	Ac	Am	18	6.45	0.0	0.0159	minus_theta222	6994		deg cm2 dmol-1	Fig. 1A	digitised;NaCl 0.01 M
+HD5	KAAAAHAAAADAAAAKGY	Ac	Am	18	6.65	0.0	0.0163	minus_theta222	7397		deg cm2 dmol-1	Fig. 1A	digitised;NaCl 0.01 M
+HD5	KAAAAHAAAADAAAAKGY	Ac	Am	18	6.85	0.0	0.0168	minus_theta222	7759		deg cm2 dmol-1	Fig. 1A	digitised;NaCl 0.01 M
+HD5	KAAAAHAAAADAAAAKGY	Ac	Am	18	7.1	0.0	0.0174	minus_theta222	8232		deg cm2 dmol-1	Fig. 1A	digitised;NaCl 0.01 M
+HD5	KAAAAHAAAADAAAAKGY	Ac	Am	18	7.35	0.0	0.0179	minus_theta222	8676		deg cm2 dmol-1	Fig. 1A	digitised;NaCl 0.01 M
+HD5	KAAAAHAAAADAAAAKGY	Ac	Am	18	7.65	0.0	0.0183	minus_theta222	9121		deg cm2 dmol-1	Fig. 1A	digitised;NaCl 0.01 M
+HD5	KAAAAHAAAADAAAAKGY	Ac	Am	18	8.05	0.0	0.0187	minus_theta222	9344		deg cm2 dmol-1	Fig. 1A	digitised;NaCl 0.01 M
+HD5	KAAAAHAAAADAAAAKGY	Ac	Am	18	8.35	0.0	0.0189	minus_theta222	9483		deg cm2 dmol-1	Fig. 1A	digitised;NaCl 0.01 M
+HD5	KAAAAHAAAADAAAAKGY	Ac	Am	18	8.75	0.0	0.0192	minus_theta222	9441		deg cm2 dmol-1	Fig. 1A	digitised;NaCl 0.01 M
+DH3	KAAAAAADAAHAAAAKGY	Ac	Am	18	2.35	0.0	0.0108	minus_theta222	9838		deg cm2 dmol-1	Fig. 1B	digitised;NaCl 0.01 M
+DH3	KAAAAAADAAHAAAAKGY	Ac	Am	18	3.55	0.0	0.0118	minus_theta222	9893		deg cm2 dmol-1	Fig. 1B	digitised;NaCl 0.01 M
+DH3	KAAAAAADAAHAAAAKGY	Ac	Am	18	4.25	0.0	0.0124	minus_theta222	10448		deg cm2 dmol-1	Fig. 1B	digitised;NaCl 0.01 M
+DH3	KAAAAAADAAHAAAAKGY	Ac	Am	18	4.9	0.0	0.0132	minus_theta222	11266		deg cm2 dmol-1	Fig. 1B	digitised;NaCl 0.01 M
+DH3	KAAAAAADAAHAAAAKGY	Ac	Am	18	5.6	0.0	0.0142	minus_theta222	11058		deg cm2 dmol-1	Fig. 1B	digitised;NaCl 0.01 M
+DH3	KAAAAAADAAHAAAAKGY	Ac	Am	18	6.05	0.0	0.015	minus_theta222	11322		deg cm2 dmol-1	Fig. 1B	digitised;NaCl 0.01 M
+DH3	KAAAAAADAAHAAAAKGY	Ac	Am	18	6.4	0.0	0.0157	minus_theta222	11488		deg cm2 dmol-1	Fig. 1B	digitised;NaCl 0.01 M
+DH3	KAAAAAADAAHAAAAKGY	Ac	Am	18	6.65	0.0	0.0163	minus_theta222	11225		deg cm2 dmol-1	Fig. 1B	digitised;NaCl 0.01 M
+DH3	KAAAAAADAAHAAAAKGY	Ac	Am	18	6.9	0.0	0.0169	minus_theta222	11668		deg cm2 dmol-1	Fig. 1B	digitised;NaCl 0.01 M
+DH3	KAAAAAADAAHAAAAKGY	Ac	Am	18	7.15	0.0	0.0175	minus_theta222	11766		deg cm2 dmol-1	Fig. 1B	digitised;NaCl 0.01 M
+DH3	KAAAAAADAAHAAAAKGY	Ac	Am	18	7.55	0.0	0.0182	minus_theta222	11932		deg cm2 dmol-1	Fig. 1B	digitised;NaCl 0.01 M
+DH3	KAAAAAADAAHAAAAKGY	Ac	Am	18	8.2	0.0	0.0189	minus_theta222	11946		deg cm2 dmol-1	Fig. 1B	digitised;NaCl 0.01 M
+DH3	KAAAAAADAAHAAAAKGY	Ac	Am	18	8.5	0.0	0.019	minus_theta222	11821		deg cm2 dmol-1	Fig. 1B	digitised;NaCl 0.01 M
+DH4	KAAAAADAAAHAAAAKGY	Ac	Am	18	2.05	0.0	0.0105	minus_theta222	10600		deg cm2 dmol-1	Fig. 1B	digitised;NaCl 0.01 M
+DH4	KAAAAADAAAHAAAAKGY	Ac	Am	18	2.4	0.0	0.0108	minus_theta222	10587		deg cm2 dmol-1	Fig. 1B	digitised;NaCl 0.01 M
+DH4	KAAAAADAAAHAAAAKGY	Ac	Am	18	2.65	0.0	0.011	minus_theta222	10767		deg cm2 dmol-1	Fig. 1B	digitised;NaCl 0.01 M
+DH4	KAAAAADAAAHAAAAKGY	Ac	Am	18	2.85	0.0	0.0112	minus_theta222	10767		deg cm2 dmol-1	Fig. 1B	digitised;NaCl 0.01 M
+DH4	KAAAAADAAAHAAAAKGY	Ac	Am	18	3.25	0.0	0.0115	minus_theta222	11128		deg cm2 dmol-1	Fig. 1B	digitised;NaCl 0.01 M
+DH4	KAAAAADAAAHAAAAKGY	Ac	Am	18	3.55	0.0	0.0118	minus_theta222	11516		deg cm2 dmol-1	Fig. 1B	digitised;NaCl 0.01 M
+DH4	KAAAAADAAAHAAAAKGY	Ac	Am	18	3.85	0.0	0.012	minus_theta222	12057		deg cm2 dmol-1	Fig. 1B	digitised;NaCl 0.01 M
+DH4	KAAAAADAAAHAAAAKGY	Ac	Am	18	4.25	0.0	0.0124	minus_theta222	12459		deg cm2 dmol-1	Fig. 1B	digitised;NaCl 0.01 M
+DH4	KAAAAADAAAHAAAAKGY	Ac	Am	18	4.55	0.0	0.0127	minus_theta222	12681		deg cm2 dmol-1	Fig. 1B	digitised;NaCl 0.01 M
+DH4	KAAAAADAAAHAAAAKGY	Ac	Am	18	4.95	0.0	0.0133	minus_theta222	12861		deg cm2 dmol-1	Fig. 1B	digitised;NaCl 0.01 M
+DH4	KAAAAADAAAHAAAAKGY	Ac	Am	18	5.7	0.0	0.0143	minus_theta222	12958		deg cm2 dmol-1	Fig. 1B	digitised;NaCl 0.01 M
+DH4	KAAAAADAAAHAAAAKGY	Ac	Am	18	6.25	0.0	0.0154	minus_theta222	12972		deg cm2 dmol-1	Fig. 1B	digitised;NaCl 0.01 M
+DH4	KAAAAADAAAHAAAAKGY	Ac	Am	18	6.55	0.0	0.0161	minus_theta222	12986		deg cm2 dmol-1	Fig. 1B	digitised;NaCl 0.01 M
+DH4	KAAAAADAAAHAAAAKGY	Ac	Am	18	6.9	0.0	0.0169	minus_theta222	12986		deg cm2 dmol-1	Fig. 1B	digitised;NaCl 0.01 M
+DH4	KAAAAADAAAHAAAAKGY	Ac	Am	18	7.5	0.0	0.0181	minus_theta222	12861		deg cm2 dmol-1	Fig. 1B	digitised;NaCl 0.01 M
+DH4	KAAAAADAAAHAAAAKGY	Ac	Am	18	8.1	0.0	0.0188	minus_theta222	12736		deg cm2 dmol-1	Fig. 1B	digitised;NaCl 0.01 M
+DH4	KAAAAADAAAHAAAAKGY	Ac	Am	18	8.4	0.0	0.019	minus_theta222	12709		deg cm2 dmol-1	Fig. 1B	digitised;NaCl 0.01 M
+DH5	KAAAADAAAAHAAAAKGY	Ac	Am	18	2.25	0.0	0.0107	minus_theta222	9657		deg cm2 dmol-1	Fig. 1B	digitised;NaCl 0.01 M
+DH5	KAAAADAAAAHAAAAKGY	Ac	Am	18	2.65	0.0	0.011	minus_theta222	9657		deg cm2 dmol-1	Fig. 1B	digitised;NaCl 0.01 M
+DH5	KAAAADAAAAHAAAAKGY	Ac	Am	18	3.05	0.0	0.0114	minus_theta222	9852		deg cm2 dmol-1	Fig. 1B	digitised;NaCl 0.01 M
+DH5	KAAAADAAAAHAAAAKGY	Ac	Am	18	3.3	0.0	0.0116	minus_theta222	10018		deg cm2 dmol-1	Fig. 1B	digitised;NaCl 0.01 M
+DH5	KAAAADAAAAHAAAAKGY	Ac	Am	18	3.55	0.0	0.0118	minus_theta222	10240		deg cm2 dmol-1	Fig. 1B	digitised;NaCl 0.01 M
+DH5	KAAAADAAAAHAAAAKGY	Ac	Am	18	3.95	0.0	0.0121	minus_theta222	10517		deg cm2 dmol-1	Fig. 1B	digitised;NaCl 0.01 M
+DH5	KAAAADAAAAHAAAAKGY	Ac	Am	18	4.35	0.0	0.0125	minus_theta222	10822		deg cm2 dmol-1	Fig. 1B	digitised;NaCl 0.01 M
+DH5	KAAAADAAAAHAAAAKGY	Ac	Am	18	5.1	0.0	0.0135	minus_theta222	11141		deg cm2 dmol-1	Fig. 1B	digitised;NaCl 0.01 M
+DH5	KAAAADAAAAHAAAAKGY	Ac	Am	18	5.55	0.0	0.0141	minus_theta222	11280		deg cm2 dmol-1	Fig. 1B	digitised;NaCl 0.01 M
+DH5	KAAAADAAAAHAAAAKGY	Ac	Am	18	5.95	0.0	0.0148	minus_theta222	11474		deg cm2 dmol-1	Fig. 1B	digitised;NaCl 0.01 M
+DH5	KAAAADAAAAHAAAAKGY	Ac	Am	18	6.3	0.0	0.0155	minus_theta222	11779		deg cm2 dmol-1	Fig. 1B	digitised;NaCl 0.01 M
+DH5	KAAAADAAAAHAAAAKGY	Ac	Am	18	6.6	0.0	0.0162	minus_theta222	12154		deg cm2 dmol-1	Fig. 1B	digitised;NaCl 0.01 M
+DH5	KAAAADAAAAHAAAAKGY	Ac	Am	18	6.85	0.0	0.0168	minus_theta222	12556		deg cm2 dmol-1	Fig. 1B	digitised;NaCl 0.01 M
+DH5	KAAAADAAAAHAAAAKGY	Ac	Am	18	7.2	0.0	0.0176	minus_theta222	12986		deg cm2 dmol-1	Fig. 1B	digitised;NaCl 0.01 M
+DH5	KAAAADAAAAHAAAAKGY	Ac	Am	18	7.55	0.0	0.0182	minus_theta222	13430		deg cm2 dmol-1	Fig. 1B	digitised;NaCl 0.01 M
+DH5	KAAAADAAAAHAAAAKGY	Ac	Am	18	8.2	0.0	0.0189	minus_theta222	13693		deg cm2 dmol-1	Fig. 1B	digitised;NaCl 0.01 M
+DH5	KAAAADAAAAHAAAAKGY	Ac	Am	18	8.6	0.0	0.0191	minus_theta222	13624		deg cm2 dmol-1	Fig. 1B	digitised;NaCl 0.01 M
+HD4	KAAAAHAAADAAAAAKGY	Ac	Am	18	3.25	0.0	1.0015	minus_theta222	14504		deg cm2 dmol-1	Fig. 2	digitised;NaCl 1 M
+HD4	KAAAAHAAADAAAAAKGY	Ac	Am	18	3.5	0.0	1.0017	minus_theta222	14684		deg cm2 dmol-1	Fig. 2	digitised;NaCl 1 M
+HD4	KAAAAHAAADAAAAAKGY	Ac	Am	18	3.95	0.0	1.0021	minus_theta222	14463		deg cm2 dmol-1	Fig. 2	digitised;NaCl 1 M
+HD4	KAAAAHAAADAAAAAKGY	Ac	Am	18	4.2	0.0	1.0023	minus_theta222	14117		deg cm2 dmol-1	Fig. 2	digitised;NaCl 1 M
+HD4	KAAAAHAAADAAAAAKGY	Ac	Am	18	4.45	0.0	1.0026	minus_theta222	14159		deg cm2 dmol-1	Fig. 2	digitised;NaCl 1 M
+HD4	KAAAAHAAADAAAAAKGY	Ac	Am	18	4.7	0.0	1.0029	minus_theta222	14200		deg cm2 dmol-1	Fig. 2	digitised;NaCl 1 M
+HD4	KAAAAHAAADAAAAAKGY	Ac	Am	18	5.0	0.0	1.0034	minus_theta222	14256		deg cm2 dmol-1	Fig. 2	digitised;NaCl 1 M
+HD4	KAAAAHAAADAAAAAKGY	Ac	Am	18	5.4	0.0	1.0039	minus_theta222	14477		deg cm2 dmol-1	Fig. 2	digitised;NaCl 1 M
+HD4	KAAAAHAAADAAAAAKGY	Ac	Am	18	5.65	0.0	1.0043	minus_theta222	14560		deg cm2 dmol-1	Fig. 2	digitised;NaCl 1 M
+HD4	KAAAAHAAADAAAAAKGY	Ac	Am	18	6.0	0.0	1.0049	minus_theta222	14214		deg cm2 dmol-1	Fig. 2	digitised;NaCl 1 M
+HD4	KAAAAHAAADAAAAAKGY	Ac	Am	18	6.65	0.0	1.0063	minus_theta222	13606		deg cm2 dmol-1	Fig. 2	digitised;NaCl 1 M
+HD4	KAAAAHAAADAAAAAKGY	Ac	Am	18	7.5	0.0	1.0081	minus_theta222	12569		deg cm2 dmol-1	Fig. 2	digitised;NaCl 1 M
+HD4	KAAAAHAAADAAAAAKGY	Ac	Am	18	8.1	0.0	1.0088	minus_theta222	12252		deg cm2 dmol-1	Fig. 2	digitised;NaCl 1 M
+HD4	KAAAAHAAADAAAAAKGY	Ac	Am	18	8.5	0.0	1.009	minus_theta222	11906		deg cm2 dmol-1	Fig. 2	digitised;NaCl 1 M
+HD4	KAAAAHAAADAAAAAKGY	Ac	Am	18	8.85	0.0	1.0092	minus_theta222	11671		deg cm2 dmol-1	Fig. 2	digitised;NaCl 1 M
+HD4	KAAAAHAAADAAAAAKGY	Ac	Am	18	9.05	0.0	1.0094	minus_theta222	11491		deg cm2 dmol-1	Fig. 2	digitised;NaCl 1 M;tyr_titration
+HD5	KAAAAHAAAADAAAAKGY	Ac	Am	18	4.25	0.0	1.0024	minus_theta222	9791		deg cm2 dmol-1	Fig. 2	digitised;NaCl 1 M
+HD5	KAAAAHAAAADAAAAKGY	Ac	Am	18	4.7	0.0	1.0029	minus_theta222	9971		deg cm2 dmol-1	Fig. 2	digitised;NaCl 1 M
+HD5	KAAAAHAAAADAAAAKGY	Ac	Am	18	5.25	0.0	1.0037	minus_theta222	9764		deg cm2 dmol-1	Fig. 2	digitised;NaCl 1 M
+HD5	KAAAAHAAAADAAAAKGY	Ac	Am	18	5.85	0.0	1.0046	minus_theta222	9625		deg cm2 dmol-1	Fig. 2	digitised;NaCl 1 M
+HD5	KAAAAHAAAADAAAAKGY	Ac	Am	18	6.5	0.0	1.006	minus_theta222	9999		deg cm2 dmol-1	Fig. 2	digitised;NaCl 1 M
+HD5	KAAAAHAAAADAAAAKGY	Ac	Am	18	7.65	0.0	1.0083	minus_theta222	11547		deg cm2 dmol-1	Fig. 2	digitised;NaCl 1 M
+HD5	KAAAAHAAAADAAAAKGY	Ac	Am	18	8.5	0.0	1.009	minus_theta222	11657		deg cm2 dmol-1	Fig. 2	digitised;NaCl 1 M
+HD5	KAAAAHAAAADAAAAKGY	Ac	Am	18	8.8	0.0	1.0092	minus_theta222	11422		deg cm2 dmol-1	Fig. 2	digitised;NaCl 1 M
+HD5	KAAAAHAAAADAAAAKGY	Ac	Am	18	8.95	0.0	1.0093	minus_theta222	11464		deg cm2 dmol-1	Fig. 2	digitised;NaCl 1 M
+HD5	KAAAAHAAAADAAAAKGY	Ac	Am	18	9.4	0.0	1.0096	minus_theta222	11160		deg cm2 dmol-1	Fig. 2	digitised;NaCl 1 M;tyr_titration

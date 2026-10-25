@@ -64,6 +64,19 @@ residue number in that peptide's own chain) and `residue` added after `n_res`. `
 `data/peptides/*.tsv` treat every row as one measurement condition and need a pH, and the NMR papers often do
 not state one. The manifest key is the path relative to this directory (`nmr/<key>`).
 
+## Measurements the model cannot score (`unscorable/`)
+
+`unscorable/` keeps measurements that the scoring scripts must not read: peptides with a residue the model cannot
+represent (ornithine, written `O` in `sequence`, flag `nonstandard_residue`), and figures whose temperature or buffer
+the paper does not state (`T_C` left empty). The format is the main one. The scripts glob `data/peptides/*.tsv`
+only, so nothing here is scored. The manifest key is the path relative to this directory (`unscorable/<key>`).
+
+## Non-helicity rows in the main files
+
+A few main files carry rows that are not helicities (for example `Tm_C`, a printed melting midpoint, whose
+`T_C` is the midpoint itself). The scoring scripts read only `helix_percent`, `helix_fraction` and
+`minus_theta222` and skip the rest.
+
 ## Ionic strength and the titrant
 
 Papers state their salt and buffer, rarely the HCl or NaOH that brought each sample to its pH. That titrant raises the

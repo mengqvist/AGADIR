@@ -1,0 +1,41 @@
+peptide_id	sequence	ncap	ccap	n_res	pH	T_C	ionic_strength_M	quantity	value	error	unit	source_table	flags
+RER5-5	OOAAAARAAAAEAAAARAAAAOOY	Ac	Am	24	7.0	4.0	0.0177	minus_theta222	19600		deg cm2 dmol-1	Table II	printed;phosphate 0.01 M;nonstandard_residue
+RER5-5	OOAAAARAAAAEAAAARAAAAOOY	Ac	Am	24	7.0	4.0	0.0177	helix_fraction	0.57		fraction	Table II	printed;phosphate 0.01 M;nonstandard_residue
+RER5-4	OOAAAARAAAAEAAARAAAAAOOY	Ac	Am	24	7.0	4.0	0.0177	minus_theta222	20600		deg cm2 dmol-1	Table II	printed;phosphate 0.01 M;nonstandard_residue
+RER5-4	OOAAAARAAAAEAAARAAAAAOOY	Ac	Am	24	7.0	4.0	0.0177	helix_fraction	0.6		fraction	Table II	printed;phosphate 0.01 M;nonstandard_residue
+RER4-5	OOAAAAARAAAEAAAARAAAAOOY	Ac	Am	24	7.0	4.0	0.0177	minus_theta222	21700		deg cm2 dmol-1	Table II	printed;phosphate 0.01 M;nonstandard_residue
+RER4-5	OOAAAAARAAAEAAAARAAAAOOY	Ac	Am	24	7.0	4.0	0.0177	helix_fraction	0.635		fraction	Table II	printed;phosphate 0.01 M;nonstandard_residue
+RER5-3	OOAAAARAAAAEAARAAAAAAOOY	Ac	Am	24	7.0	4.0	0.0177	minus_theta222	21300		deg cm2 dmol-1	Table II	printed;phosphate 0.01 M;nonstandard_residue
+RER5-3	OOAAAARAAAAEAARAAAAAAOOY	Ac	Am	24	7.0	4.0	0.0177	helix_fraction	0.62		fraction	Table II	printed;phosphate 0.01 M;nonstandard_residue
+RER3-5	OOAAAAAARAAEAAAARAAAAOOY	Ac	Am	24	7.0	4.0	0.0177	minus_theta222	22200		deg cm2 dmol-1	Table II	printed;phosphate 0.01 M;nonstandard_residue
+RER3-5	OOAAAAAARAAEAAAARAAAAOOY	Ac	Am	24	7.0	4.0	0.0177	helix_fraction	0.65		fraction	Table II	printed;phosphate 0.01 M;nonstandard_residue
+RER4-4	OOAAAAARAAAEAAARAAAAAOOY	Ac	Am	24	7.0	4.0	0.0177	minus_theta222	24700		deg cm2 dmol-1	Table II	printed;phosphate 0.01 M;nonstandard_residue
+RER4-4	OOAAAAARAAAEAAARAAAAAOOY	Ac	Am	24	7.0	4.0	0.0177	helix_fraction	0.72		fraction	Table II	printed;phosphate 0.01 M;nonstandard_residue
+RER4-3	OOAAAAARAAAEAARAAAAAAOOY	Ac	Am	24	7.0	4.0	0.0177	minus_theta222	23000		deg cm2 dmol-1	Table II	printed;phosphate 0.01 M;nonstandard_residue
+RER4-3	OOAAAAARAAAEAARAAAAAAOOY	Ac	Am	24	7.0	4.0	0.0177	helix_fraction	0.67		fraction	Table II	printed;phosphate 0.01 M;nonstandard_residue
+RER3-4	OOAAAAAARAAEAAARAAAAAOOY	Ac	Am	24	7.0	4.0	0.0177	minus_theta222	23300		deg cm2 dmol-1	Table II	printed;phosphate 0.01 M;nonstandard_residue
+RER3-4	OOAAAAAARAAEAAARAAAAAOOY	Ac	Am	24	7.0	4.0	0.0177	helix_fraction	0.68		fraction	Table II	printed;phosphate 0.01 M;nonstandard_residue
+RER3-3	OOAAAAAARAAEAARAAAAAAOOY	Ac	Am	24	7.0	4.0	0.0177	minus_theta222	24000		deg cm2 dmol-1	Table II	printed;phosphate 0.01 M;nonstandard_residue
+RER3-3	OOAAAAAARAAEAARAAAAAAOOY	Ac	Am	24	7.0	4.0	0.0177	helix_fraction	0.7		fraction	Table II	printed;phosphate 0.01 M;nonstandard_residue
+RER4-4	OOAAAAARAAAEAAARAAAAAOOY	Ac	Am	24	7.0	4.0	0.0177	minus_theta222	24738		deg cm2 dmol-1	Fig. 2	digitised;bar_top;NaCl 0 M;nonstandard_residue
+RER4-4	OOAAAAARAAAEAAARAAAAAOOY	Ac	Am	24	7.0	4.0	0.5177	minus_theta222	23185		deg cm2 dmol-1	Fig. 2	digitised;bar_top;NaCl 0.5 M;nonstandard_residue
+RER4-4	OOAAAAARAAAEAAARAAAAAOOY	Ac	Am	24	7.0	4.0	1.0177	minus_theta222	21738		deg cm2 dmol-1	Fig. 2	digitised;bar_top;NaCl 1 M;nonstandard_residue
+RER4-4	OOAAAAARAAAEAAARAAAAAOOY	Ac	Am	24	7.0	4.0	2.5177	minus_theta222	21046		deg cm2 dmol-1	Fig. 2	digitised;bar_top;NaCl 2.5 M;nonstandard_residue
+RER5-4	OOAAAARAAAAEAAARAAAAAOOY	Ac	Am	24	7.0	4.0	0.0177	minus_theta222	20446		deg cm2 dmol-1	Fig. 2	digitised;bar_top;NaCl 0 M;nonstandard_residue
+RER5-4	OOAAAARAAAAEAAARAAAAAOOY	Ac	Am	24	7.0	4.0	0.5177	minus_theta222	19815		deg cm2 dmol-1	Fig. 2	digitised;bar_top;NaCl 0.5 M;nonstandard_residue
+RER5-4	OOAAAARAAAAEAAARAAAAAOOY	Ac	Am	24	7.0	4.0	1.0177	minus_theta222	20738		deg cm2 dmol-1	Fig. 2	digitised;bar_top;NaCl 1 M;nonstandard_residue
+RER5-4	OOAAAARAAAAEAAARAAAAAOOY	Ac	Am	24	7.0	4.0	2.5177	minus_theta222	20046		deg cm2 dmol-1	Fig. 2	digitised;bar_top;NaCl 2.5 M;nonstandard_residue
+RER5-5	OOAAAARAAAAEAAAARAAAAOOY	Ac	Am	24	7.0	4.0	0.0177	minus_theta222	19600		deg cm2 dmol-1	Fig. 2	digitised;bar_top;NaCl 0 M;nonstandard_residue
+RER5-5	OOAAAARAAAAEAAAARAAAAOOY	Ac	Am	24	7.0	4.0	0.5177	minus_theta222	20354		deg cm2 dmol-1	Fig. 2	digitised;bar_top;NaCl 0.5 M;nonstandard_residue
+RER5-5	OOAAAARAAAAEAAAARAAAAOOY	Ac	Am	24	7.0	4.0	1.0177	minus_theta222	22277		deg cm2 dmol-1	Fig. 2	digitised;bar_top;NaCl 1 M;nonstandard_residue
+RER5-5	OOAAAARAAAAEAAAARAAAAOOY	Ac	Am	24	7.0	4.0	2.5177	minus_theta222	20738		deg cm2 dmol-1	Fig. 2	digitised;bar_top;NaCl 2.5 M;nonstandard_residue
+RER4-4	OOAAAAARAAAEAAARAAAAAOOY	Ac	Am	24	2.0	4.0	0.0041	minus_theta222	23115		deg cm2 dmol-1	Fig. 3	digitised;bar_top;buffer_conc_unstated;nonstandard_residue
+RER4-4	OOAAAAARAAAEAAARAAAAAOOY	Ac	Am	24	3.0	4.0	0.0088	minus_theta222	23615		deg cm2 dmol-1	Fig. 3	digitised;bar_top;buffer_conc_unstated;nonstandard_residue
+RER4-4	OOAAAAARAAAEAAARAAAAAOOY	Ac	Am	24	4.0	4.0	0.0099	minus_theta222	24333		deg cm2 dmol-1	Fig. 3	digitised;bar_top;buffer_conc_unstated;nonstandard_residue
+RER4-4	OOAAAAARAAAEAAARAAAAAOOY	Ac	Am	24	5.0	4.0	0.0101	minus_theta222	24205		deg cm2 dmol-1	Fig. 3	digitised;bar_top;buffer_conc_unstated;nonstandard_residue
+RER4-4	OOAAAAARAAAEAAARAAAAAOOY	Ac	Am	24	7.0	4.0	0.0177	minus_theta222	24744		deg cm2 dmol-1	Fig. 3	digitised;bar_top;buffer_conc_unstated;nonstandard_residue
+RER5-5	OOAAAARAAAAEAAAARAAAAOOY	Ac	Am	24	2.0	4.0	0.0041	minus_theta222	19808		deg cm2 dmol-1	Fig. 3	digitised;bar_top;buffer_conc_unstated;nonstandard_residue
+RER5-5	OOAAAARAAAAEAAAARAAAAOOY	Ac	Am	24	3.0	4.0	0.0088	minus_theta222	19692		deg cm2 dmol-1	Fig. 3	digitised;bar_top;buffer_conc_unstated;nonstandard_residue
+RER5-5	OOAAAARAAAAEAAAARAAAAOOY	Ac	Am	24	4.0	4.0	0.0099	minus_theta222	19615		deg cm2 dmol-1	Fig. 3	digitised;bar_top;buffer_conc_unstated;nonstandard_residue
+RER5-5	OOAAAARAAAAEAAAARAAAAOOY	Ac	Am	24	5.0	4.0	0.0101	minus_theta222	19821		deg cm2 dmol-1	Fig. 3	digitised;bar_top;buffer_conc_unstated;nonstandard_residue
+RER5-5	OOAAAARAAAAEAAAARAAAAOOY	Ac	Am	24	7.0	4.0	0.0177	minus_theta222	19615		deg cm2 dmol-1	Fig. 3	digitised;bar_top;buffer_conc_unstated;nonstandard_residue
