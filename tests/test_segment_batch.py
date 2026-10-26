@@ -12,6 +12,7 @@ from pathlib import Path
 import numpy as np
 import pytest
 
+import pyagadir.energies as energies
 import pyagadir.models as models
 from pyagadir.electrostatics.common import PAIR_RANGE
 from pyagadir.energies import EnergyCalculator
@@ -39,6 +40,22 @@ LAW_CASES = [(c, "munoz") for c in CASES] + [(c, "gbx") for c in (CASES[0], CASE
 
 
 REFERENCE = json.load(gzip.open(Path(__file__).parent / "data" / "segment_batch_reference.json.gz", "rt"))
+
+
+@pytest.fixture(autouse=True)
+def _recorded_model(monkeypatch):
+    """The references were recorded before 2026-10-26: capping motifs counted additively with acid-base bonds
+    (energies.CAPPING_EXCLUSIVITY, now "exclusive"; tests/test_capping_exclusivity.py covers it) and the published Gly
+    N-cap cells (-0.30; now -0.54, params/README.md)."""
+    monkeypatch.setattr(energies, "CAPPING_EXCLUSIVITY", "additive")
+    t1 = EnergyCalculator.load_params()["table_1_lacroix"]
+    cols = ("Nc-1", "Nc-2", "Nc-3", "Nc-4")
+    shipped = {c: float(t1.loc["G", c]) for c in cols}
+    for c in cols:
+        t1.loc["G", c] = -0.30
+    yield
+    for c, v in shipped.items():
+        t1.loc["G", c] = v
 
 
 def _reference(case, law):

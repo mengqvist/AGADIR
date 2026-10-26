@@ -67,6 +67,18 @@ HBOND_DH_REF = -0.895
 # rejected by both (+1.7 and +1.1 helix points RMSE); -0.225 lies between. The other Table V motifs keep their values.
 TABLE_V_GLN_ASP = -0.225
 HBOND_NCAPS = ("S", "T", "N", "D", "Ac", "Sc")
+
+# Capping motifs whose side chain points back toward the N-terminus, and that side chain's acid-base bonds to partners on
+# its C-terminal side (i+3, i+4), exclude each other: one side chain, one direction (the argument of the acid-base bond
+# rule, EnergyCalculator._acid_base_hbonds). The motifs: an Asp or Glu at N3 behind the N-cap (the capping box, and
+# Table 1's Nc-3 column for an N3 partner), a Lys or Arg at N4 in the charged staple, an Asp or Glu at N4 in the Petukhov
+# motif; the hydrophobic staple's capping-box factor follows the N3 acid. "exclusive" (default): the motif and the bonds
+# are mutually exclusive states of one side chain, Z = 1 + K_motif + K_bond with K = exp(-dG/RT) - 1 for each option's
+# free energy, so the occupancies follow from the two free energies; "max": the stronger only; "additive": both counted
+# (the behaviour before 2026-10-26). See params/README.md, "Capping motifs and acid-base bonds".
+CAPPING_EXCLUSIVITY = "exclusive"
+CAPPING_BOX_DG = -0.9  # capping box beyond the Nc-3 column (get_dG_Ncap)
+R_KCAL = 1.98720425864083e-3  # kcal/(mol K)
 HBOND_CCAPS = ("K", "R", "H", "N", "D")
 HBOND_POLAR = ("S", "T", "N", "Q", "D", "E", "K", "R", "H")
 
@@ -445,7 +457,7 @@ class EnergyCalculator(PrecomputeParams):
         energy of the segment; _nonCoulomb_charge_coefficients reads its charge dependence from them."""
         return {"Int": self.get_dG_Int(), "Ncap": self.get_dG_Ncap(), "Ccap": self.get_dG_Ccap(),
                 "pet": self.get_dG_petukhov_motif(), "sta": self.get_dG_charged_staple(),
-                "i3": self.get_dG_i3(), "i4": self.get_dG_i4()}
+                "stp": self.get_dG_staple(), "i3": self.get_dG_i3(), "i4": self.get_dG_i4()}
 
     def _nonCoulomb_charge_coefficients(self) -> tuple[dict, dict]:
         """
@@ -474,6 +486,12 @@ class EnergyCalculator(PrecomputeParams):
         charged = set(self.neg_charge_aa + self.pos_charge_aa)
         nc, cc = int(self.ncap_idx), int(self.ccap_idx)
         titr = [k for k in range(nc, cc + 1) if self.seq_list[k] in charged]  # the segment's titratable residues
+        # Capping motifs (CAPPING_EXCLUSIVITY): under "max" and "exclusive" the N-cap entry and the hydrophobic staple
+        # also read the charges of the N3 acid's rival bond partners, the Petukhov and charged-staple motifs those of
+        # the N4 residue's (3 or 4 residues on, so still at most 4 apart from the site; charge-independent selection).
+        self._acid_base_hbonds()
+        rivals = {kind: {j for _, j in entry[2]} for kind, entry in getattr(self, "_capping_state", {}).items()}
+        motif_keys = {"n3": [("Ncap", nc), ("stp", None)], "petukhov": [("pet", None)], "cstaple": [("sta", None)]}
         if not titr:
             return {}, {}
         saved = self.modified_seq_ionization_hel
@@ -511,6 +529,11 @@ class EnergyCalculator(PrecomputeParams):
                 e.append(("Ccap", cc))  # an Asp C-cap
             if a == nc + 4:
                 e += [("pet", None), ("sta", None)]  # the N4 residue of the Petukhov and charged-staple motifs
+            if a == nc + 3:
+                e.append(("stp", None))  # the N3 acid of the hydrophobic staple's capping-box factor
+            for kind, partners in rivals.items():  # a rival bond partner of a capping-motif side chain
+                if a in partners:
+                    e += [key for key in motif_keys[kind] if key not in e]
             return e
 
         # c_a: in the pattern of a's class, a is the only "on" residue that the entries reading a can see, so each
@@ -531,6 +554,10 @@ class EnergyCalculator(PrecomputeParams):
                 if b not in tset:
                     continue
                 keys = [("i3" if d == 3 else "i4", a)] + ([("Ncap", nc)] if d == 3 and a == nc else [])
+                for kind, partners in rivals.items():  # a capping-motif side chain and its rival bond partner
+                    site = getattr(self, "_capping_state")[kind][1]["idx"]
+                    if a == site and b in partners:
+                        keys += [key for key in motif_keys[kind] if key not in keys]
                 ta, tb = tc[a % 5], tc[b % 5]
                 c = sum(val(tall, *k) - val(ta, *k) - val(tb, *k) + val(t0, *k) for k in keys)
                 if abs(c) > 1e-12:
@@ -758,7 +785,7 @@ class EnergyCalculator(PrecomputeParams):
         # and is weighted by that Glu's helix-state ionisation.
         if self.Ncap_AA in ("S", "T", "D", "N") and self.N3_AA == "E":
             q_glu = abs(float(self.modified_seq_ionization_hel[self.ncap_idx + 3]))
-            energy[self.ncap_idx] += -0.9 * q_glu
+            energy[self.ncap_idx] += CAPPING_BOX_DG * q_glu
 
         # A Ser, Thr, Asn or Asp N-cap, and the Ac or Sc end group, stabilise the helix by a
         # hydrogen bond (Muñoz & Serrano 1995-III p. 305): their advantage over Ala in the same
@@ -766,7 +793,124 @@ class EnergyCalculator(PrecomputeParams):
         if self.Ncap_AA in HBOND_NCAPS:
             ref = self.table_1_lacroix.loc["A", col]
             energy[self.ncap_idx] = ref + self._hbond_temperature(energy[self.ncap_idx] - ref)
+
+        # The N3 acid caps or bridges forward, not both (CAPPING_EXCLUSIVITY): if it bridges, the capping-box bonus and the
+        # Nc-3 column's N3-partner gain go, through the same temperature law.
+        motif = self._capping_motif("n3")
+        if motif is not None:
+            state, site, g_bond = motif
+            g_cap = self._capping_n3_energy(site)
+            if state == "bridge":
+                energy[self.ncap_idx] -= g_cap
+            if CAPPING_EXCLUSIVITY == "exclusive" and site["rival"]:
+                g_excl, _ = self._capping_exclusive(g_cap, g_bond)
+                energy[self.ncap_idx] += g_excl - (g_cap if state == "motif" else g_bond)
         return energy
+
+    def _capping_n3_energy(self, site) -> float:
+        """Free energy of the N3 acid's capping (capping box and Nc-3 column gain) at this T and charge, kcal/mol."""
+        q3 = abs(float(self.modified_seq_ionization_hel[site["idx"]]))
+        g = CAPPING_BOX_DG * q3 * site["box"] - site["gain"]
+        return self._hbond_temperature(g) if self.Ncap_AA in HBOND_NCAPS else g
+
+    def _capping_motif_sites(self) -> list:
+        """The side chains of this segment whose N-terminal capping motif excludes their forward acid-base bonds
+        (CAPPING_EXCLUSIVITY): dicts with kind, idx (the residue) and w (the motif's weight at 0 C in the units of the
+        bond-selection weights, kcal/mol):
+        - "n3": an Asp or Glu at N3 that the N-cap's Table 1 column rewards (Nc-3 - Nc-1, or Nc-4 - Nc-2 with Pro at N1),
+          plus the capping box (-CAPPING_BOX_DG) for a Glu behind a Ser, Thr, Asp or Asn N-cap;
+        - "cstaple": a Lys or Arg at N4 behind a Ser or Thr N-cap with an N' residue (get_dG_charged_staple, 0.3);
+        - "petukhov": an Asp or Glu at N4 of a capping box at a free N-terminus (get_dG_petukhov_motif, 1.0).
+        The N-cap residue's own side chain takes no acid-base bond (bonds are between interior residues)."""
+        sites = []
+        nc = int(self.ncap_idx)
+        interior = set(self.helix_indices[1:-1])
+        seq, t1 = self.seq_list, self.table_1_lacroix
+        ncap_aa = seq[nc]
+        n3, n4 = nc + 3, nc + 4
+        if n3 in interior and seq[n3] in ("D", "E") and ncap_aa in t1.index:
+            col, rev = ("Nc-4", "Nc-2") if seq[nc + 1] == "P" else ("Nc-3", "Nc-1")
+            gain = float(t1.loc[ncap_aa, rev]) - float(t1.loc[ncap_aa, col])
+            box = 1.0 if (ncap_aa in ("S", "T", "D", "N") and seq[n3] == "E") else 0.0
+            if box * -CAPPING_BOX_DG + gain > 1e-9:
+                sites.append({"kind": "n3", "idx": n3, "w": box * -CAPPING_BOX_DG + gain, "box": box, "gain": gain})
+        if n4 in interior:
+            if nc > 0 and ncap_aa in ("S", "T") and seq[n4] in ("K", "R"):
+                sites.append({"kind": "cstaple", "idx": n4, "w": 0.3})
+            if (self.ncap is None and nc == 0 and ncap_aa in ("D", "N", "S", "T") and seq[n3] in ("E", "D", "Q")
+                    and seq[n4] in ("D", "E")):
+                sites.append({"kind": "petukhov", "idx": n4, "w": 1.0})
+        return sites
+
+    def _resolve_capping_motifs(self, bonds, solve) -> set:
+        """Apply CAPPING_EXCLUSIVITY to a selected set of acid-base bonds. solve(drop) re-selects the bonds with the
+        forward bonds (i, j > i) of the residues in drop removed and returns (total weight, bonds). Every combination of
+        motif sites keeping their motif is solved; the largest total (bond weights plus the motifs kept) wins. A site
+        whose residue holds no forward bond keeps its motif. Stores self._capping_state {kind: (state, site, rival)},
+        rival being the site's forward bonds in the unrestricted selection. Returns the bond set."""
+        self._capping_state = {}
+        if CAPPING_EXCLUSIVITY == "additive":
+            return bonds
+        sites = self._capping_motif_sites()
+        if not sites:
+            return bonds
+        rival = {st["idx"]: tuple(b for b in bonds if b[0] == st["idx"]) for st in sites}
+        kept = {st["kind"] for st in sites}
+        if any(rival.values()):
+            best = None
+            for mask in range(1 << len(sites)):
+                drop = {st["idx"] for n, st in enumerate(sites) if mask >> n & 1}
+                score, chosen = solve(drop)
+                keep = [st for st in sites if st["idx"] in drop or not any(b[0] == st["idx"] for b in chosen)]
+                total = score + sum(st["w"] for st in keep)
+                if best is None or total > best[0] + 1e-12:
+                    best = (total, set(chosen), {st["kind"] for st in keep})
+            _, bonds, kept = best
+        for st in sites:
+            st["rival"] = rival[st["idx"]]
+            self._capping_state[st["kind"]] = ("motif" if st["kind"] in kept else "bridge", st, rival[st["idx"]])
+        return bonds
+
+    def _bond_increment(self, i, j) -> float:
+        """Free energy that selecting the acid-base bond (i, j) adds (kcal/mol, at this T and these charges): its Table IV
+        value in the doubly charged state under the "contacts" pair rule (the other states keep it either way), the
+        whole value under "additive"."""
+        table = self.table_4a_lacroix if j - i == 3 else self.table_4b_lacroix
+        cell = float(table.loc[self.seq_list[i], self.seq_list[j]]) / 100.0
+        if self.pair_rule == "contacts":
+            cell *= abs(self.modified_seq_ionization_hel[i]) * abs(self.modified_seq_ionization_hel[j])
+        return self._hbond_temperature(cell)
+
+    def _capping_motif(self, kind):
+        """(state, site, dG of the rival bonds) of a capping-motif site of this segment, or None."""
+        if CAPPING_EXCLUSIVITY == "additive":
+            return None
+        self._acid_base_hbonds()
+        entry = getattr(self, "_capping_state", {}).get(kind)
+        if entry is None:
+            return None
+        state, site, rival = entry
+        return state, site, sum(self._bond_increment(i, j) for i, j in rival)
+
+    def _capping_exclusive(self, g_motif, g_bond):
+        """Free energy of a motif and its rival bonds as exclusive states of one side chain, -RT ln(1 + K_m + K_b),
+        K = exp(-dG/RT) - 1, and the bridge probability K_b / (1 + K_m + K_b)."""
+        rt = R_KCAL * self.T_kelvin
+        k_m, k_b = np.expm1(-g_motif / rt), np.expm1(-g_bond / rt)
+        z = 1.0 + k_m + k_b
+        return float(-rt * np.log(z)), float(k_b / z) if z > 0 else 0.0
+
+    def _capping_n4(self, kind, g):
+        """A charged-staple or Petukhov motif's free energy g under CAPPING_EXCLUSIVITY."""
+        motif = self._capping_motif(kind)
+        if motif is None or not g:
+            return g
+        state, site, g_bond = motif
+        out = g if state == "motif" else 0.0
+        if CAPPING_EXCLUSIVITY == "exclusive" and site["rival"]:
+            g_excl, _ = self._capping_exclusive(g, g_bond)
+            out += g_excl - (g if state == "motif" else g_bond)
+        return out
 
     def get_dG_Ccap(self) -> np.ndarray:
         """
@@ -854,6 +998,17 @@ class EnergyCalculator(PrecomputeParams):
             if self._dCp_hydroph_kcal(Nprime, self.N4_AA) != 0.0:
                 energy = self._entropic_cp_correct(energy, 0.0)
 
+        # The x1 capping-box factor holds while the N3 acid caps; its bridging share takes x0.5 (CAPPING_EXCLUSIVITY).
+        if energy != 0.0 and self.Ncap_AA in ["N", "D", "S", "T"] and self.N3_AA in ["E", "D"]:
+            motif = self._capping_motif("n3")
+            if motif is not None and motif[1]["rival"]:
+                state, site, g_bond = motif
+                if CAPPING_EXCLUSIVITY == "exclusive":
+                    _, p_bridge = self._capping_exclusive(self._capping_n3_energy(site), g_bond)
+                else:
+                    p_bridge = 1.0 if state == "bridge" else 0.0
+                energy *= 1.0 - 0.5 * p_bridge
+
         return energy
 
     def get_dG_schellman(self) -> float:
@@ -922,7 +1077,8 @@ class EnergyCalculator(PrecomputeParams):
         # hydrogen bond: the hydrogen-bond temperature law
         energy = self._hbond_temperature(energy)
 
-        return energy
+        # the N4 acid keeps the motif or bridges forward, not both (CAPPING_EXCLUSIVITY)
+        return self._capping_n4("petukhov", energy)
 
     def get_dG_charged_staple(self) -> float:
         """
@@ -959,6 +1115,9 @@ class EnergyCalculator(PrecomputeParams):
         # hydrogen bond: the hydrogen-bond temperature law
         energy = self._hbond_temperature(energy)
 
+        # the N4 base keeps the staple or bridges forward, not both (CAPPING_EXCLUSIVITY)
+        energy = self._capping_n4("cstaple", energy)
+
         return energy
 
     def _acid_base_hbonds(self) -> set:
@@ -972,7 +1131,9 @@ class EnergyCalculator(PrecomputeParams):
         first already reaches that sum, that set is kept.  Taking the strongest first alone can
         miss it: in (K4E4)2 the central Glu->Lys i+4 bonds (-0.20) would exclude both Lys->Glu
         blocks (8 x -0.10 and 6 x -0.15 at i+3), -1.25 against -1.70 kcal/mol.  The ionic part of
-        each pair (the Coulomb term) is not restricted.
+        each pair (the Coulomb term) is not restricted.  A capping-motif side chain (an N3 acid behind
+        the N-cap, an N4 staple base or Petukhov acid) does not also take bonds forward unless that
+        set wins (CAPPING_EXCLUSIVITY, _resolve_capping_motifs).
         """
         if getattr(self, "_ab_hbonds", None) is not None:
             return self._ab_hbonds
@@ -988,18 +1149,27 @@ class EnergyCalculator(PrecomputeParams):
                     v = float(table.loc[a, b]) / 100.0
                     if v < 0:
                         cands.append((v, i, j))
-        # A side chain points either toward the N-terminus (partners at i-3/i-4) or toward the
-        # C-terminus (partners at i+3/i+4), not both.  Partners on the same side can share it.
-        direction, chosen = {}, set()
-        for v, i, j in sorted(cands):
-            if direction.get(i, "up") != "up" or direction.get(j, "down") != "down":
-                continue
-            direction[i], direction[j] = "up", "down"
-            chosen.add((i, j))
-        best = self._best_hbond_set(cands)
         weight = {(i, j): -v for v, i, j in cands}
-        if sum(weight[p] for p in best) > sum(weight[p] for p in chosen) + 1e-9:
-            chosen = best
+
+        def select(cs):
+            # A side chain points either toward the N-terminus (partners at i-3/i-4) or toward the
+            # C-terminus (partners at i+3/i+4), not both.  Partners on the same side can share it.
+            direction, chosen = {}, set()
+            for v, i, j in sorted(cs):
+                if direction.get(i, "up") != "up" or direction.get(j, "down") != "down":
+                    continue
+                direction[i], direction[j] = "up", "down"
+                chosen.add((i, j))
+            best = self._best_hbond_set(cs)
+            if sum(weight[p] for p in best) > sum(weight[p] for p in chosen) + 1e-9:
+                chosen = best
+            return chosen
+
+        def solve(drop):
+            chosen = select([c for c in cands if c[1] not in drop])
+            return sum(weight[p] for p in chosen), chosen
+
+        chosen = self._resolve_capping_motifs(select(cands), solve)
         self._ab_hbonds = chosen
         return chosen
 
