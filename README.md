@@ -61,15 +61,17 @@ The default, `dipole_law="munoz"`, is the published treatment: the helix macrodi
 
 ### Charged side-chain pairs
 
-An acid-base pair three or four residues apart interacts through a hydrogen bond (a contact, not screened by salt) and
-through the Coulomb attraction of the two charges (screened). By default (`pair_rule="contacts"`, with the default
-`dipole_law`), a charged side chain makes at most one salt bridge, chosen by the statistical weight of the
-alternatives, and pays the published close-range attraction only in that contact. A pair with a neutral partner
-(protonated Glu, deprotonated Lys) hydrogen-bonds on either side. An isolated pair keeps its published value
-exactly, so the rule only changes peptides in which side chains compete for partners, such as Glu/Lys block repeats
-(EEEEKKKK). It gives these blocks their measured stability at low and high pH (Lyu et al. 1992; Fossat et al. 2023)
-without changing single pairs. `pair_rule="additive"` gives the rule used before (and still used with `gbx`); the
-derivation and its tests are in [`pyagadir/params/README.md`](pyagadir/params/README.md), "Charged side-chain pairs".
+An acid-base pair three or four residues apart interacts through a hydrogen bond (not screened by salt) and through the
+Coulomb attraction of the two charges (screened). By default (`pair_rule="states"`, with the default `dipole_law`), each
+side chain is in one state at a time: a set of contacts with partners three or four residues away, or its N-terminal
+capping motif, or nothing. A contact carries both the bond and the close-range attraction. Which contacts one side chain
+can hold together follows the helix geometry: a Lys can pair with two acids only on its C-terminal side, and no side
+chain reaches partners on opposite faces at once (Wolny et al. 2017; Iqbalsyah & Doig 2005). The helix sums over all
+these states rather than picking one network. Each isolated pair keeps the free energy measured for it (Smith & Scholtz
+1998; Iqbalsyah & Doig 2005; Huyghues-Despointes et al. 1993), with a separate value for the bond when one partner is
+neutral; charge-dense block repeats such as EEEEKKKK are predictions, not fitted. `pair_rule="additive"` gives the
+earlier rule (still used with `gbx`). The derivation, the pair strengths beside the published values, and the tests are
+in [`pyagadir/params/README.md`](pyagadir/params/README.md), "Charged side-chain pairs".
 
 ### Energy terms of one helical segment
 
@@ -174,8 +176,12 @@ Muñoz & Serrano (1995, paper III), Fig. 3: temperature dependence. Panel 3D is 
 
 - Baker, E. G. et al. (2015). Local and macroscopic electrostatic interactions in single α-helices. *Nat. Chem. Biol.* 11, 221-228. https://doi.org/10.1038/nchembio.1739
 - Huyghues-Despointes, B. M. P., Scholtz, J. M. & Baldwin, R. L. (1993). Effect of a single aspartate on helix stability at different positions in a neutral alanine-based peptide. *Protein Sci.* 2, 1604-1611. https://doi.org/10.1002/pro.5560021006
+- Huyghues-Despointes, B. M. P., Scholtz, J. M. & Baldwin, R. L. (1993). Helical peptides with three pairs of Asp-Arg and Glu-Arg residues in different orientations and spacings. *Protein Sci.* 2, 80-85.
+- Iqbalsyah, T. M. & Doig, A. J. (2005). Anticooperativity in a Glu-Lys-Glu salt bridge triplet in an isolated α-helical peptide. *Biochemistry* 44, 10449-10456. https://doi.org/10.1021/bi0508690
 - Marqusee, S. & Baldwin, R. L. (1987). Helix stabilization by Glu-...Lys+ salt bridges in short peptides of de novo design. *Proc. Natl. Acad. Sci. USA* 84, 8898-8902. https://doi.org/10.1073/pnas.84.24.8898
 - Scholtz, J. M., Qian, H., York, E. J., Stewart, J. M. & Baldwin, R. L. (1991). Parameters of helix-coil transition theory for alanine-based peptides of varying chain lengths in water. *Biopolymers* 31, 1463-1470. https://doi.org/10.1002/bip.360311304
+- Smith, J. S. & Scholtz, J. M. (1998). Energetics of polar side-chain interactions in helical peptides: salt effects on ion pairs and hydrogen bonds. *Biochemistry* 37, 33-40.
+- Wolny, M. et al. (2017). Characterization of long and stable de novo single alpha-helix domains provides novel insight into their stability. *Sci. Rep.* 7, 44341. https://doi.org/10.1038/srep44341
 
 **Structure scores**
 

@@ -1,4 +1,5 @@
-"""Capping motifs and acid-base bonds (energies.CAPPING_EXCLUSIVITY): a side chain that caps the helix by pointing back
+"""Capping motifs and acid-base bonds under pair_rule "additive" (energies.CAPPING_EXCLUSIVITY; under the default "states"
+rule the motif is a state of its side chain, tests/test_side_chain_states.py): a side chain that caps the helix by pointing back
 toward the N-terminus (an N3 acid behind the N-cap, an N4 charged-staple base or Petukhov acid) does not also take an
 acid-base bond forward; "exclusive" sums the two as exclusive states of one side chain, "max" keeps the stronger,
 "additive" counts both. Also: the ionisation solver's coefficients equal whole-energy differences under the rule."""
@@ -11,7 +12,8 @@ from pyagadir.energies import EnergyCalculator
 
 def _calc(seq, i, ncap, ccap, pH=7.0, T=4.0, I=0.01):
     L = len(seq) + (ncap is not None) + (ccap is not None)
-    return EnergyCalculator(seq=seq, i=i, j=L - i, pH=pH, T=T, ionic_strength=I, ncap=ncap, ccap=ccap)
+    return EnergyCalculator(seq=seq, i=i, j=L - i, pH=pH, T=T, ionic_strength=I, ncap=ncap, ccap=ccap,
+                            pair_rule="additive")
 
 
 def _rules(monkeypatch, seq, i, ncap, ccap, **kw):
@@ -101,7 +103,7 @@ def test_coefficients_equal_whole_energy_differences(monkeypatch, rule, case):
     L = len(seq) + (nc is not None) + (cc is not None)
     for j in range(6, L + 1):
         for i in range(0, L - j + 1):
-            c = EnergyCalculator(seq=seq, i=i, j=j, pH=pH, T=T, ionic_strength=I, ncap=nc, ccap=cc)
+            c = EnergyCalculator(seq=seq, i=i, j=j, pH=pH, T=T, ionic_strength=I, ncap=nc, ccap=cc, pair_rule="additive")
             la, lab = c._nonCoulomb_charge_coefficients()
             charged = set(c.neg_charge_aa + c.pos_charge_aa)
             titr = [k for k in range(int(c.ncap_idx), int(c.ccap_idx) + 1) if c.seq_list[k] in charged]

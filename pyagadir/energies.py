@@ -8,6 +8,7 @@ from pyagadir.chemistry import (E_CHARGE, EPSILON_0, N_AVOGADRO, T_REF, acidic_r
                                 basic_residue_ionization, calculate_permittivity, debye_screening_kappa)
 from pyagadir.electrostatics import DIPOLE_LAWS, GB_LAWS, GBX_LAWS, Electrostatics  # noqa: F401
 from pyagadir.electrostatics.common import SegmentBatch
+from pyagadir.electrostatics.side_chain_states import owns_pair
 from pyagadir.utils import is_valid_peptide_sequence, is_valid_ncap_ccap, is_valid_conditions
 
 # The electrostatics are in pyagadir/electrostatics/: point.py (the default point-charge law), gb.py (the Generalized
@@ -237,12 +238,14 @@ class PrecomputeParams(Electrostatics):
         if dipole_law not in DIPOLE_LAWS:
             raise ValueError(f"dipole_law must be one of {DIPOLE_LAWS}, got {dipole_law!r}")
         self.dipole_law = dipole_law
-        # Acid-base side-chain pairs (see get_dG_i3 and electrostatics/contacts.py): "contacts", the default law's rule
-        # since 2026-10-23 (salt bridges one-direction and positionally exclusive, a pair with a neutral partner
-        # hydrogen-bonds on any side), or "additive", the rule before it (kept for the gbx law and for comparisons).
-        self.pair_rule = pair_rule or ("contacts" if dipole_law == "munoz" else "additive")
-        if self.pair_rule not in ("contacts", "additive"):
-            raise ValueError(f"pair_rule must be 'contacts' or 'additive', not {pair_rule!r}")
+        # Acid-base side-chain pairs three or four residues apart: "states", the default law's rule since 2026-10-26
+        # (electrostatics/side_chain_states.py: each side chain in one state, a set of contacts or its capping motif,
+        # summed over states; the energy terms then leave those pairs out and keep the capping motifs additive), or
+        # "additive", the rule before (the best compatible set of Table IV bonds plus the Coulomb sum; kept for the gbx
+        # law, with the capping motifs exclusive of their side chain's forward bonds by CAPPING_EXCLUSIVITY).
+        self.pair_rule = pair_rule or ("states" if dipole_law == "munoz" else "additive")
+        if self.pair_rule not in ("states", "additive"):
+            raise ValueError(f"pair_rule must be 'states' or 'additive', not {pair_rule!r}")
 
         # load params
         if params is None:
@@ -489,7 +492,8 @@ class EnergyCalculator(PrecomputeParams):
         # Capping motifs (CAPPING_EXCLUSIVITY): under "max" and "exclusive" the N-cap entry and the hydrophobic staple
         # also read the charges of the N3 acid's rival bond partners, the Petukhov and charged-staple motifs those of
         # the N4 residue's (3 or 4 residues on, so still at most 4 apart from the site; charge-independent selection).
-        self._acid_base_hbonds()
+        if self.pair_rule != "states":
+            self._acid_base_hbonds()
         rivals = {kind: {j for _, j in entry[2]} for kind, entry in getattr(self, "_capping_state", {}).items()}
         motif_keys = {"n3": [("Ncap", nc), ("stp", None)], "petukhov": [("pet", None)], "cstaple": [("sta", None)]}
         if not titr:
@@ -722,6 +726,13 @@ class EnergyCalculator(PrecomputeParams):
         dG_per_bond = self._hbond_temperature(HBOND_DH_REF)
         return dG_per_bond * n_hbonds
 
+    @property
+    def capping_rule(self) -> str:
+        """How a capping motif and its side chain's forward acid-base bonds combine: under the "states" pair rule the
+        motif is a state of its side chain (electrostatics/side_chain_states.py), so the energy terms keep it additive;
+        under "additive" CAPPING_EXCLUSIVITY decides (read when called)."""
+        return "additive" if self.pair_rule == "states" else CAPPING_EXCLUSIVITY
+
     def _hbond_temperature(self, dG_ref):
         """
         The temperature law of every hydrogen-bond term: the backbone bond (get_dG_Hbond), the
@@ -802,7 +813,7 @@ class EnergyCalculator(PrecomputeParams):
             g_cap = self._capping_n3_energy(site)
             if state == "bridge":
                 energy[self.ncap_idx] -= g_cap
-            if CAPPING_EXCLUSIVITY == "exclusive" and site["rival"]:
+            if self.capping_rule == "exclusive" and site["rival"]:
                 g_excl, _ = self._capping_exclusive(g_cap, g_bond)
                 energy[self.ncap_idx] += g_excl - (g_cap if state == "motif" else g_bond)
         return energy
@@ -849,7 +860,7 @@ class EnergyCalculator(PrecomputeParams):
         whose residue holds no forward bond keeps its motif. Stores self._capping_state {kind: (state, site, rival)},
         rival being the site's forward bonds in the unrestricted selection. Returns the bond set."""
         self._capping_state = {}
-        if CAPPING_EXCLUSIVITY == "additive":
+        if self.capping_rule == "additive":
             return bonds
         sites = self._capping_motif_sites()
         if not sites:
@@ -872,18 +883,15 @@ class EnergyCalculator(PrecomputeParams):
         return bonds
 
     def _bond_increment(self, i, j) -> float:
-        """Free energy that selecting the acid-base bond (i, j) adds (kcal/mol, at this T and these charges): its Table IV
-        value in the doubly charged state under the "contacts" pair rule (the other states keep it either way), the
-        whole value under "additive"."""
+        """Free energy that selecting the acid-base bond (i, j) adds (kcal/mol, at this T): its Table IV value with the
+        hydrogen-bond temperature law ("additive" pair rule)."""
         table = self.table_4a_lacroix if j - i == 3 else self.table_4b_lacroix
         cell = float(table.loc[self.seq_list[i], self.seq_list[j]]) / 100.0
-        if self.pair_rule == "contacts":
-            cell *= abs(self.modified_seq_ionization_hel[i]) * abs(self.modified_seq_ionization_hel[j])
         return self._hbond_temperature(cell)
 
     def _capping_motif(self, kind):
         """(state, site, dG of the rival bonds) of a capping-motif site of this segment, or None."""
-        if CAPPING_EXCLUSIVITY == "additive":
+        if self.capping_rule == "additive":
             return None
         self._acid_base_hbonds()
         entry = getattr(self, "_capping_state", {}).get(kind)
@@ -907,7 +915,7 @@ class EnergyCalculator(PrecomputeParams):
             return g
         state, site, g_bond = motif
         out = g if state == "motif" else 0.0
-        if CAPPING_EXCLUSIVITY == "exclusive" and site["rival"]:
+        if self.capping_rule == "exclusive" and site["rival"]:
             g_excl, _ = self._capping_exclusive(g, g_bond)
             out += g_excl - (g if state == "motif" else g_bond)
         return out
@@ -1003,7 +1011,7 @@ class EnergyCalculator(PrecomputeParams):
             motif = self._capping_motif("n3")
             if motif is not None and motif[1]["rival"]:
                 state, site, g_bond = motif
-                if CAPPING_EXCLUSIVITY == "exclusive":
+                if self.capping_rule == "exclusive":
                     _, p_bridge = self._capping_exclusive(self._capping_n3_energy(site), g_bond)
                 else:
                     p_bridge = 1.0 if state == "bridge" else 0.0
@@ -1237,25 +1245,18 @@ class EnergyCalculator(PrecomputeParams):
                 base = 0.0
 
             # An Asp/Glu - Lys/Arg/His pair forms a side-chain hydrogen bond whose strength does
-            # not depend on salt or on whether the acid is charged (Scholtz et al. 1993; Smith &
-            # Scholtz 1998).  Its Table IV value is that hydrogen bond and applies in every
-            # ionisation state, where the geometry allows it (_acid_base_hbonds); the ionic part
-            # of the pair is the Coulomb term.
+            # not depend on salt (Scholtz et al. 1993; Smith & Scholtz 1998). Under the "additive"
+            # rule its Table IV value is that hydrogen bond and applies in every ionisation state,
+            # where the geometry allows it (_acid_base_hbonds); the ionic part of the pair is the
+            # Coulomb term. Under "states" the bond and the close-range Coulomb term are a contact.
             acid_base = bool({AAi, AAi3} & {"D", "E"} and {AAi, AAi3} & {"K", "R", "H"})
-            if acid_base and base < 0 and (idx, idx + 3) not in self._acid_base_hbonds():
-                if self.pair_rule == "contacts":
-                    # The one-direction limit belongs to the salt bridge: two charged groups pay a large
-                    # desolvation and bond toward one side. A pair with a neutral partner (COOH or NH2, cheap to
-                    # desolvate) hydrogen-bonds on any side, so a pair _acid_base_hbonds does not select keeps its
-                    # Table IV bond in the states that are not doubly charged, (1 - p_i p_j), AGADIR's form for
-                    # the other titratable pairs. Scholtz et al. (1993): "the ionization of one side chain
-                    # increases the strength of the hydrogen bond"; Fossat et al. (2023, ChemPhysChem 24,
-                    # e202200746): (E4K4)3 with all Glu neutral (net +12) is as helical as with all charged.
-                    p_i = abs(self.modified_seq_ionization_hel[idx])
-                    p_j = abs(self.modified_seq_ionization_hel[idx + 3])
-                    base = base * (1.0 - p_i * p_j)
-                else:
+            if acid_base and self.pair_rule == "states":
+                # the pair is a state of its two side chains (electrostatics/side_chain_states.py), which carries it
+                # where it has a re-derived strength or a favourable cell; an unfavourable cell of another class stays
+                if owns_pair(AAi, AAi3, 3, base):
                     base = 0.0
+            elif acid_base and base < 0 and (idx, idx + 3) not in self._acid_base_hbonds():
+                base = 0.0
 
             # Other titratable pairs: Table IV applies to the states that are not both charged.
             if not acid_base and (AAi in (self.pos_charge_aa + self.neg_charge_aa)) and (AAi3 in (self.pos_charge_aa + self.neg_charge_aa)):
@@ -1318,25 +1319,18 @@ class EnergyCalculator(PrecomputeParams):
                 base = 0.0
 
             # An Asp/Glu - Lys/Arg/His pair forms a side-chain hydrogen bond whose strength does
-            # not depend on salt or on whether the acid is charged (Scholtz et al. 1993; Smith &
-            # Scholtz 1998).  Its Table IV value is that hydrogen bond and applies in every
-            # ionisation state, where the geometry allows it (_acid_base_hbonds); the ionic part
-            # of the pair is the Coulomb term.
+            # not depend on salt (Scholtz et al. 1993; Smith & Scholtz 1998). Under the "additive"
+            # rule its Table IV value is that hydrogen bond and applies in every ionisation state,
+            # where the geometry allows it (_acid_base_hbonds); the ionic part of the pair is the
+            # Coulomb term. Under "states" the bond and the close-range Coulomb term are a contact.
             acid_base = bool({AAi, AAi4} & {"D", "E"} and {AAi, AAi4} & {"K", "R", "H"})
-            if acid_base and base < 0 and (idx, idx + 4) not in self._acid_base_hbonds():
-                if self.pair_rule == "contacts":
-                    # The one-direction limit belongs to the salt bridge: two charged groups pay a large
-                    # desolvation and bond toward one side. A pair with a neutral partner (COOH or NH2, cheap to
-                    # desolvate) hydrogen-bonds on any side, so a pair _acid_base_hbonds does not select keeps its
-                    # Table IV bond in the states that are not doubly charged, (1 - p_i p_j), AGADIR's form for
-                    # the other titratable pairs. Scholtz et al. (1993): "the ionization of one side chain
-                    # increases the strength of the hydrogen bond"; Fossat et al. (2023, ChemPhysChem 24,
-                    # e202200746): (E4K4)3 with all Glu neutral (net +12) is as helical as with all charged.
-                    p_i = abs(self.modified_seq_ionization_hel[idx])
-                    p_j = abs(self.modified_seq_ionization_hel[idx + 4])
-                    base = base * (1.0 - p_i * p_j)
-                else:
+            if acid_base and self.pair_rule == "states":
+                # the pair is a state of its two side chains (electrostatics/side_chain_states.py), which carries it
+                # where it has a re-derived strength or a favourable cell; an unfavourable cell of another class stays
+                if owns_pair(AAi, AAi4, 4, base):
                     base = 0.0
+            elif acid_base and base < 0 and (idx, idx + 4) not in self._acid_base_hbonds():
+                base = 0.0
 
             # Other titratable pairs: suppress Table IV in the both-charged microstate.
             if not acid_base and (AAi in (self.pos_charge_aa + self.neg_charge_aa)) and (AAi4 in (self.pos_charge_aa + self.neg_charge_aa)):

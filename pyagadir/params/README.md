@@ -33,7 +33,7 @@ There are no C-terminal position columns, as in the published table: a helical r
 
 The Glu (E) row departs from the published table: its charged columns are 0.172 higher and its Neutral value is 1.046, so that Glu⁻ and Glu⁰ cost +0.572 and +0.366 kcal/mol relative to Ala, the measured helix propensities of Chakrabartty et al. (1994, Protein Sci. 3, 843; Table 2), the source the published table cites for neutral and charged propensities.
 
-Capping motifs and acid-base bonds (`CAPPING_EXCLUSIVITY` in energies.py, default "exclusive"): a side chain that caps the helix by pointing back toward the N-terminus cannot at the same time take an acid-base bond to a partner on its C-terminal side (i+3, i+4), the same one-direction argument as the acid-base bond rule (`_acid_base_hbonds`). The motifs: an Asp or Glu at N3 that the N-cap's column rewards (Nc-3 - Nc-1, or Nc-4 - Nc-2 with Pro at N1) plus the capping box above for a Glu behind a Ser, Thr, Asp or Asn N-cap; a Lys or Arg at N4 in the charged staple (`get_dG_charged_staple`); an Asp or Glu at N4 in the Petukhov motif (`get_dG_petukhov_motif`); and the hydrophobic staple's capping-box factor, which follows the N3 acid. The bond selection solves every combination of motifs kept and bonds taken and keeps the largest summed weight (motif weights in the bond selection's units: the capping box 0.9 plus the column gain, the charged staple 0.3, the Petukhov motif 1.0). The energy treats the motif and the rival bonds as exclusive states of one side chain, Z = 1 + K_motif + K_bond with K = exp(-dG/RT) - 1 for each option's free energy at the segment's temperature and charges: the occupancies follow from the two free energies, no occupancy data enter. "max" keeps the stronger option only; "additive" counts both (the behaviour before 2026-10-26). Before, Lyu et al.'s (1990, 1992) Sc-YS-EEEEKKKK... peptides counted their N3 Glu once in the capping box and again in a salt bridge to the Lys four residues on. The ionisation solver's charge coefficients (`_nonCoulomb_charge_coefficients`) read the rival partners' charges too: exact for a motif with one rival partner, a bilinear approximation for two (the energy itself is exact at the solved charges). Effect together with the Gly N-cap below (2026-10-26, against the model before): mean panel RMSE 3.260 -> 3.900 (Lacroix et al. 2.554 -> 3.818, Munoz & Serrano 1995 4.362 -> 4.801, the other two unchanged); literature sets pooled 10.85 -> 10.67, mean over sets 9.79 -> 9.61 (Bradley et al. 1990 -1.3, Lyu et al. 1990/1991/1992 -1.5/-1.3/-1.1, Baker et al. 2015 melts -0.7 and Table 1 -0.9, Petukhov et al. 1996 -0.7; Doig & Baldwin 1995 Table 3 +0.5, Viguera & Serrano 1995 +0.4). The panel cost is the CheY fragment of Munoz & Serrano 1995 (Fig. 3c, EDAVEALRKLQAGGY, 3.2 -> 8.0, now under-predicted by 12 helix points at 6 C): its Asp N-cap and Glu at N3 form a capping box whose Glu no longer also bonds Arg8 and Lys9, and Lacroix et al.'s Fig. 4c walk (+2 at every pH, the Gly N-cap).
+Capping motifs and acid-base bonds (since 2026-10-26, under the default `pair_rule="states"`, the motif is a state of its side chain in `electrostatics/side_chain_states.py`, exclusive of every contact of that side chain and calibrated so that an isolated motif keeps its free energy; the description below is the `"additive"` rule's, the default with `gbx`; `CAPPING_EXCLUSIVITY` in energies.py, default "exclusive"): a side chain that caps the helix by pointing back toward the N-terminus cannot at the same time take an acid-base bond to a partner on its C-terminal side (i+3, i+4), the same one-direction argument as the acid-base bond rule (`_acid_base_hbonds`). The motifs: an Asp or Glu at N3 that the N-cap's column rewards (Nc-3 - Nc-1, or Nc-4 - Nc-2 with Pro at N1) plus the capping box above for a Glu behind a Ser, Thr, Asp or Asn N-cap; a Lys or Arg at N4 in the charged staple (`get_dG_charged_staple`); an Asp or Glu at N4 in the Petukhov motif (`get_dG_petukhov_motif`); and the hydrophobic staple's capping-box factor, which follows the N3 acid. The bond selection solves every combination of motifs kept and bonds taken and keeps the largest summed weight (motif weights in the bond selection's units: the capping box 0.9 plus the column gain, the charged staple 0.3, the Petukhov motif 1.0). The energy treats the motif and the rival bonds as exclusive states of one side chain, Z = 1 + K_motif + K_bond with K = exp(-dG/RT) - 1 for each option's free energy at the segment's temperature and charges: the occupancies follow from the two free energies, no occupancy data enter. "max" keeps the stronger option only; "additive" counts both (the behaviour before 2026-10-26). Before, Lyu et al.'s (1990, 1992) Sc-YS-EEEEKKKK... peptides counted their N3 Glu once in the capping box and again in a salt bridge to the Lys four residues on. The ionisation solver's charge coefficients (`_nonCoulomb_charge_coefficients`) read the rival partners' charges too: exact for a motif with one rival partner, a bilinear approximation for two (the energy itself is exact at the solved charges). Effect together with the Gly N-cap below (2026-10-26, against the model before): mean panel RMSE 3.260 -> 3.900 (Lacroix et al. 2.554 -> 3.818, Munoz & Serrano 1995 4.362 -> 4.801, the other two unchanged); literature sets pooled 10.85 -> 10.67, mean over sets 9.79 -> 9.61 (Bradley et al. 1990 -1.3, Lyu et al. 1990/1991/1992 -1.5/-1.3/-1.1, Baker et al. 2015 melts -0.7 and Table 1 -0.9, Petukhov et al. 1996 -0.7; Doig & Baldwin 1995 Table 3 +0.5, Viguera & Serrano 1995 +0.4). The panel cost is the CheY fragment of Munoz & Serrano 1995 (Fig. 3c, EDAVEALRKLQAGGY, 3.2 -> 8.0, now under-predicted by 12 helix points at 6 C): its Asp N-cap and Glu at N3 form a capping box whose Glu no longer also bonds Arg8 and Lys9, and Lacroix et al.'s Fig. 4c walk (+2 at every pH, the Gly N-cap).
 
 Gly N-cap (Nc-1 to Nc-4) departs from the published table: -0.30 -> -0.54 kcal/mol (2026-10-26). In two hosts that vary the N-cap residue alone, the published value under-rates a Gly N-cap against Ser, Thr, Asp and Asn: Cochran et al. (2001, Protein Sci. 10, 463; Ac-XAAAAQAAAAQAAGY-NH2, 0 C, pH 7) measure X - Gly = Ser +7, Thr +4, Asp +14, Asn +1 helix points where the model gave +10.5, +6.5, +15.5, +7.6, and Doig & Baldwin (1995, Protein Sci. 4, 1325; XAKAAAAKAAAAKAAGY-NH2, free amine, 0 C, 1 M NaCl) measure Ser and Gly N-caps equal (52.5 % at pH 9.55) where the model put Ser 8 points above. With this model (capping-motif exclusivity on), the Gly N-cap value that makes the mean X - Gly residual zero is -0.54 in Cochran et al.'s acetylated host and -0.61 in Doig & Baldwin's at pH 9.55; the acetylated host's value is used, the N-terminal context of most designs. All four N-cap columns move together (Gly's published columns are equal). Cost: Lacroix et al.'s YGG-S... walks rise by 1-3 helix points (a better Gly N-cap lets helices start at the Gly two residues before their Ser N-cap); accepted under the v17 guard (datasets ending at or below 5 helix points RMSE may regress).
 
@@ -70,7 +70,7 @@ The interaction free energies correspond to those between non-charged residues, 
 
 Three hydrophobic i,i+3 cells of table 4a depart from the published table: Leu-Leu -35 -> -16, Val(i)-Leu(i+3) -20 -> -3 and Ile(i)-Leu(i+3) -26 -> -7 (kcal/mol x 100; row = residue i). The published side-chain values were derived from a mean-force potential over NMR data on protein fragments (Munoz & Serrano 1994, Nat. Struct. Biol. 1, 399), not from peptide energetics. Two independent determinations show these i,i+3 values are too strong, and each new value is their mean. (1) Measured: Padmanabhan & Baldwin (1994, Protein Sci. 3, 1992) compared i,i+3 and i,i+4 placements of the same pairs in Ac-YKAAA...K-NH2. Holding the published i,i+4 cells, their measured i,i+4 minus i,i+3 helicity differences imply i,i+3 energies of -0.18 (Leu-Leu), -0.01 (Val-Leu) and -0.01 (Ile-Leu). (2) Computed: Creamer & Rose (1995, Protein Sci. 4, 1305, Table 7) give -0.13, -0.05 and -0.13 by Boltzmann-weighted modelling. The two sources agree only when Leu is the C-terminal residue of the pair, so the Leu(i)-X(i+3) cells and all i,i+4 cells are unchanged.
 
-In this implementation (tables 4a and 4b), a pair of an acidic (Asp, Glu) and a basic (Lys, Arg, His) residue is treated differently: its value is the side-chain hydrogen bond, which is present whether or not the acid is charged and does not depend on salt (Scholtz et al. 1993, Biochemistry 32, 9668; Smith & Scholtz 1998, Biochemistry 37, 33), so it is applied in every ionisation state. The ionic part of such a pair is the Coulomb term. Since 2026-10-23 the default law (`pair_rule="contacts"`) also gives the bond to the pairs `_acid_base_hbonds` does not select, weighted by the probability that they are not doubly charged, and makes the salt bridges' close-range Coulomb term exclusive: see "Charged side-chain pairs" below.
+In this implementation (tables 4a and 4b), a pair of an acidic (Asp, Glu) and a basic (Lys, Arg, His) residue is treated differently: its value is the side-chain hydrogen bond, which is present whether or not the acid is charged and does not depend on salt (Scholtz et al. 1993, Biochemistry 32, 9668; Smith & Scholtz 1998, Biochemistry 37, 33), so it is applied in every ionisation state. The ionic part of such a pair is the Coulomb term. This is the `"additive"` pair rule (the default with `gbx`). Since 2026-10-26 the default law (`pair_rule="states"`) takes the acid-base pairs out of Tables IV and uses re-derived bonds for the classes in `acid_base_pairs.tsv` (the Table IV cells below remain for the His pairs and for `gbx`): see "Charged side-chain pairs" below.
 
 Three acid-base cells depart from the published tables: His(i)-Glu(i+3) 0 -> -18 (table 4a), His(i)-Glu(i+4) 0 -> -21 and Lys(i)-Asp(i+4) -40 -> -24 (table 4b) (kcal/mol x 100; row = residue i). They come from Smith & Scholtz (1998, Biochemistry 37, 33), one of the sources of the published Table IV. Smith & Scholtz measured Glu/Asp-Lys and Glu-His pairs in both orientations at i,i+3, i,i+4 and i,i+5 in the host Ac-AAQAAAAQAAAAQAAY-NH2, with the acid neutral and charged, at 0.01, 1.0 and 2.5 M NaCl. Their (i,i+5) peptides carry no interaction, so the difference between an (i,i+k) peptide and its (i,i+5) partner cancels the charge-macrodipole terms. Each new value is the cell value for which this model reproduces those differences, averaged over salt concentrations and ionisation states (6-9 conditions per cell, standard deviation 0.05-0.11 kcal/mol). The same procedure returns the published value for the Glu-Lys, Lys-Glu and Asp-Lys cells at i+3 and i+4 within 0.03 kcal/mol, which is the check that it is sound. The published table has no His-Glu interaction. The measured one persists when His is neutral (pH 8.5), as expected for a hydrogen bond. The data are `data/peptides/1998_smith_biochem37_table3.tsv`.
 
@@ -375,60 +375,102 @@ The ionisation states of all titratable groups are solved self-consistently in t
 - Terminal group-macrodipole distance (every law): Lacroix 1998's rule, 2.1 A when the cap carries the free amine, carboxylate or succinyl, and 2 A more per residue between them ("2.1 A ..., then 4.1 A, 6.1 A"), with no cutoff (the paper states none). Lacroix et al.'s quoted energies (0.81, 0.36, 0.21, 0.14 kcal/mol at 50 mM, 273 K) follow this rule at a constant ratio with the 4 pi Coulomb law. An empirically fitted cubic, 2.0 + 1.80167 N - 0.045 N^2 + 0.00333 N^3, zero beyond six residues, was used before; it had no recorded basis. Effect: mean panel RMSE -0.012 (Lacroix +0.09 on the free-N titrations, Munoz & Serrano 1995 -0.09, the CheY helix-2 fragment -1.1), literature pooled RMSE -0.04.
 - Physical constants: CODATA 2018 (chemistry.py: R, e, N_A, k_B, eps_0); ln 10 exactly in the pKa shift; 0 C = 273.15 K as the reference temperature of every temperature law. The Coulomb prefactor is 332.06 kcal A/mol.
 
-## Charged side-chain pairs (`pair_rule`, no table)
-Default with `dipole_law="munoz"` since 2026-10-23 (`pair_rule="contacts"`; `"additive"` is the rule before it and stays
-the default with `gbx`). No new constant: the rule uses Table IV, Table VI and the Coulomb law as they are.
+## Charged side-chain pairs (`pair_rule`; table `acid_base_pairs`)
+Default with `dipole_law="munoz"` since 2026-10-26: `pair_rule="states"` (`electrostatics/side_chain_states.py`).
+`"additive"` stays the default with `gbx`: every pair's Coulomb term at its Table VI distance, the best compatible set of
+Table IV bonds (`_acid_base_hbonds`), and the capping motifs exclusive of their side chain's forward bonds
+(`CAPPING_EXCLUSIVITY`). The rule between 2026-10-23 and 2026-10-26 (`"contacts"`: salt bridges' Coulomb term exclusive,
+one contact per charged side chain, a pair with a neutral partner bonding on any side) is replaced and removed.
 
-*Mechanism.* An acid-base pair three or four residues apart interacts through two channels with different geometry.
-The hydrogen bond is a contact: its strength does not depend on salt (Scholtz et al. 1993, Biochemistry 32, 9668: "the
-major part of the interaction observed in 10 mM NaCl, pH 7, is still present in 2.5 M NaCl"), and a carboxylate's two
-oxygens let one rotamer reach both the i+3 and i+4 partner on one side (`_acid_base_hbonds`, HBX2; since 2026-10-23
-the helix takes the compatible set of bonds with the largest summed Table IV value, found exactly, rather than the
-strongest bond first: in (K4E4)2 strongest-first keeps the central Glu->Lys i+4 bonds and loses both Lys->Glu blocks,
--1.25 against -1.70 kcal/mol; the scored panels do not change). The Coulomb
-attraction is an average over where the charges are, and salt screens it. Two consequences of the desolvation a charged
-group pays to leave water (owner's mechanism, reasoning N202/N204):
-- *A pair with a neutral partner hydrogen-bonds on any side.* The one-direction limit of HBX2 belongs to the salt bridge,
-  whose two charged groups pay a large desolvation; a protonated carboxylate or a neutral amine is cheap to desolvate.
-  A pair HBX2 does not select therefore takes its Table IV value weighted by (1 - p_i p_j), the probability that it is
-  not doubly charged: AGADIR's form for the other titratable pairs (`get_dG_i3`, `get_dG_i4`). Scholtz et al. 1993:
-  "the ionization of one side chain increases the strength of the hydrogen bond". Fossat et al. (2023, ChemPhysChem 24,
-  e202200746), from potentiometry and CD: (E4K4)3 with every Glu neutral (net +12) is as helical as with every group
-  charged, which the additive rule cannot give.
-- *The salt bridge's close-range Coulomb term is exclusive.* The Table VI helix distance of an acid-base pair is that
-  of a pair that sits close because it attracts (Glu-Lys i+4 5.9 A against 7.8 / 8.2 A for Glu-Glu / Lys-Lys). A charged
-  side chain sits at that distance from one partner at a time, so in a charge-dense block (EEEEKKKK) the additive rule
-  counts the close-range attraction several times over. `electrostatics/contacts.py`: each charged side chain is free
-  or in one contact with a charged candidate partner (three or four residues apart, both inside the helix, caps
-  excluded, a favourable Table IV cell); a pair in contact has its Table VI Coulomb term, a candidate pair not in
-  contact the open geometry (the mean of the two like-pair Table VI rows at that separation). The contact state's free
-  energy is set so that an isolated pair reproduces its Table VI Coulomb term exactly in every salt and temperature,
-  exp(-G_contact/RT) = exp(-G_TableVI/RT) - exp(-G_open/RT). The charge and contact states are summed exactly by a
-  transfer matrix for every pair within four residues, with a mean field beyond (once refined), and the segment's free
-  energy changes by that free energy minus the additive mean-field one. The coil state has no contacts.
+*Principle.* One side chain, one state. At any moment a side chain holds a set of contacts with partners three or four
+residues away (slots i-4, i-3, i+3, i+4), or, at N3/N4, its capping motif, or nothing; an ionisable side chain also has
+its charge state. Every acid-base interaction reads that state: a contact is the pair's hydrogen bond and its
+close-range Coulomb term together, and a capping motif (the capping box with an N3 acid, the charged staple and the
+Petukhov motif at N4) excludes every contact of its side chain. A segment's helix free energy sums over all joint states
+and charge states by a transfer matrix (exact within four residues; a mean field at the solver's charges beyond). The
+coil holds no contacts.
 
-*Checks.* Peptides without acid-base pairs three or four apart are unchanged (not computed). Isolated pairs keep their
-values: Smith & Scholtz 1998, and every Asp/Glu x Lys/Arg/His type at i+3 and i+4 in both orders, within 0.05 helix
-points; the calibration holds to 1e-12. A type whose Table VI distance is not shorter than its open geometry (only
-Asp(i)-His(i+4) among the candidates: 8.3 against 6.85 A) has no contact state and keeps its Table VI term. The transfer matrix equals
-brute-force enumeration of the charge states and contact sets to 1e-9 (`tests/test_salt_bridge_contacts.py`).
+*Which contact sets one side chain can hold* (single contacts always; at most two):
+- Lys or His with two acids: only both C-terminal, (i+3, i+4). Wolny et al. (2017, Sci. Rep. 7, 44341, p. 9; molecular
+  dynamics of three single alpha-helix designs): "Lys only interacts with two Glu residues that are both C-terminal to
+  the Lys"; the opposite-face combinations (i-4, i+4) and (i-3, i+3) "were not significantly populated, in agreement
+  with the experimental finding of non-cooperativity in an alanine-based peptide with a K->E(-4) & E(+4) triplet
+  pattern" (Iqbalsyah & Doig 2005, Biochemistry 44, 10449). On an ideal helix no rotamer reaches both opposite-face
+  partners.
+- Arg with two acids: the one-face straddles (i-4, i+3) and (i-3, i+4), "up to 10 % of the time" (Wolny et al.).
+- Asp or Glu with two Lys/His: only (i-4, i+3), 7-10 % (Wolny et al.); with two Arg: (i-4, i-3), (i+3, i+4),
+  (i-4, i+3), (i-4, i+4), (i-3, i+3) (Wolny et al.'s same-side E-R pairs; Olson et al. 2001, Proteins 44, 123:
+  cooperative R-E-R triads at i, i+-4 and i, i+-3); with one Lys/His and one Arg: (i-4, i+3) only (no data).
+The rule replaces three separate ones (the best-set bond selection, the one-contact Coulomb rule, the capping
+exclusivity), which described one side chain by up to three independent states. Molecular dynamics supplies only which
+arrangements exist; no constant comes from it.
 
-*Effect* (corpus guard and scored panels against the model before it, 2026-10-23):
-- scored panels: ALL 3.426 -> 3.260; Muñoz 1995 4.739 -> 4.362; Muñoz 1997 1.278 -> 1.344; Huyghues and Lacroix
-  unchanged; residual structure 3.045 -> 2.986;
-- corpus: Lyu et al. 1990 23.98 -> 20.59, 1991 24.36 -> 21.81, 1992 16.91 -> 13.81; Bradley et al. 1990 10.20 -> 9.68;
-  Zhou et al. 1994 6.95 -> 6.47; Petukhov et al. 1996 13.18 -> 13.04; Fossat et al. 2023 (not in the guard; CDSSTR
-  helicity) 17.5 -> 10.8; every single-pair and chain set unchanged;
-- the pH response of the Glu/Lys blocks (helicity lost on protonating the acids, four peptides, model minus measured):
-  bias -35.0 -> -17.7 helix points; Lyu et al. (1992) E4K4 at pH 1.5: 18.8 -> 41.5 % (measured 46.7); single pairs,
-  like-charge and other pH switches unchanged;
-- worse: Baker et al. (2015) melts 8.83 -> 12.90 and Table 1 12.76 -> 14.85. The short unflanked block peptides
-  improve (Table 1 bias +3.9 -> -0.3); the loss is in the Ala-flanked and 35-residue peptides, which the earlier rule
-  already under-predicted (bias -5.7 to -13): the rule removes over-counted attraction uniformly and exposes that
-  deficit, which is open (reasoning N205).
+*Free energy of a contact.* The isolated pair's free energy is taken as measured: H (the bond with both partners
+charged) plus the screened Coulomb term at the pair's Table VI helix distance, or Hn (the bond with one partner neutral)
+alone. The contact state is weighted so that the isolated pair, summed over contact and no contact, reproduces that
+value exactly in every charge state, salt and temperature: exp(-G_contact/RT) = exp(-G_iso/RT) - exp(-G_open/RT), G_open
+being the Coulomb term at the open geometry (the mean of the two like-pair Table VI rows of the same residues, the
+geometry without the pair's own attraction: Glu-Lys i+4 5.9 A against 7.8 and 8.2 A for Glu-Glu and Lys-Lys), or 0 with
+a neutral partner. Where Table VI does not hold the pair closer than the open geometry (Asp/Glu(i)-His(i+3/i+4),
+Lys/Arg(i)-Asp(i+3)), the open reference is the Table VI term itself. A capping motif's state is calibrated the same way
+(K = exp(-g/RT) - 1 beside the free state), so an isolated motif keeps its free energy g. H and Hn take the
+hydrogen-bond temperature law. Why two bonds: Scholtz et al. 1993 (Biochemistry 32, 9668): "the ionization of one side
+chain increases the strength of the hydrogen bond"; Fossat et al. (2023, ChemPhysChem 24, e202200746): (E4K4)3 with
+every Glu neutral (net +12) is as helical as with every group charged.
 
-*Limitations.* Lyu et al.'s E4K4 host stays about 15 helix points too helical at 0.01-1 M at neutral pH; the
-long or flanked Baker peptides above; `gbx` keeps the additive rule until it is re-derived for its field.
+*Pair strengths (`acid_base_pairs.tsv`, kcal/mol at 0 C; published Table IV cells for comparison, row = residue i).*
+Re-derived from isolated pairs only, as differences against controls in the same host: Smith & Scholtz (1998,
+Biochemistry 37, 33) pairs against their i+5 controls at pH 2.5 and 7, 0.01-2.5 M NaCl; Iqbalsyah & Doig (2005) single
+i+4 pairs against their pair-free control over pH; Huyghues-Despointes, Scholtz & Baldwin (1993, Protein Sci. 2, 80)
+chains of three non-competing Asp/Glu-Arg pairs in both orientations, pH 2.5 and 7, 0.01 and 1 M. The charge-dense
+blocks are not fitted; they are predictions.
+
+| pair | H (both charged) | Hn (one neutral) | published cells |
+| --- | --- | --- | --- |
+| Glu-Lys i+3, either order | -0.111 | -0.175 | E-K -0.15, K-E -0.15 |
+| Glu(i)-Lys(i+4) | -0.191 | -0.256 | -0.20 |
+| Lys(i)-Glu(i+4) | -0.274 | -0.254 | -0.10 |
+| Asp-Lys i+3, either order | -0.001 | -0.102 | D-K -0.05, K-D +0.05 |
+| Asp-Lys i+4, either order | -0.192 | -0.223 | D-K -0.15, K-D -0.40 |
+| Glu-Arg i+3, either order | -0.262 | -0.203 | E-R 0, R-E -0.35 |
+| Glu-Arg i+4, either order | -0.374 | -0.503 | E-R -0.45, R-E -0.40 |
+| Asp-Arg i+3, either order | -0.093 | -0.144 | D-R -0.30, R-D +0.20 |
+| Asp-Arg i+4, either order | -0.206 | -0.274 | D-R -0.30, R-D -0.20 |
+
+Orientation enters a single pair only where two independent sources require it: at Glu-Lys i+4, Smith & Scholtz's pairs
+favour Glu first (salt-resistant) and Iqbalsyah & Doig's favour Lys first; jointly the split fits both (an
+orientation-symmetric value fits Smith & Scholtz's pairs worse than the published cells), and Stellwagen et al.'s
+Glu(i)-Lys(i+4) chains and Baker et al.'s Lys-first blocks, neither fitted, agree with it. At i+3 the split rests on one
+source and fails out of sample (Scholtz et al.'s 1991 Ac-Y(AEAAKA)nF-NH2 chains), so one value serves both orders; an
+oriented Arg fit reproduces its own peptides but not Merutka et al.'s (1991) Glu/Arg ladders or Richardson &
+Makhatadze's (2004) peptides, so Arg pairs are orientation-symmetric too. In blocks, orientation also comes from the
+geometry: a Lys-first block holds Lys (i+3, i+4) doubles that a Glu-first block cannot. Acid-base classes without an entry
+(the His pairs) use their Table IV cell for both bonds.
+
+*Checks* (tests/test_side_chain_states.py): peptides without acid-base pairs three or four apart are unchanged; an
+isolated contact and an isolated motif reproduce their free energies to 1e-12; the transfer matrix equals brute-force
+enumeration of charge states x allowed contact sets x motif states to 1e-10; isolated His pairs keep their published
+values within 0.05 helix points.
+
+*Effect* (corpus guard and scored panels against the model before it, 2026-10-26):
+- scored panels (mean RMSE per dataset): Huyghues-Despointes and Lacroix unchanged; Muñoz & Serrano 1995 4.80 -> 4.95, of
+  which the CheY fragment (Fig. 3c, EDAVEALRKLQAGGY) 8.01 -> 11.05; the other panels within 0.5 (3b 5.31 -> 4.46, 3e 10.43
+  -> 9.94, Marqusee & Baldwin's (i+3)K,E melt 2.15 -> 0.78, (i+4)E,K melt 3.35 -> 3.83, Scholtz et al.'s 1991 chains within
+  +0.4); Muñoz & Serrano 1997 1.344 -> 1.360;
+- corpus (41 sets): pooled RMSE 10.67 -> 9.78, mean of sets 9.61 -> 8.57. Better: Lyu et al. 1990 / 1991 / 1992 19.1 / 20.6 /
+  12.7 -> 11.0 / 11.2 / 10.8; Marqusee & Baldwin 1987 19.6 -> 12.3; Merutka et al. 1991 10.25 -> 7.64; Baker et al. 2015 melts
+  11.75 -> 8.97 and Table 1 13.38 -> 11.56; Batchelor et al. 2019 12.89 -> 7.46; Iqbalsyah & Doig 2005 6.52 -> 4.60;
+  Huyghues-Despointes et al. 1993 6.63 -> 5.71. Worse: Smith & Scholtz 1998 2.83 -> 3.36, Scholtz et al. 1993 3.77 -> 4.13,
+  Richardson et al. 1999 6.97 -> 7.64, Stellwagen et al. 1992 5.85 -> 5.97;
+- Fossat et al. 2023 (not in the guard): 11.39 -> 8.67;
+- Baker et al.'s 21 peptides in their own two-state frame (Supplementary Table 7, 5 C): RMSE 10.2 -> 6.3; the error of the
+  ten Glu-first minus Lys-first contrasts 13.3 -> 4.0 (the Lys-first designs were 13 helix points too low).
+
+*Limitations.* The CheY fragment's capping-box Glu5 cannot also bond Arg8 and Lys9 in one state; the measured helicity
+suggests it does (the cost was accepted). One neutral-partner bond Hn serves COOH...NH3+ (low pH, where it was fitted) and
+COO-...NH2 (high pH, where the amine is a weak donor). Charge-dense blocks at the pH extremes (net charge +-12) stay too
+low: a term for highly charged helices is missing. Baker et al.'s peptides stay about 4 helix points low in both
+orientations. His pairs keep their Table IV cells. `gbx` keeps the additive rule.
 
 *Solver note (same date).* `SegmentBatch.solve_helix` now feeds a site's Table IV/V pair couplings into its pKa also
 when the site has no non-Coulomb coefficient of its own (a (1 - p p) term has none). Before, only Cys and His sites ever

@@ -1,0 +1,10 @@
+acid	base	separation	first	H_kcal_mol	Hn_kcal_mol	source
+E	K	3	any	-0.111	-0.175	Smith & Scholtz (1998) Biochemistry 37, 33-40: Glu-Lys i+3 pairs against their i+5 controls, both orientations, pH 2.5 and 7, 0.01-2.5 M NaCl, 0 C
+E	K	4	acid	-0.191	-0.256	Smith & Scholtz (1998) Biochemistry 37, 33-40 and Iqbalsyah & Doig (2005) Biochemistry 44, 10449-10456: single Glu(i)-Lys(i+4) pairs against their pair-free controls, fitted jointly
+E	K	4	base	-0.274	-0.254	Smith & Scholtz (1998) Biochemistry 37, 33-40 and Iqbalsyah & Doig (2005) Biochemistry 44, 10449-10456: single Lys(i)-Glu(i+4) pairs against their pair-free controls, fitted jointly
+D	K	3	any	-0.001	-0.102	Smith & Scholtz (1998) Biochemistry 37, 33-40: Asp-Lys i+3 pairs against their i+5 controls, both orientations
+D	K	4	any	-0.192	-0.223	Smith & Scholtz (1998) Biochemistry 37, 33-40: Asp-Lys i+4 pairs against their i+5 controls, both orientations
+E	R	3	any	-0.262	-0.203	Huyghues-Despointes, Scholtz & Baldwin (1993) Protein Sci. 2, 80-85: three non-competing Glu-Arg i+3 pairs per peptide, both orientations, pH 2.5 and 7, 0.01 and 1 M NaCl, 0 C
+E	R	4	any	-0.374	-0.503	Huyghues-Despointes, Scholtz & Baldwin (1993) Protein Sci. 2, 80-85: three non-competing Glu-Arg i+4 pairs per peptide, both orientations
+D	R	3	any	-0.093	-0.144	Huyghues-Despointes, Scholtz & Baldwin (1993) Protein Sci. 2, 80-85: three non-competing Asp-Arg i+3 pairs per peptide, both orientations
+D	R	4	any	-0.206	-0.274	Huyghues-Despointes, Scholtz & Baldwin (1993) Protein Sci. 2, 80-85: three non-competing Asp-Arg i+4 pairs per peptide, both orientations
