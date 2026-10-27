@@ -67,7 +67,8 @@ not state one. The manifest key is the path relative to this directory (`nmr/<ke
 ## Measurements the model cannot score (`unscorable/`)
 
 `unscorable/` keeps measurements that the scoring scripts must not read: peptides with a residue the model cannot
-represent (ornithine, written `O` in `sequence`, flag `nonstandard_residue`), and figures whose temperature or buffer
+represent (ornithine, written `O` in `sequence`, flag `nonstandard_residue`; norleucine and the C-peptide's homoserine
+lactone end, written `X` with the residue named in the flag), and figures whose temperature or buffer
 the paper does not state (`T_C` left empty). The format is the main one. The scripts glob `data/peptides/*.tsv`
 only, so nothing here is scored. The manifest key is the path relative to this directory (`unscorable/<key>`).
 
@@ -76,6 +77,12 @@ only, so nothing here is scored. The manifest key is the path relative to this d
 A few main files carry rows that are not helicities (for example `Tm_C`, a printed melting midpoint, whose
 `T_C` is the midpoint itself). The scoring scripts read only `helix_percent`, `helix_fraction`,
 `minus_theta222` and the printed free energies below, and skip the rest.
+
+Other estimates a paper prints beside its 222-nm helicity keep their own names and are not scored: spectral fits
+(`helix_percent_cd_shape`, a polylysine reference fit, Bruch et al. 1991; `helix_percent_cdsstr` and
+`helix_percent_bestsel`, deconvolutions, Süveges et al. 2009 and Varga et al. 2025) and series normalised to one
+of their own points (`theta222_ratio_<reference>`, e.g. `theta222_ratio_6C`, `theta222_ratio_0M_NaCl`; a consumer
+needs an absolute [theta]222 at the reference to use them).
 
 ## Printed free energies (`dG_helix_kcal_mol`)
 
