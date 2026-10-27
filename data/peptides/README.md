@@ -74,8 +74,23 @@ only, so nothing here is scored. The manifest key is the path relative to this d
 ## Non-helicity rows in the main files
 
 A few main files carry rows that are not helicities (for example `Tm_C`, a printed melting midpoint, whose
-`T_C` is the midpoint itself). The scoring scripts read only `helix_percent`, `helix_fraction` and
-`minus_theta222` and skip the rest.
+`T_C` is the midpoint itself). The scoring scripts read only `helix_percent`, `helix_fraction`,
+`minus_theta222` and the printed free energies below, and skip the rest.
+
+## Printed free energies (`dG_helix_kcal_mol`)
+
+Park et al. 1993 print two-state free energies instead of ellipticities: `dG_helix_kcal_mol` is their
+ΔG = −RT ln([θ]obs − [θ]coil)/([θ]helix − [θ]obs) (helix −35,600, coil +300 at 0 °C), so f = 1/(1 + exp(ΔG/RT)).
+Their Fig. 4B is printed relative to pH 2 (`ddG_vs_pH2_kcal_mol`); a consumer adds the same peptide's Table I pH-2 ΔG.
+Both are stored as printed, and `reasoning/evidence/scripts/extracted_direct.py` converts them.
+
+## Salt flags
+
+Rows name their salt in `flags` (`KCl 0.5 M`, `CaCl2 0.5 M`). `ionic_strength_M` is the ionic strength (3c for
+CaCl2), and rows with a divalent salt also carry `divalent_salt`, so a test of divalent against monovalent salt at equal
+ionic strength can select them (Park et al. 1993, Fig. 2A). `same_samples_as=<source>` marks a point that shows a sample
+already stored from another table or figure. Scorers exclude it, as they exclude `reprint=` rows. `extrapolated`
+(in `unscorable/`) marks a value the authors extrapolated to conditions they did not measure.
 
 ## Ionic strength and the titrant
 

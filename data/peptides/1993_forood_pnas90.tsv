@@ -1,0 +1,75 @@
+peptide_id	sequence	ncap	ccap	n_res	pH	T_C	ionic_strength_M	quantity	value	error	unit	source_table	flags
+I	DPAEAAKAAAGR		Am	12	7.0	0.0	0.01	minus_theta222	7900		deg cm2 dmol-1	Table 2	printed;KF 0.01 M
+I	DPAEAAKAAAGR		Am	12	7.0	0.0	0.01	helix_percent	25.1		percent	Table 2	printed;KF 0.01 M
+II	APAEAAKAAAGR		Am	12	7.0	0.0	0.01	minus_theta222	760		deg cm2 dmol-1	Table 2	printed;KF 0.01 M
+II	APAEAAKAAAGR		Am	12	7.0	0.0	0.01	helix_percent	2.4		percent	Table 2	printed;KF 0.01 M
+III	NPAEAAKAAAGR		Am	12	7.0	0.0	0.01	minus_theta222	7700		deg cm2 dmol-1	Table 2	printed;KF 0.01 M
+III	NPAEAAKAAAGR		Am	12	7.0	0.0	0.01	helix_percent	24.4		percent	Table 2	printed;KF 0.01 M
+IV	QPAEAAKAAAGR		Am	12	7.0	0.0	0.01	minus_theta222	1500		deg cm2 dmol-1	Table 2	printed;KF 0.01 M
+IV	QPAEAAKAAAGR		Am	12	7.0	0.0	0.01	helix_percent	4.8		percent	Table 2	printed;KF 0.01 M
+V	SPAEAAKAAAGR		Am	12	7.0	0.0	0.01	minus_theta222	6800		deg cm2 dmol-1	Table 2	printed;KF 0.01 M
+V	SPAEAAKAAAGR		Am	12	7.0	0.0	0.01	helix_percent	21.6		percent	Table 2	printed;KF 0.01 M
+VI	EPAEAAKAAAGR		Am	12	7.0	0.0	0.01	minus_theta222	2700		deg cm2 dmol-1	Table 2	printed;KF 0.01 M
+VI	EPAEAAKAAAGR		Am	12	7.0	0.0	0.01	helix_percent	8.6		percent	Table 2	printed;KF 0.01 M
+VII	DPAEAAKAAAGK		Am	12	7.0	0.0	0.01	minus_theta222	6400		deg cm2 dmol-1	Table 2	printed;KF 0.01 M
+VII	DPAEAAKAAAGK		Am	12	7.0	0.0	0.01	helix_percent	20.3		percent	Table 2	printed;KF 0.01 M
+VIII	DPAEAAKAAAGA		Am	12	7.0	0.0	0.01	minus_theta222	5200		deg cm2 dmol-1	Table 2	printed;KF 0.01 M
+VIII	DPAEAAKAAAGA		Am	12	7.0	0.0	0.01	helix_percent	16.5		percent	Table 2	printed;KF 0.01 M
+IX	DGAEAAKAAAGR		Am	12	7.0	0.0	0.01	minus_theta222	5700		deg cm2 dmol-1	Table 2	printed;KF 0.01 M
+IX	DGAEAAKAAAGR		Am	12	7.0	0.0	0.01	helix_percent	18.1		percent	Table 2	printed;KF 0.01 M
+X	DPAEAAKAAAPR		Am	12	7.0	0.0	0.01	minus_theta222	1800		deg cm2 dmol-1	Table 2	printed;KF 0.01 M
+X	DPAEAAKAAAPR		Am	12	7.0	0.0	0.01	helix_percent	5.7		percent	Table 2	printed;KF 0.01 M
+I	DPAEAAKAAAGR		Am	12	7.0	0.0	0.01	minus_theta222	7910		deg cm2 dmol-1	Fig. 3A	digitised;KF 0.01 M
+I	DPAEAAKAAAGR		Am	12	7.0	3.0	0.01	minus_theta222	7650		deg cm2 dmol-1	Fig. 3A	digitised;KF 0.01 M
+I	DPAEAAKAAAGR		Am	12	7.0	10.0	0.01	minus_theta222	6970		deg cm2 dmol-1	Fig. 3A	digitised;KF 0.01 M
+I	DPAEAAKAAAGR		Am	12	7.0	20.0	0.01	minus_theta222	6380		deg cm2 dmol-1	Fig. 3A	digitised;KF 0.01 M
+I	DPAEAAKAAAGR		Am	12	7.0	30.0	0.01	minus_theta222	5870		deg cm2 dmol-1	Fig. 3A	digitised;KF 0.01 M
+I	DPAEAAKAAAGR		Am	12	7.0	40.0	0.01	minus_theta222	5620		deg cm2 dmol-1	Fig. 3A	digitised;KF 0.01 M;overlapped
+I	DPAEAAKAAAGR		Am	12	7.0	50.0	0.01	minus_theta222	5450		deg cm2 dmol-1	Fig. 3A	digitised;KF 0.01 M;overlapped
+I	DPAEAAKAAAGR		Am	12	7.0	60.0	0.01	minus_theta222	5370		deg cm2 dmol-1	Fig. 3A	digitised;KF 0.01 M;overlapped
+I	DPAEAAKAAAGR		Am	12	7.0	70.0	0.01	minus_theta222	5360		deg cm2 dmol-1	Fig. 3A	digitised;KF 0.01 M;overlapped
+V	SPAEAAKAAAGR		Am	12	7.0	0.0	0.01	minus_theta222	6890		deg cm2 dmol-1	Fig. 3A	digitised;KF 0.01 M
+V	SPAEAAKAAAGR		Am	12	7.0	3.0	0.01	minus_theta222	6660		deg cm2 dmol-1	Fig. 3A	digitised;KF 0.01 M
+V	SPAEAAKAAAGR		Am	12	7.0	10.0	0.01	minus_theta222	6320		deg cm2 dmol-1	Fig. 3A	digitised;KF 0.01 M
+V	SPAEAAKAAAGR		Am	12	7.0	20.0	0.01	minus_theta222	5800		deg cm2 dmol-1	Fig. 3A	digitised;KF 0.01 M
+V	SPAEAAKAAAGR		Am	12	7.0	30.0	0.01	minus_theta222	5370		deg cm2 dmol-1	Fig. 3A	digitised;KF 0.01 M
+V	SPAEAAKAAAGR		Am	12	7.0	40.0	0.01	minus_theta222	5280		deg cm2 dmol-1	Fig. 3A	digitised;KF 0.01 M;overlapped
+V	SPAEAAKAAAGR		Am	12	7.0	50.0	0.01	minus_theta222	5120		deg cm2 dmol-1	Fig. 3A	digitised;KF 0.01 M;overlapped
+V	SPAEAAKAAAGR		Am	12	7.0	60.0	0.01	minus_theta222	5010		deg cm2 dmol-1	Fig. 3A	digitised;KF 0.01 M;overlapped
+V	SPAEAAKAAAGR		Am	12	7.0	70.0	0.01	minus_theta222	5190		deg cm2 dmol-1	Fig. 3A	digitised;KF 0.01 M;overlapped;marker_shape_mismatch
+VI	EPAEAAKAAAGR		Am	12	7.0	0.0	0.01	minus_theta222	2770		deg cm2 dmol-1	Fig. 3A	digitised;KF 0.01 M
+VI	EPAEAAKAAAGR		Am	12	7.0	3.0	0.01	minus_theta222	2680		deg cm2 dmol-1	Fig. 3A	digitised;KF 0.01 M
+VI	EPAEAAKAAAGR		Am	12	7.0	10.0	0.01	minus_theta222	2770		deg cm2 dmol-1	Fig. 3A	digitised;KF 0.01 M
+VI	EPAEAAKAAAGR		Am	12	7.0	20.0	0.01	minus_theta222	3010		deg cm2 dmol-1	Fig. 3A	digitised;KF 0.01 M
+VI	EPAEAAKAAAGR		Am	12	7.0	30.0	0.01	minus_theta222	3270		deg cm2 dmol-1	Fig. 3A	digitised;KF 0.01 M
+VI	EPAEAAKAAAGR		Am	12	7.0	40.0	0.01	minus_theta222	3510		deg cm2 dmol-1	Fig. 3A	digitised;KF 0.01 M
+VI	EPAEAAKAAAGR		Am	12	7.0	50.0	0.01	minus_theta222	3750		deg cm2 dmol-1	Fig. 3A	digitised;KF 0.01 M
+VI	EPAEAAKAAAGR		Am	12	7.0	60.0	0.01	minus_theta222	4010		deg cm2 dmol-1	Fig. 3A	digitised;KF 0.01 M
+VI	EPAEAAKAAAGR		Am	12	7.0	70.0	0.01	minus_theta222	4250		deg cm2 dmol-1	Fig. 3A	digitised;KF 0.01 M
+IV	QPAEAAKAAAGR		Am	12	7.0	0.0	0.01	minus_theta222	1500		deg cm2 dmol-1	Fig. 3A	digitised;KF 0.01 M
+IV	QPAEAAKAAAGR		Am	12	7.0	3.0	0.01	minus_theta222	1670		deg cm2 dmol-1	Fig. 3A	digitised;KF 0.01 M
+IV	QPAEAAKAAAGR		Am	12	7.0	10.0	0.01	minus_theta222	1930		deg cm2 dmol-1	Fig. 3A	digitised;KF 0.01 M
+IV	QPAEAAKAAAGR		Am	12	7.0	20.0	0.01	minus_theta222	1920		deg cm2 dmol-1	Fig. 3A	digitised;KF 0.01 M;overlapped
+IV	QPAEAAKAAAGR		Am	12	7.0	30.0	0.01	minus_theta222	2240		deg cm2 dmol-1	Fig. 3A	digitised;KF 0.01 M;overlapped
+IV	QPAEAAKAAAGR		Am	12	7.0	40.0	0.01	minus_theta222	2420		deg cm2 dmol-1	Fig. 3A	digitised;KF 0.01 M;overlapped
+IV	QPAEAAKAAAGR		Am	12	7.0	50.0	0.01	minus_theta222	2670		deg cm2 dmol-1	Fig. 3A	digitised;KF 0.01 M;overlapped
+IV	QPAEAAKAAAGR		Am	12	7.0	60.0	0.01	minus_theta222	2830		deg cm2 dmol-1	Fig. 3A	digitised;KF 0.01 M;overlapped
+IV	QPAEAAKAAAGR		Am	12	7.0	70.0	0.01	minus_theta222	3080		deg cm2 dmol-1	Fig. 3A	digitised;KF 0.01 M;overlapped
+II	APAEAAKAAAGR		Am	12	7.0	0.0	0.01	minus_theta222	760		deg cm2 dmol-1	Fig. 3A	digitised;KF 0.01 M
+II	APAEAAKAAAGR		Am	12	7.0	3.0	0.01	minus_theta222	840		deg cm2 dmol-1	Fig. 3A	digitised;KF 0.01 M
+II	APAEAAKAAAGR		Am	12	7.0	10.0	0.01	minus_theta222	920		deg cm2 dmol-1	Fig. 3A	digitised;KF 0.01 M
+II	APAEAAKAAAGR		Am	12	7.0	20.0	0.01	minus_theta222	1600		deg cm2 dmol-1	Fig. 3A	digitised;KF 0.01 M;overlapped
+II	APAEAAKAAAGR		Am	12	7.0	30.0	0.01	minus_theta222	2100		deg cm2 dmol-1	Fig. 3A	digitised;KF 0.01 M;overlapped
+II	APAEAAKAAAGR		Am	12	7.0	40.0	0.01	minus_theta222	2500		deg cm2 dmol-1	Fig. 3A	digitised;KF 0.01 M;overlapped
+II	APAEAAKAAAGR		Am	12	7.0	50.0	0.01	minus_theta222	2840		deg cm2 dmol-1	Fig. 3A	digitised;KF 0.01 M;overlapped
+II	APAEAAKAAAGR		Am	12	7.0	60.0	0.01	minus_theta222	3270		deg cm2 dmol-1	Fig. 3A	digitised;KF 0.01 M;overlapped
+II	APAEAAKAAAGR		Am	12	7.0	70.0	0.01	minus_theta222	3580		deg cm2 dmol-1	Fig. 3A	digitised;KF 0.01 M;overlapped
+I	DPAEAAKAAAGR		Am	12	2.05	0.0	0.01	minus_theta222	3180		deg cm2 dmol-1	Fig. 3B	digitised;KF 0.01 M
+I	DPAEAAKAAAGR		Am	12	2.8	0.0	0.01	minus_theta222	4340		deg cm2 dmol-1	Fig. 3B	digitised;KF 0.01 M
+I	DPAEAAKAAAGR		Am	12	3.95	0.0	0.01	minus_theta222	6690		deg cm2 dmol-1	Fig. 3B	digitised;KF 0.01 M
+I	DPAEAAKAAAGR		Am	12	4.95	0.0	0.01	minus_theta222	7880		deg cm2 dmol-1	Fig. 3B	digitised;KF 0.01 M
+I	DPAEAAKAAAGR		Am	12	6.2	0.0	0.01	minus_theta222	7940		deg cm2 dmol-1	Fig. 3B	digitised;KF 0.01 M
+I	DPAEAAKAAAGR		Am	12	6.8	0.0	0.01	minus_theta222	8110		deg cm2 dmol-1	Fig. 3B	digitised;KF 0.01 M
+I	DPAEAAKAAAGR		Am	12	7.95	0.0	0.01	minus_theta222	10610		deg cm2 dmol-1	Fig. 3B	digitised;KF 0.01 M
+I	DPAEAAKAAAGR		Am	12	8.75	0.0	0.01	minus_theta222	12240		deg cm2 dmol-1	Fig. 3B	digitised;KF 0.01 M
+I	DPAEAAKAAAGR		Am	12	9.85	0.0	0.01	minus_theta222	12660		deg cm2 dmol-1	Fig. 3B	digitised;KF 0.01 M

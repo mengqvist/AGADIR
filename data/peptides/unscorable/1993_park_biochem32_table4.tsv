@@ -1,0 +1,5 @@
+peptide_id	sequence	ncap	ccap	n_res	pH	T_C	ionic_strength_M	quantity	value	error	unit	source_table	flags
+IV-1	GELEELLKKLKELLKG	Ac	Am	16	7.0	0.0	0.0	helix_percent	21		percent	Table IV	printed;extrapolated
+IV-2	AETAAAKFLRAAA	Ac	Am	13	7.0	0.0	0.0	helix_percent	26		percent	Table IV	printed;extrapolated
+IV-3	AAQAAAAQAAAAQAAY	Ac	Am	16	7.0	0.0	0.0	helix_percent	47		percent	Table IV	printed;extrapolated
+IV-4	YKAAAAKAAAAKAAAAK	Ac	Am	17	7.0	0.0	0.0	helix_percent	67		percent	Table IV	printed;extrapolated

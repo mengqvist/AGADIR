@@ -1,0 +1,149 @@
+peptide_id	sequence	ncap	ccap	n_res	pH	T_C	ionic_strength_M	quantity	value	error	unit	source_table	flags
+A	YEAAAKEAAAKEAAAKA	Ac	Am	17	7.0	0.0	0.0018	dG_helix_kcal_mol	-0.42		kcal/mol	Table I	printed;no added salt;reprint=1992_stellwagen_biopolymers32;aromatic_cd
+A	YEAAAKEAAAKEAAAKA	Ac	Am	17	2.0	0.0	0.0004	dG_helix_kcal_mol	-0.16		kcal/mol	Table I	printed;no added salt;reprint=1992_stellwagen_biopolymers32;aromatic_cd
+C	YEAAAKEACAKEAAAKA	Ac	Am	17	7.0	0.0	0.0018	dG_helix_kcal_mol	-0.06		kcal/mol	Table I	printed;no added salt;aromatic_cd
+C	YEAAAKEACAKEAAAKA	Ac	Am	17	2.0	0.0	0.0004	dG_helix_kcal_mol	0.26		kcal/mol	Table I	printed;no added salt;aromatic_cd
+D	YEAAAKEADAKEAAAKA	Ac	Am	17	7.0	0.0	0.0018	dG_helix_kcal_mol	0.18		kcal/mol	Table I	printed;no added salt;aromatic_cd
+D	YEAAAKEADAKEAAAKA	Ac	Am	17	2.0	0.0	0.0004	dG_helix_kcal_mol	0.33		kcal/mol	Table I	printed;no added salt;aromatic_cd
+E	YEAAAKEAEAKEAAAKA	Ac	Am	17	7.0	0.0	0.0018	dG_helix_kcal_mol	-0.22		kcal/mol	Table I	printed;no added salt;aromatic_cd
+E	YEAAAKEAEAKEAAAKA	Ac	Am	17	2.0	0.0	0.0004	dG_helix_kcal_mol	-0.06		kcal/mol	Table I	printed;no added salt;aromatic_cd
+F	YEAAAKEAFAKEAAAKA	Ac	Am	17	7.0	0.0	0.0018	dG_helix_kcal_mol	-0.24		kcal/mol	Table I	printed;no added salt;aromatic_cd
+F	YEAAAKEAFAKEAAAKA	Ac	Am	17	2.0	0.0	0.0004	dG_helix_kcal_mol	0.03		kcal/mol	Table I	printed;no added salt;aromatic_cd
+G	YEAAAKEAGAKEAAAKA	Ac	Am	17	7.0	0.0	0.0018	dG_helix_kcal_mol	0.59		kcal/mol	Table I	printed;no added salt;reprint=1992_stellwagen_biopolymers32;aromatic_cd
+G	YEAAAKEAGAKEAAAKA	Ac	Am	17	2.0	0.0	0.0004	dG_helix_kcal_mol	0.87		kcal/mol	Table I	printed;no added salt;aromatic_cd
+H	YEAAAKEAHAKEAAAKA	Ac	Am	17	5.6	0.0	0.001	dG_helix_kcal_mol	0.22		kcal/mol	Table I	printed;no added salt;footnote_b_pH5.6;aromatic_cd
+H	YEAAAKEAHAKEAAAKA	Ac	Am	17	2.0	0.0	0.0004	dG_helix_kcal_mol	0.66		kcal/mol	Table I	printed;no added salt;aromatic_cd
+I	YEAAAKEAIAKEAAAKA	Ac	Am	17	7.0	0.0	0.0018	dG_helix_kcal_mol	-0.02		kcal/mol	Table I	printed;no added salt;reprint=1992_stellwagen_biopolymers32;aromatic_cd
+I	YEAAAKEAIAKEAAAKA	Ac	Am	17	2.0	0.0	0.0004	dG_helix_kcal_mol	0.2		kcal/mol	Table I	printed;no added salt;aromatic_cd
+K	YEAAAKEAKAKEAAAKA	Ac	Am	17	7.0	0.0	0.0018	dG_helix_kcal_mol	-0.24		kcal/mol	Table I	printed;no added salt;aromatic_cd
+K	YEAAAKEAKAKEAAAKA	Ac	Am	17	2.0	0.0	0.0004	dG_helix_kcal_mol	0.17		kcal/mol	Table I	printed;no added salt;aromatic_cd
+L	YEAAAKEALAKEAAAKA	Ac	Am	17	7.0	0.0	0.0018	dG_helix_kcal_mol	-0.27		kcal/mol	Table I	printed;no added salt;reprint=1992_stellwagen_biopolymers32;aromatic_cd
+L	YEAAAKEALAKEAAAKA	Ac	Am	17	2.0	0.0	0.0004	dG_helix_kcal_mol	0.03		kcal/mol	Table I	printed;no added salt;aromatic_cd
+M	YEAAAKEAMAKEAAAKA	Ac	Am	17	7.0	0.0	0.0018	dG_helix_kcal_mol	-0.21		kcal/mol	Table I	printed;no added salt;reprint=1992_stellwagen_biopolymers32;aromatic_cd
+M	YEAAAKEAMAKEAAAKA	Ac	Am	17	2.0	0.0	0.0004	dG_helix_kcal_mol	0.07		kcal/mol	Table I	printed;no added salt;reprint=1992_stellwagen_biopolymers32;aromatic_cd
+N	YEAAAKEANAKEAAAKA	Ac	Am	17	7.0	0.0	0.0018	dG_helix_kcal_mol	0.24		kcal/mol	Table I	printed;no added salt;reprint=1992_stellwagen_biopolymers32;aromatic_cd
+N	YEAAAKEANAKEAAAKA	Ac	Am	17	2.0	0.0	0.0004	dG_helix_kcal_mol	0.49		kcal/mol	Table I	printed;no added salt;aromatic_cd
+Q	YEAAAKEAQAKEAAAKA	Ac	Am	17	7.0	0.0	0.0018	dG_helix_kcal_mol	-0.17		kcal/mol	Table I	printed;no added salt;reprint=1992_stellwagen_biopolymers32;aromatic_cd
+Q	YEAAAKEAQAKEAAAKA	Ac	Am	17	2.0	0.0	0.0004	dG_helix_kcal_mol	0.09		kcal/mol	Table I	printed;no added salt;aromatic_cd
+R	YEAAAKEARAKEAAAKA	Ac	Am	17	7.0	0.0	0.0018	dG_helix_kcal_mol	-0.39		kcal/mol	Table I	printed;no added salt;aromatic_cd
+R	YEAAAKEARAKEAAAKA	Ac	Am	17	2.0	0.0	0.0004	dG_helix_kcal_mol	-0.02		kcal/mol	Table I	printed;no added salt;aromatic_cd
+S	YEAAAKEASAKEAAAKA	Ac	Am	17	7.0	0.0	0.0018	dG_helix_kcal_mol	0.1		kcal/mol	Table I	printed;no added salt;reprint=1992_stellwagen_biopolymers32;aromatic_cd
+S	YEAAAKEASAKEAAAKA	Ac	Am	17	2.0	0.0	0.0004	dG_helix_kcal_mol	0.39		kcal/mol	Table I	printed;no added salt;aromatic_cd
+T	YEAAAKEATAKEAAAKA	Ac	Am	17	7.0	0.0	0.0018	dG_helix_kcal_mol	0.24		kcal/mol	Table I	printed;no added salt;reprint=1992_stellwagen_biopolymers32;aromatic_cd
+T	YEAAAKEATAKEAAAKA	Ac	Am	17	2.0	0.0	0.0004	dG_helix_kcal_mol	0.53		kcal/mol	Table I	printed;no added salt;aromatic_cd
+V	YEAAAKEAVAKEAAAKA	Ac	Am	17	7.0	0.0	0.0018	dG_helix_kcal_mol	0.24		kcal/mol	Table I	printed;no added salt;reprint=1992_stellwagen_biopolymers32;aromatic_cd
+V	YEAAAKEAVAKEAAAKA	Ac	Am	17	2.0	0.0	0.0004	dG_helix_kcal_mol	0.52		kcal/mol	Table I	printed;no added salt;aromatic_cd
+W	YEAAAKEAWAKEAAAKA	Ac	Am	17	7.0	0.0	0.0018	dG_helix_kcal_mol	-0.12		kcal/mol	Table I	printed;no added salt;aromatic_cd
+W	YEAAAKEAWAKEAAAKA	Ac	Am	17	2.0	0.0	0.0004	dG_helix_kcal_mol	0.06		kcal/mol	Table I	printed;no added salt;aromatic_cd
+Y	YEAAAKEAYAKEAAAKA	Ac	Am	17	7.0	0.0	0.0018	dG_helix_kcal_mol	-0.07		kcal/mol	Table I	printed;no added salt;aromatic_cd
+Y	YEAAAKEAYAKEAAAKA	Ac	Am	17	2.0	0.0	0.0004	dG_helix_kcal_mol	0.19		kcal/mol	Table I	printed;no added salt;aromatic_cd
+A	YEAAAKEAAAKEAAAKA	Ac	Am	17	7.0	0.0	0.5018	minus_theta222	21220.0		deg cm2 dmol-1	Fig. 2A	digitised;KCl 0.5 M;aromatic_cd
+A	YEAAAKEAAAKEAAAKA	Ac	Am	17	7.0	0.0	0.5018	minus_theta222	19400.0		deg cm2 dmol-1	Fig. 2A	digitised;CaCl2 0.167 M;divalent_salt;aromatic_cd
+A	YEAAAKEAAAKEAAAKA	Ac	Am	17	7.0	0.0	1.0018	minus_theta222	19680.0		deg cm2 dmol-1	Fig. 2A	digitised;KCl 1 M;aromatic_cd
+A	YEAAAKEAAAKEAAAKA	Ac	Am	17	7.0	0.0	1.0018	minus_theta222	17130.0		deg cm2 dmol-1	Fig. 2A	digitised;CaCl2 0.333 M;divalent_salt;aromatic_cd
+A	YEAAAKEAAAKEAAAKA	Ac	Am	17	7.0	0.0	1.5018	minus_theta222	18590.0		deg cm2 dmol-1	Fig. 2A	digitised;KCl 1.5 M;aromatic_cd
+A	YEAAAKEAAAKEAAAKA	Ac	Am	17	7.0	0.0	1.5018	minus_theta222	15540.0		deg cm2 dmol-1	Fig. 2A	digitised;CaCl2 0.500 M;divalent_salt;aromatic_cd
+A	YEAAAKEAAAKEAAAKA	Ac	Am	17	7.0	0.0	2.0018	minus_theta222	13820.0		deg cm2 dmol-1	Fig. 2A	digitised;CaCl2 0.667 M;divalent_salt;aromatic_cd
+A	YEAAAKEAAAKEAAAKA	Ac	Am	17	7.0	0.0	2.0018	minus_theta222	17130.0		deg cm2 dmol-1	Fig. 2A	digitised;KCl 2 M;aromatic_cd
+A	YEAAAKEAAAKEAAAKA	Ac	Am	17	7.0	0.0	2.5018	minus_theta222	12410.0		deg cm2 dmol-1	Fig. 2A	digitised;CaCl2 0.833 M;divalent_salt;aromatic_cd
+A	YEAAAKEAAAKEAAAKA	Ac	Am	17	7.0	0.0	2.5018	minus_theta222	16140.0		deg cm2 dmol-1	Fig. 2A	digitised;KCl 2.5 M;aromatic_cd
+A	YEAAAKEAAAKEAAAKA	Ac	Am	17	7.0	0.0	3.0018	minus_theta222	10230.0		deg cm2 dmol-1	Fig. 2A	digitised;CaCl2 1.000 M;divalent_salt;aromatic_cd
+A	YEAAAKEAAAKEAAAKA	Ac	Am	17	7.0	0.0	3.0018	minus_theta222	15140.0		deg cm2 dmol-1	Fig. 2A	digitised;KCl 3 M;aromatic_cd
+A	YEAAAKEAAAKEAAAKA	Ac	Am	17	7.0	0.0	3.5018	minus_theta222	8510.0		deg cm2 dmol-1	Fig. 2A	digitised;CaCl2 1.167 M;divalent_salt;aromatic_cd
+A	YEAAAKEAAAKEAAAKA	Ac	Am	17	7.0	0.0	3.5018	minus_theta222	14000.0		deg cm2 dmol-1	Fig. 2A	digitised;KCl 3.5 M;aromatic_cd
+A	YEAAAKEAAAKEAAAKA	Ac	Am	17	7.0	0.0	4.0018	minus_theta222	6780.0		deg cm2 dmol-1	Fig. 2A	digitised;CaCl2 1.333 M;divalent_salt;aromatic_cd
+A	YEAAAKEAAAKEAAAKA	Ac	Am	17	7.0	0.0	4.0018	minus_theta222	12780.0		deg cm2 dmol-1	Fig. 2A	digitised;KCl 4 M;aromatic_cd
+A	YEAAAKEAAAKEAAAKA	Ac	Am	17	7.0	0.0	0.0018	minus_theta222	24310.0		deg cm2 dmol-1	Fig. 2A	digitised;no added salt;same_samples_as=Table I;aromatic_cd
+A	YEAAAKEAAAKEAAAKA	Ac	Am	17	7.0	0.0	0.5018	dG_helix_kcal_mol	-0.213		kcal/mol	Fig. 2B	digitised;KCl 0.5 M;same_samples_as=Fig. 2A;aromatic_cd
+A	YEAAAKEAAAKEAAAKA	Ac	Am	17	2.0	0.0	0.5004	dG_helix_kcal_mol	-0.169		kcal/mol	Fig. 2B	digitised;KCl 0.5 M;aromatic_cd
+A	YEAAAKEAAAKEAAAKA	Ac	Am	17	7.0	0.0	1.0018	dG_helix_kcal_mol	-0.119		kcal/mol	Fig. 2B	digitised;KCl 1 M;same_samples_as=Fig. 2A;aromatic_cd
+A	YEAAAKEAAAKEAAAKA	Ac	Am	17	2.0	0.0	1.0004	dG_helix_kcal_mol	-0.147		kcal/mol	Fig. 2B	digitised;KCl 1 M;aromatic_cd
+A	YEAAAKEAAAKEAAAKA	Ac	Am	17	2.0	0.0	1.5004	dG_helix_kcal_mol	-0.117		kcal/mol	Fig. 2B	digitised;KCl 1.5 M;aromatic_cd
+A	YEAAAKEAAAKEAAAKA	Ac	Am	17	7.0	0.0	1.5018	dG_helix_kcal_mol	-0.051		kcal/mol	Fig. 2B	digitised;KCl 1.5 M;same_samples_as=Fig. 2A;aromatic_cd
+A	YEAAAKEAAAKEAAAKA	Ac	Am	17	2.0	0.0	2.0004	dG_helix_kcal_mol	-0.056		kcal/mol	Fig. 2B	digitised;KCl 2 M;aromatic_cd
+A	YEAAAKEAAAKEAAAKA	Ac	Am	17	7.0	0.0	2.0018	dG_helix_kcal_mol	0.034		kcal/mol	Fig. 2B	digitised;KCl 2 M;same_samples_as=Fig. 2A;aromatic_cd
+A	YEAAAKEAAAKEAAAKA	Ac	Am	17	7.0	0.0	2.5018	dG_helix_kcal_mol	0.095		kcal/mol	Fig. 2B	digitised;KCl 2.5 M;same_samples_as=Fig. 2A;aromatic_cd
+A	YEAAAKEAAAKEAAAKA	Ac	Am	17	2.0	0.0	2.5004	dG_helix_kcal_mol	-0.011		kcal/mol	Fig. 2B	digitised;KCl 2.5 M;aromatic_cd
+A	YEAAAKEAAAKEAAAKA	Ac	Am	17	7.0	0.0	3.0018	dG_helix_kcal_mol	0.158		kcal/mol	Fig. 2B	digitised;KCl 3 M;same_samples_as=Fig. 2A;aromatic_cd
+A	YEAAAKEAAAKEAAAKA	Ac	Am	17	2.0	0.0	3.0004	dG_helix_kcal_mol	0.059		kcal/mol	Fig. 2B	digitised;KCl 3 M;aromatic_cd
+A	YEAAAKEAAAKEAAAKA	Ac	Am	17	7.0	0.0	3.5018	dG_helix_kcal_mol	0.227		kcal/mol	Fig. 2B	digitised;KCl 3.5 M;same_samples_as=Fig. 2A;aromatic_cd
+A	YEAAAKEAAAKEAAAKA	Ac	Am	17	2.0	0.0	3.5004	dG_helix_kcal_mol	0.129		kcal/mol	Fig. 2B	digitised;KCl 3.5 M;aromatic_cd
+A	YEAAAKEAAAKEAAAKA	Ac	Am	17	7.0	0.0	4.0018	dG_helix_kcal_mol	0.303		kcal/mol	Fig. 2B	digitised;KCl 4 M;same_samples_as=Fig. 2A;aromatic_cd
+A	YEAAAKEAAAKEAAAKA	Ac	Am	17	2.0	0.0	4.0004	dG_helix_kcal_mol	0.183		kcal/mol	Fig. 2B	digitised;KCl 4 M;aromatic_cd
+A	YEAAAKEAAAKEAAAKA	Ac	Am	17	7.0	0.0	0.0018	dG_helix_kcal_mol	-0.422		kcal/mol	Fig. 2B	digitised;no added salt;same_samples_as=Table I;aromatic_cd
+A	YEAAAKEAAAKEAAAKA	Ac	Am	17	2.0	0.0	0.0004	dG_helix_kcal_mol	-0.161		kcal/mol	Fig. 2B	digitised;no added salt;same_samples_as=Table I;aromatic_cd
+E	YEAAAKEAEAKEAAAKA	Ac	Am	17	7.0	0.0	0.5018	dG_helix_kcal_mol	0.002		kcal/mol	Fig. 3A	digitised;KCl 0.5 M;aromatic_cd
+E	YEAAAKEAEAKEAAAKA	Ac	Am	17	2.0	0.0	0.5004	dG_helix_kcal_mol	-0.04		kcal/mol	Fig. 3A	digitised;KCl 0.5 M;aromatic_cd
+E	YEAAAKEAEAKEAAAKA	Ac	Am	17	7.0	0.0	1.0018	dG_helix_kcal_mol	0.131		kcal/mol	Fig. 3A	digitised;KCl 1 M;aromatic_cd
+E	YEAAAKEAEAKEAAAKA	Ac	Am	17	2.0	0.0	1.0004	dG_helix_kcal_mol	0.003		kcal/mol	Fig. 3A	digitised;KCl 1 M;aromatic_cd
+E	YEAAAKEAEAKEAAAKA	Ac	Am	17	2.0	0.0	1.5004	dG_helix_kcal_mol	0.031		kcal/mol	Fig. 3A	digitised;KCl 1.5 M;aromatic_cd
+E	YEAAAKEAEAKEAAAKA	Ac	Am	17	7.0	0.0	1.5018	dG_helix_kcal_mol	0.204		kcal/mol	Fig. 3A	digitised;KCl 1.5 M;aromatic_cd
+E	YEAAAKEAEAKEAAAKA	Ac	Am	17	7.0	0.0	2.0018	dG_helix_kcal_mol	0.238		kcal/mol	Fig. 3A	digitised;KCl 2 M;aromatic_cd
+E	YEAAAKEAEAKEAAAKA	Ac	Am	17	2.0	0.0	2.0004	dG_helix_kcal_mol	0.105		kcal/mol	Fig. 3A	digitised;KCl 2 M;aromatic_cd
+E	YEAAAKEAEAKEAAAKA	Ac	Am	17	7.0	0.0	2.5018	dG_helix_kcal_mol	0.328		kcal/mol	Fig. 3A	digitised;KCl 2.5 M;aromatic_cd
+E	YEAAAKEAEAKEAAAKA	Ac	Am	17	2.0	0.0	2.5004	dG_helix_kcal_mol	0.12		kcal/mol	Fig. 3A	digitised;KCl 2.5 M;aromatic_cd
+E	YEAAAKEAEAKEAAAKA	Ac	Am	17	2.0	0.0	3.0004	dG_helix_kcal_mol	0.241		kcal/mol	Fig. 3A	digitised;KCl 3 M;aromatic_cd
+E	YEAAAKEAEAKEAAAKA	Ac	Am	17	7.0	0.0	3.0018	dG_helix_kcal_mol	0.427		kcal/mol	Fig. 3A	digitised;KCl 3 M;aromatic_cd
+E	YEAAAKEAEAKEAAAKA	Ac	Am	17	7.0	0.0	3.5018	dG_helix_kcal_mol	0.498		kcal/mol	Fig. 3A	digitised;KCl 3.5 M;aromatic_cd
+E	YEAAAKEAEAKEAAAKA	Ac	Am	17	2.0	0.0	3.5004	dG_helix_kcal_mol	0.286		kcal/mol	Fig. 3A	digitised;KCl 3.5 M;aromatic_cd
+E	YEAAAKEAEAKEAAAKA	Ac	Am	17	7.0	0.0	4.0018	dG_helix_kcal_mol	0.538		kcal/mol	Fig. 3A	digitised;KCl 4 M;aromatic_cd
+E	YEAAAKEAEAKEAAAKA	Ac	Am	17	2.0	0.0	4.0004	dG_helix_kcal_mol	0.357		kcal/mol	Fig. 3A	digitised;KCl 4 M;aromatic_cd
+E	YEAAAKEAEAKEAAAKA	Ac	Am	17	7.0	0.0	0.0018	dG_helix_kcal_mol	-0.224		kcal/mol	Fig. 3A	digitised;no added salt;same_samples_as=Table I;aromatic_cd
+E	YEAAAKEAEAKEAAAKA	Ac	Am	17	2.0	0.0	0.0004	dG_helix_kcal_mol	-0.058		kcal/mol	Fig. 3A	digitised;no added salt;same_samples_as=Table I;aromatic_cd
+K	YEAAAKEAKAKEAAAKA	Ac	Am	17	2.0	0.0	0.5004	dG_helix_kcal_mol	0.062		kcal/mol	Fig. 3B	digitised;KCl 0.5 M;aromatic_cd
+K	YEAAAKEAKAKEAAAKA	Ac	Am	17	7.0	0.0	0.5018	dG_helix_kcal_mol	-0.071		kcal/mol	Fig. 3B	digitised;KCl 0.5 M;aromatic_cd
+K	YEAAAKEAKAKEAAAKA	Ac	Am	17	2.0	0.0	1.0004	dG_helix_kcal_mol	0.044		kcal/mol	Fig. 3B	digitised;KCl 1 M;aromatic_cd
+K	YEAAAKEAKAKEAAAKA	Ac	Am	17	7.0	0.0	1.0018	dG_helix_kcal_mol	0.007		kcal/mol	Fig. 3B	digitised;KCl 1 M;aromatic_cd
+K	YEAAAKEAKAKEAAAKA	Ac	Am	17	2.0	0.0	1.5004	dG_helix_kcal_mol	0.065		kcal/mol	Fig. 3B	digitised;KCl 1.5 M;aromatic_cd
+K	YEAAAKEAKAKEAAAKA	Ac	Am	17	7.0	0.0	2.0018	dG_helix_kcal_mol	0.12		kcal/mol	Fig. 3B	digitised;KCl 2 M;aromatic_cd
+K	YEAAAKEAKAKEAAAKA	Ac	Am	17	2.0	0.0	2.0004	dG_helix_kcal_mol	0.087		kcal/mol	Fig. 3B	digitised;KCl 2 M;aromatic_cd
+K	YEAAAKEAKAKEAAAKA	Ac	Am	17	2.0	0.0	2.5004	dG_helix_kcal_mol	0.126		kcal/mol	Fig. 3B	digitised;KCl 2.5 M;aromatic_cd
+K	YEAAAKEAKAKEAAAKA	Ac	Am	17	7.0	0.0	2.5018	dG_helix_kcal_mol	0.145		kcal/mol	Fig. 3B	digitised;KCl 2.5 M;aromatic_cd
+K	YEAAAKEAKAKEAAAKA	Ac	Am	17	7.0	0.0	3.0018	dG_helix_kcal_mol	0.275		kcal/mol	Fig. 3B	digitised;KCl 3 M;aromatic_cd
+K	YEAAAKEAKAKEAAAKA	Ac	Am	17	2.0	0.0	3.0004	dG_helix_kcal_mol	0.184		kcal/mol	Fig. 3B	digitised;KCl 3 M;aromatic_cd
+K	YEAAAKEAKAKEAAAKA	Ac	Am	17	2.0	0.0	3.5004	dG_helix_kcal_mol	0.273		kcal/mol	Fig. 3B	digitised;KCl 3.5 M;aromatic_cd
+K	YEAAAKEAKAKEAAAKA	Ac	Am	17	7.0	0.0	3.5018	dG_helix_kcal_mol	0.302		kcal/mol	Fig. 3B	digitised;KCl 3.5 M;aromatic_cd
+K	YEAAAKEAKAKEAAAKA	Ac	Am	17	2.0	0.0	4.0004	dG_helix_kcal_mol	0.294		kcal/mol	Fig. 3B	digitised;KCl 4 M;aromatic_cd
+K	YEAAAKEAKAKEAAAKA	Ac	Am	17	7.0	0.0	4.0018	dG_helix_kcal_mol	0.433		kcal/mol	Fig. 3B	digitised;KCl 4 M;aromatic_cd
+K	YEAAAKEAKAKEAAAKA	Ac	Am	17	7.0	0.0	0.0018	dG_helix_kcal_mol	-0.243		kcal/mol	Fig. 3B	digitised;no added salt;same_samples_as=Table I;aromatic_cd
+K	YEAAAKEAKAKEAAAKA	Ac	Am	17	2.0	0.0	0.0004	dG_helix_kcal_mol	0.167		kcal/mol	Fig. 3B	digitised;no added salt;same_samples_as=Table I;aromatic_cd
+A	YEAAAKEAAAKEAAAKA	Ac	Am	17	2.0	0.0	0.0004	dG_helix_kcal_mol	-0.161		kcal/mol	Fig. 4A	digitised;no added salt;same_samples_as=Table I;aromatic_cd
+A	YEAAAKEAAAKEAAAKA	Ac	Am	17	3.0	0.0	0.0009	dG_helix_kcal_mol	-0.181		kcal/mol	Fig. 4A	digitised;no added salt;aromatic_cd
+A	YEAAAKEAAAKEAAAKA	Ac	Am	17	3.5	0.0	0.001	dG_helix_kcal_mol	-0.211		kcal/mol	Fig. 4A	digitised;no added salt;aromatic_cd
+A	YEAAAKEAAAKEAAAKA	Ac	Am	17	4.0	0.0	0.001	dG_helix_kcal_mol	-0.26		kcal/mol	Fig. 4A	digitised;no added salt;aromatic_cd
+A	YEAAAKEAAAKEAAAKA	Ac	Am	17	4.5	0.0	0.001	dG_helix_kcal_mol	-0.33		kcal/mol	Fig. 4A	digitised;no added salt;aromatic_cd
+A	YEAAAKEAAAKEAAAKA	Ac	Am	17	5.15	0.0	0.001	dG_helix_kcal_mol	-0.38		kcal/mol	Fig. 4A	digitised;no added salt;aromatic_cd
+A	YEAAAKEAAAKEAAAKA	Ac	Am	17	5.5	0.0	0.001	dG_helix_kcal_mol	-0.412		kcal/mol	Fig. 4A	digitised;no added salt;aromatic_cd
+A	YEAAAKEAAAKEAAAKA	Ac	Am	17	6.2	0.0	0.0012	dG_helix_kcal_mol	-0.421		kcal/mol	Fig. 4A	digitised;no added salt;aromatic_cd
+A	YEAAAKEAAAKEAAAKA	Ac	Am	17	7.1	0.0	0.0019	dG_helix_kcal_mol	-0.431		kcal/mol	Fig. 4A	digitised;no added salt;aromatic_cd
+A	YEAAAKEAAAKEAAAKA	Ac	Am	17	8.0	0.0	0.0027	dG_helix_kcal_mol	-0.421		kcal/mol	Fig. 4A	digitised;no added salt;aromatic_cd
+A	YEAAAKEAAAKEAAAKA	Ac	Am	17	9.0	0.0	0.003	dG_helix_kcal_mol	-0.421		kcal/mol	Fig. 4A	digitised;no added salt;aromatic_cd
+H	YEAAAKEAHAKEAAAKA	Ac	Am	17	2.0	0.0	0.0004	ddG_vs_pH2_kcal_mol	0.0		kcal/mol	Fig. 4B	digitised;overlapped;no added salt;reference_point;same_samples_as=Table I;aromatic_cd
+H	YEAAAKEAHAKEAAAKA	Ac	Am	17	2.5	0.0	0.0007	ddG_vs_pH2_kcal_mol	0.002		kcal/mol	Fig. 4B	digitised;overlapped;no added salt;aromatic_cd
+H	YEAAAKEAHAKEAAAKA	Ac	Am	17	3.2	0.0	0.0009	ddG_vs_pH2_kcal_mol	-0.041		kcal/mol	Fig. 4B	digitised;no added salt;aromatic_cd
+H	YEAAAKEAHAKEAAAKA	Ac	Am	17	4.0	0.0	0.001	ddG_vs_pH2_kcal_mol	-0.148		kcal/mol	Fig. 4B	digitised;overlapped;no added salt;aromatic_cd
+H	YEAAAKEAHAKEAAAKA	Ac	Am	17	4.5	0.0	0.001	ddG_vs_pH2_kcal_mol	-0.331		kcal/mol	Fig. 4B	digitised;no added salt;aromatic_cd
+H	YEAAAKEAHAKEAAAKA	Ac	Am	17	5.0	0.0	0.001	ddG_vs_pH2_kcal_mol	-0.382		kcal/mol	Fig. 4B	digitised;no added salt;aromatic_cd
+H	YEAAAKEAHAKEAAAKA	Ac	Am	17	5.7	0.0	0.0011	ddG_vs_pH2_kcal_mol	-0.422		kcal/mol	Fig. 4B	digitised;no added salt;aromatic_cd
+H	YEAAAKEAHAKEAAAKA	Ac	Am	17	6.3	0.0	0.0012	ddG_vs_pH2_kcal_mol	-0.441		kcal/mol	Fig. 4B	digitised;no added salt;aromatic_cd
+H	YEAAAKEAHAKEAAAKA	Ac	Am	17	7.0	0.0	0.0018	ddG_vs_pH2_kcal_mol	-0.47		kcal/mol	Fig. 4B	digitised;no added salt;aromatic_cd
+H	YEAAAKEAHAKEAAAKA	Ac	Am	17	7.4	0.0	0.0022	ddG_vs_pH2_kcal_mol	-0.492		kcal/mol	Fig. 4B	digitised;no added salt;aromatic_cd
+H	YEAAAKEAHAKEAAAKA	Ac	Am	17	7.9	0.0	0.0027	ddG_vs_pH2_kcal_mol	-0.501		kcal/mol	Fig. 4B	digitised;no added salt;aromatic_cd
+H	YEAAAKEAHAKEAAAKA	Ac	Am	17	8.4	0.0	0.0029	ddG_vs_pH2_kcal_mol	-0.5		kcal/mol	Fig. 4B	digitised;no added salt;aromatic_cd
+K	YEAAAKEAKAKEAAAKA	Ac	Am	17	2.3	0.0	0.0006	ddG_vs_pH2_kcal_mol	0.001		kcal/mol	Fig. 4B	digitised;overlapped;no added salt;aromatic_cd
+K	YEAAAKEAKAKEAAAKA	Ac	Am	17	3.4	0.0	0.0009	ddG_vs_pH2_kcal_mol	-0.069		kcal/mol	Fig. 4B	digitised;no added salt;aromatic_cd
+K	YEAAAKEAKAKEAAAKA	Ac	Am	17	5.0	0.0	0.001	ddG_vs_pH2_kcal_mol	-0.347		kcal/mol	Fig. 4B	digitised;partly_hidden;no added salt;aromatic_cd
+K	YEAAAKEAKAKEAAAKA	Ac	Am	17	5.5	0.0	0.001	ddG_vs_pH2_kcal_mol	-0.383		kcal/mol	Fig. 4B	digitised;partly_hidden;no added salt;aromatic_cd
+K	YEAAAKEAKAKEAAAKA	Ac	Am	17	6.9	0.0	0.0017	ddG_vs_pH2_kcal_mol	-0.398		kcal/mol	Fig. 4B	digitised;no added salt;aromatic_cd
+K	YEAAAKEAKAKEAAAKA	Ac	Am	17	7.8	0.0	0.0026	ddG_vs_pH2_kcal_mol	-0.392		kcal/mol	Fig. 4B	digitised;no added salt;aromatic_cd
+K	YEAAAKEAKAKEAAAKA	Ac	Am	17	8.75	0.0	0.0029	ddG_vs_pH2_kcal_mol	-0.402		kcal/mol	Fig. 4B	digitised;no added salt;aromatic_cd
+R	YEAAAKEARAKEAAAKA	Ac	Am	17	2.1	0.0	0.0005	ddG_vs_pH2_kcal_mol	0.002		kcal/mol	Fig. 4B	digitised;overlapped;no added salt;aromatic_cd
+R	YEAAAKEARAKEAAAKA	Ac	Am	17	3.0	0.0	0.0009	ddG_vs_pH2_kcal_mol	-0.011		kcal/mol	Fig. 4B	digitised;no added salt;aromatic_cd
+R	YEAAAKEARAKEAAAKA	Ac	Am	17	3.6	0.0	0.001	ddG_vs_pH2_kcal_mol	-0.058		kcal/mol	Fig. 4B	digitised;no added salt;aromatic_cd
+R	YEAAAKEARAKEAAAKA	Ac	Am	17	4.0	0.0	0.001	ddG_vs_pH2_kcal_mol	-0.164		kcal/mol	Fig. 4B	digitised;overlapped;no added salt;aromatic_cd
+R	YEAAAKEARAKEAAAKA	Ac	Am	17	4.6	0.0	0.001	ddG_vs_pH2_kcal_mol	-0.271		kcal/mol	Fig. 4B	digitised;no added salt;aromatic_cd
+R	YEAAAKEARAKEAAAKA	Ac	Am	17	5.1	0.0	0.001	ddG_vs_pH2_kcal_mol	-0.359		kcal/mol	Fig. 4B	digitised;overlapped;no added salt;aromatic_cd
+R	YEAAAKEARAKEAAAKA	Ac	Am	17	6.1	0.0	0.0011	ddG_vs_pH2_kcal_mol	-0.406		kcal/mol	Fig. 4B	digitised;no added salt;aromatic_cd
+R	YEAAAKEARAKEAAAKA	Ac	Am	17	7.0	0.0	0.0018	ddG_vs_pH2_kcal_mol	-0.413		kcal/mol	Fig. 4B	digitised;no added salt;aromatic_cd
+R	YEAAAKEARAKEAAAKA	Ac	Am	17	8.2	0.0	0.0028	ddG_vs_pH2_kcal_mol	-0.425		kcal/mol	Fig. 4B	digitised;no added salt;aromatic_cd
+R	YEAAAKEARAKEAAAKA	Ac	Am	17	8.8	0.0	0.003	ddG_vs_pH2_kcal_mol	-0.431		kcal/mol	Fig. 4B	digitised;no added salt;aromatic_cd

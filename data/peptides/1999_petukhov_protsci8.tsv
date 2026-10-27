@@ -1,0 +1,49 @@
+peptide_id	sequence	ncap	ccap	n_res	pH	T_C	ionic_strength_M	quantity	value	error	unit	source_table	flags
+fs	SAAAAAAARAAARGGY		Am	16	10.0	5.0	0.005	minus_theta222	10720.0	350.0	deg cm2 dmol-1	Table 1	printed;phosphate 0.005 M
+fs	SAAAAAAARAAARGGY		Am	16	10.0	5.0	0.005	helix_percent	32.8	1.0	percent	Table 1	printed;phosphate 0.005 M
+s1	SAAAAAAARAAARGGY	Ac	Am	16	7.0	5.0	0.005	minus_theta222	12700.0	400.0	deg cm2 dmol-1	Table 1	printed;phosphate 0.005 M
+s1	SAAAAAAARAAARGGY	Ac	Am	16	7.0	5.0	0.005	helix_percent	38.3	1.2	percent	Table 1	printed;phosphate 0.005 M
+s2	ASAAAAAARAAARGGY	Ac	Am	16	7.0	5.0	0.005	minus_theta222	10880.0	350.0	deg cm2 dmol-1	Table 1	printed;phosphate 0.005 M
+s2	ASAAAAAARAAARGGY	Ac	Am	16	7.0	5.0	0.005	helix_percent	32.8	1.0	percent	Table 1	printed;phosphate 0.005 M
+s3	AASAAAAARAAARGGY	Ac	Am	16	7.0	5.0	0.005	minus_theta222	9610.0	300.0	deg cm2 dmol-1	Table 1	printed;phosphate 0.005 M
+s3	AASAAAAARAAARGGY	Ac	Am	16	7.0	5.0	0.005	helix_percent	29.0	1.0	percent	Table 1	printed;phosphate 0.005 M
+s4	AAASAAAARAAARGGY	Ac	Am	16	7.0	5.0	0.005	minus_theta222	8760.0	300.0	deg cm2 dmol-1	Table 1	printed;phosphate 0.005 M
+s4	AAASAAAARAAARGGY	Ac	Am	16	7.0	5.0	0.005	helix_percent	26.4	1.0	percent	Table 1	printed;phosphate 0.005 M
+s7	AAAAAASARAAARGGY	Ac	Am	16	7.0	5.0	0.005	minus_theta222	8490.0	300.0	deg cm2 dmol-1	Table 1	printed;phosphate 0.005 M
+s7	AAAAAASARAAARGGY	Ac	Am	16	7.0	5.0	0.005	helix_percent	25.6	1.0	percent	Table 1	printed;phosphate 0.005 M
+ft	TAAAAAAARAAARGGY		Am	16	10.0	5.0	0.005	minus_theta222	9400.0	300.0	deg cm2 dmol-1	Table 1	printed;phosphate 0.005 M
+ft	TAAAAAAARAAARGGY		Am	16	10.0	5.0	0.005	helix_percent	28.7	1.0	percent	Table 1	printed;phosphate 0.005 M
+t1	TAAAAAAARAAARGGY	Ac	Am	16	7.0	5.0	0.005	minus_theta222	13230.0	400.0	deg cm2 dmol-1	Table 1	printed;phosphate 0.005 M
+t1	TAAAAAAARAAARGGY	Ac	Am	16	7.0	5.0	0.005	helix_percent	39.9	1.2	percent	Table 1	printed;phosphate 0.005 M
+t2	ATAAAAAARAAARGGY	Ac	Am	16	7.0	5.0	0.005	minus_theta222	10750.0	350.0	deg cm2 dmol-1	Table 1	printed;phosphate 0.005 M
+t2	ATAAAAAARAAARGGY	Ac	Am	16	7.0	5.0	0.005	helix_percent	32.4	1.0	percent	Table 1	printed;phosphate 0.005 M
+t3	AATAAAAARAAARGGY	Ac	Am	16	7.0	5.0	0.005	minus_theta222	9290.0	300.0	deg cm2 dmol-1	Table 1	printed;phosphate 0.005 M
+t3	AATAAAAARAAARGGY	Ac	Am	16	7.0	5.0	0.005	helix_percent	28.0	1.0	percent	Table 1	printed;phosphate 0.005 M
+t4	AAATAAAARAAARGGY	Ac	Am	16	7.0	5.0	0.005	minus_theta222	7870.0	250.0	deg cm2 dmol-1	Table 1	printed;phosphate 0.005 M
+t4	AAATAAAARAAARGGY	Ac	Am	16	7.0	5.0	0.005	helix_percent	23.7	1.0	percent	Table 1	printed;phosphate 0.005 M
+t7	AAAAAATARAAARGGY	Ac	Am	16	7.0	5.0	0.005	minus_theta222	6610.0	200.0	deg cm2 dmol-1	Table 1	printed;phosphate 0.005 M
+t7	AAAAAATARAAARGGY	Ac	Am	16	7.0	5.0	0.005	helix_percent	19.9	1.0	percent	Table 1	printed;phosphate 0.005 M
+fn	NAAAAAAARAAARGGY		Am	16	10.0	5.0	0.005	minus_theta222	11700.0	350.0	deg cm2 dmol-1	Table 1	printed;phosphate 0.005 M
+fn	NAAAAAAARAAARGGY		Am	16	10.0	5.0	0.005	helix_percent	35.7	1.0	percent	Table 1	printed;phosphate 0.005 M
+n1	NAAAAAAARAAARGGY	Ac	Am	16	7.0	5.0	0.005	minus_theta222	13210.0	400.0	deg cm2 dmol-1	Table 1	printed;phosphate 0.005 M
+n1	NAAAAAAARAAARGGY	Ac	Am	16	7.0	5.0	0.005	helix_percent	39.8	1.2	percent	Table 1	printed;phosphate 0.005 M
+n2	ANAAAAAARAAARGGY	Ac	Am	16	7.0	5.0	0.005	minus_theta222	10930.0	350.0	deg cm2 dmol-1	Table 1	printed;phosphate 0.005 M
+n2	ANAAAAAARAAARGGY	Ac	Am	16	7.0	5.0	0.005	helix_percent	33.0	1.0	percent	Table 1	printed;phosphate 0.005 M
+n3	AANAAAAARAAARGGY	Ac	Am	16	7.0	5.0	0.005	minus_theta222	9550.0	300.0	deg cm2 dmol-1	Table 1	printed;phosphate 0.005 M
+n3	AANAAAAARAAARGGY	Ac	Am	16	7.0	5.0	0.005	helix_percent	28.8	1.0	percent	Table 1	printed;phosphate 0.005 M
+n4	AAANAAAARAAARGGY	Ac	Am	16	7.0	5.0	0.005	minus_theta222	8340.0	300.0	deg cm2 dmol-1	Table 1	printed;phosphate 0.005 M
+n4	AAANAAAARAAARGGY	Ac	Am	16	7.0	5.0	0.005	helix_percent	25.2	1.0	percent	Table 1	printed;phosphate 0.005 M
+n7	AAAAAANARAAARGGY	Ac	Am	16	7.0	5.0	0.005	minus_theta222	8560.0	300.0	deg cm2 dmol-1	Table 1	printed;phosphate 0.005 M
+n7	AAAAAANARAAARGGY	Ac	Am	16	7.0	5.0	0.005	helix_percent	25.8	1.0	percent	Table 1	printed;phosphate 0.005 M
+fq	QAAAAAAARAAARGGY		Am	16	10.0	5.0	0.005	minus_theta222	4500.0	200.0	deg cm2 dmol-1	Table 1	printed;phosphate 0.005 M
+fq	QAAAAAAARAAARGGY		Am	16	10.0	5.0	0.005	helix_percent	13.7	1.0	percent	Table 1	printed;phosphate 0.005 M
+q1	QAAAAAAARAAARGGY	Ac	Am	16	7.0	5.0	0.005	minus_theta222	11730.0	350.0	deg cm2 dmol-1	Table 1	printed;phosphate 0.005 M
+q1	QAAAAAAARAAARGGY	Ac	Am	16	7.0	5.0	0.005	helix_percent	35.4	1.0	percent	Table 1	printed;phosphate 0.005 M
+q2	AQAAAAAARAAARGGY	Ac	Am	16	7.0	5.0	0.005	minus_theta222	10810.0	350.0	deg cm2 dmol-1	Table 1	printed;phosphate 0.005 M
+q2	AQAAAAAARAAARGGY	Ac	Am	16	7.0	5.0	0.005	helix_percent	32.6	1.0	percent	Table 1	printed;phosphate 0.005 M
+q3	AAQAAAAARAAARGGY	Ac	Am	16	7.0	5.0	0.005	minus_theta222	11800.0	350.0	deg cm2 dmol-1	Table 1	printed;phosphate 0.005 M
+q3	AAQAAAAARAAARGGY	Ac	Am	16	7.0	5.0	0.005	helix_percent	35.6	1.1	percent	Table 1	printed;phosphate 0.005 M
+q4	AAAQAAAARAAARGGY	Ac	Am	16	7.0	5.0	0.005	minus_theta222	10700.0	350.0	deg cm2 dmol-1	Table 1	printed;phosphate 0.005 M
+q4	AAAQAAAARAAARGGY	Ac	Am	16	7.0	5.0	0.005	helix_percent	32.3	1.0	percent	Table 1	printed;phosphate 0.005 M
+q7	AAAAAAQARAAARGGY	Ac	Am	16	7.0	5.0	0.005	minus_theta222	9690.0	300.0	deg cm2 dmol-1	Table 1	printed;phosphate 0.005 M
+q7	AAAAAAQARAAARGGY	Ac	Am	16	7.0	5.0	0.005	helix_percent	29.2	1.0	percent	Table 1	printed;phosphate 0.005 M

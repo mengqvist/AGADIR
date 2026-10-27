@@ -1,0 +1,31 @@
+peptide_id	sequence	ncap	ccap	n_res	pH	T_C	ionic_strength_M	quantity	value	error	unit	source_table	flags
+S3_parent	YMSEDELKAAEAAFKRHGPT	Ac	Am	20	6.0	4.0	0.01	minus_theta222	16000		deg cm2 dmol-1	Table I	printed;KF 0.01 M;aromatic_cd=Y1,F14;ccap_from=1994_zhou_proteins18_table1;N-cap (position 3);reprint=1994_zhou_proteins18_table1:S3_parent
+S3_parent	YMSEDELKAAEAAFKRHGPT	Ac	Am	20	6.0	4.0	0.01	helix_percent	50		percent	Table I	printed;KF 0.01 M;aromatic_cd=Y1,F14;ccap_from=1994_zhou_proteins18_table1;N-cap (position 3);reprint=1994_zhou_proteins18_table1:S3_parent
+N3	YMNEDELKAAEAAFKRHGPT	Ac	Am	20	6.0	4.0	0.01	minus_theta222	14150		deg cm2 dmol-1	Table I	printed;KF 0.01 M;aromatic_cd=Y1,F14;ccap_from=1994_zhou_proteins18_table1;N-cap (position 3);reprint=1994_zhou_proteins18_table1:N3
+N3	YMNEDELKAAEAAFKRHGPT	Ac	Am	20	6.0	4.0	0.01	helix_percent	44		percent	Table I	printed;KF 0.01 M;aromatic_cd=Y1,F14;ccap_from=1994_zhou_proteins18_table1;N-cap (position 3);reprint=1994_zhou_proteins18_table1:N3
+G3	YMGEDELKAAEAAFKRHGPT	Ac	Am	20	6.0	4.0	0.01	minus_theta222	10580		deg cm2 dmol-1	Table I	printed;KF 0.01 M;aromatic_cd=Y1,F14;ccap_from=1994_zhou_proteins18_table1;N-cap (position 3);reprint=1994_zhou_proteins18_table1:G3
+G3	YMGEDELKAAEAAFKRHGPT	Ac	Am	20	6.0	4.0	0.01	helix_percent	33		percent	Table I	printed;KF 0.01 M;aromatic_cd=Y1,F14;ccap_from=1994_zhou_proteins18_table1;N-cap (position 3);reprint=1994_zhou_proteins18_table1:G3
+A3	YMAEDELKAAEAAFKRHGPT	Ac	Am	20	6.0	4.0	0.01	minus_theta222	7700		deg cm2 dmol-1	Table I	printed;KF 0.01 M;aromatic_cd=Y1,F14;ccap_from=1994_zhou_proteins18_table1;N-cap (position 3);reprint=1994_zhou_proteins18_table1:A3
+A3	YMAEDELKAAEAAFKRHGPT	Ac	Am	20	6.0	4.0	0.01	helix_percent	24		percent	Table I	printed;KF 0.01 M;aromatic_cd=Y1,F14;ccap_from=1994_zhou_proteins18_table1;N-cap (position 3);reprint=1994_zhou_proteins18_table1:A3
+A6	YMSEDALKAAEAAFKRHGPT	Ac	Am	20	6.0	4.0	0.01	minus_theta222	12048		deg cm2 dmol-1	Table I	printed;KF 0.01 M;aromatic_cd=Y1,F14;ccap_from=1994_zhou_proteins18_table1;internal (position 6);reprint=1994_zhou_proteins18_table1:A6
+A6	YMSEDALKAAEAAFKRHGPT	Ac	Am	20	6.0	4.0	0.01	helix_percent	38		percent	Table I	printed;KF 0.01 M;aromatic_cd=Y1,F14;ccap_from=1994_zhou_proteins18_table1;internal (position 6);reprint=1994_zhou_proteins18_table1:A6
+G6	YMSEDGLKAAEAAFKRHGPT	Ac	Am	20	6.0	4.0	0.01	minus_theta222	6941		deg cm2 dmol-1	Table I	printed;KF 0.01 M;aromatic_cd=Y1,F14;ccap_from=1994_zhou_proteins18_table1;internal (position 6);reprint=1994_zhou_proteins18_table1:G6
+G6	YMSEDGLKAAEAAFKRHGPT	Ac	Am	20	6.0	4.0	0.01	helix_percent	22		percent	Table I	printed;KF 0.01 M;aromatic_cd=Y1,F14;ccap_from=1994_zhou_proteins18_table1;internal (position 6);reprint=1994_zhou_proteins18_table1:G6
+S10	YMSEDELKASEAAFKRHGPT	Ac	Am	20	6.0	4.0	0.01	minus_theta222	9300		deg cm2 dmol-1	Table I	printed;KF 0.01 M;aromatic_cd=Y1,F14;ccap_from=1994_zhou_proteins18_table1;internal (position 10);reprint=1994_zhou_proteins18_table1:S10
+S10	YMSEDELKASEAAFKRHGPT	Ac	Am	20	6.0	4.0	0.01	helix_percent	29		percent	Table I	printed;KF 0.01 M;aromatic_cd=Y1,F14;ccap_from=1994_zhou_proteins18_table1;internal (position 10);reprint=1994_zhou_proteins18_table1:S10
+G10	YMSEDELKAGEAAFKRHGPT	Ac	Am	20	6.0	4.0	0.01	minus_theta222	5560		deg cm2 dmol-1	Table I	printed;KF 0.01 M;aromatic_cd=Y1,F14;ccap_from=1994_zhou_proteins18_table1;internal (position 10);reprint=1994_zhou_proteins18_table1:G10
+G10	YMSEDELKAGEAAFKRHGPT	Ac	Am	20	6.0	4.0	0.01	helix_percent	17		percent	Table I	printed;KF 0.01 M;aromatic_cd=Y1,F14;ccap_from=1994_zhou_proteins18_table1;internal (position 10);reprint=1994_zhou_proteins18_table1:G10
+A17	YMSEDELKAAEAAFKRAGPT	Ac	Am	20	6.0	4.0	0.01	minus_theta222	15476		deg cm2 dmol-1	Table I	printed;KF 0.01 M;aromatic_cd=Y1,F14;ccap_from=1994_zhou_proteins18_table1;internal (position 17)
+A17	YMSEDELKAAEAAFKRAGPT	Ac	Am	20	6.0	4.0	0.01	helix_percent	48		percent	Table I	printed;KF 0.01 M;aromatic_cd=Y1,F14;ccap_from=1994_zhou_proteins18_table1;internal (position 17)
+S17	YMSEDELKAAEAAFKRSGPT	Ac	Am	20	6.0	4.0	0.01	minus_theta222	15449		deg cm2 dmol-1	Table I	printed;KF 0.01 M;aromatic_cd=Y1,F14;ccap_from=1994_zhou_proteins18_table1;internal (position 17)
+S17	YMSEDELKAAEAAFKRSGPT	Ac	Am	20	6.0	4.0	0.01	helix_percent	48		percent	Table I	printed;KF 0.01 M;aromatic_cd=Y1,F14;ccap_from=1994_zhou_proteins18_table1;internal (position 17)
+N18	YMSEDELKAAEAAFKRHNPT	Ac	Am	20	6.0	4.0	0.01	minus_theta222	20028		deg cm2 dmol-1	Table I	printed;KF 0.01 M;aromatic_cd=Y1,F14;ccap_from=1994_zhou_proteins18_table1;C-cap (position 18);reprint=1994_zhou_proteins18_table1:N18
+N18	YMSEDELKAAEAAFKRHNPT	Ac	Am	20	6.0	4.0	0.01	helix_percent	63		percent	Table I	printed;KF 0.01 M;aromatic_cd=Y1,F14;ccap_from=1994_zhou_proteins18_table1;C-cap (position 18);reprint=1994_zhou_proteins18_table1:N18
+Q18	YMSEDELKAAEAAFKRHQPT	Ac	Am	20	6.0	4.0	0.01	minus_theta222	17927		deg cm2 dmol-1	Table I	printed;KF 0.01 M;aromatic_cd=Y1,F14;ccap_from=1994_zhou_proteins18_table1;C-cap (position 18)
+Q18	YMSEDELKAAEAAFKRHQPT	Ac	Am	20	6.0	4.0	0.01	helix_percent	56		percent	Table I	printed;KF 0.01 M;aromatic_cd=Y1,F14;ccap_from=1994_zhou_proteins18_table1;C-cap (position 18)
+A18	YMSEDELKAAEAAFKRHAPT	Ac	Am	20	6.0	4.0	0.01	minus_theta222	17359		deg cm2 dmol-1	Table I	printed;KF 0.01 M;aromatic_cd=Y1,F14;ccap_from=1994_zhou_proteins18_table1;C-cap (position 18)
+A18	YMSEDELKAAEAAFKRHAPT	Ac	Am	20	6.0	4.0	0.01	helix_percent	54		percent	Table I	printed;KF 0.01 M;aromatic_cd=Y1,F14;ccap_from=1994_zhou_proteins18_table1;C-cap (position 18)
+S18	YMSEDELKAAEAAFKRHSPT	Ac	Am	20	6.0	4.0	0.01	minus_theta222	17369		deg cm2 dmol-1	Table I	printed;KF 0.01 M;aromatic_cd=Y1,F14;ccap_from=1994_zhou_proteins18_table1;C-cap (position 18)
+S18	YMSEDELKAAEAAFKRHSPT	Ac	Am	20	6.0	4.0	0.01	helix_percent	54		percent	Table I	printed;KF 0.01 M;aromatic_cd=Y1,F14;ccap_from=1994_zhou_proteins18_table1;C-cap (position 18)
+T18	YMSEDELKAAEAAFKRHTPT	Ac	Am	20	6.0	4.0	0.01	minus_theta222	15951		deg cm2 dmol-1	Table I	printed;KF 0.01 M;aromatic_cd=Y1,F14;ccap_from=1994_zhou_proteins18_table1;C-cap (position 18)
+T18	YMSEDELKAAEAAFKRHTPT	Ac	Am	20	6.0	4.0	0.01	helix_percent	50		percent	Table I	printed;KF 0.01 M;aromatic_cd=Y1,F14;ccap_from=1994_zhou_proteins18_table1;C-cap (position 18)
