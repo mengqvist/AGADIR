@@ -1,20 +1,18 @@
 """The segments' ionisation solved together (electrostatics/common.py SegmentBatch, models.AGADIR._calc_partition_fxn):
-the results of the per-segment solver it replaced (deleted on 2026-10-22; its results for these peptides are in
-tests/data/segment_batch_reference.json.gz, recorded at commit 0b7b056 under the additive acid-base pair rule, which
-these tests therefore select), the premises the batch rests on (every interacting pair within PAIR_RANGE residues; a
-segment-independent coil state), and the non-Coulomb coefficients."""
+each segment's charges, potentials, ionisation free energy and sweep counts equal those of the same segment solved on its
+own (a batch of one), and so do the predictions; the premises the batch rests on (every interacting pair within
+PAIR_RANGE residues; a segment-independent coil state); and the non-Coulomb coefficients against whole-energy
+differences of the terms themselves.
+
+(Until 2026-10-27 the batch was also checked against results recorded from the per-segment solver it replaced in
+2026-10-22; those references were recorded under a macrodipole law and pair rule that no longer exist.)"""
 import contextlib
-import gzip
 import io
-import json
-from pathlib import Path
 
 import numpy as np
 import pytest
 
-import pyagadir.energies as energies
 import pyagadir.models as models
-from pyagadir.chemistry import T_REF
 from pyagadir.electrostatics.common import PAIR_RANGE
 from pyagadir.energies import EnergyCalculator
 
@@ -35,201 +33,105 @@ CASES = [
 ]
 
 
-# (case, law): every case under the default law, a subset under gbx (the GB field instead of Muñoz's)
-LAW_CASES = [(c, "munoz") for c in CASES] + [(c, "gbx") for c in (CASES[0], CASES[2], CASES[3], CASES[6], CASES[8],
-                                                                    CASES[-1])]
+def _ids(case):
+    return f"{case[0]}-{case[3]}"
 
 
-REFERENCE = json.load(gzip.open(Path(__file__).parent / "data" / "segment_batch_reference.json.gz", "rt"))
+def _windows(case):
+    seq, nc, cc, *_ = case
+    L = len(seq) + (nc is not None) + (cc is not None)
+    return [(i, j) for j in range(6, L + 1) for i in range(0, L - j + 1)]
 
 
-def _recorded_hbond_law(monkeypatch):
-    """The hydrogen-bond temperature law of the recorded model: every side-chain and capping hydrogen bond scaled by the
-    backbone's relative law h(T) = 1 + dCp (T - T_REF) / HBOND_DH_REF (temperature-independent since 2026-10-26,
-    params/README.md "Hydrogen-bond temperature dependence"): the advantage over Ala of the hydrogen-bonding N- and C-caps
-    and end groups, the Am value, the N4 motifs, and the favourable polar and acid-base pair entries (Table IV with the
-    Table V motifs). Exact under the additive capping rule these references use."""
-    C = EnergyCalculator
-    polar = set("STNQDEKRH")
-
-    def h(c):
-        return 1.0 + c.dCp * (c.T_kelvin - T_REF) / energies.HBOND_DH_REF
-
-    def ncap(f):
-        def g(c):
-            e = f(c)
-            if c.Ncap_AA in ("S", "T", "N", "D", "Ac", "Sc"):
-                col = ("Nc-4" if c.N1_AA == "P" else "Nc-3") if c.N3_AA in ("E", "D", "Q") else (
-                    "Nc-2" if c.N1_AA == "P" else "Nc-1")
-                ref = c.table_1_lacroix.loc["A", col]
-                e[c.ncap_idx] = ref + h(c) * (e[c.ncap_idx] - ref)
-            return e
-        return g
-
-    def ccap(f):
-        def g(c):
-            e = f(c)
-            col = "Cc-2" if c.Cprime_AA == "P" else "Cc-1"
-            if c.Ccap_AA in ("K", "R", "H", "N", "D"):
-                ref = c.table_1_lacroix.loc["A", col]
-                e[c.ccap_idx] = ref + h(c) * (e[c.ccap_idx] - ref)
-            elif c.Ccap_AA == "Am":
-                e[c.ccap_idx] = h(c) * e[c.ccap_idx]
-            return e
-        return g
-
-    def pair(f, k):
-        def g(c):
-            e = f(c).copy()
-            for i in range(len(e)):
-                if e[i] < 0 and i + k < len(c.seq_list):
-                    a, b = c.seq_list[i], c.seq_list[i + k]
-                    if a in polar and b in polar:  # acid-base and polar pairs (the Table V motifs are polar pairs)
-                        e[i] *= h(c)
-            return e
-        return g
-
-    def scaled(f):
-        return lambda c: h(c) * f(c)
-
-    monkeypatch.setattr(C, "get_dG_Ncap", ncap(C.get_dG_Ncap))
-    monkeypatch.setattr(C, "get_dG_Ccap", ccap(C.get_dG_Ccap))
-    monkeypatch.setattr(C, "get_dG_i3", pair(C.get_dG_i3, 3))
-    monkeypatch.setattr(C, "get_dG_i4", pair(C.get_dG_i4, 4))
-    monkeypatch.setattr(C, "get_dG_petukhov_motif", scaled(C.get_dG_petukhov_motif))
-    monkeypatch.setattr(C, "get_dG_charged_staple", scaled(C.get_dG_charged_staple))
+def _alone(case, i, j, params):
+    seq, nc, cc, pH, T, M = case
+    return EnergyCalculator(seq=seq, i=i, j=j, pH=pH, T=T, ionic_strength=M, ncap=nc, ccap=cc, params=params)
 
 
-@pytest.fixture(autouse=True)
-def _recorded_model(monkeypatch):
-    """The references were recorded before 2026-10-26: capping motifs counted additively with acid-base bonds
-    (energies.CAPPING_EXCLUSIVITY, now "exclusive"; tests/test_capping_exclusivity.py covers it), the published Gly
-    N-cap cells (-0.30; now -0.54, params/README.md) and the side-chain hydrogen bonds on the backbone's temperature law
-    (_recorded_hbond_law)."""
-    monkeypatch.setattr(energies, "CAPPING_EXCLUSIVITY", "additive")
-    _recorded_hbond_law(monkeypatch)
-    t1 = EnergyCalculator.load_params()["table_1_lacroix"]
-    cols = ("Nc-1", "Nc-2", "Nc-3", "Nc-4")
-    shipped = {c: float(t1.loc["G", c]) for c in cols}
-    for c in cols:
-        t1.loc["G", c] = -0.30
-    yield
-    for c, v in shipped.items():
-        t1.loc["G", c] = v
+def _batched(case, params):
+    """The segments as models.AGADIR builds them: the first on its own, the rest on its batch, solved together."""
+    seq, nc, cc, pH, T, M = case
+    windows = _windows(case)
+    first = _alone(case, *windows[0], params)
+    batch = first.segment_batch
+    rest = [EnergyCalculator(seq=seq, i=i, j=j, pH=pH, T=T, ionic_strength=M, ncap=nc, ccap=cc, params=params,
+                             batch=batch) for i, j in windows[1:]]
+    batch.solve_helix(rest)
+    return [first] + rest
 
 
-def _reference(case, law):
-    """The per-segment solver's recorded results for (case, law)."""
-    for r in REFERENCE["cases"]:
-        if tuple(r["case"]) == tuple(case) and r["law"] == law:
-            return r
-    raise KeyError((case, law))
+def _site_q(c, helix):
+    seq_q = c.modified_seq_ionization_hel if helix else c.modified_seq_ionization_rc
+    nq = c.modified_nterm_ionization_hel if helix else c.modified_nterm_ionization_rc
+    cq = c.modified_cterm_ionization_hel if helix else c.modified_cterm_ionization_rc
+    return np.array([float(nq) if k == "Nterm" else float(cq) if k == "Cterm" else float(seq_q[i])
+                     for k, i in c._ionizable_sites()[0]])
 
 
-def _predict(case, law="munoz"):
+@pytest.mark.parametrize("case", CASES, ids=_ids)
+def test_every_segment_of_the_batch_equals_the_segment_alone(case):
+    params = EnergyCalculator.snapshot_params()
+    for b in _batched(case, params):
+        a = _alone(case, b.i, b.j, params)
+        assert np.allclose(_site_q(b, False), _site_q(a, False), rtol=0, atol=1e-12), (b.i, b.j)
+        assert np.allclose(_site_q(b, True), _site_q(a, True), rtol=0, atol=1e-12), (b.i, b.j)
+        assert abs(b.dG_ionization - a.dG_ionization) < 1e-12, (b.i, b.j)
+        assert b.ionization_sweeps == a.ionization_sweeps, (b.i, b.j)
+
+
+@pytest.mark.parametrize("case", CASES[:6], ids=_ids)
+def test_predictions_equal_the_sum_of_segments_solved_alone(case):
+    """models.AGADIR's % helix equals the one-sequence sum over segments each solved on its own."""
     seq, nc, cc, pH, T, M = case
     with contextlib.redirect_stdout(io.StringIO()):
-        return models.AGADIR(method="1s", T=T, M=M, pH=pH, dipole_law=law, pair_rule="additive").predict(
-            seq, ncap=nc, ccap=cc)
+        m = models.AGADIR(method="1s", T=T, M=M, pH=pH)
+        r = m.predict(seq, ncap=nc, ccap=cc)
+    params = EnergyCalculator.snapshot_params()
+    L = r.seq_length
+    k_arr, k_tot = np.zeros(L), 0.0
+    for i, j in _windows(case):
+        m.energy_calculator = _alone(case, i, j, params)
+        K = m._calc_K(m._calc_dG_Hel(i, j))
+        k_arr[i + 1:i + j - 1] += K
+        k_tot += K
+    prop = 100 * k_arr / (1.0 + k_tot)
+    assert np.max(np.abs(prop - r.helical_propensity)) < 1e-9
 
 
-def _segments(case, law="munoz"):
-    seq, nc, cc, pH, T, M = case
-    L = len(seq) + (nc is not None) + (cc is not None)
-    params = EnergyCalculator.snapshot_params(law)
-    for j in range(6, L + 1):
-        for i in range(0, L - j + 1):
-            yield EnergyCalculator(seq=seq, i=i, j=j, pH=pH, T=T, ionic_strength=M, ncap=nc, ccap=cc, params=params,
-                                   dipole_law=law, pair_rule="additive")
-
-
-def _ids(cl):
-    return f"{cl[1]}-{cl[0][0]}-{cl[0][3]}"
-
-
-# Since 2026-10-23 the solver feeds a site's Table IV/V pair couplings into its pKa also when the site has no own
-# non-Coulomb coefficient (electrostatics/common.py, SegmentBatch.solve_helix). The per-segment solver recorded here
-# dropped them, which only the Cys and His sites of these two peptides ever had (the Cys/His N-cap rule, Table IV/V
-# couplings): helix-state charges of short segments move by up to 0.1 and a segment's ionisation free energy by up to
-# 0.14 kcal/mol (measured 0.072 / 0.048 default law, 0.094 / 0.138 gbx), and predictions by <= 0.02 helix points per
-# residue and <= 0.01 in % helix. All other reference peptides stay exact.
-COUPLING_FIX = {"ACAAEKAAKHAAEAAY", "AQAAADKAAEFAAHKAAEAARY"}
-
-# Since 2026-10-23 the acid-base H-bond set is the best compatible one (energies._acid_base_hbonds), not strongest-first.
-# Of these peptides only the (AEEEKKK)4 repeat gets a different set: +0.18 % helix (default law) and +0.19 (gbx), at
-# most 0.54 / 0.81 helix points per residue. The solver itself is unchanged.
-HBOND_SET_CHANGE = {"AEEEKKKAEEEKKKAEEEKKKAEEEKKKAW": 0.2}
-
-
-@pytest.mark.parametrize("cl", LAW_CASES, ids=_ids)
-def test_predictions_reproduce_the_per_segment_solver(cl):
-    """Identical % helix; per-residue helicity equal to rounding (the coefficients differ from the per-segment solver's
-    whole-energy differences at the last bit). COUPLING_FIX peptides: within the fix's documented size."""
-    case, law = cl
-    ref = _reference(case, law)
-    r = _predict(case, law)
-    if case[0] in COUPLING_FIX:
-        assert abs(r.percent_helix - ref["percent_helix"]) <= 0.011
-        assert np.max(np.abs(r.helical_propensity - np.array(ref["helical_propensity"]))) < 0.05
-        return
-    if case[0] in HBOND_SET_CHANGE:
-        assert 0.0 < r.percent_helix - ref["percent_helix"] <= HBOND_SET_CHANGE[case[0]]
-        assert np.max(np.abs(r.helical_propensity - np.array(ref["helical_propensity"]))) < 1.0
-        return
-    assert r.percent_helix == ref["percent_helix"]
-    assert np.max(np.abs(r.helical_propensity - np.array(ref["helical_propensity"]))) < 1e-9
-
-
-@pytest.mark.parametrize("cl", LAW_CASES, ids=_ids)
-def test_every_segment_matches_the_per_segment_solver(cl):
-    """Each segment's ionisation (a batch of one) against the per-segment solver's recorded results: the coil state to
-    the last bit, the helix state and dG_ionization to rounding, the same sweep counts."""
-    case, law = cl
-    ref = _reference(case, law)
-    segs = {(g["i"], g["j"]): g for g in ref["segments"]}
-    n_seen = 0
-    for c in _segments(case, law):
-        g = segs[(c.i, c.j)]
-        sites = c._ionizable_sites()[0]
-
-        def site_q(helix):
-            seq_q = c.modified_seq_ionization_hel if helix else c.modified_seq_ionization_rc
-            nq = c.modified_nterm_ionization_hel if helix else c.modified_nterm_ionization_rc
-            cq = c.modified_cterm_ionization_hel if helix else c.modified_cterm_ionization_rc
-            return [float(nq) if k == "Nterm" else float(cq) if k == "Cterm" else float(seq_q[i]) for k, i in sites]
-        assert site_q(False) == ref["q_coil"], (c.i, c.j)
-        if case[0] in COUPLING_FIX:  # the helix state's His couplings now enter the pKa (see COUPLING_FIX)
-            assert np.allclose(site_q(True), g["q_hel"], rtol=0, atol=0.15), (c.i, c.j)
-            assert abs(c.dG_ionization - g["dG_ionization"]) < 0.15, (c.i, c.j)
-        else:
-            assert np.allclose(site_q(True), g["q_hel"], rtol=0, atol=1e-12), (c.i, c.j)
-            assert abs(c.dG_ionization - g["dG_ionization"]) < 1e-12, (c.i, c.j)
-            assert [c.ionization_sweeps[True], c.ionization_sweeps[False]] == g["sweeps"], (c.i, c.j)
-        n_seen += 1
-    assert n_seen == len(segs)
-
-
-@pytest.mark.parametrize("cl", LAW_CASES, ids=_ids)
-def test_noncoulomb_coefficients_equal_the_whole_energy_differences(cl):
-    """The seven-pattern coefficients against the per-segment solver's recorded whole-energy differences."""
-    case, law = cl
-    segs = {(g["i"], g["j"]): g for g in _reference(case, law)["segments"]}
-    for c in _segments(case, law):
-        g = segs[(c.i, c.j)]
+@pytest.mark.parametrize("case", CASES, ids=_ids)
+def test_noncoulomb_coefficients_equal_the_whole_energy_differences(case):
+    """The seven-pattern coefficients (EnergyCalculator._nonCoulomb_charge_coefficients) against the whole
+    charge-dependent non-Coulomb energy evaluated at single and pairwise charge patterns."""
+    params = EnergyCalculator.snapshot_params()
+    for c in _batched(case, params):
         la, lab = c._nonCoulomb_charge_coefficients()
-        a = {int(k): v for k, v in g["c_a"].items()}
-        ab = {tuple(int(x) for x in k.split(",")): v for k, v in g["c_ab"].items()}
-        assert set(a) == set(la) and set(ab) == set(lab), (c.i, c.j)
-        for k in a:
-            assert abs(a[k] - la[k]) < 1e-12, (c.i, c.j, k)
-        for k in ab:
-            assert abs(ab[k] - lab[k]) < 1e-12, (c.i, c.j, k)
+        charged = set(c.neg_charge_aa + c.pos_charge_aa)
+        titr = [k for k in range(c.ncap_idx, c.ccap_idx + 1) if c.seq_list[k] in charged]
+        saved = c.modified_seq_ionization_hel
+
+        def G(on):
+            c.modified_seq_ionization_hel = np.array([1.0 if k in on else 0.0 for k in range(len(c.seq_list))])
+            t = c._charge_dependent_nonCoulomb_terms()
+            return float(sum(np.sum(v) for v in t.values()))
+        try:
+            g0 = G(())
+            single = {a: G((a,)) - g0 for a in titr}
+            for a in titr:
+                assert abs(single[a] - la.get(a, 0.0)) < 1e-12, (c.i, c.j, a)
+            for a in titr:
+                for d in (3, 4):
+                    b = a + d
+                    if b in titr:
+                        cab = G((a, b)) - g0 - single[a] - single[b]
+                        assert abs(cab - lab.get((a, b), 0.0)) < 1e-12, (c.i, c.j, a, b)
+        finally:
+            c.modified_seq_ionization_hel = saved
 
 
 def test_every_tabulated_distance_is_within_range_and_inside_the_solver_cutoff():
     """Table VI ends at i+PAIR_RANGE, and every tabulated distance is below the solver's 40 A cutoff, so the pairs within
     PAIR_RANGE residues are exactly the pairs any term counts."""
-    params = EnergyCalculator.snapshot_params("munoz")
+    params = EnergyCalculator.snapshot_params()
     for name in ("table_6_helix_lacroix", "table_6_coil_lacroix"):
         t = params[name]
         cols = [c for c in t.columns if str(c).startswith("i+")]
@@ -240,7 +142,9 @@ def test_every_tabulated_distance_is_within_range_and_inside_the_solver_cutoff()
 
 def test_pairs_beyond_the_range_are_unmodelled_in_both_states():
     case = CASES[-1]
-    for c in _segments(case):
+    params = EnergyCalculator.snapshot_params()
+    for i, j in _windows(case)[::7]:
+        c = _alone(case, i, j, params)
         sites = c._ionizable_sites()[0]
         for k1, i1 in sites:
             for k2, i2 in sites:
@@ -254,10 +158,10 @@ def test_pairs_beyond_the_range_are_unmodelled_in_both_states():
                         assert c._site_pair_distance(k1, i1, k2, i2, False) == 99.0
 
 
-@pytest.mark.parametrize("case", [CASES[0], CASES[3], CASES[6], CASES[-2]], ids=lambda c: f"{c[0]}-{c[3]}")
+@pytest.mark.parametrize("case", [CASES[0], CASES[3], CASES[6], CASES[-2]], ids=_ids)
 def test_the_coil_state_is_the_same_for_every_segment(case):
     first = None
-    for c in _segments(case):
+    for c in _batched(case, EnergyCalculator.snapshot_params()):
         coil = (c.modified_seq_ionization_rc, c.modified_nterm_ionization_rc, c.modified_cterm_ionization_rc,
                 c.site_potential_rc, c.ionization_free_energy_states[False], c.ionization_sweeps[False])
         if first is None:

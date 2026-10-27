@@ -1,5 +1,5 @@
 """
-Acid-base side chains of the helix as states (default law, pair_rule "states").
+Acid-base side chains of the helix as states.
 
 One side chain, one state. At any moment a side chain holds a set of contacts with partners three or four residues
 away (partner slots -4, -3, +3, +4), or, at N3/N4, its capping motif, or nothing; ionisable side chains also carry their
@@ -48,7 +48,7 @@ way, K_motif = exp(-g/RT) - 1 beside the free state, so an isolated motif reprod
 The coil state holds no contacts. The correction a segment's free energy takes is
     Delta(i, j) = [F(helix) - F(coil)] - [F_MF(helix) - F_MF(coil)] - sum over motif sites of g_motif(neutral),
 F_MF being the mean-field charge-dependent free energy of the segment as the energy terms give it (with the acid-base
-pairs left to this module and the capping motifs additive, see EnergyCalculator.get_dG_i3 and capping_rule): the
+pairs left to this module and the capping motifs additive, see EnergyCalculator.get_dG_i3): the
 module replaces that part of the segment's free energy, and the charge-independent part of each motif it carries.
 """
 import itertools

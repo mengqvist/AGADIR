@@ -130,3 +130,6 @@ dmypy.json
 
 # Literature PDFs: kept locally, not distributed
 doc/
+
+# Retired GB-law build tools and their data (2026-10-27): kept on disk, out of the repository
+gb_pipeline/

@@ -1,31 +1,25 @@
 """
-What the electrostatic laws share, and the switch between them (dipole_law).
-
-The side chain-macrodipole potential and the side chain-side chain pair energy come from the selected law
-(point.py or gb.py); the self-consistent ionisation of every group in the helix and coil states, and the energy terms
-that collect both laws, are the same for all of them.
+The electrostatics of a helical segment: the self-consistent ionisation of every group in the helix and coil states,
+and the electrostatic energy terms, on the point-charge law (point.py).
 """
 import math
 import warnings
 
 import numpy as np
 
-from pyagadir.chemistry import (LN10, R_KCAL, T_REF, adjust_pKa, acidic_residue_ionization, basic_residue_ionization,
+from pyagadir.chemistry import (LN10, R_KCAL, adjust_pKa, acidic_residue_ionization, basic_residue_ionization,
                                 ionization_free_energy)
-from pyagadir.electrostatics.gb import GB_LAWS, GBElectrostatics
-from pyagadir.electrostatics.point import POINT_LAW, PointChargeElectrostatics
-
-DIPOLE_LAWS = (POINT_LAW, *GB_LAWS)
+from pyagadir.electrostatics.point import PointChargeElectrostatics
 
 
 class IonizationConvergenceWarning(RuntimeWarning):
     """The helix- or coil-state ionisation did not converge within the sweep limit."""
 
 
-class Electrostatics(GBElectrostatics, PointChargeElectrostatics):
+class Electrostatics(PointChargeElectrostatics):
     """
-    The electrostatics of a helical segment under dipole_law: the law switch, the ionisation solver and the
-    energy terms shared by the laws. Mixin of energies.PrecomputeParams.
+    The electrostatics of a helical segment: the ionisation solver's setup and the electrostatic energy terms. Mixin of
+    energies.PrecomputeParams.
     """
 
     def _nonCoulomb_charge_coefficients(self) -> tuple[dict, dict]:
@@ -35,42 +29,29 @@ class Electrostatics(GBElectrostatics, PointChargeElectrostatics):
         """
         return {}, {}
 
-    def dipole_temperature_factor(self) -> float:
-        """Muñoz 1995-III eq. (12): the side chain-macrodipole term uses a fixed dielectric and is
-        scaled by eps(0 C)/eps(T) = exp(+0.004314 (T - 273.15)) (stronger at higher T).
-        The GB law (dipole_law="gbx") carries its temperature dependence in eps_w(T) itself: 1."""
-        if self.dipole_law in GB_LAWS:
-            return 1.0
-        return math.exp(0.004314 * (self.T_kelvin - T_REF))
-
     def _sidechain_dipole_potential(self, idx: int) -> tuple[float, float]:
         """
-        Energy (kcal/mol) of a +1 charge on residue idx in the field of the helix macrodipole,
-        split into the contributions of the N-terminal and the C-terminal end, before the eps(T)
-        factor (dipole_temperature_factor). get_dG_sidechain_macrodipole multiplies these by the
-        residue's charge, and the ionisation solver uses them as the helix-state field, so both see
-        one electrostatic model. The law is _munoz_dipole_potential (default) or, with
-        the GB law ("gbx"), _gb_dipole_potential.
+        Energy (kcal/mol) of a +1 charge on residue idx in the field of the helix macrodipole, split into the
+        contributions of the N-terminal and the C-terminal end (point.py, _macrodipole_potential).
+        get_dG_sidechain_macrodipole multiplies these by the residue's charge, and the ionisation solver uses them as the
+        helix-state field, so both see one electrostatic model.
         """
-        if self.dipole_law in GB_LAWS:
-            return self._gb_dipole_potential(idx)
-        return self._munoz_dipole_potential(idx)
+        return self._macrodipole_potential(idx)
 
     def _assign_sidechain_dipole_potentials(self):
         """
-        Helix-state macrodipole field on every charged residue (kcal/mol per +1 charge, including
-        the eps(T) factor): the potential the ionisation solver uses for the helix state. It is
-        the same law the side chain-macrodipole energy applies (_sidechain_dipole_potential).
+        Helix-state macrodipole field on every charged residue (kcal/mol per +1 charge): the potential the ionisation
+        solver uses for the helix state. It is the same law the side chain-macrodipole energy applies
+        (_sidechain_dipole_potential).
         """
         n = len(self.seq_list)
         if int(self.ccap_idx) - int(self.ncap_idx) + 1 <= 5:
             raise ValueError(f"Invalid helix boundaries: start={self.ncap_idx}, end={self.ccap_idx}")
         charged = set(self.neg_charge_aa + self.pos_charge_aa)
-        factor = self.dipole_temperature_factor()
         self.sidechain_dipole_potential = np.zeros(n, dtype=float)
         for idx, aa in enumerate(self.seq_list):
             if aa in charged:
-                self.sidechain_dipole_potential[idx] = factor * sum(self._sidechain_dipole_potential(idx))
+                self.sidechain_dipole_potential[idx] = sum(self._sidechain_dipole_potential(idx))
 
     def _ionizable_sites(self):
         """
@@ -132,29 +113,9 @@ class Electrostatics(GBElectrostatics, PointChargeElectrostatics):
         """
         Calculate the interaction energy between charged side-chains and the helix macrodipole.
 
-        The macrodipole is treated as local: the field of a helix end comes from the
-        unpaired amides of the first turn or carbonyls of the last turn, so each charged
-        residue (Ncap to Ccap inclusive) interacts with the NEAREST helix end only (ties go
-        to the N-terminus), with the law of Munoz 1995-II eq. 11:
-
-            N-terminal end:  g =  q × K / d_N² × exp(−κ × d_N)
-            C-terminal end:  g = −q × K / d_C² × exp(−κ × d_C)
-
-        K = 0.6 × 4.9² kcal Å² mol⁻¹, d_N / d_C are distances from the charged group to that
-        end (Coulomb distance tables, after Lacroix 1998 Table VII), and residues more than
-        nine positions from the cap contribute nothing.
-
-        The other (far) end adds the field of its half charge (Hol et al. 1978): screened
-        Coulomb in water at the Table VII distance to that end, extended past 13 positions by
-        1.5 A per residue (FEH; reasoning/nodes/N083.md), scaled by FEH_FAR_APBS.
-
-        Flanking charged residues outside the helix interact with the nearby end's half charge
-        by the same screened Coulomb law in water, at the Lacroix 1998 flank distance (6 A at
-        N'/C', +3 A per further position), and the energy is assigned to the cap.
-
-        The law itself is _sidechain_dipole_potential (shared with the ionisation solver); with
-        a GB law it is the Generalized Born field (_gb_dipole_potential) and the text above
-        describes only its flanks.
+        Each charged residue within nine positions of the helix (N-cap to C-cap, and the flanks) takes its charge times
+        the macrodipole potential of _sidechain_dipole_potential (point.py, _macrodipole_potential: the +1/2 and -1/2
+        end charges by screened Coulomb in water). A flanking residue's energy is assigned to the nearby cap.
 
         Returns:
             tuple[np.ndarray, np.ndarray]: N-terminal and C-terminal dipole energy arrays.
@@ -231,7 +192,7 @@ class SegmentBatch:
     """
     Self-consistent mean-field ionisation in the helix and coil ensembles, and the ionisation free energy, of every
     helical segment of a prediction at once (models.AGADIR) or of a single segment (an EnergyCalculator built on its
-    own is a batch of one), under both laws (the default and gbx).
+    own is a batch of one).
 
     The model. Each titratable group's pKa is shifted by the electrostatic potential psi it feels as a fully charged
     probe (Lacroix 1998, eqs 8-11): the macrodipole (helix state only) and every other ionisable group at its current
@@ -254,12 +215,11 @@ class SegmentBatch:
     MAX_ITERATIONS sweeps).
 
     How (reasoning/nodes/N201.md). It replaced, with the same results, a solver that ran once per segment and state
-    (deleted on 2026-10-22; its results for the test peptides are kept in tests/data/segment_batch_reference.json.gz):
+    (deleted on 2026-10-22; tests/test_segment_batch.py checks the batch against segments solved one at a time):
 
     - the coil state does not depend on the segment (coil distances by sequence separation, the intrinsic charges as
       the start, the point-charge pair law, no macrodipole and no non-Coulomb term), so it is solved once, here, and
-      every segment takes that solution. gbx differs from the default only in its side chain-macrodipole field (the
-      GB table, read through each segment's sidechain_dipole_potential) and in table values;
+      every segment takes that solution;
     - pair lists, distance tables and the sums cover the pairs within PAIR_RANGE residues, the only ones that
       interact;
     - each state's Gauss-Seidel sweep runs for all segments at once: one array operation per site update, over the

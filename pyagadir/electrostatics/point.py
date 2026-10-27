@@ -1,23 +1,21 @@
 """
-Point-charge electrostatics: dipole_law="munoz", the default law.
+Point-charge electrostatics of the helix-coil model.
 
 Charges are points at tabulated distances (Lacroix et al. 1998, J. Mol. Biol. 284, 173, supplementary Tables VI and
-VII) and interact by screened Coulomb in water (Lacroix 1998 eq. 6); a charged side chain feels the nearest helix end
-by Muñoz & Serrano 1995-II eq. 11 and the far end as a half charge. Every law takes the terminal groups from here (the
-free amine's and carboxylate's interactions with the macrodipole and with side chains), and the Generalized Born law
-(gb.py) also falls back on this one wherever its tables do not reach.
+VII) and interact by screened Coulomb in water at water's eps(T) (Lacroix 1998 eq. 6, with 4 pi). The helix macrodipole
+is a +1/2 charge at the N-terminal end and a -1/2 charge at the C-terminal end (Hol, van Duijnen & Berendsen 1978), and
+every charge feels it by that same law: side chains inside the helix (both ends, at their Table VII distances), side
+chains in the flanks (the nearby end) and the free terminal groups.
 
 PointChargeElectrostatics is a mixin of energies.PrecomputeParams and reads the segment set up there (seq_list,
 helix_indices, ncap_idx, ccap_idx, charged_pairs, kappa, epsilon_r, T_kelvin, the parameter tables and the ionisation
 states).
 """
+from importlib.resources import files
 import math
 
 import numpy as np
-
-from pyagadir.chemistry import T_REF, calculate_permittivity
-
-POINT_LAW = "munoz"
+import pandas as pd
 
 # Helix-state distance (A) between a succinyl N-cap's carboxylate and a charged side chain at N1, N2 or N3, used in
 # place of Lacroix 1998 Table VI 'N-cap f' (which places a free amine on the backbone: 9.2 A to N2 in the helix vs 9.6 A
@@ -28,19 +26,45 @@ POINT_LAW = "munoz"
 # -0.34 kcal/mol. Pairs not listed keep Table VI. See params/README.md.
 SUCCINYL_HELIX_DISTANCE = {("acid", 1): 9.33, ("acid", 2): 3.95, ("acid", 3): 5.27, ("base", 2): 4.80}
 
-# Far end of the helix macrodipole: a charged residue inside the helix feels the nearest end by Munoz & Serrano 1995-II
-# eq. 11 and the other end as a half charge (Hol, van Duijnen & Berendsen 1978), screened Coulomb in water. Poisson-
-# Boltzmann calculations on built helices (interior dielectric 4; Asp/Glu at N1-N3 and Lys/Arg at C1-C3, helix lengths
-# 6-28) give 0.82 times that half-charge law (least squares through the origin over 72 cases), so the far end is scaled
-# by this factor. The flank half charges are not (params/README.md: the same calculation on flanking residues gives 0.63,
-# but the measured data prefer the unscaled law).
-FEH_FAR_APBS = 0.82
+# Capping-box N-caps (a Glu at N3 behind one of these is its own Table 1 class, "N3cb").
+CAPPING_BOX_NCAPS = ("S", "T", "D", "N")
+_TRANSFER = None
+
+
+def table1_position_class(aa: str, n_dist: int, c_dist: int, ncap_res: str) -> str:
+    """
+    Table 1 class of a charged residue n_dist from the N-cap and c_dist from the C-cap, following get_dG_Int's column
+    choice: the N-cap; the C-cap; C1-C3 (whose charged-residue cells equal Ncen); N1-N4 for Asp/Glu, per N-cap type
+    (acetyl/succinyl "N1", residue "N1r"); Ncen otherwise (Lys/Arg/His N1-N4 cells equal Ncen). "N3cb": Glu at N3 behind
+    an S/T/D/N N-cap, the capping box, whose bonus was measured in residue-capped peptides. The classes of the macrodipole
+    carry-over (macrodipole_transfer).
+    """
+    if aa == "E" and n_dist == 3 and c_dist > 3 and ncap_res in CAPPING_BOX_NCAPS:
+        return "N3cb"
+    if n_dist == 0:
+        return "Ncap"
+    if c_dist == 0:
+        return "Ccap"
+    if c_dist <= 3:
+        return "Ncen"
+    if n_dist <= 4 and aa in ("D", "E"):
+        return f"N{n_dist}" + ("" if ncap_res in ("Ac", "Sc") else "r")
+    return "Ncen"
+
+
+def macrodipole_transfer() -> dict:
+    """params/macrodipole_transfer.tsv, loaded once: {(residue, class): dphi} (kcal/mol per +1 charge)."""
+    global _TRANSFER
+    if _TRANSFER is None:
+        t = pd.read_csv(files("pyagadir.params").joinpath("macrodipole_transfer.tsv"), sep="\t", comment="#")
+        _TRANSFER = {(r.residue, r.cls): float(r.dphi) for r in t.itertuples()}
+    return _TRANSFER
 
 
 class PointChargeElectrostatics:
     """
-    The point-charge law: interaction distances, the Coulomb energy, the side chain-macrodipole potential of
-    Muñoz & Serrano, and the electrostatic energy terms that only this law provides (terminal groups).
+    The point-charge law: interaction distances, the Coulomb energy, the helix macrodipole potential, and the
+    electrostatic energy terms of the terminal groups.
     """
 
     def _calculate_r(self, N: int) -> float:
@@ -70,7 +94,7 @@ class PointChargeElectrostatics:
             qi (float): Charge of the first residue.
             qj (float): Charge of the second residue.
             r (float): Distance between the residues in Ångströms.
-            factor_pi (float): Factor to multiply the Coulomb term by. Default is 3.0, as indicated in Lacroix, 1998.
+            factor_pi (float): The pi multiple of the Coulomb denominator, 4 (standard Coulomb; Lacroix 1998 prints 3).
         Returns:
             float: The interaction energy in kcal/mol.
         """
@@ -81,80 +105,53 @@ class PointChargeElectrostatics:
         energy_kcal_mol = self.N_A * energy_joules / 4184
         return energy_kcal_mol
 
-    def _munoz_dipole_potential_scaled(self, idx: int) -> tuple[float, float]:
-        """Muñoz's law with its eps(T) factor applied, for the positions the GB law leaves to it."""
-        factor = math.exp(0.004314 * (self.T_kelvin - T_REF))
-        phi_N, phi_C = self._munoz_dipole_potential(idx)
-        return factor * phi_N, factor * phi_C
-
-    def _munoz_dipole_potential(self, idx: int) -> tuple[float, float]:
+    def _macrodipole_potential(self, idx: int) -> tuple[float, float]:
         """
-        The default law (dipole_law="munoz"), before the eps(T) factor.
+        Energy (kcal/mol) of a +1 charge on residue idx in the field of the helix macrodipole, split into the N-terminal
+        and C-terminal ends' contributions.
 
-        Inside the helix (N-cap to C-cap): the nearest end by Muñoz 1995-II eq. 11,
-
-            N-terminal end:  g =  K / d_N² × exp(−κ × d_N)
-            C-terminal end:  g = −K / d_C² × exp(−κ × d_C)
-
-        with K = 0.6 × 4.9² kcal Å² mol⁻¹ and d_N / d_C from the Coulomb distance tables (after
-        Lacroix 1998 Table VII), zero beyond nine positions from the cap. The other (far) end adds
-        the field of its half charge (Hol, van Duijnen & Berendsen 1978): screened Coulomb in water
-        at the Table VII distance to that end, extended past 13 positions by the helix rise of
-        1.5 A per residue (reasoning/nodes/N083.md), scaled by FEH_FAR_APBS (0.82, Poisson-Boltzmann
-        calculations on built helices).
-
-        Flanking residues (up to nine positions outside a cap) feel the nearby end's half charge by
-        the same screened Coulomb law in water, at the Lacroix 1998 flank distance (6 A at N'/C',
-        +3 A per further position).
-
-        Residues farther away return (0, 0).
+        The ends are a +1/2 and a -1/2 charge (Hol, van Duijnen & Berendsen 1978), felt by screened Coulomb in water at
+        water's eps(T), the law of every other charge pair:
+        - residues N-cap..C-cap feel both ends, at their Lacroix 1998 Table VII distances to each end (extended past
+          13 positions by the helix rise of 1.5 A per residue), with no cutoff; to that potential the residue's Table 1
+          carry-over is added (params/macrodipole_transfer.tsv: the Table 1 values of charged residues were measured
+          with Muñoz & Serrano's eq. 11 near-end law in the loop; the offset keeps each at its reference measurement);
+        - flanking residues (up to nine positions outside a cap) feel the nearby end at the Lacroix 1998 flank
+          distance, 6 A at N'/C' and 3 A more per further position;
+        - residues farther away return (0, 0).
         """
         n = len(self.seq_list)
         ncap_i, ccap_i = int(self.ncap_idx), int(self.ccap_idx)
         aa = self.seq_list[idx]
-        kappa_01A = self.kappa * 1e-11  # Debye-Hückel parameter in 0.1 A units
-        K_DIPOLE = 0.6 * 49.0**2  # eq. 11 with r in 0.1 A units
-        # the half-charge terms are evaluated at the 0 C dielectric because the whole side
-        # chain-macrodipole term is multiplied by dipole_temperature_factor()
-        eps_to_0C = self.epsilon_r / calculate_permittivity(T_REF)
 
-        def dist_n(p):
-            key = "Ncap" if p == 0 else (f"N{p}" if 1 <= p <= 13 else None)
-            if key is None or aa not in self.table_7_coulomb_ncap.index:
-                return 99.0
-            return float(self.table_7_coulomb_ncap.loc[aa, key])
+        def half(pole, r):
+            return self._electrostatic_interaction_energy(qi=pole * self.mu_helix, qj=1.0, r=r)
 
-        def dist_c(p):
-            key = "Ccap" if p == 0 else (f"C{p}" if 1 <= p <= 13 else None)
-            if key is None or aa not in self.table_7_coulomb_ccap.index:
-                return 99.0
-            return float(self.table_7_coulomb_ccap.loc[aa, key])
-
-        def half_charge(pole, r):
-            return self._electrostatic_interaction_energy(qi=pole * self.mu_helix, qj=1.0, r=r) * eps_to_0C
-
-        phi_N = phi_C = 0.0
         if ncap_i <= idx <= ccap_i:
             n_pos, c_pos = idx - ncap_i, ccap_i - idx
-            d_N, d_C = dist_n(n_pos), dist_c(c_pos)
-            if d_N * 10.0 < 1.0 or d_C * 10.0 < 1.0:
-                return 0.0, 0.0
-            # the nearest end (ties go to the N-terminus); the other end as a half charge
-            if n_pos <= c_pos:
-                if n_pos <= 9:
-                    phi_N += K_DIPOLE / (d_N * 10.0) ** 2 * math.exp(-kappa_01A * d_N * 10.0)
-                d_far = d_C if c_pos <= 13 else dist_c(13) + 1.5 * (c_pos - 13)
-                phi_C += FEH_FAR_APBS * half_charge(-1.0, d_far)
+
+            def dist(table, prefix, p):
+                if aa not in table.index:
+                    return 99.0
+                if p == 0:
+                    return float(table.loc[aa, prefix + "cap"])
+                if p <= 13:
+                    return float(table.loc[aa, f"{prefix}{p}"])
+                return float(table.loc[aa, f"{prefix}13"]) + 1.5 * (p - 13)
+
+            phi_N = half(1.0, dist(self.table_7_ncap_lacroix, "N", n_pos))
+            phi_C = half(-1.0, dist(self.table_7_ccap_lacroix, "C", c_pos))
+            d = macrodipole_transfer().get((aa, table1_position_class(aa, n_pos, c_pos, self.seq_list[ncap_i])), 0.0)
+            if n_pos <= c_pos:  # the carry-over is booked on the nearer end
+                phi_N += d
             else:
-                if c_pos <= 9:
-                    phi_C += -K_DIPOLE / (d_C * 10.0) ** 2 * math.exp(-kappa_01A * d_C * 10.0)
-                d_far = d_N if n_pos <= 13 else dist_n(13) + 1.5 * (n_pos - 13)
-                phi_N += FEH_FAR_APBS * half_charge(1.0, d_far)
-        elif ccap_i < idx < min(n, ccap_i + 10):
-            phi_C += half_charge(-1.0, 6.0 + 3.0 * (idx - ccap_i - 1))
-        elif max(0, ncap_i - 9) <= idx < ncap_i:
-            phi_N += half_charge(1.0, 6.0 + 3.0 * (ncap_i - idx - 1))
-        return phi_N, phi_C
+                phi_C += d
+            return phi_N, phi_C
+        if ccap_i < idx < min(n, ccap_i + 10):
+            return 0.0, half(-1.0, 6.0 + 3.0 * (idx - ccap_i - 1))
+        if max(0, ncap_i - 9) <= idx < ncap_i:
+            return half(1.0, 6.0 + 3.0 * (ncap_i - idx - 1)), 0.0
+        return 0.0, 0.0
 
     def _terminal_group_distance(self, row: str, x: int) -> float:
         """Helix-state distance (A) between a free terminal group and a helical charged

@@ -1,5 +1,5 @@
-"""Acid-base side chains as states (pair_rule "states", electrostatics/side_chain_states.py): a peptide without
-acid-base pairs three or four apart is unchanged; the pair table and the compatibility table are what the module states;
+"""Acid-base side chains as states (electrostatics/side_chain_states.py): a peptide without acid-base pairs three or
+four apart is unchanged by the module; the pair table and the compatibility table are what the module states;
 a contact and a capping motif are calibrated so that the isolated case reproduces its free energy; the transfer matrix
 sums the states exactly (brute-force enumeration); and an isolated pair without a re-derived strength keeps its
 published value."""
@@ -16,9 +16,17 @@ from pyagadir.electrostatics import side_chain_states as S
 from pyagadir.energies import EnergyCalculator
 
 
-def _helix(seq, nc, cc, T, M, pH, rule):
+def _helix(seq, nc, cc, T, M, pH):
     with contextlib.redirect_stdout(io.StringIO()):
-        return models.AGADIR(method="1s", T=T, M=M, pH=pH, pair_rule=rule).predict(seq, ncap=nc, ccap=cc).percent_helix
+        return models.AGADIR(method="1s", T=T, M=M, pH=pH).predict(seq, ncap=nc, ccap=cc).percent_helix
+
+
+def _without_states(monkeypatch):
+    """The model with the module switched off: every acid-base pair on its Table IV cell in every charge state and its
+    Coulomb term at the Table VI distance, summed additively (the rule before 2026-10-26, for an isolated pair)."""
+    from pyagadir import energies
+    monkeypatch.setattr(energies, "owns_pair", lambda *a: False)
+    monkeypatch.setattr(S.SideChainStates, "segment_correction", lambda self, calc: 0.0)
 
 
 @pytest.mark.parametrize("seq,nc,cc,pH", [
@@ -27,8 +35,10 @@ def _helix(seq, nc, cc, T, M, pH, rule):
     ("AEAAAAEAAAAEAAAA", "Ac", "Am", 4.5),   # Glu only
     ("AEAAAAAKAAAAAAAY", "Ac", "Am", 7.0),   # an acid-base pair six apart
 ])
-def test_peptides_without_candidate_pairs_are_unchanged(seq, nc, cc, pH):
-    assert _helix(seq, nc, cc, 5.0, 0.05, pH, "states") == _helix(seq, nc, cc, 5.0, 0.05, pH, "additive")
+def test_peptides_without_candidate_pairs_are_unchanged(seq, nc, cc, pH, monkeypatch):
+    with_states = _helix(seq, nc, cc, 5.0, 0.05, pH)
+    _without_states(monkeypatch)
+    assert with_states == _helix(seq, nc, cc, 5.0, 0.05, pH)
 
 
 def test_pair_table():
@@ -145,9 +155,13 @@ def test_transfer_matrix_against_enumeration(seed):
 
 
 @pytest.mark.parametrize("X,Y,k", [("H", "E", 3), ("H", "E", 4)])
-def test_an_isolated_pair_without_a_rederived_strength_keeps_its_value(X, Y, k):
+def test_an_isolated_pair_without_a_rederived_strength_keeps_its_value(X, Y, k, monkeypatch):
     """A class without an entry in the pair table (His-first Glu pairs) keeps its published cell for both bonds and its
-    Table VI Coulomb term: the result equals the additive rule up to the exact short-range correlation of the charges."""
+    Table VI Coulomb term: the result equals the additive treatment of the isolated pair up to the exact short-range
+    correlation of the charges."""
     seq = "AAQAA" + X + "A" * (k - 1) + Y + "AAQAAY"
-    for pH, M in ((5.0, 0.005), (7.0, 0.005), (3.0, 0.1)):
-        assert abs(_helix(seq, "Ac", "Am", 0.0, M, pH, "states") - _helix(seq, "Ac", "Am", 0.0, M, pH, "additive")) < 0.05
+    conds = ((5.0, 0.005), (7.0, 0.005), (3.0, 0.1))
+    states = [_helix(seq, "Ac", "Am", 0.0, M, pH) for pH, M in conds]
+    _without_states(monkeypatch)
+    for (pH, M), v in zip(conds, states):
+        assert abs(v - _helix(seq, "Ac", "Am", 0.0, M, pH)) < 0.05

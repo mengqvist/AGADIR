@@ -43,9 +43,9 @@ print(result.get_helical_propensity().round(1))  # helicity of each position, %
 
 ```text
 Predicting helical propensity for sequence: ILKSLEEFLKVTLRSTRQT, method: 1s, T(C): 4.0, M: 0.15, pH: 7.0, ncap: Ac, ccap: Am
-31.74
-[ 0.   3.   3.1  3.4  3.6 64.3 64.6 64.7 64.9 64.5 60.3 55.  51.7 48.
- 24.4 11.5  8.4  5.2  1.5  0.8  0. ]
+28.55
+[ 0.   5.3  5.6  6.   6.3 57.  57.2 57.4 57.6 57.  52.4 47.8 45.  41.8
+ 21.6 10.1  7.4  4.6  1.4  0.8  0. ]
 ```
 
 - **Units.** Both results are percentages (0-100). The per-position array includes the Ac and Am positions, so it has two more entries than the sequence. `get_percent_helix()` averages over the amino acids only. `predict()` prints the conditions it ran at, as shown above.
@@ -53,24 +53,21 @@ Predicting helical propensity for sequence: ILKSLEEFLKVTLRSTRQT, method: 1s, T(C
 - **Terminal modifications.** `ncap="Ac"` (acetyl) or `"Sc"` (succinyl), and `ccap="Am"` (amide). Each one occupies a position in the sequence and can act as a capping residue. Acetyl and amide remove the terminal charge; succinyl removes the amine's positive charge but adds a negative one. Use them to match capped synthetic peptides. For a helix cut out of a protein, use Ac and Am: the helix in the protein has no free terminal charges.
 - **Method.** `method="1s"` (the default) is AGADIR's one-sequence approximation, which allows at most one helical segment per molecule. A residue's helicity is the summed statistical weight of the segments in which it is helical, divided by the partition function (the weights of all segments, with the coil counting 1). `method="r"` divides by each residue's own sum instead and ignores the competition between segments, so it always gives equal or higher values. It is kept for comparison; the validation below uses `"1s"`.
 
-### Helix-dipole electrostatics (in development)
+### Helix-dipole electrostatics
 
-The default, `dipole_law="munoz"`, is the published treatment: the helix macrodipole acts on a charged side chain as a point charge at each helix end (Muñoz & Serrano 1995, paper II). That is a far-field approximation. It breaks down for charges in the first and last turn, which sit 3-7 Å from the backbone N-H and C=O groups (Baker et al. 2015). Measured walks of a single charge along a helix show stronger effects near the ends, and less salt screening of them, than the point-charge law gives.
-
-`AGADIR(dipole_law="gbx")` is being developed to fix this. It replaces the point charges with a Generalized Born calculation of each charged side chain against the backbone atoms of built helices (the table itself has no fitted parameters). The published table values that were measured with the point-charge law are moved over to it. It reproduces those charge walks better, and the Glu-Lys salt-bridge peptides of Marqusee & Baldwin (1987) and Baker et al. (2015). It is still less accurate than the default on the validation figures below, so it is experimental and not the default. Its derivation, scores and known shortfalls are in [`pyagadir/params/README.md`](pyagadir/params/README.md).
+The helix macrodipole is a +1/2 charge at the N-terminal end of the helix and a -1/2 charge at the C-terminal end (Hol et al. 1978). Every charge feels it by the law of every other charge pair in the model, screened Coulomb in water: charged side chains inside the helix feel both ends at their tabulated distances (Lacroix et al. 1998, Table VII), flanking side chains and the free terminal groups the nearby end. Table 1's values for charged residues were measured with Muñoz & Serrano's (1995) near-end law in the loop; each is carried over to this rule at its reference measurement (`params/macrodipole_transfer.tsv`). The derivation and its effect are in [`pyagadir/params/README.md`](pyagadir/params/README.md), "Helix macrodipole".
 
 ### Charged side-chain pairs
 
 An acid-base pair three or four residues apart interacts through a hydrogen bond (not screened by salt) and through the
-Coulomb attraction of the two charges (screened). By default (`pair_rule="states"`, with the default `dipole_law`), each
+Coulomb attraction of the two charges (screened). Each
 side chain is in one state at a time: a set of contacts with partners three or four residues away, or its N-terminal
 capping motif, or nothing. A contact carries both the bond and the close-range attraction. Which contacts one side chain
 can hold together follows the helix geometry: a Lys can pair with two acids only on its C-terminal side, and no side
 chain reaches partners on opposite faces at once (Wolny et al. 2017; Iqbalsyah & Doig 2005). The helix sums over all
 these states rather than picking one network. Each isolated pair keeps the free energy measured for it (Smith & Scholtz
 1998; Iqbalsyah & Doig 2005; Huyghues-Despointes et al. 1993), with a separate value for the bond when one partner is
-neutral; charge-dense block repeats such as EEEEKKKK are predictions, not fitted. `pair_rule="additive"` gives the
-earlier rule (still used with `gbx`). The derivation, the pair strengths beside the published values, and the tests are
+neutral; charge-dense block repeats such as EEEEKKKK are predictions, not fitted. The derivation, the pair strengths beside the published values, and the tests are
 in [`pyagadir/params/README.md`](pyagadir/params/README.md), "Charged side-chain pairs".
 
 ### Energy terms of one helical segment

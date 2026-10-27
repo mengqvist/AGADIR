@@ -34,10 +34,6 @@ MOCK_PARAMS = {
     "table_7_ccap_lacroix": c_macro_df,
     # keys EnergyCalculator gained after this mock was written; empty Muñoz Table 3 keeps the
     # tests on the Table VII distance path they are about
-    "table_3_munoz_nterm": pd.DataFrame(columns=["Ncap"] + [f"N{k}" for k in range(1, 10)], dtype=float),
-    "table_3_munoz_cterm": pd.DataFrame(columns=["Ccap"] + [f"C{k}" for k in range(1, 10)], dtype=float),
-    "table_7_coulomb_ncap": n_macro_df,
-    "table_7_coulomb_ccap": c_macro_df,
     "pka_values": pka_df
 }
 

@@ -5,7 +5,7 @@ import numpy as np
 from pyagadir.chemistry import R_KCAL
 from pyagadir.electrostatics.common import SEGMENT_BATCH_SIZE
 from pyagadir.electrostatics.side_chain_states import SideChainStates
-from pyagadir.energies import DIPOLE_LAWS, EnergyCalculator
+from pyagadir.energies import EnergyCalculator
 from pyagadir.utils import is_valid_peptide_sequence, is_valid_ncap_ccap
 
 # Salt effects on the neutral helix (Scholtz et al. 1991, JACS 113:5102; see params/README.md).
@@ -91,8 +91,7 @@ class AGADIR(object):
     """
 
     def __init__(
-        self, method: str = "1s", T: float = 4.0, M: float = 0.15, pH: float = 7.0, dipole_law: str = "munoz",
-        pair_rule: str = None,
+        self, method: str = "1s", T: float = 4.0, M: float = 0.15, pH: float = 7.0,
     ):
         """
         Initialize AGADIR object.
@@ -103,27 +102,8 @@ class AGADIR(object):
                 '1s': One-sequence approximation.
             T (float): Temperature in Celsius. Default is 4.0.
             M (float): Ionic strength in Molar (M, mol/L). Default is 0.15.
-            dipole_law (str): Side chain-macrodipole law. 'munoz' (default): Muñoz & Serrano 1995-II eq. 11 for the
-                nearest end plus the far end's half charge. 'gbx': the Generalized Born field of the helix backbone
-                (params/README.md) with the Table 1 values transferred to it (the field alone, the former 'gb', counts
-                first-turn and capping electrostatics twice) and the parameters that depend on the law re-derived
-                (params/README.md "gbx"). 'gbp' (gbx plus the GB side chain-side chain pair law, every ionisable
-                group coupled to both GB terms through its charged and neutral forms' energies, GB desolvation and the
-                statistical acid-base network) was retired on 2026-10-22 (params/README.md "Retired: gbp").
-            pair_rule (str): Acid-base side-chain pairs three or four residues apart. 'states' (the default with the
-                'munoz' law, since 2026-10-26): each side chain is in one state, a set of contacts allowed by the helix
-                geometry or its capping motif, and the segment sums over the states (electrostatics/side_chain_states.py;
-                pair strengths re-derived from isolated pairs, params/acid_base_pairs.tsv). 'additive' (the default with
-                'gbx'): every pair's Coulomb term at its Table VI distance, the best compatible set of Table IV bonds, and
-                the capping motifs exclusive of their side chain's forward bonds. params/README.md, "Charged side-chain
-                pairs".
+            pH (float): Solution pH. Default is 7.0.
         """
-        if dipole_law not in DIPOLE_LAWS:
-            raise ValueError(f"dipole_law must be one of {DIPOLE_LAWS}, got {dipole_law!r}")
-        self.dipole_law = dipole_law
-        self.pair_rule = pair_rule or ("states" if dipole_law == "munoz" else "additive")
-        if self.pair_rule not in ("states", "additive"):
-            raise ValueError(f"pair_rule must be 'states' or 'additive', got {pair_rule!r}")
         self.method_options = ["r", "1s"]
         if method not in self.method_options:
             raise ValueError(
@@ -228,21 +208,15 @@ class AGADIR(object):
         dG_ionic = -SALTING_IN_ALPHA * (1 - np.exp(-SALTING_IN_BETA * self.molarity))
         dG_ionic += K_HOFMEISTER * self.molarity * (j - 2)
 
-        # Muñoz 1995 III eq. (12): electrostatic interactions scale with
-        # the temperature-dependent dielectric constant of water.
-        # ε(T) = ε(0°C) × exp(-0.004314×ΔT), so Coulomb energies scale
-        # as exp(+0.004314×ΔT) (stronger at higher T due to lower ε).
-        elec_temp_factor = self.energy_calculator.dipole_temperature_factor()
-
         # Ionisation free energy of the segment: the part of the mean-field electrostatic free
         # energy that the q-weighted electrostatic terms below leave out (electrostatics/common.py,
         # SegmentBatch).
         dG_ionization = self.energy_calculator.get_dG_ionization()
 
-        # Side-chain states (pair_rule 'states'): the charge-dependent free energy summed over the side chains' contact
+        # Side-chain states: the charge-dependent free energy summed over the side chains' contact
         # and capping-motif states, minus the mean-field one above (electrostatics/side_chain_states.py; 0 for a
         # peptide without acid-base pairs three or four residues apart)
-        dG_contacts = self._contacts.segment_correction(self.energy_calculator) if self._contacts is not None else 0.0
+        dG_contacts = self._contacts.segment_correction(self.energy_calculator)
 
         # sum all components
         dG_Hel = (
@@ -255,11 +229,10 @@ class AGADIR(object):
             + dG_charged_staple
             + dG_Hbond
             + dG_ionic
-            # Only the side-chain-macrodipole term uses a fixed dielectric (eps = 44) and needs
-            # the eps(T) factor; the other four already use calculate_permittivity(T).
+            # every electrostatic term is screened Coulomb in water at eps(T) (calculate_permittivity)
             + sum(dG_terminals_dipole_N)
             + sum(dG_terminals_dipole_C)
-            + np.sum(dG_sidechain_dipole) * elec_temp_factor
+            + np.sum(dG_sidechain_dipole)
             + np.sum(dG_electrost_term)
             + np.sum(dG_electrost_sidechain)
             + dG_electrost_term_term
@@ -292,7 +265,7 @@ class AGADIR(object):
         computed in the order j (length) then i (position).
         """
         # one fast snapshot of the parameter tables, shared by every segment
-        params = EnergyCalculator.snapshot_params(self.dipole_law)
+        params = EnergyCalculator.snapshot_params()
 
         # Every helical segment (i: index of its N-cap, j: its length with both caps), lengths outer and positions
         # inner, so that K_tot and K_tot_array accumulate in that order.
@@ -302,7 +275,7 @@ class AGADIR(object):
         def calculator(i, j, batch=None):
             return EnergyCalculator(seq=self.result.seq, i=i, j=j, pH=self.pH, T=self.T_celsius,
                                     ionic_strength=self.molarity, ncap=self.n_cap, ccap=self.c_cap, params=params,
-                                    dipole_law=self.dipole_law, batch=batch, pair_rule=self.pair_rule)
+                                    batch=batch)
 
         # The first segment, built on its own, is a batch of one (energies.PrecomputeParams) and is solved with it; its
         # batch holds the peptide's tables and coil state for the other segments.
@@ -404,8 +377,8 @@ class AGADIR(object):
 
         # initialize the result object
         self.result = ModelResult(seq, ncap=self.n_cap, ccap=self.c_cap)
-        # side-chain states (pair_rule 'states'): the coil terms are computed once per prediction
-        self._contacts = SideChainStates(seq) if self.pair_rule == "states" else None
+        # side-chain states: the coil terms are computed once per prediction
+        self._contacts = SideChainStates(seq)
 
         # calculate the partition function and helical propensity
         self._calc_partition_fxn()

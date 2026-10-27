@@ -1,18 +1,15 @@
 """
-Electrostatics of the helix-coil model. The law is chosen per prediction with dipole_law (AGADIR(dipole_law=...),
-EnergyCalculator(dipole_law=...)):
+Electrostatics of the helix-coil model.
 
-  point.py   "munoz" (default): point charges at tabulated distances, screened Coulomb, and the side chain-macrodipole
-             law of Muñoz & Serrano 1995. Also the terminal groups' terms for every law.
-  gb.py      "gbx" (opt-in, in development): Generalized Born, tabulated from built helices and coil chains, with
-             the Table 1 values and parameters transferred to it. ("gbp" was retired on 2026-10-22.)
-  common.py  the switch between them, the self-consistent ionisation solver, and the energy terms both laws feed.
+  point.py              point charges at tabulated distances, screened Coulomb in water: the side chain-side chain and
+                        terminal-group pairs and the helix macrodipole (a +1/2 and a -1/2 charge at the helix ends).
+  common.py             the self-consistent ionisation solver and the electrostatic energy terms.
+  side_chain_states.py  the acid-base side chains as states (contacts at i+-3/i+-4 or a capping motif), summed by a
+                        transfer matrix.
 
-Each module holds a mixin of energies.PrecomputeParams, which inherits Electrostatics (common.py).
+Electrostatics (common.py) is a mixin of energies.PrecomputeParams.
 """
-from pyagadir.electrostatics.common import DIPOLE_LAWS, Electrostatics
-from pyagadir.electrostatics.gb import GB_LAWS, GBX_LAWS, GBElectrostatics
-from pyagadir.electrostatics.point import POINT_LAW, PointChargeElectrostatics
+from pyagadir.electrostatics.common import Electrostatics
+from pyagadir.electrostatics.point import PointChargeElectrostatics
 
-__all__ = ["DIPOLE_LAWS", "GB_LAWS", "GBX_LAWS", "POINT_LAW", "Electrostatics", "GBElectrostatics",
-           "PointChargeElectrostatics"]
+__all__ = ["Electrostatics", "PointChargeElectrostatics"]

@@ -6,17 +6,15 @@ import pandas as pd
 
 from pyagadir.chemistry import (E_CHARGE, EPSILON_0, N_AVOGADRO, T_REF, acidic_residue_ionization,
                                 basic_residue_ionization, calculate_permittivity, debye_screening_kappa)
-from pyagadir.electrostatics import DIPOLE_LAWS, GB_LAWS, GBX_LAWS, Electrostatics  # noqa: F401
+from pyagadir.electrostatics import Electrostatics
 from pyagadir.electrostatics.common import SegmentBatch
 from pyagadir.electrostatics.side_chain_states import owns_pair
 from pyagadir.utils import is_valid_peptide_sequence, is_valid_ncap_ccap, is_valid_conditions
 
-# The electrostatics are in pyagadir/electrostatics/: point.py (the default point-charge law), gb.py (the Generalized
-# Born law gbx) and common.py (the law switch and what the laws share). Their public names stay importable from here.
-from pyagadir.electrostatics.gb import (  # noqa: F401
-    GB_BOTH_CAPS, GB_DIPOLE_CHARGE, GB_DIPOLE_FORM, GB_NEAR_CAP, GBX_CAPPING_BOX_NCAPS, gb_dipole_table,
-    gbx_position_class, gbx_tables, law_tables)
-from pyagadir.electrostatics.point import FEH_FAR_APBS, SUCCINYL_HELIX_DISTANCE  # noqa: F401
+# The electrostatics are in pyagadir/electrostatics/: point.py (the point-charge law, the macrodipole and the terminal
+# groups), common.py (the ionisation solver and the electrostatic energy terms) and side_chain_states.py (the acid-base
+# side chains as states). The succinyl distances stay importable from here.
+from pyagadir.electrostatics.point import SUCCINYL_HELIX_DISTANCE  # noqa: F401
 
 
 class ParamTable:
@@ -71,17 +69,7 @@ HBOND_DH_REF = -0.895
 # rejected by both (+1.7 and +1.1 helix points RMSE); -0.225 lies between. The other Table V motifs keep their values.
 TABLE_V_GLN_ASP = -0.225
 
-# Capping motifs whose side chain points back toward the N-terminus, and that side chain's acid-base bonds to partners on
-# its C-terminal side (i+3, i+4), exclude each other: one side chain, one direction (the argument of the acid-base bond
-# rule, EnergyCalculator._acid_base_hbonds). The motifs: an Asp or Glu at N3 behind the N-cap (the capping box, and
-# Table 1's Nc-3 column for an N3 partner), a Lys or Arg at N4 in the charged staple, an Asp or Glu at N4 in the Petukhov
-# motif; the hydrophobic staple's capping-box factor follows the N3 acid. "exclusive" (default): the motif and the bonds
-# are mutually exclusive states of one side chain, Z = 1 + K_motif + K_bond with K = exp(-dG/RT) - 1 for each option's
-# free energy, so the occupancies follow from the two free energies; "max": the stronger only; "additive": both counted
-# (the behaviour before 2026-10-26). See params/README.md, "Capping motifs and acid-base bonds".
-CAPPING_EXCLUSIVITY = "exclusive"
 CAPPING_BOX_DG = -0.9  # capping box beyond the Nc-3 column (get_dG_Ncap)
-R_KCAL = 1.98720425864083e-3  # kcal/(mol K)
 
 
 class PrecomputeParams(Electrostatics):
@@ -155,42 +143,17 @@ class PrecomputeParams(Electrostatics):
                 sep="\t",
             ).astype(float)
 
-            # load N-terminal distances between charged amino acids and the half charge from the helix macrodipole
+            # Lacroix 1998 supplementary Table VII: distances (A) between a charged side chain and the half charge at the
+            # C-terminal end of the helix (the macrodipole, point.py _macrodipole_potential)
             cls._params["table_7_ccap_lacroix"] = pd.read_csv(
                 datapath.joinpath("table_7_Ccap_lacroix.tsv"),
                 index_col="AA",
                 sep="\t",
             ).astype(float)
 
-            # load C-terminal distances between charged amino acids and the half charge from the helix macrodipole
+            # and to the half charge at the N-terminal end
             cls._params["table_7_ncap_lacroix"] = pd.read_csv(
                 datapath.joinpath("table_7_Ncap_lacroix.tsv"),
-                index_col="AA",
-                sep="\t",
-            ).astype(float)
-
-            # load empirical sidechain-macrodipole energies from Muñoz & Serrano 1995 II Table 3
-            cls._params["table_3_munoz_nterm"] = pd.read_csv(
-                datapath.joinpath("table_3_munoz_1995.tsv"),
-                index_col="AA",
-                sep="\t",
-            ).astype(float)
-
-            cls._params["table_3_munoz_cterm"] = pd.read_csv(
-                datapath.joinpath("table_3_munoz_1995_cterm.tsv"),
-                index_col="AA",
-                sep="\t",
-            ).astype(float)
-
-            # Coulomb distances for sidechain-macrodipole (differ from Table7 for K/R)
-            cls._params["table_7_coulomb_ncap"] = pd.read_csv(
-                datapath.joinpath("table_7_coulomb_Ncap.tsv"),
-                index_col="AA",
-                sep="\t",
-            ).astype(float)
-
-            cls._params["table_7_coulomb_ccap"] = pd.read_csv(
-                datapath.joinpath("table_7_coulomb_Ccap.tsv"),
                 index_col="AA",
                 sep="\t",
             ).astype(float)
@@ -205,15 +168,15 @@ class PrecomputeParams(Electrostatics):
         return cls._params
 
     @classmethod
-    def snapshot_params(cls, dipole_law: str = "munoz") -> dict:
+    def snapshot_params(cls) -> dict:
         """
         Fast ParamTable copies of load_params(), for passing as params= to many
         instances. Rebuilt on every call (~10 ms), so take one per prediction:
         edits made to the _params DataFrames between predictions are then honoured.
         """
-        return {name: ParamTable(df) for name, df in cls.law_params(dipole_law).items()}
+        return {name: ParamTable(df) for name, df in cls.load_params().items()}
 
-    def __init__(self, seq: str, i: int, j: int, pH: float, T: float, ionic_strength: float, ncap: str = None, ccap: str = None, debug: bool = False, params: dict = None, dipole_law: str = "munoz", batch=None, pair_rule: str = None):
+    def __init__(self, seq: str, i: int, j: int, pH: float, T: float, ionic_strength: float, ncap: str = None, ccap: str = None, debug: bool = False, params: dict = None, batch=None):
         """
         Initialize the PrecomputedParams for a peptide sequence.
 
@@ -227,29 +190,19 @@ class PrecomputeParams(Electrostatics):
             ncap (str): N-terminal capping modification (acetylation='Ac', succinylation='Sc').
             ccap (str): C-terminal capping modification (amidation='Am').
             params (dict): Parameter tables from snapshot_params(). If None, load_params() is used.
-            dipole_law (str): side chain-macrodipole law, "munoz" (default) or "gbx" (see
-                _sidechain_dipole_potential).
             batch (SegmentBatch): The peptide's shared tables and coil solution
                 (electrostatics/common.py): the setup takes them instead of recomputing them, the pair lists cover the
                 interacting pairs only, and the helix-state ionisation is left to batch.solve_helix.
         """
         self.debug = debug
         self.segment_batch = batch
-        if dipole_law not in DIPOLE_LAWS:
-            raise ValueError(f"dipole_law must be one of {DIPOLE_LAWS}, got {dipole_law!r}")
-        self.dipole_law = dipole_law
-        # Acid-base side-chain pairs three or four residues apart: "states", the default law's rule since 2026-10-26
+        # Acid-base side-chain pairs three or four residues apart are states of their side chains
         # (electrostatics/side_chain_states.py: each side chain in one state, a set of contacts or its capping motif,
-        # summed over states; the energy terms then leave those pairs out and keep the capping motifs additive), or
-        # "additive", the rule before (the best compatible set of Table IV bonds plus the Coulomb sum; kept for the gbx
-        # law, with the capping motifs exclusive of their side chain's forward bonds by CAPPING_EXCLUSIVITY).
-        self.pair_rule = pair_rule or ("states" if dipole_law == "munoz" else "additive")
-        if self.pair_rule not in ("states", "additive"):
-            raise ValueError(f"pair_rule must be 'states' or 'additive', not {pair_rule!r}")
+        # summed over states); the energy terms leave those pairs out and keep the capping motifs additive.
 
         # load params
         if params is None:
-            params = self.law_params(dipole_law) if dipole_law in GBX_LAWS else self.load_params()
+            params = self.load_params()
         self.table_1_lacroix = params["table_1_lacroix"]
         self.table_2_lacroix = params["table_2_lacroix"]
         self.table_3_lacroix = params["table_3_lacroix"]
@@ -259,10 +212,6 @@ class PrecomputeParams(Electrostatics):
         self.table_6_coil_lacroix = params["table_6_coil_lacroix"]
         self.table_7_ccap_lacroix = params["table_7_ccap_lacroix"]
         self.table_7_ncap_lacroix = params["table_7_ncap_lacroix"]
-        self.table_3_munoz_nterm = params["table_3_munoz_nterm"]
-        self.table_3_munoz_cterm = params["table_3_munoz_cterm"]
-        self.table_7_coulomb_ncap = params["table_7_coulomb_ncap"]
-        self.table_7_coulomb_ccap = params["table_7_coulomb_ccap"]
         self.table_pka_values = params["pka_values"]
 
         is_valid_peptide_sequence(seq)
@@ -343,7 +292,7 @@ class PrecomputeParams(Electrostatics):
         self.modified_cterm_ionization_rc = None
 
         if batch is not None:
-            # Default law or gbx, segments of one prediction solved together (electrostatics/common.py SegmentBatch). The
+            # Segments of one prediction solved together (electrostatics/common.py SegmentBatch). The
             # pair list (only the pairs within PAIR_RANGE), the pKa and the intrinsic ionisation are the peptide's and
             # come from the batch. What depends on the segment (macrodipole distances and potentials, terminal group
             # distances, helix pair distances) is assigned as usual. The ionisation is left to batch.solve_helix,
@@ -432,7 +381,7 @@ class EnergyCalculator(PrecomputeParams):
     _ALIPHATIC = {"A", "V", "L", "I", "M"}
     dCp = -0.0015  # kcal/(mol*K)
 
-    def __init__(self, seq: str, i: int, j: int, pH: float, T: float, ionic_strength: float, ncap: str = None, ccap: str = None, params: dict = None, dipole_law: str = "munoz", batch=None, pair_rule: str = None):
+    def __init__(self, seq: str, i: int, j: int, pH: float, T: float, ionic_strength: float, ncap: str = None, ccap: str = None, params: dict = None, batch=None):
         """
         Initialize the EnergyCalculator for a peptide sequence.
 
@@ -446,11 +395,9 @@ class EnergyCalculator(PrecomputeParams):
             ncap (str): N-terminal capping modification (acetylation='Ac', succinylation='Sc').
             ccap (str): C-terminal capping modification (amidation='Am').
             params (dict): Parameter tables from snapshot_params(). If None, load_params() is used.
-            dipole_law (str): side chain-macrodipole law, "munoz" (default) or "gbx".
             batch (SegmentBatch): see PrecomputeParams.
         """
-        super().__init__(seq, i, j, pH, T, ionic_strength, ncap, ccap, params=params, dipole_law=dipole_law,
-                         batch=batch, pair_rule=pair_rule)
+        super().__init__(seq, i, j, pH, T, ionic_strength, ncap, ccap, params=params, batch=batch)
 
     def _charge_dependent_nonCoulomb_terms(self) -> dict:
         """The helix-state terms that depend on charged fractions other than through Coulomb's law, at the current helix
@@ -460,7 +407,7 @@ class EnergyCalculator(PrecomputeParams):
         energy of the segment; _nonCoulomb_charge_coefficients reads its charge dependence from them."""
         return {"Int": self.get_dG_Int(), "Ncap": self.get_dG_Ncap(), "Ccap": self.get_dG_Ccap(),
                 "pet": self.get_dG_petukhov_motif(), "sta": self.get_dG_charged_staple(),
-                "stp": self.get_dG_staple(), "i3": self.get_dG_i3(), "i4": self.get_dG_i4()}
+                "i3": self.get_dG_i3(), "i4": self.get_dG_i4()}
 
     def _nonCoulomb_charge_coefficients(self) -> tuple[dict, dict]:
         """
@@ -489,13 +436,6 @@ class EnergyCalculator(PrecomputeParams):
         charged = set(self.neg_charge_aa + self.pos_charge_aa)
         nc, cc = int(self.ncap_idx), int(self.ccap_idx)
         titr = [k for k in range(nc, cc + 1) if self.seq_list[k] in charged]  # the segment's titratable residues
-        # Capping motifs (CAPPING_EXCLUSIVITY): under "max" and "exclusive" the N-cap entry and the hydrophobic staple
-        # also read the charges of the N3 acid's rival bond partners, the Petukhov and charged-staple motifs those of
-        # the N4 residue's (3 or 4 residues on, so still at most 4 apart from the site; charge-independent selection).
-        if self.pair_rule != "states":
-            self._acid_base_hbonds()
-        rivals = {kind: {j for _, j in entry[2]} for kind, entry in getattr(self, "_capping_state", {}).items()}
-        motif_keys = {"n3": [("Ncap", nc), ("stp", None)], "petukhov": [("pet", None)], "cstaple": [("sta", None)]}
         if not titr:
             return {}, {}
         saved = self.modified_seq_ionization_hel
@@ -533,11 +473,6 @@ class EnergyCalculator(PrecomputeParams):
                 e.append(("Ccap", cc))  # an Asp C-cap
             if a == nc + 4:
                 e += [("pet", None), ("sta", None)]  # the N4 residue of the Petukhov and charged-staple motifs
-            if a == nc + 3:
-                e.append(("stp", None))  # the N3 acid of the hydrophobic staple's capping-box factor
-            for kind, partners in rivals.items():  # a rival bond partner of a capping-motif side chain
-                if a in partners:
-                    e += [key for key in motif_keys[kind] if key not in e]
             return e
 
         # c_a: in the pattern of a's class, a is the only "on" residue that the entries reading a can see, so each
@@ -558,10 +493,6 @@ class EnergyCalculator(PrecomputeParams):
                 if b not in tset:
                     continue
                 keys = [("i3" if d == 3 else "i4", a)] + ([("Ncap", nc)] if d == 3 and a == nc else [])
-                for kind, partners in rivals.items():  # a capping-motif side chain and its rival bond partner
-                    site = getattr(self, "_capping_state")[kind][1]["idx"]
-                    if a == site and b in partners:
-                        keys += [key for key in motif_keys[kind] if key not in keys]
                 ta, tb = tc[a % 5], tc[b % 5]
                 c = sum(val(tall, *k) - val(ta, *k) - val(tb, *k) + val(t0, *k) for k in keys)
                 if abs(c) > 1e-12:
@@ -658,11 +589,6 @@ class EnergyCalculator(PrecomputeParams):
             if col == "N2":
                 energy[idx] += self._first_turn_n2_offset(AA)
 
-            # gbx: first- and last-turn cells of charged residues re-derived under the GB law
-            # (params/gbx_overrides.tsv)
-            if self.dipole_law in GBX_LAWS:
-                energy[idx] += self._gbx_end_cell(AA, n_dist, c_dist)
-
         # Munoz & Serrano 1995-III eq. (9): dG_Int = -t (dS_ref + dCp ln(t/t_ref)),
         # i.e. dG_ref * t/t_ref - t * dCp * ln(t/t_ref).  t_ref = 0 C (T_REF).
         # The heat capacity is counted once per backbone hydrogen bond in both of its terms: the enthalpy
@@ -693,12 +619,7 @@ class EnergyCalculator(PrecomputeParams):
         return "Ncen"
 
     def _first_turn_n2_offset(self, aa: str) -> float:
-        """FIRST_TURN_N2_OFFSET, with the gbx law's re-derived values (params/gbx_overrides.tsv, table
-        "first_turn_n2") where it has them."""
-        if self.dipole_law in GBX_LAWS:
-            value = self._gbx_first_turn_n2_offset(aa)
-            if value is not None:
-                return value
+        """FIRST_TURN_N2_OFFSET of residue aa (kcal/mol; 0 for a residue without one)."""
         return FIRST_TURN_N2_OFFSET.get(aa, 0.0)
 
     def get_dG_Hbond(self) -> float:
@@ -725,13 +646,6 @@ class EnergyCalculator(PrecomputeParams):
         # with dH_ref = HBOND_DH_REF, dCp = -0.0015 kcal/(mol K), t_ref = 0 C (T_REF).
         dG_per_bond = HBOND_DH_REF + self.dCp * (self.T_kelvin - T_REF)
         return dG_per_bond * n_hbonds
-
-    @property
-    def capping_rule(self) -> str:
-        """How a capping motif and its side chain's forward acid-base bonds combine: under the "states" pair rule the
-        motif is a state of its side chain (electrostatics/side_chain_states.py), so the energy terms keep it additive;
-        under "additive" CAPPING_EXCLUSIVITY decides (read when called)."""
-        return "additive" if self.pair_rule == "states" else CAPPING_EXCLUSIVITY
 
     def get_dG_Ncap(self) -> np.ndarray:
         """
@@ -781,17 +695,6 @@ class EnergyCalculator(PrecomputeParams):
         # 1995-III p. 305, who give them the temperature dependence of the backbone bond). Here every capping value is a
         # free energy at 0-5 C and is temperature-independent (HBOND_DH_REF; params/README.md).
 
-        # The N3 acid caps or bridges forward, not both (CAPPING_EXCLUSIVITY): if it bridges, the capping-box bonus and the
-        # Nc-3 column's N3-partner gain go.
-        motif = self._capping_motif("n3")
-        if motif is not None:
-            state, site, g_bond = motif
-            g_cap = self._capping_n3_energy(site)
-            if state == "bridge":
-                energy[self.ncap_idx] -= g_cap
-            if self.capping_rule == "exclusive" and site["rival"]:
-                g_excl, _ = self._capping_exclusive(g_cap, g_bond)
-                energy[self.ncap_idx] += g_excl - (g_cap if state == "motif" else g_bond)
         return energy
 
     def _capping_n3_energy(self, site) -> float:
@@ -800,9 +703,9 @@ class EnergyCalculator(PrecomputeParams):
         return CAPPING_BOX_DG * q3 * site["box"] - site["gain"]
 
     def _capping_motif_sites(self) -> list:
-        """The side chains of this segment whose N-terminal capping motif excludes their forward acid-base bonds
-        (CAPPING_EXCLUSIVITY): dicts with kind, idx (the residue) and w (the motif's weight at 0 C in the units of the
-        bond-selection weights, kcal/mol):
+        """The side chains of this segment whose N-terminal capping motif is a state of the side chain, exclusive of its
+        acid-base contacts (electrostatics/side_chain_states.py): dicts with kind, idx (the residue) and w (the motif's
+        free energy at 0 C, kcal/mol, with the side chain charged):
         - "n3": an Asp or Glu at N3 that the N-cap's Table 1 column rewards (Nc-3 - Nc-1, or Nc-4 - Nc-2 with Pro at N1),
           plus the capping box (-CAPPING_BOX_DG) for a Glu behind a Ser, Thr, Asp or Asn N-cap;
         - "cstaple": a Lys or Arg at N4 behind a Ser or Thr N-cap with an N' residue (get_dG_charged_staple, 0.3);
@@ -827,72 +730,6 @@ class EnergyCalculator(PrecomputeParams):
                     and seq[n4] in ("D", "E")):
                 sites.append({"kind": "petukhov", "idx": n4, "w": 1.0})
         return sites
-
-    def _resolve_capping_motifs(self, bonds, solve) -> set:
-        """Apply CAPPING_EXCLUSIVITY to a selected set of acid-base bonds. solve(drop) re-selects the bonds with the
-        forward bonds (i, j > i) of the residues in drop removed and returns (total weight, bonds). Every combination of
-        motif sites keeping their motif is solved; the largest total (bond weights plus the motifs kept) wins. A site
-        whose residue holds no forward bond keeps its motif. Stores self._capping_state {kind: (state, site, rival)},
-        rival being the site's forward bonds in the unrestricted selection. Returns the bond set."""
-        self._capping_state = {}
-        if self.capping_rule == "additive":
-            return bonds
-        sites = self._capping_motif_sites()
-        if not sites:
-            return bonds
-        rival = {st["idx"]: tuple(b for b in bonds if b[0] == st["idx"]) for st in sites}
-        kept = {st["kind"] for st in sites}
-        if any(rival.values()):
-            best = None
-            for mask in range(1 << len(sites)):
-                drop = {st["idx"] for n, st in enumerate(sites) if mask >> n & 1}
-                score, chosen = solve(drop)
-                keep = [st for st in sites if st["idx"] in drop or not any(b[0] == st["idx"] for b in chosen)]
-                total = score + sum(st["w"] for st in keep)
-                if best is None or total > best[0] + 1e-12:
-                    best = (total, set(chosen), {st["kind"] for st in keep})
-            _, bonds, kept = best
-        for st in sites:
-            st["rival"] = rival[st["idx"]]
-            self._capping_state[st["kind"]] = ("motif" if st["kind"] in kept else "bridge", st, rival[st["idx"]])
-        return bonds
-
-    def _bond_increment(self, i, j) -> float:
-        """Free energy that selecting the acid-base bond (i, j) adds (kcal/mol): its Table IV value ("additive" pair
-        rule)."""
-        table = self.table_4a_lacroix if j - i == 3 else self.table_4b_lacroix
-        return float(table.loc[self.seq_list[i], self.seq_list[j]]) / 100.0
-
-    def _capping_motif(self, kind):
-        """(state, site, dG of the rival bonds) of a capping-motif site of this segment, or None."""
-        if self.capping_rule == "additive":
-            return None
-        self._acid_base_hbonds()
-        entry = getattr(self, "_capping_state", {}).get(kind)
-        if entry is None:
-            return None
-        state, site, rival = entry
-        return state, site, sum(self._bond_increment(i, j) for i, j in rival)
-
-    def _capping_exclusive(self, g_motif, g_bond):
-        """Free energy of a motif and its rival bonds as exclusive states of one side chain, -RT ln(1 + K_m + K_b),
-        K = exp(-dG/RT) - 1, and the bridge probability K_b / (1 + K_m + K_b)."""
-        rt = R_KCAL * self.T_kelvin
-        k_m, k_b = np.expm1(-g_motif / rt), np.expm1(-g_bond / rt)
-        z = 1.0 + k_m + k_b
-        return float(-rt * np.log(z)), float(k_b / z) if z > 0 else 0.0
-
-    def _capping_n4(self, kind, g):
-        """A charged-staple or Petukhov motif's free energy g under CAPPING_EXCLUSIVITY."""
-        motif = self._capping_motif(kind)
-        if motif is None or not g:
-            return g
-        state, site, g_bond = motif
-        out = g if state == "motif" else 0.0
-        if self.capping_rule == "exclusive" and site["rival"]:
-            g_excl, _ = self._capping_exclusive(g, g_bond)
-            out += g_excl - (g if state == "motif" else g_bond)
-        return out
 
     def get_dG_Ccap(self) -> np.ndarray:
         """
@@ -973,17 +810,6 @@ class EnergyCalculator(PrecomputeParams):
             if self._dCp_hydroph_kcal(Nprime, self.N4_AA) != 0.0:
                 energy = self._entropic_cp_correct(energy, 0.0)
 
-        # The x1 capping-box factor holds while the N3 acid caps; its bridging share takes x0.5 (CAPPING_EXCLUSIVITY).
-        if energy != 0.0 and self.Ncap_AA in ["N", "D", "S", "T"] and self.N3_AA in ["E", "D"]:
-            motif = self._capping_motif("n3")
-            if motif is not None and motif[1]["rival"]:
-                state, site, g_bond = motif
-                if self.capping_rule == "exclusive":
-                    _, p_bridge = self._capping_exclusive(self._capping_n3_energy(site), g_bond)
-                else:
-                    p_bridge = 1.0 if state == "bridge" else 0.0
-                energy *= 1.0 - 0.5 * p_bridge
-
         return energy
 
     def get_dG_schellman(self) -> float:
@@ -1049,8 +875,8 @@ class EnergyCalculator(PrecomputeParams):
         q_N4 = abs(self.modified_seq_ionization_hel[self.ncap_idx + 4])
         energy = -1.0 * q_N4
 
-        # the N4 acid keeps the motif or bridges forward, not both (CAPPING_EXCLUSIVITY)
-        return self._capping_n4("petukhov", energy)
+        # the N4 acid's motif is a state of its side chain, exclusive of its acid-base contacts (side_chain_states.py)
+        return energy
 
     def get_dG_charged_staple(self) -> float:
         """
@@ -1084,93 +910,9 @@ class EnergyCalculator(PrecomputeParams):
         q_N4 = abs(self.modified_seq_ionization_hel[self.ncap_idx + 4])
         energy = -0.3 * q_N4
 
-        # the N4 base keeps the staple or bridges forward, not both (CAPPING_EXCLUSIVITY)
-        energy = self._capping_n4("cstaple", energy)
+        # the N4 base's staple is a state of its side chain, exclusive of its acid-base contacts (side_chain_states.py)
 
         return energy
-
-    def _acid_base_hbonds(self) -> set:
-        """Acid-base (Asp/Glu - Lys/Arg/His) side-chain H-bonds that can coexist in this helix.
-
-        A side chain is in one rotamer at a time: it can reach partners on its N-terminal side
-        (i-3, i-4) or on its C-terminal side (i+3, i+4), not both.  Partners on the same side can
-        share that rotamer.  Candidates are the i,i+3 and i,i+4 pairs inside the helix (caps
-        excluded) with a favourable Table IV value.  The helix takes the set of bonds with the
-        largest summed Table IV value that these directions allow; where taking the strongest bond
-        first already reaches that sum, that set is kept.  Taking the strongest first alone can
-        miss it: in (K4E4)2 the central Glu->Lys i+4 bonds (-0.20) would exclude both Lys->Glu
-        blocks (8 x -0.10 and 6 x -0.15 at i+3), -1.25 against -1.70 kcal/mol.  The ionic part of
-        each pair (the Coulomb term) is not restricted.  A capping-motif side chain (an N3 acid behind
-        the N-cap, an N4 staple base or Petukhov acid) does not also take bonds forward unless that
-        set wins (CAPPING_EXCLUSIVITY, _resolve_capping_motifs).
-        """
-        if getattr(self, "_ab_hbonds", None) is not None:
-            return self._ab_hbonds
-        cands = []
-        interior = set(self.helix_indices[1:-1])
-        for k, table in ((3, self.table_4a_lacroix), (4, self.table_4b_lacroix)):
-            for i in interior:
-                j = i + k
-                if j not in interior:
-                    continue
-                a, b = self.seq_list[i], self.seq_list[j]
-                if {a, b} & {"D", "E"} and {a, b} & {"K", "R", "H"}:
-                    v = float(table.loc[a, b]) / 100.0
-                    if v < 0:
-                        cands.append((v, i, j))
-        weight = {(i, j): -v for v, i, j in cands}
-
-        def select(cs):
-            # A side chain points either toward the N-terminus (partners at i-3/i-4) or toward the
-            # C-terminus (partners at i+3/i+4), not both.  Partners on the same side can share it.
-            direction, chosen = {}, set()
-            for v, i, j in sorted(cs):
-                if direction.get(i, "up") != "up" or direction.get(j, "down") != "down":
-                    continue
-                direction[i], direction[j] = "up", "down"
-                chosen.add((i, j))
-            best = self._best_hbond_set(cs)
-            if sum(weight[p] for p in best) > sum(weight[p] for p in chosen) + 1e-9:
-                chosen = best
-            return chosen
-
-        def solve(drop):
-            chosen = select([c for c in cands if c[1] not in drop])
-            return sum(weight[p] for p in chosen), chosen
-
-        chosen = self._resolve_capping_motifs(select(cands), solve)
-        self._ab_hbonds = chosen
-        return chosen
-
-    @staticmethod
-    def _best_hbond_set(cands) -> set:
-        """The compatible set of acid-base bonds with the largest summed |Table IV| (exact).
-
-        Each side chain points up (bonding partners at i+3/i+4) or down (partners at i-3/i-4); a pair
-        (i, j) is bonded when i points up and j down.  Dynamic programming along the chain, the state
-        being the directions of the last four residues, since partners are at most four apart.
-        """
-        if not cands:
-            return set()
-        weight = {(i, j): -v for v, i, j in cands}
-        lo, hi = min(i for _, i, _ in cands), max(j for _, _, j in cands)
-        best = {(): (0.0, ())}  # directions of the last four residues -> (score, all directions so far)
-        for p in range(lo, hi + 1):
-            new = {}
-            for state, (score, path) in best.items():
-                for up in (True, False):
-                    gain = 0.0
-                    if not up:
-                        for k in (3, 4):
-                            if len(state) >= k and state[-k] and (p - k, p) in weight:
-                                gain += weight[(p - k, p)]
-                    key = (state + (up,))[-4:]
-                    if key not in new or score + gain > new[key][0] + 1e-12:
-                        new[key] = (score + gain, path + (up,))
-            best = new
-        _, path = max(best.values(), key=lambda t: t[0])
-        up = {lo + n: d for n, d in enumerate(path)}
-        return {(i, j) for (i, j) in weight if up[i] and not up[j]}
 
     def get_dG_i3(self) -> np.ndarray:
         """
@@ -1205,18 +947,12 @@ class EnergyCalculator(PrecomputeParams):
             if idx == self.ncap_idx or idx + 3 == self.ccap_idx:
                 base = 0.0
 
-            # An Asp/Glu - Lys/Arg/His pair forms a side-chain hydrogen bond whose strength does
-            # not depend on salt (Scholtz et al. 1993; Smith & Scholtz 1998). Under the "additive"
-            # rule its Table IV value is that hydrogen bond and applies in every ionisation state,
-            # where the geometry allows it (_acid_base_hbonds); the ionic part of the pair is the
-            # Coulomb term. Under "states" the bond and the close-range Coulomb term are a contact.
+            # An Asp/Glu - Lys/Arg/His pair forms a side-chain hydrogen bond whose strength does not depend on salt
+            # (Scholtz et al. 1993; Smith & Scholtz 1998); the bond and the close-range Coulomb term are a contact, a
+            # state of its two side chains (electrostatics/side_chain_states.py), which carries the pair where it has a
+            # re-derived strength or a favourable cell; an unfavourable cell of another class stays here.
             acid_base = bool({AAi, AAi3} & {"D", "E"} and {AAi, AAi3} & {"K", "R", "H"})
-            if acid_base and self.pair_rule == "states":
-                # the pair is a state of its two side chains (electrostatics/side_chain_states.py), which carries it
-                # where it has a re-derived strength or a favourable cell; an unfavourable cell of another class stays
-                if owns_pair(AAi, AAi3, 3, base):
-                    base = 0.0
-            elif acid_base and base < 0 and (idx, idx + 3) not in self._acid_base_hbonds():
+            if acid_base and owns_pair(AAi, AAi3, 3, base):
                 base = 0.0
 
             # Other titratable pairs: Table IV applies to the states that are not both charged.
@@ -1277,18 +1013,12 @@ class EnergyCalculator(PrecomputeParams):
             if idx == self.ncap_idx or idx + 4 == self.ccap_idx:
                 base = 0.0
 
-            # An Asp/Glu - Lys/Arg/His pair forms a side-chain hydrogen bond whose strength does
-            # not depend on salt (Scholtz et al. 1993; Smith & Scholtz 1998). Under the "additive"
-            # rule its Table IV value is that hydrogen bond and applies in every ionisation state,
-            # where the geometry allows it (_acid_base_hbonds); the ionic part of the pair is the
-            # Coulomb term. Under "states" the bond and the close-range Coulomb term are a contact.
+            # An Asp/Glu - Lys/Arg/His pair forms a side-chain hydrogen bond whose strength does not depend on salt
+            # (Scholtz et al. 1993; Smith & Scholtz 1998); the bond and the close-range Coulomb term are a contact, a
+            # state of its two side chains (electrostatics/side_chain_states.py), which carries the pair where it has a
+            # re-derived strength or a favourable cell; an unfavourable cell of another class stays here.
             acid_base = bool({AAi, AAi4} & {"D", "E"} and {AAi, AAi4} & {"K", "R", "H"})
-            if acid_base and self.pair_rule == "states":
-                # the pair is a state of its two side chains (electrostatics/side_chain_states.py), which carries it
-                # where it has a re-derived strength or a favourable cell; an unfavourable cell of another class stays
-                if owns_pair(AAi, AAi4, 4, base):
-                    base = 0.0
-            elif acid_base and base < 0 and (idx, idx + 4) not in self._acid_base_hbonds():
+            if acid_base and owns_pair(AAi, AAi4, 4, base):
                 base = 0.0
 
             # Other titratable pairs: suppress Table IV in the both-charged microstate.

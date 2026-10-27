@@ -69,7 +69,7 @@ def test_solver_dipole_field_is_the_energy_law():
         q = float(c.modified_seq_ionization_hel[idx])
         assert np.isclose(eN[idx] + eC[idx], q * sum(c._sidechain_dipole_potential(idx)), atol=1e-12)
         assert np.isclose(c.sidechain_dipole_potential[idx],
-                          c.dipole_temperature_factor() * sum(c._sidechain_dipole_potential(idx)), atol=1e-12)
+                          sum(c._sidechain_dipole_potential(idx)), atol=1e-12)
 
 
 def test_n_terminal_tyr_alpha_amino_pka():
@@ -102,7 +102,7 @@ def test_his_his_pair_matches_exact_microstate_enumeration(pH):
     p = [abs(float(c.modified_seq_ionization_hel[k])) for k in his]
     nonC = (sum(c_a.get(k, 0.0) * pk for k, pk in zip(his, p))
             + c_ab.get((his[0], his[1]), 0.0) * p[0] * p[1])
-    model = (np.sum(c.get_dG_sidechain_sidechain_electrost()) + np.sum(n + cc) * c.dipole_temperature_factor()
+    model = (np.sum(c.get_dG_sidechain_sidechain_electrost()) + np.sum(n + cc)
              + c.get_dG_ionization() + nonC)
 
     rt = R_KCAL * c.T_kelvin
@@ -177,7 +177,7 @@ def test_point_energy_terms_are_the_solver_mean_field_energy(seq, ncap, ccap, pH
     tN, tC = c.get_dG_terminals_macrodipole()
     sN, sC = c.get_dG_sidechain_macrodipole()
     eN, eC = c.get_dG_terminals_sidechain_electrost()
-    terms = (np.sum(tN) + np.sum(tC) + np.sum(sN + sC) * c.dipole_temperature_factor() + np.sum(eN + eC)
+    terms = (np.sum(tN) + np.sum(tC) + np.sum(sN + sC) + np.sum(eN + eC)
              + np.sum(c.get_dG_sidechain_sidechain_electrost()) + c.get_dG_terminal_terminal_electrost())
     assert terms == pytest.approx(_solver_mean_field_energy(c, True) - _solver_mean_field_energy(c, False), abs=1e-9)
 
@@ -199,7 +199,7 @@ def test_point_law_charges_minimise_the_mean_field_free_energy(seq, ncap, ccap, 
         tN, tC = c.get_dG_terminals_macrodipole()
         sN, sC = c.get_dG_sidechain_macrodipole()
         eN, eC = c.get_dG_terminals_sidechain_electrost()
-        return (np.sum(tN) + np.sum(tC) + np.sum(sN + sC) * c.dipole_temperature_factor() + np.sum(eN + eC)
+        return (np.sum(tN) + np.sum(tC) + np.sum(sN + sC) + np.sum(eN + eC)
                 + np.sum(c.get_dG_sidechain_sidechain_electrost()) + c.get_dG_terminal_terminal_electrost()
                 + sum(float(np.sum(v)) for v in c._charge_dependent_nonCoulomb_terms().values()))
 
