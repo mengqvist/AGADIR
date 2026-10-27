@@ -26,6 +26,7 @@ def _without_states(monkeypatch):
     Coulomb term at the Table VI distance, summed additively (the rule before 2026-10-26, for an isolated pair)."""
     from pyagadir import energies
     monkeypatch.setattr(energies, "owns_pair", lambda *a: False)
+    monkeypatch.setattr(energies, "owns_polar", lambda *a: False)
     monkeypatch.setattr(S.SideChainStates, "segment_correction", lambda self, calc: 0.0)
 
 
@@ -111,7 +112,7 @@ def _brute(m, field):
     ec = {k: S._contact_energy(m, *k) for k in keys}
     near = [(a, b) for a in range(n) for b in range(a + 1, n) if abs(m["pos"][a] - m["pos"][b]) <= S.EXACT_RANGE]
     terms = []
-    for s in itertools.product((0, 1), repeat=n):
+    for s in itertools.product(*[(0, 1) if m["charged"][a] else (0,) for a in range(n)]):
         base = sum(s[a] * (m["lnx"][a] * RT - m["hC"][a] - m["hF"][a] - field[a]) for a in range(n))
         base -= sum(s[a] * s[b] * (m["C"][a, b] + m["zzW"][a, b]) for a, b in near)
         mot = list(m["motif"])
@@ -139,7 +140,7 @@ def _brute(m, field):
                         terms.append((base + gm - e) / RT)
     t = np.array(terms)
     lnZ = float(np.max(t) + np.log(np.sum(np.exp(t - np.max(t)))))
-    return -RT * lnZ + RT * float(np.sum(np.logaddexp(0.0, m["lnx"])))
+    return -RT * lnZ + RT * float(np.sum(np.logaddexp(0.0, m["lnx"][m["charged"]])))
 
 
 @pytest.mark.parametrize("seed", range(10))
@@ -165,3 +166,66 @@ def test_an_isolated_pair_without_a_rederived_strength_keeps_its_value(X, Y, k, 
     _without_states(monkeypatch)
     for (pH, M), v in zip(conds, states):
         assert abs(v - _helix(seq, "Ac", "Am", 0.0, M, pH)) < 0.05
+
+
+@pytest.mark.parametrize("seed", range(10))
+def test_transfer_matrix_against_enumeration_with_polar_contacts(seed):
+    """Side-chain hydrogen bonds with titrating partners (Gln, Asn, Ser, Thr as uncharged sites; like-charged pairs):
+    the transfer matrix still equals brute-force enumeration."""
+    rng = np.random.default_rng(100 + seed)
+    for _ in range(50):
+        seq = "S" + "".join(rng.choice(list("EKRDQNSTAA"), 9))
+        c, m = _segment(seq, pH=float(rng.uniform(2, 11)), T=float(rng.uniform(0, 40)), I=float(rng.uniform(0.01, 1)))
+        if m["n"] <= 9 and any(ct["kind"] == "polar" for ct in m["contacts"].values()):
+            break
+    assert any(ct["kind"] == "polar" for ct in m["contacts"].values())
+    field = rng.normal(0, 0.2, m["n"])
+    assert S._transfer(m, field)[0] == pytest.approx(_brute(m, field), abs=1e-10)
+
+
+@pytest.mark.parametrize("X,Y,k,pH", [("Q", "E", 4, 7.0), ("E", "N", 4, 7.0), ("E", "N", 4, 3.0), ("R", "Q", 3, 7.0),
+                                      ("Q", "D", 4, 7.0), ("E", "E", 4, 2.5)])
+def test_an_isolated_polar_bond_keeps_its_value(X, Y, k, pH, monkeypatch):
+    """An isolated side-chain hydrogen bond with a titrating partner reproduces its Table IV cell plus its Table V motif
+    (the additive treatment) up to the exact short-range correlation of the charges."""
+    seq = "AAAA" + X + "A" * (k - 1) + Y + "AAAAY"
+    v = _helix(seq, "Ac", "Am", 0.0, 0.05, pH)
+    _without_states(monkeypatch)
+    assert abs(v - _helix(seq, "Ac", "Am", 0.0, 0.05, pH)) < 0.05
+
+
+def test_a_carboxyl_pair_half_charged_gains_from_the_exact_sum(monkeypatch):
+    """Glu-Glu i+4 at pH 4.5 (both about half charged): the bond forms when one is neutral, so it steers which one is
+    protonated. The exact state sum is lower in free energy than the mean-field (1 - p p) treatment (a mean-field free
+    energy is an upper bound), so the helix is a little more stable."""
+    seq = "AAAAEAAAEAAAAY"
+    v = _helix(seq, "Ac", "Am", 0.0, 0.05, 4.5)
+    _without_states(monkeypatch)
+    base = _helix(seq, "Ac", "Am", 0.0, 0.05, 4.5)
+    assert base < v < base + 1.0
+
+
+def test_a_polar_contact_is_held_alone():
+    """A Glu with a Lys four on and a Gln four back: each contact alone, never both (one side chain, one state)."""
+    c, m = _segment("AAAQAAAEAAAKAAAY")
+    kinds = sorted(ct["kind"] for ct in m["contacts"].values())
+    assert kinds == ["ab", "polar"]
+    glu = next(a for a, (k, i) in enumerate(m["sites"]) if k == "SC" and c.seq_list[i] == "E")
+    masks = S._site_masks(m)[glu]
+    assert masks == sorted({0, 1 << S.SLOT[-4], 1 << S.SLOT[4]})
+
+
+def test_the_staple_half_rides_on_the_capping_box():
+    """The hydrophobic staple keeps its capping-box half only while the N3 acid caps: that half is part of the N3
+    motif's free energy."""
+    c = EnergyCalculator(seq="ALSAAELAAAKAAAAAY", i=3, j=14, pH=7.0, T=5.0, ionic_strength=0.05, ncap="Ac", ccap="Am")
+    assert c.Ncap_AA == "S" and c.N3_AA == "E" and c.get_dG_staple() < 0
+    (i, (g0, g1)), = S._motif_energies(c).items()
+    st = next(x for x in c._capping_motif_sites() if x["kind"] == "n3")
+    ion = c.modified_seq_ionization_hel
+    saved = float(ion[i])
+    ion[i] = 0.0
+    try:
+        assert g0 == pytest.approx(c._capping_n3_energy(st) + 0.5 * c.get_dG_staple(), abs=1e-12)
+    finally:
+        ion[i] = saved

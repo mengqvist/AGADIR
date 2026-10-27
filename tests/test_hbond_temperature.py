@@ -45,14 +45,13 @@ def test_hydrophobic_pair_keeps_its_entropic_law():
     assert hi.get_dG_i4()[i] / lo.get_dG_i4()[i] == pytest.approx(hi.T_kelvin / lo.T_kelvin)
 
 
-@pytest.mark.parametrize("seq", ["AAAQAAANAAAA", "AAAEAAANAAAA"])
-def test_polar_pairs_and_table_v_are_temperature_independent(seq):
-    """Gln(i)-Asn(i+4) (Table IVb -0.60) and Glu-(i)-Asn(i+4) (Table IV plus the Table V motif): side-chain hydrogen
-    bonds."""
-    lo, hi = _calc(seq, 0.0), _calc(seq, 60.0)
-    i = 4
-    assert lo.get_dG_i4()[i] < 0.0
-    assert hi.get_dG_i4()[i] == pytest.approx(lo.get_dG_i4()[i], rel=1e-3)  # Glu's charge moves slightly with T
+def test_polar_pairs_and_table_v_are_temperature_independent():
+    """Gln(i)-Asn(i+4) (Table IVb -0.60; no titrating partner, an energy term) and Glu-(i)-Asn(i+4) (Table IV plus the
+    Table V motif; a side-chain state, whose bond is a constant): side-chain hydrogen bonds."""
+    lo, hi = _calc("AAAQAAANAAAA", 0.0), _calc("AAAQAAANAAAA", 60.0)
+    assert lo.get_dG_i4()[4] < 0.0
+    assert hi.get_dG_i4()[4] == pytest.approx(lo.get_dG_i4()[4], abs=1e-12)
+    assert S.polar_bond("E", "N", 4, -0.30)[1, 0] == pytest.approx(-0.80)
 
 
 def test_side_chain_state_bonds_are_temperature_independent():

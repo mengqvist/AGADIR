@@ -24,6 +24,11 @@ Which contact sets one side chain can hold (the compatibility table; single cont
   combination formed (7-10 %)"); holding two Arg: (-4, -3), (+3, +4), (-4, +3), (-4, +4), (-3, +3) (Wolny's same-side
   E->R pairs; Olson et al. 2001, Proteins 44, 123: cooperative R-E-R triads at i, i+-4 and i, i+-3); one Lys/His and
   one Arg: the straddle (-4, +3) only (no data).
+- A side-chain hydrogen bond with a titrating partner that is not an acid-base pair (polar_bond: Table IV cells of Ser,
+  Thr, Asn, Gln with Asp, Glu, Lys, Arg, His, or of two like-charged acids, and the Table V motifs Gln-Asp-, Glu--Asn,
+  Gln-Glu-) is a contact too, and is held alone: a side chain in such a contact holds no other. Ser, Thr, Asn and Gln
+  join the model as sites with one (uncharged) state. Hydrogen bonds between two side chains that do not titrate stay
+  energy terms (and a Gln or Glu side chain's hydrogen bond to the main chain is not modelled here).
 Rotamer populations do not appear: every separation is reachable from the populated chi1 wells, so a side chain's
 direction is a matter of its contacts, and the cost of adopting a contact is inside the contact's calibrated free energy.
 
@@ -62,6 +67,7 @@ import pandas as pd
 EXACT_RANGE = 4
 LIKE_ROW = {"D": "DD", "E": "EE", "K": "KK", "R": "RR"}
 ACIDS, BASES = set("DE"), set("KRH")
+POLAR = set("STNQ")  # side chains that hydrogen-bond but do not titrate here
 R_KCAL = 0.0019872043
 SLOT = {-4: 0, -3: 1, 3: 2, 4: 3}
 NBITS, CBITS = 0b0011, 0b1100
@@ -91,13 +97,63 @@ def owns_pair(A: str, B: str, k: int, cell: float) -> bool:
     return pair_strength(A, B, k) is not None or cell < 0
 
 
+@lru_cache(maxsize=1)
+def _table_iv() -> dict:
+    """Lacroix 1998 supplementary Table IV (kcal/mol, i+3 and i+4), read once: {k: DataFrame}."""
+    return {k: pd.read_csv(files("pyagadir.params").joinpath(f"table_4{'a' if k == 3 else 'b'}_lacroix.tsv"),
+                           index_col="AA", sep="\t").astype(float) / 100.0 for k in (3, 4)}
+
+
+def table_v(A: str, B: str, k: int):
+    """The Table V hydrogen-bond motif of A(i)-B(i+4): (value in kcal/mol, which residue's charge it needs: 0 for A,
+    1 for B), or None. Gln-Asp-, Glu--Asn and Gln-Glu- (Lacroix 1998 supplementary Table V; Gln-Asp- re-derived,
+    energies.TABLE_V_GLN_ASP)."""
+    if k != 4:
+        return None
+    from pyagadir.energies import TABLE_V_GLN_ASP
+    return {("Q", "D"): (TABLE_V_GLN_ASP, 1), ("E", "N"): (-0.5, 0), ("Q", "E"): (-0.1, 1)}.get((A, B))
+
+
+def polar_bond(A: str, B: str, k: int, cell: float):
+    """The side-chain hydrogen bond of a pair A(i)-B(i+k) that is not an acid-base pair, at least one of whose residues
+    titrates and both of which hydrogen-bond (S T N Q D E K R H): bond[s_A][s_B] in kcal/mol by charge state, the
+    Table IV cell (in the states that are not both charged, when both titrate) plus a Table V motif when its residue is
+    charged; or None where no state bonds (a contact needs a favourable bond)."""
+    charged = ACIDS | BASES
+    if (A in ACIDS and B in BASES) or (A in BASES and B in ACIDS):
+        return None
+    if not ({A, B} & charged and A in POLAR | charged and B in POLAR | charged):
+        return None
+    bond = np.full((2, 2), cell)
+    if A in charged and B in charged:
+        bond[1, 1] = 0.0
+    tv = table_v(A, B, k)
+    if tv is not None:
+        v, who = tv
+        if who == 0:
+            bond[1, :] += v
+        else:
+            bond[:, 1] += v
+    return bond if (bond < 0).any() else None
+
+
+def owns_polar(A: str, B: str, k: int, cell: float) -> bool:
+    """Whether this module carries the side-chain hydrogen bond of the pair A(i)-B(i+k) (polar_bond): the energy terms
+    then leave its Table IV cell and Table V motif out."""
+    return polar_bond(A, B, k, cell) is not None
+
+
 def has_candidates(seq: str) -> bool:
-    """Whether a sequence has an acid-base pair three or four residues apart (the only place the rule acts)."""
+    """Whether a sequence has a candidate contact three or four residues apart: an acid-base pair, or a side-chain
+    hydrogen bond with a titrating partner (owns_polar)."""
+    t4 = _table_iv()
     for i, a in enumerate(seq):
         for k in (3, 4):
             if i + k < len(seq):
                 b = seq[i + k]
                 if (a in ACIDS and b in BASES) or (a in BASES and b in ACIDS):
+                    return True
+                if a in t4[k].index and b in t4[k].columns and owns_polar(a, b, k, float(t4[k].loc[a, b])):
                     return True
     return False
 
@@ -163,7 +219,23 @@ def _sites(calc, helix: bool):
             C[where[j], where[i]] += v
     return dict(sites=sites, n=n, z=z, lnx=lnx, pos=pos, hF=z * phi, hC=hC, C=C, zzW=np.outer(z, z) * W,
                 RT=R_KCAL * calc.T_kelvin, res=[calc.seq_list[i] if k == "SC" else "" for k, i in sites],
-                contacts={}, motif={})
+                charged=np.ones(n, bool), contacts={}, motif={})
+
+
+def _add_polar_site(m, i, aa):
+    """A side chain that hydrogen-bonds but does not titrate (S T N Q) joins the model as a site with one charge state:
+    no charge, no field, no Coulomb coupling. Returns its site index."""
+    n = m["n"]
+    for key in ("z", "lnx", "hF", "hC"):
+        m[key] = np.append(m[key], 0.0)
+    m["pos"] = np.append(m["pos"], float(i))
+    for key in ("C", "zzW"):
+        m[key] = np.pad(m[key], ((0, 1), (0, 1)))
+    m["charged"] = np.append(m["charged"], False)
+    m["sites"] = m["sites"] + [("POL", i)]
+    m["res"] = m["res"] + [aa]
+    m["n"] = n + 1
+    return n
 
 
 def _mean_field(m, tol=1e-12, max_sweeps=10000):
@@ -219,14 +291,40 @@ def _add_contacts(calc, m):
             Wc = calc._electrostatic_interaction_energy(1.0, 1.0, r_vi)
             Wo = calc._electrostatic_interaction_energy(1.0, 1.0, r_open)
             m["zzW"][a, b] = m["zzW"][b, a] = m["z"][a] * m["z"][b] * Wo
-            m["contacts"][(a, b)] = dict(H=H, Hn=Hn, Wc=Wc)
+            m["contacts"][(a, b)] = dict(kind="ab", H=H, Hn=Hn, Wc=Wc)
+    # side-chain hydrogen bonds with a titrating partner (polar_bond): the bond alone is the contact; the pair's Coulomb
+    # term, where both are charged, stays at its Table VI distance
+    for i in sorted(inner):
+        for k in (3, 4):
+            j = i + k
+            if j not in inner:
+                continue
+            A, B = calc.seq_list[i], calc.seq_list[j]
+            if A not in tables[k].index or B not in tables[k].columns:
+                continue
+            bond = polar_bond(A, B, k, float(tables[k].loc[A, B]) / 100.0)
+            if bond is None:
+                continue
+            a = where.get(i)
+            if a is None:
+                a = where[i] = _add_polar_site(m, i, A)
+            b = where.get(j)
+            if b is None:
+                b = where[j] = _add_polar_site(m, j, B)
+            m["contacts"][(a, b)] = dict(kind="polar", bond=bond)
 
 
 def _contact_energy(m, a, b):
     """e[s_a][s_b]: the contact's free energy relative to the open pair, calibrated on the isolated pair."""
     ct, RT = m["contacts"][(a, b)], m["RT"]
-    zz = m["z"][a] * m["z"][b]
     e = np.zeros((2, 2))
+    if ct["kind"] == "polar":  # exp(-e/RT) = exp(-bond/RT) - 1 beside the open pair: the isolated bond is reproduced
+        for sa in (0, 1):
+            for sb in (0, 1):
+                g = ct["bond"][sa, sb]
+                e[sa, sb] = -RT * math.log(math.expm1(-g / RT)) if g < 0 else math.inf
+        return e
+    zz = m["z"][a] * m["z"][b]
     for sa in (0, 1):
         for sb in (0, 1):
             tt = sa * sb
@@ -239,18 +337,21 @@ def _contact_energy(m, a, b):
 
 def _motif_energies(calc):
     """{residue index: (g neutral, g charged)} of the segment's capping motifs as the energy terms give them (kcal/mol):
-    the N3 acid's capping box and Nc-3 column gain, the charged staple, the Petukhov motif."""
+    the N3 acid's capping box and Nc-3 column gain, the charged staple, the Petukhov motif. The N3 acid's motif also
+    carries the capping-box half of the hydrophobic staple (get_dG_staple: x1 behind an N, D, S or T N-cap with an
+    N3 acid, x0.5 otherwise): the box positions N' and N4, so the staple keeps its full value only while the N3 acid caps."""
     out = {}
     ion = calc.modified_seq_ionization_hel
     for st in calc._capping_motif_sites():
         i = st["idx"]
         saved = float(ion[i])
         sign = -1.0 if calc.seq_list[i] in ACIDS else 1.0
+        staple_half = 0.5 * float(calc.get_dG_staple()) if st["kind"] == "n3" and calc.Ncap_AA in ("N", "D", "S", "T") else 0.0
         g = []
         for s in (0.0, 1.0):
             ion[i] = s * sign
             if st["kind"] == "n3":
-                g.append(calc._capping_n3_energy(st))
+                g.append(calc._capping_n3_energy(st) + staple_half)
             elif st["kind"] == "cstaple":
                 g.append(float(calc.get_dG_charged_staple()))
             else:
@@ -273,14 +374,18 @@ def _add_motifs(calc, m):
 def _site_masks(m):
     """Allowed contact masks per site: 0, every single candidate contact, the table's doubles."""
     cand = {a: {} for a in range(m["n"])}
-    for (a, b) in m["contacts"]:
+    cand_ab = {a: {} for a in range(m["n"])}
+    for (a, b), ct in m["contacts"].items():
         k = int(round(m["pos"][b] - m["pos"][a]))
         cand[a][k] = m["res"][b]
         cand[b][-k] = m["res"][a]
+        if ct["kind"] == "ab":
+            cand_ab[a][k] = m["res"][b]
+            cand_ab[b][-k] = m["res"][a]
     masks = []
     for a in range(m["n"]):
         ms = {0} | {1 << SLOT[o] for o in cand[a]}
-        ms |= allowed_doubles(m["res"][a], cand[a])
+        ms |= allowed_doubles(m["res"][a], cand_ab[a])  # a side-chain hydrogen bond (polar contact) is held alone
         masks.append(sorted(ms))
     return masks
 
@@ -315,7 +420,7 @@ def _transfer(m, field, track=False):
     masks = _site_masks(m)
     sts = []
     for a in range(n):
-        st = [(s, mk, 0) for s in (0, 1) for mk in masks[a]]
+        st = [(s, mk, 0) for s in ((0, 1) if m["charged"][a] else (0,)) for mk in masks[a]]
         if a in m["motif"]:
             st += [(s, 0, 1) for s in (0, 1)]
         sts.append(st)
@@ -402,7 +507,7 @@ def _transfer(m, field, track=False):
     while win:
         remove(0)
     lnZ += float(logA)
-    F = -RT * lnZ + RT * float(np.sum(np.logaddexp(0.0, m["lnx"])))
+    F = -RT * lnZ + RT * float(np.sum(np.logaddexp(0.0, m["lnx"][m["charged"]])))
     return F, (EX.copy() if track else None)
 
 
@@ -451,6 +556,6 @@ class SideChainStates:
         F_mf_h, p_h = _mean_field(mh)
         _add_contacts(calc, mh)
         _add_motifs(calc, mh)
-        F_h = _free_energy_at(mh, p_h)
+        F_h = _free_energy_at(mh, np.pad(p_h, (0, mh["n"] - len(p_h))))  # side chains without charge: 0
         g0 = sum(g[0] for g in mh["motif"].values())
         return (F_h - F_c) - (F_mf_h - F_mf_c) - g0

@@ -8,7 +8,7 @@ from pyagadir.chemistry import (E_CHARGE, EPSILON_0, N_AVOGADRO, T_REF, acidic_r
                                 basic_residue_ionization, calculate_permittivity, debye_screening_kappa)
 from pyagadir.electrostatics import Electrostatics
 from pyagadir.electrostatics.common import SegmentBatch
-from pyagadir.electrostatics.side_chain_states import owns_pair
+from pyagadir.electrostatics.side_chain_states import owns_pair, owns_polar
 from pyagadir.utils import is_valid_peptide_sequence, is_valid_ncap_ccap, is_valid_conditions
 
 # The electrostatics are in pyagadir/electrostatics/: point.py (the point-charge law, the macrodipole and the terminal
@@ -954,6 +954,11 @@ class EnergyCalculator(PrecomputeParams):
             acid_base = bool({AAi, AAi3} & {"D", "E"} and {AAi, AAi3} & {"K", "R", "H"})
             if acid_base and owns_pair(AAi, AAi3, 3, base):
                 base = 0.0
+            # a side-chain hydrogen bond with a titrating partner, inside the helix, is a contact of the two side chains
+            # too (side_chain_states.owns_polar), which carries its Table IV cell
+            interior = not (idx == self.ncap_idx or idx + 3 == self.ccap_idx)
+            if interior and not acid_base and owns_polar(AAi, AAi3, 3, self.table_4a_lacroix.loc[AAi, AAi3] / 100.0):
+                base = 0.0
 
             # Other titratable pairs: Table IV applies to the states that are not both charged.
             if not acid_base and (AAi in (self.pos_charge_aa + self.neg_charge_aa)) and (AAi3 in (self.pos_charge_aa + self.neg_charge_aa)):
@@ -1020,6 +1025,13 @@ class EnergyCalculator(PrecomputeParams):
             acid_base = bool({AAi, AAi4} & {"D", "E"} and {AAi, AAi4} & {"K", "R", "H"})
             if acid_base and owns_pair(AAi, AAi4, 4, base):
                 base = 0.0
+            # a side-chain hydrogen bond with a titrating partner, inside the helix, is a contact of the two side chains
+            # too (side_chain_states.owns_polar), which carries its Table IV cell and its Table V motif
+            interior = not (idx == self.ncap_idx or idx + 4 == self.ccap_idx)
+            polar_contact = interior and not acid_base and owns_polar(AAi, AAi4, 4,
+                                                                      self.table_4b_lacroix.loc[AAi, AAi4] / 100.0)
+            if polar_contact:
+                base = 0.0
 
             # Other titratable pairs: suppress Table IV in the both-charged microstate.
             if not acid_base and (AAi in (self.pos_charge_aa + self.neg_charge_aa)) and (AAi4 in (self.pos_charge_aa + self.neg_charge_aa)):
@@ -1057,18 +1069,19 @@ class EnergyCalculator(PrecomputeParams):
                 val = -0.4 if his_is_C1_or_Ccap else (-0.4 / 3.0)
                 aro_his += p_his * val
 
-            # Gln (i) with Asp- (i+4): TABLE_V_GLN_ASP (published -0.5; re-derived from the Asp walk)
-            if AAi == "Q" and AAi4 == "D":
+            # Gln (i) with Asp- (i+4): TABLE_V_GLN_ASP (published -0.5; re-derived from the Asp walk). These three motifs
+            # are carried by the side-chain states inside the helix (polar_contact); here only where a cap takes part.
+            if AAi == "Q" and AAi4 == "D" and not polar_contact:
                 p_asp = abs(self.modified_seq_ionization_hel[idx + 4])  # population of Asp-
                 extra += p_asp * TABLE_V_GLN_ASP
 
             # Glu- (i) with Asn (i+4): -0.5 kcal/mol (Table V)
-            if AAi == "E" and AAi4 == "N":
+            if AAi == "E" and AAi4 == "N" and not polar_contact:
                 p_glu = abs(self.modified_seq_ionization_hel[idx])  # population of Glu-
                 extra += p_glu * (-0.5)
 
             # Gln (i) with Glu- (i+4): -0.1 kcal/mol (Table V)
-            if AAi == "Q" and AAi4 == "E":
+            if AAi == "Q" and AAi4 == "E" and not polar_contact:
                 p_glu = abs(self.modified_seq_ionization_hel[idx + 4])  # population of Glu-
                 extra += p_glu * (-0.1)
 

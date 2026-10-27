@@ -293,6 +293,28 @@ COO-...NH2 (high pH, where the amine is a weak donor). Charge-dense blocks at th
 low: a term for highly charged helices is missing. Baker et al.'s peptides stay about 4 helix points low in both
 orientations. His pairs keep their Table IV cells.
 
+*Side-chain hydrogen bonds with a titrating partner (2026-10-27).* One side chain, one state applied to the other
+side-chain hydrogen bonds of the same side chains. Before, the energy terms added, on top of a side chain's acid-base
+contact or capping motif, its other Table IV/V hydrogen bonds: like-charged acid pairs (Glu-Glu i+4 -0.40, Asp-Glu,
+Glu-Asp, in the states not both charged), pairs with a polar partner (Gln-Glu i+4 -0.20, Glu-Asn i+4 -0.30, Arg-Gln i+3
+-0.15, Asp-Gln ...) and the Table V motifs (Gln-Asp-, Glu--Asn, Gln-Glu-). These are now contacts of the states engine
+(`polar_bond`): the bond in each charge state is the Table IV cell (0 when both partners titrate and both are charged) plus
+the Table V motif when its residue is charged; the contact is calibrated beside the open pair (exp(-e/RT) = exp(-bond/RT) -
+1), so an isolated bond keeps its value; the pair's Coulomb term stays at its Table VI distance; and a side chain in such a
+contact holds no other (no data put two of them on one side chain). Ser, Thr, Asn and Gln join the model as sites with one
+uncharged state. Not included: bonds between two side chains that do not titrate (they stay energy terms), the
+aromatic-His+ motif (a ring-cation contact, partly at the C-cap), and any side chain to main chain hydrogen bond. The same
+change gives the hydrophobic staple's capping-box half (x1 against x0.5 behind an N, D, S or T N-cap with an N3 acid) to
+the N3 acid's motif state: the staple keeps its full value only while that acid caps (the coupling the additive rule had,
+lost on 2026-10-26).
+Effect (against the model before, 45-set guard): the scored panels unchanged (Munoz & Serrano 1995 +0.01, the CheY
+fragment by <= 0.19); 116 corpus rows in 25 sequences move, all with competing bonds; corpus mean of sets 8.229 -> 8.239;
+Lyu et al. 1990 8.21 -> 7.63, 1992 9.43 -> 9.58 (its E2K2 repeat at pH 1.4-4 by -6 to -17: each neutral Glu took a
+Glu-Glu bond and a Lys contact at once), Batchelor et al. 2019 8.93 -> 9.75, Zavrtanik et al. 2024 +0.05. An isolated
+Glu-Glu i+4 pair at pH 4.5, both carboxylates half charged, is 0.65 helix points more stable than the mean-field (1 - p p)
+treatment gave (the bond steers which one is protonated). The Glu-Glu i+4 cell is Lacroix's published value; no isolated
+measurement of it is in hand.
+
 *Solver note (same date).* `SegmentBatch.solve_helix` now feeds a site's Table IV/V pair couplings into its pKa also
 when the site has no non-Coulomb coefficient of its own (a (1 - p p) term has none). Before, only Cys and His sites ever
 had couplings without one (the Cys/His N-cap rule); including them moves those peptides by <= 0.01 in % helix.
