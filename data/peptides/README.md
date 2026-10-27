@@ -80,7 +80,10 @@ A few main files carry rows that are not helicities (for example `Tm_C`, a print
 
 Other estimates a paper prints beside its 222-nm helicity keep their own names and are not scored: spectral fits
 (`helix_percent_cd_shape`, a polylysine reference fit, Bruch et al. 1991; `helix_percent_cdsstr` and
-`helix_percent_bestsel`, deconvolutions, Süveges et al. 2009 and Varga et al. 2025) and series normalised to one
+`helix_percent_bestsel`, deconvolutions, Süveges et al. 2009 and Varga et al. 2025), a figure that shows a stored
+[theta]222 series again under the authors' conversion (`helix_fraction_luo_baldwin`, Sivaramakrishnan et al. 2008
+Fig. 1A, the same melt as its SI Fig. S2), helix contents from amide hydrogen-exchange kinetics
+(`helix_percent_nh_exchange`, Padmanabhan & Baldwin 1994) and series normalised to one
 of their own points (`theta222_ratio_<reference>`, e.g. `theta222_ratio_6C`, `theta222_ratio_0M_NaCl`; a consumer
 needs an absolute [theta]222 at the reference to use them).
 

@@ -1,0 +1,25 @@
+peptide_id	sequence	ncap	ccap	n_res	pH	T_C	ionic_strength_M	quantity	value	error	unit	source_table	flags
+Ref	YKAAAAKAAAAKAAAAK	Ac	Am	17	7.0	0.0	1.0072	minus_theta222	25000	500	deg cm2 dmol-1	Table 1	printed;read_from_page_image;NaCl 1 M;Na CD buffer 0.001 M each;corpus_host=1993_chakrabartty_biochem32_table1 (24,700 / 25,100) and 1996_padmanabhan_jmb257_table2 (f 0.74 printed at the same conditions; the scorer reads that one, so this theta is not scored twice)
+YKAAVAK	YKAAVAK	Ac	Am	7	7.0	0.0	1.0072	minus_theta222	-600	100	deg cm2 dmol-1	Table 1	printed;read_from_page_image;NaCl 1 M;Na CD buffer 0.001 M each
+1Y4V	YKAVAAKAAAAKAAAAK	Ac	Am	17	7.0	0.0	1.0072	minus_theta222	18250	100	deg cm2 dmol-1	Table 1	printed;read_from_page_image;NaCl 1 M;Na CD buffer 0.001 M each
+1Y5V	YKAAVAKAAAAKAAAAK	Ac	Am	17	7.0	0.0	1.0072	minus_theta222	20300	600	deg cm2 dmol-1	Table 1	printed;read_from_page_image;NaCl 1 M;Na CD buffer 0.001 M each
+1Y9V	YKAAAAKAVAAKAAAAK	Ac	Am	17	7.0	0.0	1.0072	minus_theta222	17200	400	deg cm2 dmol-1	Table 1	printed;read_from_page_image;NaCl 1 M;Na CD buffer 0.001 M each
+1Y10V	YKAAAAKAAVAKAAAAK	Ac	Am	17	7.0	0.0	1.0072	minus_theta222	16200	100	deg cm2 dmol-1	Table 1	printed;read_from_page_image;NaCl 1 M;Na CD buffer 0.001 M each
+1Y14V	YKAAAAKAAAAKAVAAK	Ac	Am	17	7.0	0.0	1.0072	minus_theta222	18100	250	deg cm2 dmol-1	Table 1	printed;read_from_page_image;NaCl 1 M;Na CD buffer 0.001 M each
+1Y15V	YKAAAAKAAAAKAAVAK	Ac	Am	17	7.0	0.0	1.0072	minus_theta222	19490	600	deg cm2 dmol-1	Table 1	printed;read_from_page_image;NaCl 1 M;Na CD buffer 0.001 M each
+1Y(5,10,15)L	YKAALAKAALAKAALAK	Ac	Am	17	7.0	0.0	1.0072	minus_theta222	26000	500	deg cm2 dmol-1	Table 2	printed;read_from_page_image;NaCl 1 M;Na CD buffer 0.001 M each;15-30 uM;remeasured (Padmanabhan et al. 1990 printed 26,300)
+1Y(4,10,15)L	YKALAAKAALAKAALAK	Ac	Am	17	7.0	0.0	1.0072	minus_theta222	20400	100	deg cm2 dmol-1	Table 2	printed;read_from_page_image;NaCl 1 M;Na CD buffer 0.001 M each;15-30 uM
+6Y10L	AKAAAYKAALAKAAAAK	Ac	Am	17	7.0	0.0	1.0072	minus_theta222	24500	300	deg cm2 dmol-1	Table 2	printed;read_from_page_image;NaCl 1 M;Na CD buffer 0.001 M each;15-30 uM
+6Y9L	AKAAAYKALAAKAAAAK	Ac	Am	17	7.0	0.0	1.0072	minus_theta222	17800	200	deg cm2 dmol-1	Table 2	printed;read_from_page_image;NaCl 1 M;Na CD buffer 0.001 M each;15-30 uM
+3Y7L	AAYKAALAKAAA	Ac	Am	12	7.0	0.0	1.0072	minus_theta222	11700	300	deg cm2 dmol-1	Table 3	printed;read_from_page_image;NaCl 1 M;Na CD buffer 0.001 M each (footnote names phosphate and borate);15-30 uM
+3Y6L	AAYKALAAKAAA	Ac	Am	12	7.0	0.0	1.0072	minus_theta222	6500	100	deg cm2 dmol-1	Table 3	printed;read_from_page_image;NaCl 1 M;Na CD buffer 0.001 M each (footnote names phosphate and borate);15-30 uM
+6L10Y	AAAKALAAKYAA	Ac	Am	12	7.0	0.0	1.0072	minus_theta222	13600	500	deg cm2 dmol-1	Table 3	printed;read_from_page_image;NaCl 1 M;Na CD buffer 0.001 M each (footnote names phosphate and borate);15-30 uM
+7L10Y	AAAKAALAKYAA	Ac	Am	12	7.0	0.0	1.0072	minus_theta222	10500	300	deg cm2 dmol-1	Table 3	printed;read_from_page_image;NaCl 1 M;Na CD buffer 0.001 M each (footnote names phosphate and borate);15-30 uM
+1Y5V	YKAAVAKAAAAKAAAAK	Ac	Am	17	7.0	0.0	1.0072	helix_percent	60.3		percent	Text (Results; CD, from Table 1)	printed;authors_conversion +640/-34,100;NaCl 1 M;Na CD buffer 0.001 M each
+1Y4V	YKAVAAKAAAAKAAAAK	Ac	Am	17	7.0	0.0	1.0072	helix_percent	54.4		percent	Text (Results; CD, from Table 1)	printed;authors_conversion +640/-34,100;NaCl 1 M;Na CD buffer 0.001 M each
+6Y10L	AKAAAYKAALAKAAAAK	Ac	Am	17	7.0	0.0	1.0072	helix_percent	72.4		percent	Text (Results; CD, from Table 2)	printed;authors_conversion +640/-34,100;NaCl 1 M;Na CD buffer 0.001 M each;15-30 uM
+6Y9L	AKAAAYKALAAKAAAAK	Ac	Am	17	7.0	0.0	1.0072	helix_percent	53.1		percent	Text (Results; CD, from Table 2)	printed;authors_conversion +640/-34,100;NaCl 1 M;Na CD buffer 0.001 M each;15-30 uM
+1Y5V	YKAAVAKAAAAKAAAAK	Ac	Am	17	2.3	3.0	1.0	helix_percent_nh_exchange	64.2		percent	Text (Results; H-exchange kinetics, Figs 1, 3)	printed;D2O;pH* 2.30 (uncorrected);NaCl 1 M;Lifson-Roig fit (v2 0.0023, mean w)
+1Y4V	YKAVAAKAAAAKAAAAK	Ac	Am	17	2.3	3.0	1.0	helix_percent_nh_exchange	49.4		percent	Text (Results; H-exchange kinetics, Figs 1, 3)	printed;D2O;pH* 2.30 (uncorrected);NaCl 1 M;Lifson-Roig fit (v2 0.0023, mean w)
+6Y10L	AKAAAYKAALAKAAAAK	Ac	Am	17	2.3	3.0	1.0	helix_percent_nh_exchange	65.3		percent	Text (Results; H-exchange kinetics, Figs 1, 3)	printed;D2O;pH* 2.30 (uncorrected);NaCl 1 M;Lifson-Roig fit (v2 0.0023, mean w)
+6Y9L	AKAAAYKALAAKAAAAK	Ac	Am	17	2.3	3.0	1.0	helix_percent_nh_exchange	43.8		percent	Text (Results; H-exchange kinetics, Figs 1, 3)	printed;D2O;pH* 2.30 (uncorrected);NaCl 1 M;Lifson-Roig fit (v2 0.0023, mean w)
