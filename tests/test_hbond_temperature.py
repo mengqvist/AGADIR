@@ -1,10 +1,13 @@
-"""One temperature law for every hydrogen-bond term (energies.EnergyCalculator._hbond_temperature): Munoz & Serrano
-1995-III eq. (8) for the backbone bond, and the same relative change for the hydrogen-bonding caps and end groups, the
-side-chain hydrogen bonds of the Table IV/V pair terms and the Petukhov and charged-staple motifs."""
+"""Temperature laws of the hydrogen-bond terms. The backbone bond follows Munoz & Serrano 1995-III eq. (8) (enthalpy with
+a heat capacity, its entropy in the intrinsic term). Every side-chain and capping hydrogen bond (caps and end groups,
+the capping box, Table IV/V pairs, the N4 motifs, the side-chain states' bonds H and Hn) is a free energy at 0-5 C and
+temperature-independent: no source measures its enthalpy in a helix (params/README.md, "Hydrogen-bond temperature
+dependence")."""
 import pytest
 
 import pyagadir.energies as E
 from pyagadir.chemistry import T_REF
+from pyagadir.electrostatics import side_chain_states as S
 
 
 def _calc(seq, T, ncap="Ac", ccap="Am", pH=7.0):
@@ -19,23 +22,20 @@ def test_backbone_is_eq8(T):
     assert c.get_dG_Hbond() == pytest.approx((E.HBOND_DH_REF + c.dCp * (c.T_kelvin - T_REF)) * n_hb, abs=1e-12)
 
 
-def test_factor_is_one_at_the_reference_temperature():
-    c = _calc("A" * 10, 0.0)  # 0 C = T_REF, the law's reference temperature
-    assert c._hbond_temperature(-0.7) == pytest.approx(-0.7, abs=1e-12)
-
-
-def test_ser_ncap_advantage_follows_the_backbone_law():
-    seq = "SAAAAAAAAAAA"  # free N-terminus: Ser is the N-cap (index 0)
+@pytest.mark.parametrize("seq", ["SAAAAAAAAAAA", "TAAEAAAAAAAA", "AAAAAAAAAAAA"])
+def test_ncap_is_temperature_independent(seq):
+    """A Ser N-cap, a Thr N-cap with its capping box (Glu at N3), and an Ala N-cap (free N-terminus: the first residue
+    is the N-cap)."""
     lo, hi = _calc(seq, 0.0, ncap=None), _calc(seq, 60.0, ncap=None)
-    ref = lo.table_1_lacroix.loc["A", "Nc-1"]
-    adv_lo, adv_hi = lo.get_dG_Ncap()[0] - ref, hi.get_dG_Ncap()[0] - ref
-    assert adv_hi / adv_lo == pytest.approx(hi._hbond_temperature(1.0) / lo._hbond_temperature(1.0))
-    assert adv_hi < adv_lo < 0.0  # more favourable at higher temperature, as the backbone term
+    # the capping box is weighted by Glu's helix-state charge, which moves slightly with T
+    assert hi.get_dG_Ncap()[0] == pytest.approx(lo.get_dG_Ncap()[0], rel=1e-3)
 
 
-def test_ala_ncap_is_temperature_independent():
-    seq = "AAAAAAAAAAAA"
-    assert _calc(seq, 0.0, ncap=None).get_dG_Ncap()[0] == _calc(seq, 60.0, ncap=None).get_dG_Ncap()[0]
+@pytest.mark.parametrize("seq, ccap", [("AAAAAAAAAAAK", None), ("AAAAAAAAAAAA", "Am")])
+def test_ccap_and_end_groups_are_temperature_independent(seq, ccap):
+    lo, hi = _calc(seq, 0.0, ccap=ccap), _calc(seq, 60.0, ccap=ccap)
+    assert hi.get_dG_Ncap().sum() == pytest.approx(lo.get_dG_Ncap().sum(), abs=1e-12)  # the Ac end group
+    assert hi.get_dG_Ccap().sum() == pytest.approx(lo.get_dG_Ccap().sum(), abs=1e-12)
 
 
 def test_hydrophobic_pair_keeps_its_entropic_law():
@@ -45,11 +45,26 @@ def test_hydrophobic_pair_keeps_its_entropic_law():
     assert hi.get_dG_i4()[i] / lo.get_dG_i4()[i] == pytest.approx(hi.T_kelvin / lo.T_kelvin)
 
 
-def test_polar_pair_takes_the_hbond_law():
-    seq = "AAAQAAANAAAA"  # Gln(i)-Asn(i+4), Table IVb -0.60: a side-chain hydrogen bond
+@pytest.mark.parametrize("seq", ["AAAQAAANAAAA", "AAAEAAANAAAA"])
+def test_polar_pairs_and_table_v_are_temperature_independent(seq):
+    """Gln(i)-Asn(i+4) (Table IVb -0.60) and Glu-(i)-Asn(i+4) (Table IV plus the Table V motif): side-chain hydrogen
+    bonds."""
     lo, hi = _calc(seq, 0.0), _calc(seq, 60.0)
     i = 4
-    assert hi.get_dG_i4()[i] / lo.get_dG_i4()[i] == pytest.approx(hi._hbond_temperature(1.0) / lo._hbond_temperature(1.0))
+    assert lo.get_dG_i4()[i] < 0.0
+    assert hi.get_dG_i4()[i] == pytest.approx(lo.get_dG_i4()[i], rel=1e-3)  # Glu's charge moves slightly with T
+
+
+def test_side_chain_state_bonds_are_temperature_independent():
+    """The contact bonds H and Hn of the side-chain states are the tabulated 0 C values at any temperature."""
+    seq = "AAAAEAAAKAAAAA"  # Glu(i)-Lys(i+4)
+    H, Hn = S.pair_strength("E", "K", 4)
+    for T in (0.0, 60.0):
+        c = _calc(seq, T)
+        m = S._sites(c, True)
+        S._add_contacts(c, m)
+        (ct,) = m["contacts"].values()
+        assert (ct["H"], ct["Hn"]) == (H, Hn)
 
 
 def test_hydrophobic_staple_takes_the_hydrophobic_pair_law():

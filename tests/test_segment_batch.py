@@ -14,6 +14,7 @@ import pytest
 
 import pyagadir.energies as energies
 import pyagadir.models as models
+from pyagadir.chemistry import T_REF
 from pyagadir.electrostatics.common import PAIR_RANGE
 from pyagadir.energies import EnergyCalculator
 
@@ -42,12 +43,71 @@ LAW_CASES = [(c, "munoz") for c in CASES] + [(c, "gbx") for c in (CASES[0], CASE
 REFERENCE = json.load(gzip.open(Path(__file__).parent / "data" / "segment_batch_reference.json.gz", "rt"))
 
 
+def _recorded_hbond_law(monkeypatch):
+    """The hydrogen-bond temperature law of the recorded model: every side-chain and capping hydrogen bond scaled by the
+    backbone's relative law h(T) = 1 + dCp (T - T_REF) / HBOND_DH_REF (temperature-independent since 2026-10-26,
+    params/README.md "Hydrogen-bond temperature dependence"): the advantage over Ala of the hydrogen-bonding N- and C-caps
+    and end groups, the Am value, the N4 motifs, and the favourable polar and acid-base pair entries (Table IV with the
+    Table V motifs). Exact under the additive capping rule these references use."""
+    C = EnergyCalculator
+    polar = set("STNQDEKRH")
+
+    def h(c):
+        return 1.0 + c.dCp * (c.T_kelvin - T_REF) / energies.HBOND_DH_REF
+
+    def ncap(f):
+        def g(c):
+            e = f(c)
+            if c.Ncap_AA in ("S", "T", "N", "D", "Ac", "Sc"):
+                col = ("Nc-4" if c.N1_AA == "P" else "Nc-3") if c.N3_AA in ("E", "D", "Q") else (
+                    "Nc-2" if c.N1_AA == "P" else "Nc-1")
+                ref = c.table_1_lacroix.loc["A", col]
+                e[c.ncap_idx] = ref + h(c) * (e[c.ncap_idx] - ref)
+            return e
+        return g
+
+    def ccap(f):
+        def g(c):
+            e = f(c)
+            col = "Cc-2" if c.Cprime_AA == "P" else "Cc-1"
+            if c.Ccap_AA in ("K", "R", "H", "N", "D"):
+                ref = c.table_1_lacroix.loc["A", col]
+                e[c.ccap_idx] = ref + h(c) * (e[c.ccap_idx] - ref)
+            elif c.Ccap_AA == "Am":
+                e[c.ccap_idx] = h(c) * e[c.ccap_idx]
+            return e
+        return g
+
+    def pair(f, k):
+        def g(c):
+            e = f(c).copy()
+            for i in range(len(e)):
+                if e[i] < 0 and i + k < len(c.seq_list):
+                    a, b = c.seq_list[i], c.seq_list[i + k]
+                    if a in polar and b in polar:  # acid-base and polar pairs (the Table V motifs are polar pairs)
+                        e[i] *= h(c)
+            return e
+        return g
+
+    def scaled(f):
+        return lambda c: h(c) * f(c)
+
+    monkeypatch.setattr(C, "get_dG_Ncap", ncap(C.get_dG_Ncap))
+    monkeypatch.setattr(C, "get_dG_Ccap", ccap(C.get_dG_Ccap))
+    monkeypatch.setattr(C, "get_dG_i3", pair(C.get_dG_i3, 3))
+    monkeypatch.setattr(C, "get_dG_i4", pair(C.get_dG_i4, 4))
+    monkeypatch.setattr(C, "get_dG_petukhov_motif", scaled(C.get_dG_petukhov_motif))
+    monkeypatch.setattr(C, "get_dG_charged_staple", scaled(C.get_dG_charged_staple))
+
+
 @pytest.fixture(autouse=True)
 def _recorded_model(monkeypatch):
     """The references were recorded before 2026-10-26: capping motifs counted additively with acid-base bonds
-    (energies.CAPPING_EXCLUSIVITY, now "exclusive"; tests/test_capping_exclusivity.py covers it) and the published Gly
-    N-cap cells (-0.30; now -0.54, params/README.md)."""
+    (energies.CAPPING_EXCLUSIVITY, now "exclusive"; tests/test_capping_exclusivity.py covers it), the published Gly
+    N-cap cells (-0.30; now -0.54, params/README.md) and the side-chain hydrogen bonds on the backbone's temperature law
+    (_recorded_hbond_law)."""
     monkeypatch.setattr(energies, "CAPPING_EXCLUSIVITY", "additive")
+    _recorded_hbond_law(monkeypatch)
     t1 = EnergyCalculator.load_params()["table_1_lacroix"]
     cols = ("Nc-1", "Nc-2", "Nc-3", "Nc-4")
     shipped = {c: float(t1.loc["G", c]) for c in cols}

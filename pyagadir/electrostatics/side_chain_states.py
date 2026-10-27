@@ -41,7 +41,8 @@ and 8.2 A for Glu-Glu and Lys-Lys), 0 when a partner is neutral. Where Table VI 
 open geometry (Asp/Glu(i)-His(i+3/i+4), Lys/Arg(i)-Asp(i+3)), the open reference is the Table VI term itself and the
 contact carries the bond alone. H and Hn are re-derived from isolated pairs (params/acid_base_pairs.tsv: Smith & Scholtz
 1998; Iqbalsyah & Doig 2005; Huyghues-Despointes et al. 1993); acid-base classes without an entry there (His pairs) use
-the Table IV cell for both. Both take the hydrogen-bond temperature law. A capping motif's state is calibrated the same
+the Table IV cell for both. Both are free energies at 0-5 C and temperature-independent (no measured enthalpy; the
+Coulomb term keeps water's eps(T)). A capping motif's state is calibrated the same
 way, K_motif = exp(-g/RT) - 1 beside the free state, so an isolated motif reproduces its free energy g exactly.
 
 The coil state holds no contacts. The correction a segment's free energy takes is
@@ -200,7 +201,6 @@ def _add_contacts(calc, m):
     where = {i: a for a, (k, i) in enumerate(m["sites"]) if k == "SC"}
     inner = set(calc.helix_indices[1:-1])
     tables = {3: calc.table_4a_lacroix, 4: calc.table_4b_lacroix}
-    law = lambda v: calc._hbond_temperature(v) if v < 0 else v  # noqa: E731
     for i in sorted(where):
         for k in (3, 4):
             j = i + k
@@ -219,7 +219,7 @@ def _add_contacts(calc, m):
             Wc = calc._electrostatic_interaction_energy(1.0, 1.0, r_vi)
             Wo = calc._electrostatic_interaction_energy(1.0, 1.0, r_open)
             m["zzW"][a, b] = m["zzW"][b, a] = m["z"][a] * m["z"][b] * Wo
-            m["contacts"][(a, b)] = dict(H=law(H), Hn=law(Hn), Wc=Wc)
+            m["contacts"][(a, b)] = dict(H=H, Hn=Hn, Wc=Wc)
 
 
 def _contact_energy(m, a, b):

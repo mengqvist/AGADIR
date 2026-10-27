@@ -63,7 +63,7 @@ def test_a_stronger_bond_wins_over_a_weak_cap(monkeypatch):
     assert gain == pytest.approx(0.10)
     d = (_under(monkeypatch, "max", lambda: c["max"].get_dG_Ncap()[2])
          - _under(monkeypatch, "additive", lambda: c["max"].get_dG_Ncap()[2]))
-    assert d == pytest.approx(c["max"]._hbond_temperature(gain), abs=1e-12)
+    assert d == pytest.approx(gain, abs=1e-12)
 
 
 def test_charged_staple_and_petukhov_motifs(monkeypatch):

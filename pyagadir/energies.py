@@ -56,10 +56,13 @@ class ParamTable:
 # 0.943 so that Leu's protein offset equals its peptide value. Charge-independent. See params/README.md.
 FIRST_TURN_N2_OFFSET = {"K": 0.25, "R": 0.25, "H": -0.059, "C": 0.228, "F": 0.162, "Y": 0.157, "W": 0.141}
 
-# Hydrogen-bond terms share one temperature law (EnergyCalculator._hbond_temperature): Munoz & Serrano 1995-III
-# eq. (8) for the backbone bond, dH_ref = -0.895 kcal/mol per bond at 0 C (Lacroix 1998, Discussion). Side chains and end groups
-# whose capping contribution is a hydrogen bond (Munoz & Serrano 1995-III p. 305), and residues that can form
-# side-chain hydrogen bonds in the Table IV/V pair terms:
+# Backbone hydrogen bond, Munoz & Serrano 1995-III eq. (8): an enthalpy, dH_ref = -0.895 kcal/mol per bond at 0 C (Lacroix
+# 1998, Discussion), with the heat capacity dCp (EnergyCalculator.dCp); the entropy of fixing the backbone is in
+# get_dG_Int. Its value agrees with the measured helix enthalpy, -0.9 +- 0.1 kcal/mol per residue, independent of
+# temperature over 5-45 C (Lopez, Chin, Baldwin & Makhatadze 2002, PNAS 99, 1298, by ITC). The side-chain and capping
+# hydrogen bonds (caps and end groups, Table IV/V pairs, the capping box and N4 motifs, the side-chain states) are free
+# energies at 0-5 C and are temperature-independent: no source measures the enthalpy of a side-chain hydrogen bond in a
+# helix (params/README.md, "Hydrogen-bond temperature dependence").
 HBOND_DH_REF = -0.895
 
 # Table V Gln(i)-Asp-(i+4) side-chain hydrogen bond (Lacroix 1998 supplementary Table V: -0.5 kcal/mol), re-derived from
@@ -67,7 +70,6 @@ HBOND_DH_REF = -0.895
 # with this model its printed tables are best fitted at -0.15 or weaker and its pH 7 figure at -0.30, and -0.5 is
 # rejected by both (+1.7 and +1.1 helix points RMSE); -0.225 lies between. The other Table V motifs keep their values.
 TABLE_V_GLN_ASP = -0.225
-HBOND_NCAPS = ("S", "T", "N", "D", "Ac", "Sc")
 
 # Capping motifs whose side chain points back toward the N-terminus, and that side chain's acid-base bonds to partners on
 # its C-terminal side (i+3, i+4), exclude each other: one side chain, one direction (the argument of the acid-base bond
@@ -80,8 +82,6 @@ HBOND_NCAPS = ("S", "T", "N", "D", "Ac", "Sc")
 CAPPING_EXCLUSIVITY = "exclusive"
 CAPPING_BOX_DG = -0.9  # capping box beyond the Nc-3 column (get_dG_Ncap)
 R_KCAL = 1.98720425864083e-3  # kcal/(mol K)
-HBOND_CCAPS = ("K", "R", "H", "N", "D")
-HBOND_POLAR = ("S", "T", "N", "Q", "D", "E", "K", "R", "H")
 
 
 class PrecomputeParams(Electrostatics):
@@ -713,8 +713,8 @@ class EnergyCalculator(PrecomputeParams):
         The net H-bond ΔG at 0°C is -0.895 kcal/mol per bond (Lacroix 1998, Discussion). It is
         treated as enthalpic, with the temperature dependence of equation (8) of
         Muñoz & Serrano (1995-III): ΔG(t) = ΔH_ref + ΔCp (t - t_ref), ΔCp = -1.5
-        cal/(mol·K) in the folding direction, t_ref = 0 C (_hbond_temperature, the
-        law every hydrogen-bond term uses).
+        cal/(mol·K) in the folding direction, t_ref = 0 C. It is the only hydrogen-bond term
+        with a temperature law (HBOND_DH_REF).
 
         Returns:
             float: The total free energy contribution for hydrogen bonding in the sequence.
@@ -723,7 +723,7 @@ class EnergyCalculator(PrecomputeParams):
 
         # Munoz & Serrano 1995-III eq. (8): dG_HBond = dH_ref + dCp (t - t_ref) per bond,
         # with dH_ref = HBOND_DH_REF, dCp = -0.0015 kcal/(mol K), t_ref = 0 C (T_REF).
-        dG_per_bond = self._hbond_temperature(HBOND_DH_REF)
+        dG_per_bond = HBOND_DH_REF + self.dCp * (self.T_kelvin - T_REF)
         return dG_per_bond * n_hbonds
 
     @property
@@ -732,27 +732,6 @@ class EnergyCalculator(PrecomputeParams):
         motif is a state of its side chain (electrostatics/side_chain_states.py), so the energy terms keep it additive;
         under "additive" CAPPING_EXCLUSIVITY decides (read when called)."""
         return "additive" if self.pair_rule == "states" else CAPPING_EXCLUSIVITY
-
-    def _hbond_temperature(self, dG_ref):
-        """
-        The temperature law of every hydrogen-bond term: the backbone bond (get_dG_Hbond), the
-        hydrogen-bonding N- and C-caps and end groups (get_dG_Ncap, get_dG_Ccap), the side-chain
-        hydrogen bonds of the i,i+3 and i,i+4 terms (Table IV acid-base and polar pairs, the
-        Table V motifs) and the Petukhov and charged-staple motifs.
-
-        Muñoz & Serrano (1995-III) eq. (8) treats a hydrogen-bond term as an enthalpy,
-        ΔG(t) = ΔH_ref + ΔCp (t - t_ref), with ΔCp = -1.5 cal/(mol·K) per backbone bond in the
-        folding direction and t_ref = 0 C; the entropy of fixing the backbone is in
-        get_dG_Int. Other hydrogen bonds take the same law as a relative change,
-        ΔG_ref × (1 + ΔCp (t - t_ref) / ΔH_ref) with the backbone bond's ΔH_ref = -0.895
-        kcal/mol, which for the backbone bond is eq. (8) itself. Muñoz & Serrano apply it to the
-        hydrogen-bonding caps and the end groups (p. 305) and neglect it for side-chain pairs.
-        The term grows more favourable with temperature, as the backbone term does.
-
-        Args:
-            dG_ref: free energy at 0 C (T_REF; float or array), kcal/mol.
-        """
-        return dG_ref * (1.0 + self.dCp * (self.T_kelvin - T_REF) / HBOND_DH_REF)
 
     def get_dG_Ncap(self) -> np.ndarray:
         """
@@ -798,15 +777,12 @@ class EnergyCalculator(PrecomputeParams):
             q_glu = abs(float(self.modified_seq_ionization_hel[self.ncap_idx + 3]))
             energy[self.ncap_idx] += CAPPING_BOX_DG * q_glu
 
-        # A Ser, Thr, Asn or Asp N-cap, and the Ac or Sc end group, stabilise the helix by a
-        # hydrogen bond (Muñoz & Serrano 1995-III p. 305): their advantage over Ala in the same
-        # column, capping box included, takes the hydrogen-bond temperature law.
-        if self.Ncap_AA in HBOND_NCAPS:
-            ref = self.table_1_lacroix.loc["A", col]
-            energy[self.ncap_idx] = ref + self._hbond_temperature(energy[self.ncap_idx] - ref)
+        # A Ser, Thr, Asn or Asp N-cap, and the Ac or Sc end group, stabilise the helix by a hydrogen bond (Muñoz & Serrano
+        # 1995-III p. 305, who give them the temperature dependence of the backbone bond). Here every capping value is a
+        # free energy at 0-5 C and is temperature-independent (HBOND_DH_REF; params/README.md).
 
         # The N3 acid caps or bridges forward, not both (CAPPING_EXCLUSIVITY): if it bridges, the capping-box bonus and the
-        # Nc-3 column's N3-partner gain go, through the same temperature law.
+        # Nc-3 column's N3-partner gain go.
         motif = self._capping_motif("n3")
         if motif is not None:
             state, site, g_bond = motif
@@ -819,10 +795,9 @@ class EnergyCalculator(PrecomputeParams):
         return energy
 
     def _capping_n3_energy(self, site) -> float:
-        """Free energy of the N3 acid's capping (capping box and Nc-3 column gain) at this T and charge, kcal/mol."""
+        """Free energy of the N3 acid's capping (capping box and Nc-3 column gain) at this charge, kcal/mol."""
         q3 = abs(float(self.modified_seq_ionization_hel[site["idx"]]))
-        g = CAPPING_BOX_DG * q3 * site["box"] - site["gain"]
-        return self._hbond_temperature(g) if self.Ncap_AA in HBOND_NCAPS else g
+        return CAPPING_BOX_DG * q3 * site["box"] - site["gain"]
 
     def _capping_motif_sites(self) -> list:
         """The side chains of this segment whose N-terminal capping motif excludes their forward acid-base bonds
@@ -883,11 +858,10 @@ class EnergyCalculator(PrecomputeParams):
         return bonds
 
     def _bond_increment(self, i, j) -> float:
-        """Free energy that selecting the acid-base bond (i, j) adds (kcal/mol, at this T): its Table IV value with the
-        hydrogen-bond temperature law ("additive" pair rule)."""
+        """Free energy that selecting the acid-base bond (i, j) adds (kcal/mol): its Table IV value ("additive" pair
+        rule)."""
         table = self.table_4a_lacroix if j - i == 3 else self.table_4b_lacroix
-        cell = float(table.loc[self.seq_list[i], self.seq_list[j]]) / 100.0
-        return self._hbond_temperature(cell)
+        return float(table.loc[self.seq_list[i], self.seq_list[j]]) / 100.0
 
     def _capping_motif(self, kind):
         """(state, site, dG of the rival bonds) of a capping-motif site of this segment, or None."""
@@ -945,15 +919,8 @@ class EnergyCalculator(PrecomputeParams):
             energy[self.ccap_idx] = (q_cap * self.table_1_lacroix.loc["D", col]
                                      + (1.0 - q_cap) * self.table_1_lacroix.loc["N", col])
 
-        # A Lys, Arg, His, Asn or Asp C-cap hydrogen-bonds a C-terminal carbonyl, and the Am end
-        # group's contribution is a hydrogen bond (Muñoz & Serrano 1995-III p. 305): the
-        # advantage over Ala (the whole Am value) takes the hydrogen-bond temperature law.
-        col = "Cc-2" if self.Cprime_AA == "P" else "Cc-1"
-        if self.Ccap_AA in HBOND_CCAPS:
-            ref = self.table_1_lacroix.loc["A", col]
-            energy[self.ccap_idx] = ref + self._hbond_temperature(energy[self.ccap_idx] - ref)
-        elif self.Ccap_AA == "Am":
-            energy[self.ccap_idx] = self._hbond_temperature(energy[self.ccap_idx])
+        # A Lys, Arg, His, Asn or Asp C-cap hydrogen-bonds a C-terminal carbonyl, and the Am end group's contribution is a
+        # hydrogen bond (Muñoz & Serrano 1995-III p. 305); like the N-cap, temperature-independent (HBOND_DH_REF).
         return energy
 
     def get_dG_staple(self) -> float:
@@ -1082,9 +1049,6 @@ class EnergyCalculator(PrecomputeParams):
         q_N4 = abs(self.modified_seq_ionization_hel[self.ncap_idx + 4])
         energy = -1.0 * q_N4
 
-        # hydrogen bond: the hydrogen-bond temperature law
-        energy = self._hbond_temperature(energy)
-
         # the N4 acid keeps the motif or bridges forward, not both (CAPPING_EXCLUSIVITY)
         return self._capping_n4("petukhov", energy)
 
@@ -1119,9 +1083,6 @@ class EnergyCalculator(PrecomputeParams):
         # Apply energy, scaled by ionization of N4
         q_N4 = abs(self.modified_seq_ionization_hel[self.ncap_idx + 4])
         energy = -0.3 * q_N4
-
-        # hydrogen bond: the hydrogen-bond temperature law
-        energy = self._hbond_temperature(energy)
 
         # the N4 base keeps the staple or bridges forward, not both (CAPPING_EXCLUSIVITY)
         energy = self._capping_n4("cstaple", energy)
@@ -1272,9 +1233,7 @@ class EnergyCalculator(PrecomputeParams):
                 # hydrophobic pairs scale entropically (dG_ref * t/t_ref), no dCp_hydroph term:
                 # Munoz 1995-III states this term becomes more favourable with temperature
                 base = self._entropic_cp_correct(base, 0.0)
-            # acid-base and polar pairs are side-chain hydrogen bonds: the hydrogen-bond temperature law
-            elif base < 0.0 and (acid_base or (AAi in HBOND_POLAR and AAi3 in HBOND_POLAR)):
-                base = self._hbond_temperature(base)
+            # acid-base and polar pairs are side-chain hydrogen bonds: temperature-independent (HBOND_DH_REF)
 
             energy[idx] = base
 
@@ -1346,9 +1305,7 @@ class EnergyCalculator(PrecomputeParams):
                 # hydrophobic pairs scale entropically (dG_ref * t/t_ref), no dCp_hydroph term:
                 # Munoz 1995-III states this term becomes more favourable with temperature
                 base = self._entropic_cp_correct(base, 0.0)
-            # acid-base and polar pairs are side-chain hydrogen bonds: the hydrogen-bond temperature law
-            elif base < 0.0 and (acid_base or (AAi in HBOND_POLAR and AAi4 in HBOND_POLAR)):
-                base = self._hbond_temperature(base)
+            # acid-base and polar pairs are side-chain hydrogen bonds: temperature-independent (HBOND_DH_REF)
 
             extra = 0.0  # Table V hydrogen-bond motifs
             aro_his = 0.0  # Table V aromatic-His+ motif (a ring-cation contact, not a hydrogen bond)
@@ -1385,8 +1342,8 @@ class EnergyCalculator(PrecomputeParams):
                 p_glu = abs(self.modified_seq_ionization_hel[idx + 4])  # population of Glu-
                 extra += p_glu * (-0.1)
 
-            # the Gln-Asp-, Glu--Asn and Gln-Glu- motifs are side-chain hydrogen bonds: the hydrogen-bond
-            # temperature law; the aromatic-His+ contact is temperature-independent
-            energy[idx] = base + self._hbond_temperature(extra) + aro_his
+            # the Gln-Asp-, Glu--Asn and Gln-Glu- motifs (side-chain hydrogen bonds) and the aromatic-His+ contact are
+            # temperature-independent
+            energy[idx] = base + extra + aro_his
 
         return energy
