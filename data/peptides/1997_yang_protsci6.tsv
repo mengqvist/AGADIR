@@ -1,0 +1,58 @@
+peptide_id	sequence	ncap	ccap	n_res	pH	T_C	ionic_strength_M	quantity	value	error	unit	source_table	flags
+AAA	YSEEEEKAKKAAAEEAEKKKK	Sc	Am	21	7.0	4.0	0.0118	minus_theta222	27200		deg cm2 dmol-1	Table 1	printed;KF 0.01 M;phosphate 0.001 M;aromatic_cd=Y
+AAA	YSEEEEKAKKAAAEEAEKKKK	Sc	Am	21	7.0	4.0	0.0118	helix_percent	84.9		percent	Table 1	printed;authors_conversion proportional, 100 % = 32,000, 0 % = 0;KF 0.01 M;phosphate 0.001 M;aromatic_cd=Y
+AEA	YSEEEEKAKKAEAEEAEKKKK	Sc	Am	21	7.0	4.0	0.0118	minus_theta222	26400		deg cm2 dmol-1	Table 1	printed;KF 0.01 M;phosphate 0.001 M;aromatic_cd=Y
+AEA	YSEEEEKAKKAEAEEAEKKKK	Sc	Am	21	7.0	4.0	0.0118	helix_percent	82.5		percent	Table 1	printed;authors_conversion proportional, 100 % = 32,000, 0 % = 0;KF 0.01 M;phosphate 0.001 M;aromatic_cd=Y
+ALA	YSEEEEKAKKALAEEAEKKKK	Sc	Am	21	7.0	4.0	0.0118	minus_theta222	25800		deg cm2 dmol-1	Table 1	printed;KF 0.01 M;phosphate 0.001 M;aromatic_cd=Y
+ALA	YSEEEEKAKKALAEEAEKKKK	Sc	Am	21	7.0	4.0	0.0118	helix_percent	80.6		percent	Table 1	printed;authors_conversion proportional, 100 % = 32,000, 0 % = 0;KF 0.01 M;phosphate 0.001 M;aromatic_cd=Y
+AIA	YSEEEEKAKKAIAEEAEKKKK	Sc	Am	21	7.0	4.0	0.0118	minus_theta222	25700		deg cm2 dmol-1	Table 1	printed;KF 0.01 M;phosphate 0.001 M;aromatic_cd=Y
+AIA	YSEEEEKAKKAIAEEAEKKKK	Sc	Am	21	7.0	4.0	0.0118	helix_percent	80.3		percent	Table 1	printed;authors_conversion proportional, 100 % = 32,000, 0 % = 0;KF 0.01 M;phosphate 0.001 M;aromatic_cd=Y
+ARA	YSEEEEKAKKARAEEAEKKKK	Sc	Am	21	7.0	4.0	0.0118	minus_theta222	25500		deg cm2 dmol-1	Table 1	printed;KF 0.01 M;phosphate 0.001 M;aromatic_cd=Y
+ARA	YSEEEEKAKKARAEEAEKKKK	Sc	Am	21	7.0	4.0	0.0118	helix_percent	79.7		percent	Table 1	printed;authors_conversion proportional, 100 % = 32,000, 0 % = 0;KF 0.01 M;phosphate 0.001 M;aromatic_cd=Y
+AMA	YSEEEEKAKKAMAEEAEKKKK	Sc	Am	21	7.0	4.0	0.0118	minus_theta222	24900		deg cm2 dmol-1	Table 1	printed;KF 0.01 M;phosphate 0.001 M;aromatic_cd=Y
+AMA	YSEEEEKAKKAMAEEAEKKKK	Sc	Am	21	7.0	4.0	0.0118	helix_percent	77.8		percent	Table 1	printed;authors_conversion proportional, 100 % = 32,000, 0 % = 0;KF 0.01 M;phosphate 0.001 M;aromatic_cd=Y
+AHA	YSEEEEKAKKAHAEEAEKKKK	Sc	Am	21	7.0	4.0	0.0118	minus_theta222	24800		deg cm2 dmol-1	Table 1	printed;KF 0.01 M;phosphate 0.001 M;aromatic_cd=Y
+AHA	YSEEEEKAKKAHAEEAEKKKK	Sc	Am	21	7.0	4.0	0.0118	helix_percent	77.5		percent	Table 1	printed;authors_conversion proportional, 100 % = 32,000, 0 % = 0;KF 0.01 M;phosphate 0.001 M;aromatic_cd=Y
+AKA	YSEEEEKAKKAKAEEAEKKKK	Sc	Am	21	7.0	4.0	0.0118	minus_theta222	24500		deg cm2 dmol-1	Table 1	printed;KF 0.01 M;phosphate 0.001 M;aromatic_cd=Y
+AKA	YSEEEEKAKKAKAEEAEKKKK	Sc	Am	21	7.0	4.0	0.0118	helix_percent	76.6		percent	Table 1	printed;authors_conversion proportional, 100 % = 32,000, 0 % = 0;KF 0.01 M;phosphate 0.001 M;aromatic_cd=Y
+AVA	YSEEEEKAKKAVAEEAEKKKK	Sc	Am	21	7.0	4.0	0.0118	minus_theta222	23500		deg cm2 dmol-1	Table 1	printed;KF 0.01 M;phosphate 0.001 M;aromatic_cd=Y
+AVA	YSEEEEKAKKAVAEEAEKKKK	Sc	Am	21	7.0	4.0	0.0118	helix_percent	73.4		percent	Table 1	printed;authors_conversion proportional, 100 % = 32,000, 0 % = 0;KF 0.01 M;phosphate 0.001 M;aromatic_cd=Y
+ASA	YSEEEEKAKKASAEEAEKKKK	Sc	Am	21	7.0	4.0	0.0118	minus_theta222	23200		deg cm2 dmol-1	Table 1	printed;KF 0.01 M;phosphate 0.001 M;aromatic_cd=Y
+ASA	YSEEEEKAKKASAEEAEKKKK	Sc	Am	21	7.0	4.0	0.0118	helix_percent	72.5		percent	Table 1	printed;authors_conversion proportional, 100 % = 32,000, 0 % = 0;KF 0.01 M;phosphate 0.001 M;aromatic_cd=Y
+ADA	YSEEEEKAKKADAEEAEKKKK	Sc	Am	21	7.0	4.0	0.0118	minus_theta222	23100		deg cm2 dmol-1	Table 1	printed;KF 0.01 M;phosphate 0.001 M;aromatic_cd=Y
+ADA	YSEEEEKAKKADAEEAEKKKK	Sc	Am	21	7.0	4.0	0.0118	helix_percent	72.2		percent	Table 1	printed;authors_conversion proportional, 100 % = 32,000, 0 % = 0;KF 0.01 M;phosphate 0.001 M;aromatic_cd=Y
+AQA	YSEEEEKAKKAQAEEAEKKKK	Sc	Am	21	7.0	4.0	0.0118	minus_theta222	22900		deg cm2 dmol-1	Table 1	printed;KF 0.01 M;phosphate 0.001 M;aromatic_cd=Y
+AQA	YSEEEEKAKKAQAEEAEKKKK	Sc	Am	21	7.0	4.0	0.0118	helix_percent	71.6		percent	Table 1	printed;authors_conversion proportional, 100 % = 32,000, 0 % = 0;KF 0.01 M;phosphate 0.001 M;aromatic_cd=Y
+ANA	YSEEEEKAKKANAEEAEKKKK	Sc	Am	21	7.0	4.0	0.0118	minus_theta222	22500		deg cm2 dmol-1	Table 1	printed;KF 0.01 M;phosphate 0.001 M;aromatic_cd=Y
+ANA	YSEEEEKAKKANAEEAEKKKK	Sc	Am	21	7.0	4.0	0.0118	helix_percent	70.3		percent	Table 1	printed;authors_conversion proportional, 100 % = 32,000, 0 % = 0;KF 0.01 M;phosphate 0.001 M;aromatic_cd=Y
+ATA	YSEEEEKAKKATAEEAEKKKK	Sc	Am	21	7.0	4.0	0.0118	minus_theta222	22200		deg cm2 dmol-1	Table 1	printed;KF 0.01 M;phosphate 0.001 M;aromatic_cd=Y
+ATA	YSEEEEKAKKATAEEAEKKKK	Sc	Am	21	7.0	4.0	0.0118	helix_percent	69.4		percent	Table 1	printed;authors_conversion proportional, 100 % = 32,000, 0 % = 0;KF 0.01 M;phosphate 0.001 M;aromatic_cd=Y
+AGA	YSEEEEKAKKAGAEEAEKKKK	Sc	Am	21	7.0	4.0	0.0118	minus_theta222	20700		deg cm2 dmol-1	Table 1	printed;KF 0.01 M;phosphate 0.001 M;aromatic_cd=Y
+AGA	YSEEEEKAKKAGAEEAEKKKK	Sc	Am	21	7.0	4.0	0.0118	helix_percent	64.7		percent	Table 1	printed;authors_conversion proportional, 100 % = 32,000, 0 % = 0;KF 0.01 M;phosphate 0.001 M;aromatic_cd=Y
+AFA	YSEEEEKAKKAFAEEAEKKKK	Sc	Am	21	7.0	4.0	0.0118	minus_theta222	20100		deg cm2 dmol-1	Table 1	printed;KF 0.01 M;phosphate 0.001 M;aromatic_cd=Y;aromatic_cd=F
+AFA	YSEEEEKAKKAFAEEAEKKKK	Sc	Am	21	7.0	4.0	0.0118	helix_percent	62.8		percent	Table 1	printed;authors_conversion proportional, 100 % = 32,000, 0 % = 0;KF 0.01 M;phosphate 0.001 M;aromatic_cd=Y;aromatic_cd=F
+AWA	YSEEEEKAKKAWAEEAEKKKK	Sc	Am	21	7.0	4.0	0.0118	minus_theta222	20100		deg cm2 dmol-1	Table 1	printed;KF 0.01 M;phosphate 0.001 M;aromatic_cd=Y;aromatic_cd=W
+AWA	YSEEEEKAKKAWAEEAEKKKK	Sc	Am	21	7.0	4.0	0.0118	helix_percent	62.8		percent	Table 1	printed;authors_conversion proportional, 100 % = 32,000, 0 % = 0;KF 0.01 M;phosphate 0.001 M;aromatic_cd=Y;aromatic_cd=W
+ACA	YSEEEEKAKKACAEEAEKKKK	Sc	Am	21	7.0	4.0	0.0118	minus_theta222	19600		deg cm2 dmol-1	Table 1	printed;KF 0.01 M;phosphate 0.001 M;aromatic_cd=Y;cys_redox_unstated
+ACA	YSEEEEKAKKACAEEAEKKKK	Sc	Am	21	7.0	4.0	0.0118	helix_percent	61.3		percent	Table 1	printed;authors_conversion proportional, 100 % = 32,000, 0 % = 0;KF 0.01 M;phosphate 0.001 M;aromatic_cd=Y;cys_redox_unstated
+AYA	YSEEEEKAKKAYAEEAEKKKK	Sc	Am	21	7.0	4.0	0.0118	minus_theta222	11900		deg cm2 dmol-1	Table 1	printed;KF 0.01 M;phosphate 0.001 M;aromatic_cd=Y;aromatic_cd=Y
+AYA	YSEEEEKAKKAYAEEAEKKKK	Sc	Am	21	7.0	4.0	0.0118	helix_percent	37.2		percent	Table 1	printed;authors_conversion proportional, 100 % = 32,000, 0 % = 0;KF 0.01 M;phosphate 0.001 M;aromatic_cd=Y;aromatic_cd=Y
+APA	YSEEEEKAKKAPAEEAEKKKK	Sc	Am	21	7.0	4.0	0.0118	minus_theta222	8330		deg cm2 dmol-1	Table 1	printed;KF 0.01 M;phosphate 0.001 M;aromatic_cd=Y
+APA	YSEEEEKAKKAPAEEAEKKKK	Sc	Am	21	7.0	4.0	0.0118	helix_percent	26.0		percent	Table 1	printed;authors_conversion proportional, 100 % = 32,000, 0 % = 0;KF 0.01 M;phosphate 0.001 M;aromatic_cd=Y
+AAA	YSEEEEKAKKAAAEEAEKKKK	Sc	Am	21	7.0	4.0	0.0118	helix_percent	84.9		percent	Fig. 2A	digitised;T_read=3.42;KF 0.01 M;phosphate 0.001 M;aromatic_cd=Y;same_samples_as=Table 1 (4 C point; table value scored)
+AAA	YSEEEEKAKKAAAEEAEKKKK	Sc	Am	21	7.0	25.0	0.0118	helix_percent	68.0		percent	Fig. 2A	digitised;T_read=24.58;KF 0.01 M;phosphate 0.001 M;aromatic_cd=Y
+AAA	YSEEEEKAKKAAAEEAEKKKK	Sc	Am	21	7.0	50.0	0.0118	helix_percent	45.3		percent	Fig. 2A	digitised;T_read=49.78;KF 0.01 M;phosphate 0.001 M;aromatic_cd=Y
+AAA	YSEEEEKAKKAAAEEAEKKKK	Sc	Am	21	7.0	75.0	0.0118	helix_percent	29.5		percent	Fig. 2A	digitised;T_read=74.78;KF 0.01 M;phosphate 0.001 M;aromatic_cd=Y
+AGA	YSEEEEKAKKAGAEEAEKKKK	Sc	Am	21	7.0	4.0	0.0118	helix_percent	64.6		percent	Fig. 2A	digitised;T_read=3.52;KF 0.01 M;phosphate 0.001 M;aromatic_cd=Y;same_samples_as=Table 1 (4 C point; table value scored)
+AGA	YSEEEEKAKKAGAEEAEKKKK	Sc	Am	21	7.0	25.0	0.0118	helix_percent	43.1		percent	Fig. 2A	digitised;T_read=24.84;KF 0.01 M;phosphate 0.001 M;aromatic_cd=Y
+AGA	YSEEEEKAKKAGAEEAEKKKK	Sc	Am	21	7.0	50.0	0.0118	helix_percent	25.8		percent	Fig. 2A	digitised;T_read=49.89;KF 0.01 M;phosphate 0.001 M;aromatic_cd=Y
+AGA	YSEEEEKAKKAGAEEAEKKKK	Sc	Am	21	7.0	75.0	0.0118	helix_percent	17.8		percent	Fig. 2A	digitised;T_read=74.83;KF 0.01 M;phosphate 0.001 M;aromatic_cd=Y
+AAA	YSEEEEKAKKAAAEEAEKKKK	Sc	Am	21	7.0	4.0	0.5118	helix_percent	69.0		percent	Fig. 2C	digitised;NaCl 0.5 M;NaCl_read=0.5;KF 0.01 M;phosphate 0.001 M;aromatic_cd=Y
+AAA	YSEEEEKAKKAAAEEAEKKKK	Sc	Am	21	7.0	4.0	1.0118	helix_percent	63.1		percent	Fig. 2C	digitised;NaCl 1.0 M;NaCl_read=0.999;KF 0.01 M;phosphate 0.001 M;aromatic_cd=Y
+AAA	YSEEEEKAKKAAAEEAEKKKK	Sc	Am	21	7.0	4.0	1.5118	helix_percent	57.5		percent	Fig. 2C	digitised;NaCl 1.5 M;NaCl_read=1.502;KF 0.01 M;phosphate 0.001 M;aromatic_cd=Y
+AAA	YSEEEEKAKKAAAEEAEKKKK	Sc	Am	21	7.0	4.0	2.0118	helix_percent	53.9		percent	Fig. 2C	digitised;NaCl 2.0 M;NaCl_read=2.002;KF 0.01 M;phosphate 0.001 M;aromatic_cd=Y
+AAA	YSEEEEKAKKAAAEEAEKKKK	Sc	Am	21	7.0	4.0	2.5118	helix_percent	49.0		percent	Fig. 2C	digitised;NaCl 2.5 M;NaCl_read=2.501;KF 0.01 M;phosphate 0.001 M;aromatic_cd=Y
+AAA	YSEEEEKAKKAAAEEAEKKKK	Sc	Am	21	7.0	4.0	3.0118	helix_percent	44.3		percent	Fig. 2C	digitised;NaCl 3.0 M;NaCl_read=3.006;KF 0.01 M;phosphate 0.001 M;aromatic_cd=Y
+AAA	YSEEEEKAKKAAAEEAEKKKK	Sc	Am	21	7.0	4.0	3.5118	helix_percent	40.4		percent	Fig. 2C	digitised;NaCl 3.5 M;NaCl_read=3.508;KF 0.01 M;phosphate 0.001 M;aromatic_cd=Y;hofmeister
+AAA	YSEEEEKAKKAAAEEAEKKKK	Sc	Am	21	7.0	4.0	4.0118	helix_percent	36.7		percent	Fig. 2C	digitised;NaCl 4.0 M;NaCl_read=4.004;KF 0.01 M;phosphate 0.001 M;aromatic_cd=Y;hofmeister
+AAA	YSEEEEKAKKAAAEEAEKKKK	Sc	Am	21	7.0	4.0	4.5118	helix_percent	32.3		percent	Fig. 2C	digitised;NaCl 4.5 M;NaCl_read=4.5;KF 0.01 M;phosphate 0.001 M;aromatic_cd=Y;hofmeister

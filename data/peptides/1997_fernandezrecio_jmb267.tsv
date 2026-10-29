@@ -1,0 +1,13 @@
+peptide_id	sequence	ncap	ccap	n_res	pH	T_C	ionic_strength_M	quantity	value	error	unit	source_table	flags
+WH4	AARAWEAAHARA	Ac	Am	12	5.0	2.0	0.0284	helix_percent	25		percent	Table 2	printed;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W;authors_conversion Chen 1974 from [theta]220 (n not stated)
+WH4	AARAWEAAHARA	Ac	Am	12	9.5	2.0	0.0346	helix_percent	14		percent	Table 2	printed;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W;authors_conversion Chen 1974 from [theta]220 (n not stated)
+WH3	AARAWEAHAARA	Ac	Am	12	5.0	2.0	0.0284	helix_percent	7		percent	Table 2	printed;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W;authors_conversion Chen 1974 from [theta]220 (n not stated)
+WH3	AARAWEAHAARA	Ac	Am	12	9.5	2.0	0.0346	helix_percent	13		percent	Table 2	printed;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W;authors_conversion Chen 1974 from [theta]220 (n not stated)
+HW4	AARAHEAAWARA	Ac	Am	12	5.0	2.0	0.0284	helix_percent	6		percent	Table 2	printed;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W;authors_conversion Chen 1974 from [theta]220 (n not stated)
+HW4	AARAHEAAWARA	Ac	Am	12	9.5	2.0	0.0346	helix_percent	10		percent	Table 2	printed;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W;authors_conversion Chen 1974 from [theta]220 (n not stated)
+HW3	AARAHEAWAARA	Ac	Am	12	5.0	2.0	0.0284	helix_percent	8		percent	Table 2	printed;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W;authors_conversion Chen 1974 from [theta]220 (n not stated)
+HW3	AARAHEAWAARA	Ac	Am	12	9.5	2.0	0.0346	helix_percent	13		percent	Table 2	printed;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W;authors_conversion Chen 1974 from [theta]220 (n not stated)
+WAH4	AARAWAAAHARA	Ac	Am	12	5.0	2.0	0.0284	helix_percent	32		percent	Table 2	printed;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W;authors_conversion Chen 1974 from [theta]220 (n not stated)
+WAH4	AARAWAAAHARA	Ac	Am	12	9.5	2.0	0.0346	helix_percent	17		percent	Table 2	printed;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W;authors_conversion Chen 1974 from [theta]220 (n not stated)
+WAH3	AARAAWAAHARA	Ac	Am	12	5.0	2.0	0.0284	helix_percent	15		percent	Table 2	printed;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W;authors_conversion Chen 1974 from [theta]220 (n not stated)
+WAH3	AARAAWAAHARA	Ac	Am	12	9.5	2.0	0.0346	helix_percent	13		percent	Table 2	printed;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W;authors_conversion Chen 1974 from [theta]220 (n not stated)

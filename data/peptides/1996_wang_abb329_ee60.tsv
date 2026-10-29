@@ -1,0 +1,12 @@
+peptide_id	sequence	ncap	ccap	n_res	pH	T_C	ionic_strength_M	quantity	value	error	unit	source_table	flags
+EE60	YGEKKAAEEKQKAEEEKKAAEERERAKAEEEKRAAEERERAKAEEERKAAEERAKAEEEC		Am	60	1.18	5.0	0.1	minus_theta222	31150.0		deg cm2 dmol-1	Fig. 4	digitised;outline_scan;unbuffered;cys_freshly_reduced;aromatic_cd=Y;NaCl 0.1 M
+EE60	YGEKKAAEEKQKAEEEKKAAEERERAKAEEEKRAAEERERAKAEEERKAAEERAKAEEEC		Am	60	2.27	5.0	0.1	minus_theta222	30130.0		deg cm2 dmol-1	Fig. 4	digitised;outline_scan;unbuffered;cys_freshly_reduced;aromatic_cd=Y;NaCl 0.1 M
+EE60	YGEKKAAEEKQKAEEEKKAAEERERAKAEEEKRAAEERERAKAEEERKAAEERAKAEEEC		Am	60	3.17	5.0	0.1	minus_theta222	30160.0		deg cm2 dmol-1	Fig. 4	digitised;outline_scan;unbuffered;cys_freshly_reduced;aromatic_cd=Y;NaCl 0.1 M
+EE60	YGEKKAAEEKQKAEEEKKAAEERERAKAEEEKRAAEERERAKAEEERKAAEERAKAEEEC		Am	60	4.18	5.0	0.1	minus_theta222	31520.0		deg cm2 dmol-1	Fig. 4	digitised;outline_scan;unbuffered;cys_freshly_reduced;aromatic_cd=Y;NaCl 0.1 M
+EE60	YGEKKAAEEKQKAEEEKKAAEERERAKAEEEKRAAEERERAKAEEERKAAEERAKAEEEC		Am	60	5.37	5.0	0.1	minus_theta222	29890.0		deg cm2 dmol-1	Fig. 4	digitised;outline_scan;unbuffered;cys_freshly_reduced;aromatic_cd=Y;NaCl 0.1 M
+EE60	YGEKKAAEEKQKAEEEKKAAEERERAKAEEEKRAAEERERAKAEEERKAAEERAKAEEEC		Am	60	6.0	5.0	0.1	minus_theta222	30000.0		deg cm2 dmol-1	Fig. 4	digitised;outline_scan;unbuffered;cys_freshly_reduced;aromatic_cd=Y;NaCl 0.1 M
+EE60	YGEKKAAEEKQKAEEEKKAAEERERAKAEEEKRAAEERERAKAEEERKAAEERAKAEEEC		Am	60	7.01	5.0	0.1	minus_theta222	29220.0		deg cm2 dmol-1	Fig. 4	digitised;outline_scan;unbuffered;cys_freshly_reduced;aromatic_cd=Y;NaCl 0.1 M
+EE60	YGEKKAAEEKQKAEEEKKAAEERERAKAEEEKRAAEERERAKAEEERKAAEERAKAEEEC		Am	60	8.01	5.0	0.1	minus_theta222	29440.0		deg cm2 dmol-1	Fig. 4	digitised;outline_scan;unbuffered;cys_freshly_reduced;aromatic_cd=Y;NaCl 0.1 M
+EE60	YGEKKAAEEKQKAEEEKKAAEERERAKAEEEKRAAEERERAKAEEERKAAEERAKAEEEC		Am	60	9.18	5.0	0.1	minus_theta222	29220.0		deg cm2 dmol-1	Fig. 4	digitised;outline_scan;unbuffered;cys_freshly_reduced;aromatic_cd=Y;NaCl 0.1 M;tyr_titration
+EE60	YGEKKAAEEKQKAEEEKKAAEERERAKAEEEKRAAEERERAKAEEERKAAEERAKAEEEC		Am	60	10.17	5.0	0.1	minus_theta222	28880.0		deg cm2 dmol-1	Fig. 4	digitised;outline_scan;unbuffered;cys_freshly_reduced;aromatic_cd=Y;NaCl 0.1 M;tyr_titration
+EE60	YGEKKAAEEKQKAEEEKKAAEERERAKAEEEKRAAEERERAKAEEERKAAEERAKAEEEC		Am	60	11.84	5.0	0.1	minus_theta222	26360.0		deg cm2 dmol-1	Fig. 4	digitised;outline_scan;unbuffered;cys_freshly_reduced;aromatic_cd=Y;NaCl 0.1 M;tyr_titration

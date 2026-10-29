@@ -1,0 +1,13 @@
+peptide_id	sequence	ncap	ccap	n_res	pH	T_C	ionic_strength_M	quantity	value	error	unit	source_table	flags
+TestQN	AQAAAAQAAAANAAAAQGY	Ac	Am	19	7.0	0.0	0.0189	minus_theta222	12900		deg cm2 dmol-1	Table 1	printed;NaCl 0.010 M;Na phosphate 0.005 M;aromatic_cd=Y
+TestQN	AQAAAAQAAAANAAAAQGY	Ac	Am	19	7.0	0.0	0.0189	helix_percent	37		percent	Table 1	printed;NaCl 0.010 M;Na phosphate 0.005 M;aromatic_cd=Y;authors_conversion Scholtz/Chakrabartty -40,000(1 - 2.5/n), coil 0
+MidQN	AAQAAAAQAAANAAAAQGY	Ac	Am	19	7.0	0.0	0.0189	minus_theta222	19200		deg cm2 dmol-1	Table 1	printed;NaCl 0.010 M;Na phosphate 0.005 M;aromatic_cd=Y
+MidQN	AAQAAAAQAAANAAAAQGY	Ac	Am	19	7.0	0.0	0.0189	helix_percent	55		percent	Table 1	printed;NaCl 0.010 M;Na phosphate 0.005 M;aromatic_cd=Y;authors_conversion Scholtz/Chakrabartty -40,000(1 - 2.5/n), coil 0
+CtermQN	AAQAAAAQAAAAQAAANGY	Ac	Am	19	7.0	0.0	0.0189	minus_theta222	16700		deg cm2 dmol-1	Table 1	printed;NaCl 0.010 M;Na phosphate 0.005 M;aromatic_cd=Y
+CtermQN	AAQAAAAQAAAAQAAANGY	Ac	Am	19	7.0	0.0	0.0189	helix_percent	48		percent	Table 1	printed;NaCl 0.010 M;Na phosphate 0.005 M;aromatic_cd=Y;authors_conversion Scholtz/Chakrabartty -40,000(1 - 2.5/n), coil 0
+NtermQN	AAQAAANAAAAQAAAAQGY	Ac	Am	19	7.0	0.0	0.0189	minus_theta222	17700		deg cm2 dmol-1	Table 1	printed;NaCl 0.010 M;Na phosphate 0.005 M;aromatic_cd=Y
+NtermQN	AAQAAANAAAAQAAAAQGY	Ac	Am	19	7.0	0.0	0.0189	helix_percent	50		percent	Table 1	printed;NaCl 0.010 M;Na phosphate 0.005 M;aromatic_cd=Y;authors_conversion Scholtz/Chakrabartty -40,000(1 - 2.5/n), coil 0
+TestNQ	AQAAAANAAAAQAAAAQGY	Ac	Am	19	7.0	0.0	0.0189	minus_theta222	11500		deg cm2 dmol-1	Table 1	printed;NaCl 0.010 M;Na phosphate 0.005 M;aromatic_cd=Y
+TestNQ	AQAAAANAAAAQAAAAQGY	Ac	Am	19	7.0	0.0	0.0189	helix_percent	33		percent	Table 1	printed;NaCl 0.010 M;Na phosphate 0.005 M;aromatic_cd=Y;authors_conversion Scholtz/Chakrabartty -40,000(1 - 2.5/n), coil 0
+MidNQ	AAQAAAANAAAQAAAAQGY	Ac	Am	19	7.0	0.0	0.0189	minus_theta222	13100		deg cm2 dmol-1	Table 1	printed;NaCl 0.010 M;Na phosphate 0.005 M;aromatic_cd=Y
+MidNQ	AAQAAAANAAAQAAAAQGY	Ac	Am	19	7.0	0.0	0.0189	helix_percent	37		percent	Table 1	printed;NaCl 0.010 M;Na phosphate 0.005 M;aromatic_cd=Y;authors_conversion Scholtz/Chakrabartty -40,000(1 - 2.5/n), coil 0

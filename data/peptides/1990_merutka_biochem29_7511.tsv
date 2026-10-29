@@ -1,0 +1,20 @@
+peptide_id	sequence	ncap	ccap	n_res	pH	T_C	ionic_strength_M	quantity	value	error	unit	source_table	flags
+C	YEAAAKEACAKEAAAKA	Ac	Am	17	7.0	0.0	0.0118	minus_theta222	7700		deg cm2 dmol-1	text	printed_in_text;NaCl 0.010 M;phosphate 0.001 M;aromatic_cd=Y;dtt 0.5 mM
+R	YEAAAKEARAKEAAAKA	Ac	Am	17	7.0	0.0	0.0118	minus_theta222	23100		deg cm2 dmol-1	text	printed_in_text;NaCl 0.010 M;phosphate 0.001 M;aromatic_cd=Y
+A	YEAAAKEAAAKEAAAKA	Ac	Am	17	7.0	0.0	0.0118	minus_theta222	22570.0		deg cm2 dmol-1	Fig. 2	digitised;label_assigned_by_eye;NaCl 0.010 M;phosphate 0.001 M;aromatic_cd=Y
+D	YEAAAKEADAKEAAAKA	Ac	Am	17	7.0	0.0	0.0118	minus_theta222	11440.0		deg cm2 dmol-1	Fig. 2	digitised;label_assigned_by_eye;NaCl 0.010 M;phosphate 0.001 M;aromatic_cd=Y
+E	YEAAAKEAEAKEAAAKA	Ac	Am	17	7.0	0.0	0.0118	minus_theta222	22320.0		deg cm2 dmol-1	Fig. 2	digitised;label_assigned_by_eye;NaCl 0.010 M;phosphate 0.001 M;aromatic_cd=Y
+F	YEAAAKEAFAKEAAAKA	Ac	Am	17	7.0	0.0	0.0118	minus_theta222	17410.0		deg cm2 dmol-1	Fig. 2	digitised;label_assigned_by_eye;NaCl 0.010 M;phosphate 0.001 M;aromatic_cd=Y;aromatic_cd=F
+G	YEAAAKEAGAKEAAAKA	Ac	Am	17	7.0	0.0	0.0118	minus_theta222	9330.0		deg cm2 dmol-1	Fig. 2	digitised;label_assigned_by_eye;NaCl 0.010 M;phosphate 0.001 M;aromatic_cd=Y
+H	YEAAAKEAHAKEAAAKA	Ac	Am	17	7.0	0.0	0.0118	minus_theta222	11440.0		deg cm2 dmol-1	Fig. 2	digitised;label_assigned_by_eye;NaCl 0.010 M;phosphate 0.001 M;aromatic_cd=Y
+I	YEAAAKEAIAKEAAAKA	Ac	Am	17	7.0	0.0	0.0118	minus_theta222	19200.0		deg cm2 dmol-1	Fig. 2	digitised;label_assigned_by_eye;NaCl 0.010 M;phosphate 0.001 M;aromatic_cd=Y
+K	YEAAAKEAKAKEAAAKA	Ac	Am	17	7.0	0.0	0.0118	minus_theta222	19200.0		deg cm2 dmol-1	Fig. 2	digitised;label_assigned_by_eye;NaCl 0.010 M;phosphate 0.001 M;aromatic_cd=Y
+L	YEAAAKEALAKEAAAKA	Ac	Am	17	7.0	0.0	0.0118	minus_theta222	15140.0		deg cm2 dmol-1	Fig. 2	digitised;label_assigned_by_eye;NaCl 0.010 M;phosphate 0.001 M;aromatic_cd=Y
+M	YEAAAKEAMAKEAAAKA	Ac	Am	17	7.0	0.0	0.0118	minus_theta222	11970.0		deg cm2 dmol-1	Fig. 2	digitised;label_assigned_by_eye;NaCl 0.010 M;phosphate 0.001 M;aromatic_cd=Y;dtt 0.5 mM
+N	YEAAAKEANAKEAAAKA	Ac	Am	17	7.0	0.0	0.0118	minus_theta222	13880.0		deg cm2 dmol-1	Fig. 2	digitised;label_assigned_by_eye;NaCl 0.010 M;phosphate 0.001 M;aromatic_cd=Y
+Q	YEAAAKEAQAKEAAAKA	Ac	Am	17	7.0	0.0	0.0118	minus_theta222	11520.0		deg cm2 dmol-1	Fig. 2	digitised;label_assigned_by_eye;NaCl 0.010 M;phosphate 0.001 M;aromatic_cd=Y
+S	YEAAAKEASAKEAAAKA	Ac	Am	17	7.0	0.0	0.0118	minus_theta222	16800.0		deg cm2 dmol-1	Fig. 2	digitised;label_assigned_by_eye;NaCl 0.010 M;phosphate 0.001 M;aromatic_cd=Y
+T	YEAAAKEATAKEAAAKA	Ac	Am	17	7.0	0.0	0.0118	minus_theta222	11690.0		deg cm2 dmol-1	Fig. 2	digitised;label_assigned_by_eye;NaCl 0.010 M;phosphate 0.001 M;aromatic_cd=Y
+V	YEAAAKEAVAKEAAAKA	Ac	Am	17	7.0	0.0	0.0118	minus_theta222	10710.0		deg cm2 dmol-1	Fig. 2	digitised;label_assigned_by_eye;NaCl 0.010 M;phosphate 0.001 M;aromatic_cd=Y
+W	YEAAAKEAWAKEAAAKA	Ac	Am	17	7.0	0.0	0.0118	minus_theta222	12540.0		deg cm2 dmol-1	Fig. 2	digitised;label_assigned_by_eye;NaCl 0.010 M;phosphate 0.001 M;aromatic_cd=Y;aromatic_cd=W
+Y	YEAAAKEAYAKEAAAKA	Ac	Am	17	7.0	0.0	0.0118	minus_theta222	12980.0		deg cm2 dmol-1	Fig. 2	digitised;label_assigned_by_eye;NaCl 0.010 M;phosphate 0.001 M;aromatic_cd=Y;aromatic_cd=Y

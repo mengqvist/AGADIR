@@ -1,0 +1,13 @@
+peptide_id	sequence	ncap	ccap	n_res	pH	T_C	ionic_strength_M	quantity	value	error	unit	source_table	flags
+AA9	EAEKAAKEAEKAAKEAEK	Ac	Am	18	7.0	5.0	0.1887	minus_theta220	18270		deg cm2 dmol-1	Table II	printed;KCl 0.1 M;K phosphate 0.050 M;wavelength_220nm
+AA9	EAEKAAKEAEKAAKEAEK	Ac	Am	18	7.0	5.0	0.1887	helix_fraction	0.65		fraction	Table II	printed;KCl 0.1 M;K phosphate 0.050 M;wavelength_220nm;authors_conversion theta_C +1,500 (8 M urea), theta_H per-peptide 50 % TFE (~-28,600)
+AL9	EAEKAAKELEKAAKEAEK	Ac	Am	18	7.0	5.0	0.1887	minus_theta220	15570		deg cm2 dmol-1	Table II	printed;KCl 0.1 M;K phosphate 0.050 M;wavelength_220nm
+AL9	EAEKAAKELEKAAKEAEK	Ac	Am	18	7.0	5.0	0.1887	helix_fraction	0.58		fraction	Table II	printed;KCl 0.1 M;K phosphate 0.050 M;wavelength_220nm;authors_conversion theta_C +1,500 (8 M urea), theta_H per-peptide 50 % TFE (~-28,600)
+AG9	EAEKAAKEGEKAAKEAEK	Ac	Am	18	7.0	5.0	0.1887	minus_theta220	5760		deg cm2 dmol-1	Table II	printed;KCl 0.1 M;K phosphate 0.050 M;wavelength_220nm
+AG9	EAEKAAKEGEKAAKEAEK	Ac	Am	18	7.0	5.0	0.1887	helix_fraction	0.24		fraction	Table II	printed;KCl 0.1 M;K phosphate 0.050 M;wavelength_220nm;authors_conversion theta_C +1,500 (8 M urea), theta_H per-peptide 50 % TFE (~-28,600)
+AA7	EAEKAAAEAEKAAKEAEK	Ac	Am	18	7.0	5.0	0.1887	minus_theta220	18810		deg cm2 dmol-1	Table II	printed;KCl 0.1 M;K phosphate 0.050 M;wavelength_220nm
+AA7	EAEKAAAEAEKAAKEAEK	Ac	Am	18	7.0	5.0	0.1887	helix_fraction	0.67		fraction	Table II	printed;KCl 0.1 M;K phosphate 0.050 M;wavelength_220nm;authors_conversion theta_C +1,500 (8 M urea), theta_H per-peptide 50 % TFE (~-28,600)
+AL7	EAEKAALEAEKAAKEAEK	Ac	Am	18	7.0	5.0	0.1887	minus_theta220	19330		deg cm2 dmol-1	Table II	printed;KCl 0.1 M;K phosphate 0.050 M;wavelength_220nm
+AL7	EAEKAALEAEKAAKEAEK	Ac	Am	18	7.0	5.0	0.1887	helix_fraction	0.68		fraction	Table II	printed;KCl 0.1 M;K phosphate 0.050 M;wavelength_220nm;authors_conversion theta_C +1,500 (8 M urea), theta_H per-peptide 50 % TFE (~-28,600)
+AG7	EAEKAAGEAEKAAKEAEK	Ac	Am	18	7.0	5.0	0.1887	minus_theta220	10340		deg cm2 dmol-1	Table II	printed;KCl 0.1 M;K phosphate 0.050 M;wavelength_220nm
+AG7	EAEKAAGEAEKAAKEAEK	Ac	Am	18	7.0	5.0	0.1887	helix_fraction	0.4		fraction	Table II	printed;KCl 0.1 M;K phosphate 0.050 M;wavelength_220nm;authors_conversion theta_C +1,500 (8 M urea), theta_H per-peptide 50 % TFE (~-28,600)

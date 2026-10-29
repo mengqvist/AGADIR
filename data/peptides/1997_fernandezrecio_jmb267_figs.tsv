@@ -1,0 +1,125 @@
+peptide_id	sequence	ncap	ccap	n_res	pH	T_C	ionic_strength_M	quantity	value	error	unit	source_table	flags
+WH4	AARAWEAAHARA	Ac	Am	12	5.23	2.0	0.0287	minus_theta220	7310.0		deg cm2 dmol-1	Fig. 1a	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WH4	AARAWEAAHARA	Ac	Am	12	5.5	2.0	0.029	minus_theta220	7310.0		deg cm2 dmol-1	Fig. 1a	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WH4	AARAWEAAHARA	Ac	Am	12	5.75	2.0	0.0294	minus_theta220	7240.0		deg cm2 dmol-1	Fig. 1a	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WH4	AARAWEAAHARA	Ac	Am	12	6.01	2.0	0.0299	minus_theta220	6920.0		deg cm2 dmol-1	Fig. 1a	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WH4	AARAWEAAHARA	Ac	Am	12	6.34	2.0	0.0306	minus_theta220	6730.0		deg cm2 dmol-1	Fig. 1a	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WH4	AARAWEAAHARA	Ac	Am	12	6.58	2.0	0.0312	minus_theta220	6490.0		deg cm2 dmol-1	Fig. 1a	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WH4	AARAWEAAHARA	Ac	Am	12	6.91	2.0	0.032	minus_theta220	5990.0		deg cm2 dmol-1	Fig. 1a	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WH4	AARAWEAAHARA	Ac	Am	12	7.14	2.0	0.0325	minus_theta220	5450.0		deg cm2 dmol-1	Fig. 1a	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WH4	AARAWEAAHARA	Ac	Am	12	7.32	2.0	0.0328	minus_theta220	5180.0		deg cm2 dmol-1	Fig. 1a	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WH4	AARAWEAAHARA	Ac	Am	12	7.47	2.0	0.0331	minus_theta220	4970.0		deg cm2 dmol-1	Fig. 1a	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WH4	AARAWEAAHARA	Ac	Am	12	7.6	2.0	0.0333	minus_theta220	4720.0		deg cm2 dmol-1	Fig. 1a	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WH4	AARAWEAAHARA	Ac	Am	12	7.81	2.0	0.0335	minus_theta220	4460.0		deg cm2 dmol-1	Fig. 1a	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WH4	AARAWEAAHARA	Ac	Am	12	8.01	2.0	0.0337	minus_theta220	4470.0		deg cm2 dmol-1	Fig. 1a	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WH4	AARAWEAAHARA	Ac	Am	12	8.93	2.0	0.0343	minus_theta220	4230.0		deg cm2 dmol-1	Fig. 1a	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WH4	AARAWEAAHARA	Ac	Am	12	8.37	2.0	0.034	minus_theta220	4100.0		deg cm2 dmol-1	Fig. 1a	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+HW4	AARAHEAAWARA	Ac	Am	12	8.59	2.0	0.0341	minus_theta220	2650.0		deg cm2 dmol-1	Fig. 1a	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+HW4	AARAHEAAWARA	Ac	Am	12	8.17	2.0	0.0338	minus_theta220	2610.0		deg cm2 dmol-1	Fig. 1a	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+HW4	AARAHEAAWARA	Ac	Am	12	7.75	2.0	0.0335	minus_theta220	2580.0		deg cm2 dmol-1	Fig. 1a	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+HW4	AARAHEAAWARA	Ac	Am	12	7.44	2.0	0.033	minus_theta220	2490.0		deg cm2 dmol-1	Fig. 1a	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W;overlapped
+HW4	AARAHEAAWARA	Ac	Am	12	7.53	2.0	0.0332	minus_theta220	2430.0		deg cm2 dmol-1	Fig. 1a	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W;overlapped
+HW4	AARAHEAAWARA	Ac	Am	12	7.26	2.0	0.0327	minus_theta220	2430.0		deg cm2 dmol-1	Fig. 1a	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+HW4	AARAHEAAWARA	Ac	Am	12	6.98	2.0	0.0321	minus_theta220	2160.0		deg cm2 dmol-1	Fig. 1a	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+HW4	AARAHEAAWARA	Ac	Am	12	6.79	2.0	0.0317	minus_theta220	2100.0		deg cm2 dmol-1	Fig. 1a	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+HW4	AARAHEAAWARA	Ac	Am	12	6.5	2.0	0.031	minus_theta220	1770.0		deg cm2 dmol-1	Fig. 1a	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+HW4	AARAHEAAWARA	Ac	Am	12	6.26	2.0	0.0304	minus_theta220	1730.0		deg cm2 dmol-1	Fig. 1a	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+HW4	AARAHEAAWARA	Ac	Am	12	6.02	2.0	0.0299	minus_theta220	1660.0		deg cm2 dmol-1	Fig. 1a	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+HW4	AARAHEAAWARA	Ac	Am	12	5.19	2.0	0.0286	minus_theta220	1600.0		deg cm2 dmol-1	Fig. 1a	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+HW4	AARAHEAAWARA	Ac	Am	12	5.49	2.0	0.029	minus_theta220	1600.0		deg cm2 dmol-1	Fig. 1a	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WH4	AARAWEAAHARA	Ac	Am	12	5.13	25.0	0.0285	minus_theta220	4790.0		deg cm2 dmol-1	Fig. 1b	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WH4	AARAWEAAHARA	Ac	Am	12	5.45	25.0	0.029	minus_theta220	4720.0		deg cm2 dmol-1	Fig. 1b	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WH4	AARAWEAAHARA	Ac	Am	12	5.72	25.0	0.0294	minus_theta220	4740.0		deg cm2 dmol-1	Fig. 1b	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WH4	AARAWEAAHARA	Ac	Am	12	6.01	25.0	0.0299	minus_theta220	4550.0		deg cm2 dmol-1	Fig. 1b	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WH4	AARAWEAAHARA	Ac	Am	12	6.29	25.0	0.0305	minus_theta220	4290.0		deg cm2 dmol-1	Fig. 1b	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WH4	AARAWEAAHARA	Ac	Am	12	6.53	25.0	0.031	minus_theta220	4190.0		deg cm2 dmol-1	Fig. 1b	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WH4	AARAWEAAHARA	Ac	Am	12	6.82	25.0	0.0318	minus_theta220	3850.0		deg cm2 dmol-1	Fig. 1b	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WH4	AARAWEAAHARA	Ac	Am	12	7.08	25.0	0.0323	minus_theta220	3750.0		deg cm2 dmol-1	Fig. 1b	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WH4	AARAWEAAHARA	Ac	Am	12	7.52	25.0	0.0332	minus_theta220	3580.0		deg cm2 dmol-1	Fig. 1b	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WH4	AARAWEAAHARA	Ac	Am	12	7.32	25.0	0.0328	minus_theta220	3560.0		deg cm2 dmol-1	Fig. 1b	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WH4	AARAWEAAHARA	Ac	Am	12	7.84	25.0	0.0336	minus_theta220	3510.0		deg cm2 dmol-1	Fig. 1b	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WH4	AARAWEAAHARA	Ac	Am	12	8.08	25.0	0.0338	minus_theta220	3490.0		deg cm2 dmol-1	Fig. 1b	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WH4	AARAWEAAHARA	Ac	Am	12	7.72	25.0	0.0334	minus_theta220	3410.0		deg cm2 dmol-1	Fig. 1b	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WH4	AARAWEAAHARA	Ac	Am	12	8.52	25.0	0.034	minus_theta220	3350.0		deg cm2 dmol-1	Fig. 1b	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WH3	AARAWEAHAARA	Ac	Am	12	7.97	25.0	0.0337	minus_theta220	3310.0		deg cm2 dmol-1	Fig. 1b	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WH3	AARAWEAHAARA	Ac	Am	12	8.35	25.0	0.0339	minus_theta220	3280.0		deg cm2 dmol-1	Fig. 1b	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WH3	AARAWEAHAARA	Ac	Am	12	7.83	25.0	0.0335	minus_theta220	3260.0		deg cm2 dmol-1	Fig. 1b	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WH3	AARAWEAHAARA	Ac	Am	12	7.64	25.0	0.0333	minus_theta220	3260.0		deg cm2 dmol-1	Fig. 1b	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WH3	AARAWEAHAARA	Ac	Am	12	7.32	25.0	0.0328	minus_theta220	3160.0		deg cm2 dmol-1	Fig. 1b	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WH3	AARAWEAHAARA	Ac	Am	12	7.49	25.0	0.0331	minus_theta220	3110.0		deg cm2 dmol-1	Fig. 1b	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WH3	AARAWEAHAARA	Ac	Am	12	7.06	25.0	0.0323	minus_theta220	3020.0		deg cm2 dmol-1	Fig. 1b	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WH3	AARAWEAHAARA	Ac	Am	12	6.79	25.0	0.0317	minus_theta220	3000.0		deg cm2 dmol-1	Fig. 1b	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WH3	AARAWEAHAARA	Ac	Am	12	6.5	25.0	0.031	minus_theta220	2900.0		deg cm2 dmol-1	Fig. 1b	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WH3	AARAWEAHAARA	Ac	Am	12	6.26	25.0	0.0304	minus_theta220	2780.0		deg cm2 dmol-1	Fig. 1b	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WH3	AARAWEAHAARA	Ac	Am	12	6.04	25.0	0.0299	minus_theta220	2670.0		deg cm2 dmol-1	Fig. 1b	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WH3	AARAWEAHAARA	Ac	Am	12	5.75	25.0	0.0294	minus_theta220	2550.0		deg cm2 dmol-1	Fig. 1b	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WH3	AARAWEAHAARA	Ac	Am	12	5.45	25.0	0.029	minus_theta220	2440.0		deg cm2 dmol-1	Fig. 1b	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WH3	AARAWEAHAARA	Ac	Am	12	5.14	25.0	0.0286	minus_theta220	2370.0		deg cm2 dmol-1	Fig. 1b	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WAH4	AARAWAAAHARA	Ac	Am	12	5.45	2.0	0.029	minus_theta220	9440.0		deg cm2 dmol-1	Fig. 3	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WAH4	AARAWAAAHARA	Ac	Am	12	5.75	2.0	0.0294	minus_theta220	9310.0		deg cm2 dmol-1	Fig. 3	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WAH4	AARAWAAAHARA	Ac	Am	12	5.18	2.0	0.0286	minus_theta220	9250.0		deg cm2 dmol-1	Fig. 3	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WAH4	AARAWAAAHARA	Ac	Am	12	6.05	2.0	0.03	minus_theta220	8980.0		deg cm2 dmol-1	Fig. 3	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WAH4	AARAWAAAHARA	Ac	Am	12	6.35	2.0	0.0306	minus_theta220	8510.0		deg cm2 dmol-1	Fig. 3	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WAH4	AARAWAAAHARA	Ac	Am	12	6.6	2.0	0.0312	minus_theta220	7900.0		deg cm2 dmol-1	Fig. 3	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WAH4	AARAWAAAHARA	Ac	Am	12	6.87	2.0	0.0319	minus_theta220	7120.0		deg cm2 dmol-1	Fig. 3	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WAH4	AARAWAAAHARA	Ac	Am	12	7.15	2.0	0.0325	minus_theta220	6590.0		deg cm2 dmol-1	Fig. 3	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WAH4	AARAWAAAHARA	Ac	Am	12	7.37	2.0	0.0329	minus_theta220	6010.0		deg cm2 dmol-1	Fig. 3	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WAH4	AARAWAAAHARA	Ac	Am	12	7.59	2.0	0.0333	minus_theta220	5760.0		deg cm2 dmol-1	Fig. 3	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WAH4	AARAWAAAHARA	Ac	Am	12	7.8	2.0	0.0335	minus_theta220	5490.0		deg cm2 dmol-1	Fig. 3	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WAH4	AARAWAAAHARA	Ac	Am	12	8.49	2.0	0.034	minus_theta220	5300.0		deg cm2 dmol-1	Fig. 3	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WAH4	AARAWAAAHARA	Ac	Am	12	8.1	2.0	0.0338	minus_theta220	5260.0		deg cm2 dmol-1	Fig. 3	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WAH4	AARAWAAAHARA	Ac	Am	12	8.76	2.0	0.0342	minus_theta220	5090.0		deg cm2 dmol-1	Fig. 3	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WAH3	AARAAWAAHARA	Ac	Am	12	5.17	2.0	0.0286	minus_theta220	4310.0		deg cm2 dmol-1	Fig. 3	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WAH3	AARAAWAAHARA	Ac	Am	12	6.03	2.0	0.0299	minus_theta220	4240.0		deg cm2 dmol-1	Fig. 3	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WAH3	AARAAWAAHARA	Ac	Am	12	5.72	2.0	0.0294	minus_theta220	4210.0		deg cm2 dmol-1	Fig. 3	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WAH3	AARAAWAAHARA	Ac	Am	12	5.44	2.0	0.029	minus_theta220	4160.0		deg cm2 dmol-1	Fig. 3	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WAH3	AARAAWAAHARA	Ac	Am	12	6.32	2.0	0.0306	minus_theta220	4100.0		deg cm2 dmol-1	Fig. 3	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WAH3	AARAAWAAHARA	Ac	Am	12	6.56	2.0	0.0311	minus_theta220	3950.0		deg cm2 dmol-1	Fig. 3	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WAH3	AARAAWAAHARA	Ac	Am	12	7.34	2.0	0.0329	minus_theta220	3830.0		deg cm2 dmol-1	Fig. 3	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WAH3	AARAAWAAHARA	Ac	Am	12	6.86	2.0	0.0318	minus_theta220	3810.0		deg cm2 dmol-1	Fig. 3	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WAH3	AARAAWAAHARA	Ac	Am	12	7.1	2.0	0.0324	minus_theta220	3830.0		deg cm2 dmol-1	Fig. 3	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WAH3	AARAAWAAHARA	Ac	Am	12	7.53	2.0	0.0332	minus_theta220	3780.0		deg cm2 dmol-1	Fig. 3	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WAH3	AARAAWAAHARA	Ac	Am	12	7.75	2.0	0.0335	minus_theta220	3750.0		deg cm2 dmol-1	Fig. 3	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WAH3	AARAAWAAHARA	Ac	Am	12	8.03	2.0	0.0337	minus_theta220	3690.0		deg cm2 dmol-1	Fig. 3	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WAH3	AARAAWAAHARA	Ac	Am	12	8.45	2.0	0.034	minus_theta220	3610.0		deg cm2 dmol-1	Fig. 3	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WAH3	AARAAWAAHARA	Ac	Am	12	8.75	2.0	0.0342	minus_theta220	3610.0		deg cm2 dmol-1	Fig. 3	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WAH4	AARAWAAAHARA	Ac	Am	12	3.65	2.0	0.0269	minus_theta220	9560.0		deg cm2 dmol-1	Fig. 12	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WAH4	AARAWAAAHARA	Ac	Am	12	3.11	2.0	0.0264	minus_theta220	9540.0		deg cm2 dmol-1	Fig. 12	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WAH4	AARAWAAAHARA	Ac	Am	12	2.5	2.0	0.0259	minus_theta220	9510.0		deg cm2 dmol-1	Fig. 12	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WAH4	AARAWAAAHARA	Ac	Am	12	4.68	2.0	0.0279	minus_theta220	9480.0		deg cm2 dmol-1	Fig. 12	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WAH4	AARAWAAAHARA	Ac	Am	12	4.21	2.0	0.0274	minus_theta220	9450.0		deg cm2 dmol-1	Fig. 12	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WAH4	AARAWAAAHARA	Ac	Am	12	5.44	2.0	0.029	minus_theta220	9450.0		deg cm2 dmol-1	Fig. 12	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W;same_samples_as=Fig. 3 (WAH4 at pH 5.45; scored there)
+WAH4	AARAWAAAHARA	Ac	Am	12	5.74	2.0	0.0294	minus_theta220	9320.0		deg cm2 dmol-1	Fig. 12	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W;same_samples_as=Fig. 3 (WAH4 at pH 5.75; scored there)
+WAH4	AARAWAAAHARA	Ac	Am	12	6.04	2.0	0.0299	minus_theta220	8970.0		deg cm2 dmol-1	Fig. 12	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W;same_samples_as=Fig. 3 (WAH4 at pH 6.05; scored there)
+WAH4	AARAWAAAHARA	Ac	Am	12	6.34	2.0	0.0306	minus_theta220	8500.0		deg cm2 dmol-1	Fig. 12	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W;same_samples_as=Fig. 3 (WAH4 at pH 6.35; scored there)
+WH4	AARAWEAAHARA	Ac	Am	12	2.61	2.0	0.026	minus_theta220	8150.0		deg cm2 dmol-1	Fig. 12	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WH4	AARAWEAAHARA	Ac	Am	12	3.17	2.0	0.0265	minus_theta220	8050.0		deg cm2 dmol-1	Fig. 12	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WAH4	AARAWAAAHARA	Ac	Am	12	6.59	2.0	0.0312	minus_theta220	7890.0		deg cm2 dmol-1	Fig. 12	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W;same_samples_as=Fig. 3 (WAH4 at pH 6.60; scored there)
+WH4	AARAWEAAHARA	Ac	Am	12	3.84	2.0	0.027	minus_theta220	7830.0		deg cm2 dmol-1	Fig. 12	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WH4	AARAWEAAHARA	Ac	Am	12	4.33	2.0	0.0275	minus_theta220	7640.0		deg cm2 dmol-1	Fig. 12	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WH4	AARAWEAAHARA	Ac	Am	12	4.75	2.0	0.028	minus_theta220	7510.0		deg cm2 dmol-1	Fig. 12	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WH4	AARAWEAAHARA	Ac	Am	12	5.22	2.0	0.0287	minus_theta220	7310.0		deg cm2 dmol-1	Fig. 12	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W;same_samples_as=Fig. 1a (WH4 at pH 5.23; scored there)
+WH4	AARAWEAAHARA	Ac	Am	12	5.5	2.0	0.029	minus_theta220	7310.0		deg cm2 dmol-1	Fig. 12	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W;same_samples_as=Fig. 1a (WH4 at pH 5.50; scored there)
+WH4	AARAWEAAHARA	Ac	Am	12	5.75	2.0	0.0294	minus_theta220	7230.0		deg cm2 dmol-1	Fig. 12	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W;same_samples_as=Fig. 1a (WH4 at pH 5.75; scored there)
+WAH4	AARAWAAAHARA	Ac	Am	12	6.87	2.0	0.0319	minus_theta220	7100.0		deg cm2 dmol-1	Fig. 12	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W;same_samples_as=Fig. 3 (WAH4 at pH 6.87; scored there)
+WH4	AARAWEAAHARA	Ac	Am	12	6.01	2.0	0.0299	minus_theta220	6930.0		deg cm2 dmol-1	Fig. 12	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W;same_samples_as=Fig. 1a (WH4 at pH 6.01; scored there)
+WH4	AARAWEAAHARA	Ac	Am	12	6.33	2.0	0.0306	minus_theta220	6730.0		deg cm2 dmol-1	Fig. 12	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W;same_samples_as=Fig. 1a (WH4 at pH 6.34; scored there)
+WAH4	AARAWAAAHARA	Ac	Am	12	7.15	2.0	0.0325	minus_theta220	6580.0		deg cm2 dmol-1	Fig. 12	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W;same_samples_as=Fig. 3 (WAH4 at pH 7.15; scored there)
+WH4	AARAWEAAHARA	Ac	Am	12	6.57	2.0	0.0312	minus_theta220	6490.0		deg cm2 dmol-1	Fig. 12	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W;same_samples_as=Fig. 1a (WH4 at pH 6.58; scored there)
+WAH4	AARAWAAAHARA	Ac	Am	12	7.37	2.0	0.0329	minus_theta220	5990.0		deg cm2 dmol-1	Fig. 12	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W;same_samples_as=Fig. 3 (WAH4 at pH 7.37; scored there)
+WH4	AARAWEAAHARA	Ac	Am	12	6.91	2.0	0.032	minus_theta220	6000.0		deg cm2 dmol-1	Fig. 12	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W;same_samples_as=Fig. 1a (WH4 at pH 6.91; scored there)
+WAH4	AARAWAAAHARA	Ac	Am	12	7.58	2.0	0.0332	minus_theta220	5760.0		deg cm2 dmol-1	Fig. 12	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W;same_samples_as=Fig. 3 (WAH4 at pH 7.59; scored there)
+WAH4	AARAWAAAHARA	Ac	Am	12	7.8	2.0	0.0335	minus_theta220	5490.0		deg cm2 dmol-1	Fig. 12	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W;same_samples_as=Fig. 3 (WAH4 at pH 7.80; scored there)
+WH4	AARAWEAAHARA	Ac	Am	12	7.14	2.0	0.0325	minus_theta220	5460.0		deg cm2 dmol-1	Fig. 12	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W;same_samples_as=Fig. 1a (WH4 at pH 7.14; scored there)
+WAH4	AARAWAAAHARA	Ac	Am	12	8.48	2.0	0.034	minus_theta220	5300.0		deg cm2 dmol-1	Fig. 12	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W;same_samples_as=Fig. 3 (WAH4 at pH 8.49; scored there)
+WAH4	AARAWAAAHARA	Ac	Am	12	9.3	2.0	0.0345	minus_theta220	5290.0		deg cm2 dmol-1	Fig. 12	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WAH4	AARAWAAAHARA	Ac	Am	12	8.1	2.0	0.0338	minus_theta220	5260.0		deg cm2 dmol-1	Fig. 12	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W;same_samples_as=Fig. 3 (WAH4 at pH 8.10; scored there)
+WH4	AARAWEAAHARA	Ac	Am	12	7.32	2.0	0.0328	minus_theta220	5200.0		deg cm2 dmol-1	Fig. 12	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W;same_samples_as=Fig. 1a (WH4 at pH 7.32; scored there)
+WAH4	AARAWAAAHARA	Ac	Am	12	8.76	2.0	0.0342	minus_theta220	5090.0		deg cm2 dmol-1	Fig. 12	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W;same_samples_as=Fig. 3 (WAH4 at pH 8.76; scored there)
+WH4	AARAWEAAHARA	Ac	Am	12	7.46	2.0	0.0331	minus_theta220	4980.0		deg cm2 dmol-1	Fig. 12	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W;same_samples_as=Fig. 1a (WH4 at pH 7.47; scored there)
+WH4	AARAWEAAHARA	Ac	Am	12	7.59	2.0	0.0333	minus_theta220	4730.0		deg cm2 dmol-1	Fig. 12	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W;same_samples_as=Fig. 1a (WH4 at pH 7.60; scored there)
+WH4	AARAWEAAHARA	Ac	Am	12	7.81	2.0	0.0335	minus_theta220	4470.0		deg cm2 dmol-1	Fig. 12	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W;overlapped;same_samples_as=Fig. 1a (WH4 at pH 7.81; scored there)
+WH4	AARAWEAAHARA	Ac	Am	12	8.0	2.0	0.0337	minus_theta220	4480.0		deg cm2 dmol-1	Fig. 12	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W;overlapped;same_samples_as=Fig. 1a (WH4 at pH 8.01; scored there)
+WH4	AARAWEAAHARA	Ac	Am	12	8.93	2.0	0.0343	minus_theta220	4220.0		deg cm2 dmol-1	Fig. 12	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W;same_samples_as=Fig. 1a (WH4 at pH 8.93; scored there)
+WH4	AARAWEAAHARA	Ac	Am	12	9.19	2.0	0.0345	minus_theta220	4190.0		deg cm2 dmol-1	Fig. 12	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W
+WH4	AARAWEAAHARA	Ac	Am	12	8.36	2.0	0.034	minus_theta220	4120.0		deg cm2 dmol-1	Fig. 12	digitised;native_raster;wavelength_220nm;NaCl 0.025 M;Na CD buffer 0.001 M each;aromatic_cd=W;same_samples_as=Fig. 1a (WH4 at pH 8.37; scored there)

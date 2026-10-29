@@ -1,0 +1,38 @@
+peptide_id	sequence	ncap	ccap	n_res	pH	T_C	ionic_strength_M	quantity	value	error	unit	source_table	flags
+S-peptide	KETAAAKFERQHMDSSTSAA			20	4.03	1.0	0.1022	minus_theta222	4200		deg cm2 dmol-1	text (Fig. 8)	printed_in_text;spectrum_value_at_222;NaCl 0.1 M;Na CD buffer 0.001 M each;ninhydrin_concentration;original_of=2024_zavrtanik_jmb436_compiled S peptide (their re-conversion carries the reprint flag; owner 2026-10-29)
+S-peptide	KETAAAKFERQHMDSSTSAA			20	7.4	40.0	0.108	minus_theta222	2110.0		deg cm2 dmol-1	Fig. 9	digitised;NaCl 0.1 M;Na CD buffer 0.001 M each;ninhydrin_concentration;overlapped
+S-peptide	KETAAAKFERQHMDSSTSAA			20	8.55	3.5	0.1091	minus_theta222	2210.0		deg cm2 dmol-1	Fig. 9	digitised;NaCl 0.1 M;Na CD buffer 0.001 M each;ninhydrin_concentration;overlapped
+S-peptide	KETAAAKFERQHMDSSTSAA			20	2.24	40.0	0.1007	minus_theta222	2370.0		deg cm2 dmol-1	Fig. 9	digitised;NaCl 0.1 M;Na CD buffer 0.001 M each;ninhydrin_concentration
+S-peptide	KETAAAKFERQHMDSSTSAA			20	3.19	40.0	0.1015	minus_theta222	2450.0		deg cm2 dmol-1	Fig. 9	digitised;NaCl 0.1 M;Na CD buffer 0.001 M each;ninhydrin_concentration
+S-peptide	KETAAAKFERQHMDSSTSAA			20	4.49	40.0	0.1027	minus_theta222	2120.0		deg cm2 dmol-1	Fig. 9	digitised;NaCl 0.1 M;Na CD buffer 0.001 M each;ninhydrin_concentration
+S-peptide	KETAAAKFERQHMDSSTSAA			20	5.49	40.0	0.104	minus_theta222	1910.0		deg cm2 dmol-1	Fig. 9	digitised;NaCl 0.1 M;Na CD buffer 0.001 M each;ninhydrin_concentration
+S-peptide	KETAAAKFERQHMDSSTSAA			20	6.49	40.0	0.1059	minus_theta222	1880.0		deg cm2 dmol-1	Fig. 9	digitised;NaCl 0.1 M;Na CD buffer 0.001 M each;ninhydrin_concentration
+S-peptide	KETAAAKFERQHMDSSTSAA			20	1.7	3.5	0.1003	minus_theta222	3340.0		deg cm2 dmol-1	Fig. 9	digitised;NaCl 0.1 M;Na CD buffer 0.001 M each;ninhydrin_concentration
+S-peptide	KETAAAKFERQHMDSSTSAA			20	2.24	3.5	0.1007	minus_theta222	3330.0		deg cm2 dmol-1	Fig. 9	digitised;NaCl 0.1 M;Na CD buffer 0.001 M each;ninhydrin_concentration
+S-peptide	KETAAAKFERQHMDSSTSAA			20	2.69	3.5	0.101	minus_theta222	3500.0		deg cm2 dmol-1	Fig. 9	digitised;NaCl 0.1 M;Na CD buffer 0.001 M each;ninhydrin_concentration
+S-peptide	KETAAAKFERQHMDSSTSAA			20	3.17	3.5	0.1015	minus_theta222	4000.0		deg cm2 dmol-1	Fig. 9	digitised;NaCl 0.1 M;Na CD buffer 0.001 M each;ninhydrin_concentration
+S-peptide	KETAAAKFERQHMDSSTSAA			20	3.65	3.5	0.1019	minus_theta222	4410.0		deg cm2 dmol-1	Fig. 9	digitised;NaCl 0.1 M;Na CD buffer 0.001 M each;ninhydrin_concentration
+S-peptide	KETAAAKFERQHMDSSTSAA			20	3.92	3.5	0.1021	minus_theta222	4260.0		deg cm2 dmol-1	Fig. 9	digitised;NaCl 0.1 M;Na CD buffer 0.001 M each;ninhydrin_concentration
+S-peptide	KETAAAKFERQHMDSSTSAA			20	4.08	3.5	0.1022	minus_theta222	4220.0		deg cm2 dmol-1	Fig. 9	digitised;NaCl 0.1 M;Na CD buffer 0.001 M each;ninhydrin_concentration
+S-peptide	KETAAAKFERQHMDSSTSAA			20	4.26	3.5	0.1024	minus_theta222	4200.0		deg cm2 dmol-1	Fig. 9	digitised;NaCl 0.1 M;Na CD buffer 0.001 M each;ninhydrin_concentration
+S-peptide	KETAAAKFERQHMDSSTSAA			20	4.49	3.5	0.1027	minus_theta222	3930.0		deg cm2 dmol-1	Fig. 9	digitised;NaCl 0.1 M;Na CD buffer 0.001 M each;ninhydrin_concentration
+S-peptide	KETAAAKFERQHMDSSTSAA			20	4.74	3.5	0.103	minus_theta222	3680.0		deg cm2 dmol-1	Fig. 9	digitised;NaCl 0.1 M;Na CD buffer 0.001 M each;ninhydrin_concentration
+S-peptide	KETAAAKFERQHMDSSTSAA			20	5.27	3.5	0.1037	minus_theta222	3310.0		deg cm2 dmol-1	Fig. 9	digitised;NaCl 0.1 M;Na CD buffer 0.001 M each;ninhydrin_concentration
+S-peptide	KETAAAKFERQHMDSSTSAA			20	5.48	3.5	0.104	minus_theta222	3320.0		deg cm2 dmol-1	Fig. 9	digitised;NaCl 0.1 M;Na CD buffer 0.001 M each;ninhydrin_concentration
+S-peptide	KETAAAKFERQHMDSSTSAA			20	5.69	3.5	0.1043	minus_theta222	3280.0		deg cm2 dmol-1	Fig. 9	digitised;NaCl 0.1 M;Na CD buffer 0.001 M each;ninhydrin_concentration
+S-peptide	KETAAAKFERQHMDSSTSAA			20	6.09	3.5	0.105	minus_theta222	3130.0		deg cm2 dmol-1	Fig. 9	digitised;NaCl 0.1 M;Na CD buffer 0.001 M each;ninhydrin_concentration
+S-peptide	KETAAAKFERQHMDSSTSAA			20	6.5	3.5	0.106	minus_theta222	2750.0		deg cm2 dmol-1	Fig. 9	digitised;NaCl 0.1 M;Na CD buffer 0.001 M each;ninhydrin_concentration
+S-peptide	KETAAAKFERQHMDSSTSAA			20	6.62	3.5	0.1063	minus_theta222	2750.0		deg cm2 dmol-1	Fig. 9	digitised;NaCl 0.1 M;Na CD buffer 0.001 M each;ninhydrin_concentration
+S-peptide	KETAAAKFERQHMDSSTSAA			20	6.82	3.5	0.1068	minus_theta222	2440.0		deg cm2 dmol-1	Fig. 9	digitised;NaCl 0.1 M;Na CD buffer 0.001 M each;ninhydrin_concentration
+S-peptide	KETAAAKFERQHMDSSTSAA			20	7.2	3.5	0.1076	minus_theta222	2220.0		deg cm2 dmol-1	Fig. 9	digitised;NaCl 0.1 M;Na CD buffer 0.001 M each;ninhydrin_concentration
+S-peptide	KETAAAKFERQHMDSSTSAA			20	7.4	3.5	0.108	minus_theta222	2010.0		deg cm2 dmol-1	Fig. 9	digitised;NaCl 0.1 M;Na CD buffer 0.001 M each;ninhydrin_concentration;overlapped
+S-peptide	KETAAAKFERQHMDSSTSAA			20	7.8	3.5	0.1085	minus_theta222	2060.0		deg cm2 dmol-1	Fig. 9	digitised;NaCl 0.1 M;Na CD buffer 0.001 M each;ninhydrin_concentration
+S-peptide	KETAAAKFERQHMDSSTSAA			20	1.35	3.5	0.1002	minus_theta222	3580.0		deg cm2 dmol-1	Fig. 9	digitised;NaCl 0.1 M;Na CD buffer 0.001 M each;ninhydrin_concentration
+S-peptide	KETAAAKFERQHMDSSTSAA			20	8.99	3.5	0.1093	minus_theta222	2530.0		deg cm2 dmol-1	Fig. 9	digitised;NaCl 0.1 M;Na CD buffer 0.001 M each;ninhydrin_concentration
+S-peptide	KETAAAKFERQHMDSSTSAA			20	5.03	5.9	0.1034	minus_theta222	3400.0		deg cm2 dmol-1	Fig. 10	digitised;NaCl 0.1 M;Na CD buffer 0.001 M each;ninhydrin_concentration
+S-peptide	KETAAAKFERQHMDSSTSAA			20	5.03	9.5	0.1034	minus_theta222	3010.0		deg cm2 dmol-1	Fig. 10	digitised;NaCl 0.1 M;Na CD buffer 0.001 M each;ninhydrin_concentration
+S-peptide	KETAAAKFERQHMDSSTSAA			20	5.03	14.7	0.1034	minus_theta222	2650.0		deg cm2 dmol-1	Fig. 10	digitised;NaCl 0.1 M;Na CD buffer 0.001 M each;ninhydrin_concentration
+S-peptide	KETAAAKFERQHMDSSTSAA			20	5.03	23.9	0.1034	minus_theta222	2270.0		deg cm2 dmol-1	Fig. 10	digitised;NaCl 0.1 M;Na CD buffer 0.001 M each;ninhydrin_concentration
+S-peptide	KETAAAKFERQHMDSSTSAA			20	5.03	28.4	0.1034	minus_theta222	2220.0		deg cm2 dmol-1	Fig. 10	digitised;NaCl 0.1 M;Na CD buffer 0.001 M each;ninhydrin_concentration
+S-peptide	KETAAAKFERQHMDSSTSAA			20	5.03	35.3	0.1034	minus_theta222	2270.0		deg cm2 dmol-1	Fig. 10	digitised;NaCl 0.1 M;Na CD buffer 0.001 M each;ninhydrin_concentration
+S-peptide	KETAAAKFERQHMDSSTSAA			20	5.03	42.0	0.1034	minus_theta222	2370.0		deg cm2 dmol-1	Fig. 10	digitised;located_by_hand (broken ring);NaCl 0.1 M;Na CD buffer 0.001 M each;ninhydrin_concentration

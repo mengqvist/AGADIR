@@ -1,0 +1,19 @@
+peptide_id	sequence	ncap	ccap	n_res	pH	T_C	ionic_strength_M	quantity	value	error	unit	source_table	flags
+C-AAG	YGSAAEAAARAAAKAGGG	Ac	Am	18	3.0	4.0	0.001	minus_theta222	13929		deg cm2 dmol-1	Table 3	printed;HCl to pH 3, no salt stated;aromatic_cd=Y;theta_vs_printed_pct (eq. 1 with n = 17 gives 41.5, printed 39)
+C-AAG	YGSAAEAAARAAAKAGGG	Ac	Am	18	3.0	4.0	0.001	helix_percent_222nm	39		percent	Table 3	printed;HCl to pH 3, no salt stated;aromatic_cd=Y;authors_conversion Chen 1974 eq. 1, n = peptide bonds, coil 0
+C-AAG	YGSAAEAAARAAAKAGGG	Ac	Am	18	3.0	4.0	0.001	helix_percent_193nm	40		percent	Table 3	printed;HCl to pH 3, no salt stated;aromatic_cd=Y;authors_conversion eq. 2 (193 nm, calibrated on the Phe-free peptides)
+C-AFG	YGSAAEAAARAAAKFGGG	Ac	Am	18	3.0	4.0	0.001	minus_theta222	11453		deg cm2 dmol-1	Table 3	printed;HCl to pH 3, no salt stated;aromatic_cd=Y;aromatic_cd=F;theta_vs_printed_pct (eq. 1 with n = 17 gives 34.2, printed 32)
+C-AFG	YGSAAEAAARAAAKFGGG	Ac	Am	18	3.0	4.0	0.001	helix_percent_222nm	32		percent	Table 3	printed;HCl to pH 3, no salt stated;aromatic_cd=Y;aromatic_cd=F;authors_conversion Chen 1974 eq. 1, n = peptide bonds, coil 0
+C-AFG	YGSAAEAAARAAAKFGGG	Ac	Am	18	3.0	4.0	0.001	helix_percent_193nm	37		percent	Table 3	printed;HCl to pH 3, no salt stated;aromatic_cd=Y;aromatic_cd=F;authors_conversion eq. 2 (193 nm, calibrated on the Phe-free peptides)
+C-AHG	YGSAAEAAARAAAKHGGG	Ac	Am	18	3.0	4.0	0.001	minus_theta222	13295		deg cm2 dmol-1	Table 3	printed;HCl to pH 3, no salt stated;aromatic_cd=Y
+C-AHG	YGSAAEAAARAAAKHGGG	Ac	Am	18	3.0	4.0	0.001	helix_percent_222nm	40		percent	Table 3	printed;HCl to pH 3, no salt stated;aromatic_cd=Y;authors_conversion Chen 1974 eq. 1, n = peptide bonds, coil 0
+C-AHG	YGSAAEAAARAAAKHGGG	Ac	Am	18	3.0	4.0	0.001	helix_percent_193nm	40		percent	Table 3	printed;HCl to pH 3, no salt stated;aromatic_cd=Y;authors_conversion eq. 2 (193 nm, calibrated on the Phe-free peptides)
+C-AAP	YGSAAEAAARAAAKAPGG	Ac	Am	18	3.0	4.0	0.001	minus_theta222	8607		deg cm2 dmol-1	Table 3	printed;HCl to pH 3, no salt stated;aromatic_cd=Y
+C-AAP	YGSAAEAAARAAAKAPGG	Ac	Am	18	3.0	4.0	0.001	helix_percent_222nm	26		percent	Table 3	printed;HCl to pH 3, no salt stated;aromatic_cd=Y;authors_conversion Chen 1974 eq. 1, n = peptide bonds, coil 0
+C-AAP	YGSAAEAAARAAAKAPGG	Ac	Am	18	3.0	4.0	0.001	helix_percent_193nm	26		percent	Table 3	printed;HCl to pH 3, no salt stated;aromatic_cd=Y;authors_conversion eq. 2 (193 nm, calibrated on the Phe-free peptides)
+C-AFP	YGSAAEAAARAAAKFPGG	Ac	Am	18	3.0	4.0	0.001	minus_theta222	9430		deg cm2 dmol-1	Table 3	printed;HCl to pH 3, no salt stated;aromatic_cd=Y;aromatic_cd=F
+C-AFP	YGSAAEAAARAAAKFPGG	Ac	Am	18	3.0	4.0	0.001	helix_percent_222nm	28		percent	Table 3	printed;HCl to pH 3, no salt stated;aromatic_cd=Y;aromatic_cd=F;authors_conversion Chen 1974 eq. 1, n = peptide bonds, coil 0
+C-AFP	YGSAAEAAARAAAKFPGG	Ac	Am	18	3.0	4.0	0.001	helix_percent_193nm	31		percent	Table 3	printed;HCl to pH 3, no salt stated;aromatic_cd=Y;aromatic_cd=F;authors_conversion eq. 2 (193 nm, calibrated on the Phe-free peptides)
+C-AHP	YGSAAEAAARAAAKHPGG	Ac	Am	18	3.0	4.0	0.001	minus_theta222	11499		deg cm2 dmol-1	Table 3	printed;HCl to pH 3, no salt stated;aromatic_cd=Y
+C-AHP	YGSAAEAAARAAAKHPGG	Ac	Am	18	3.0	4.0	0.001	helix_percent_222nm	34		percent	Table 3	printed;HCl to pH 3, no salt stated;aromatic_cd=Y;authors_conversion Chen 1974 eq. 1, n = peptide bonds, coil 0
+C-AHP	YGSAAEAAARAAAKHPGG	Ac	Am	18	3.0	4.0	0.001	helix_percent_193nm	34		percent	Table 3	printed;HCl to pH 3, no salt stated;aromatic_cd=Y;authors_conversion eq. 2 (193 nm, calibrated on the Phe-free peptides)

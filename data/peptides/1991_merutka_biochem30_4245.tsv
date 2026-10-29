@@ -1,0 +1,64 @@
+peptide_id	sequence	ncap	ccap	n_res	pH	T_C	ionic_strength_M	quantity	value	error	unit	source_table	flags
+WER2	WEAAAREAAARA	Ac	Am	12	2.07	0.0	0.01	minus_theta222	16480.0		deg cm2 dmol-1	Fig. 4	digitised;NaCl 0.01 M;aromatic_cd=W
+WER1	WEAAARA	Ac	Am	7	2.36	0.0	0.01	minus_theta222	2280.0		deg cm2 dmol-1	Fig. 4	digitised;NaCl 0.01 M;aromatic_cd=W
+WER2	WEAAAREAAARA	Ac	Am	12	2.45	0.0	0.01	minus_theta222	16520.0		deg cm2 dmol-1	Fig. 4	digitised;NaCl 0.01 M;aromatic_cd=W
+WER2	WEAAAREAAARA	Ac	Am	12	2.83	0.0	0.01	minus_theta222	16600.0		deg cm2 dmol-1	Fig. 4	digitised;NaCl 0.01 M;aromatic_cd=W
+WER2	WEAAAREAAARA	Ac	Am	12	3.29	0.0	0.01	minus_theta222	17570.0		deg cm2 dmol-1	Fig. 4	digitised;NaCl 0.01 M;aromatic_cd=W
+WER1	WEAAARA	Ac	Am	7	3.66	0.0	0.01	minus_theta222	3060.0		deg cm2 dmol-1	Fig. 4	digitised;NaCl 0.01 M;aromatic_cd=W
+WER2	WEAAAREAAARA	Ac	Am	12	3.83	0.0	0.01	minus_theta222	18820.0		deg cm2 dmol-1	Fig. 4	digitised;NaCl 0.01 M;aromatic_cd=W
+WER2	WEAAAREAAARA	Ac	Am	12	4.15	0.0	0.01	minus_theta222	20300.0		deg cm2 dmol-1	Fig. 4	digitised;NaCl 0.01 M;aromatic_cd=W
+WER2	WEAAAREAAARA	Ac	Am	12	4.71	0.0	0.01	minus_theta222	21780.0		deg cm2 dmol-1	Fig. 4	digitised;NaCl 0.01 M;aromatic_cd=W
+WER2	WEAAAREAAARA	Ac	Am	12	6.09	0.0	0.01	minus_theta222	23030.0		deg cm2 dmol-1	Fig. 4	digitised;NaCl 0.01 M;aromatic_cd=W
+WER2	WEAAAREAAARA	Ac	Am	12	7.01	0.0	0.01	minus_theta222	23580.0		deg cm2 dmol-1	Fig. 4	digitised;NaCl 0.01 M;aromatic_cd=W
+WER5	WEAAAREAAAREAAAREAAAREAAARA	Ac	Am	27	1.96	0.0	0.01	minus_theta222	37230.0		deg cm2 dmol-1	Fig. 4	digitised;NaCl 0.01 M;aromatic_cd=W
+WER3	WEAAAREAAAREAAARA	Ac	Am	17	2.21	0.0	0.01	minus_theta222	32430.0		deg cm2 dmol-1	Fig. 4	digitised;NaCl 0.01 M;aromatic_cd=W;reprint=1991_merutka_biochem30 (Fig. 3 ER titration: the same points, published first in Biochemistry 30, 1591; the original is scored)
+WER5	WEAAAREAAAREAAAREAAAREAAARA	Ac	Am	27	2.49	0.0	0.01	minus_theta222	37110.0		deg cm2 dmol-1	Fig. 4	digitised;NaCl 0.01 M;aromatic_cd=W
+WER3	WEAAAREAAAREAAARA	Ac	Am	17	2.66	0.0	0.01	minus_theta222	32470.0		deg cm2 dmol-1	Fig. 4	digitised;NaCl 0.01 M;aromatic_cd=W;reprint=1991_merutka_biochem30 (Fig. 3 ER titration: the same points, published first in Biochemistry 30, 1591; the original is scored)
+WER5	WEAAAREAAAREAAAREAAAREAAARA	Ac	Am	27	2.82	0.0	0.01	minus_theta222	36950.0		deg cm2 dmol-1	Fig. 4	digitised;NaCl 0.01 M;aromatic_cd=W
+WER3	WEAAAREAAAREAAARA	Ac	Am	17	3.13	0.0	0.01	minus_theta222	32660.0		deg cm2 dmol-1	Fig. 4	digitised;NaCl 0.01 M;aromatic_cd=W;reprint=1991_merutka_biochem30 (Fig. 3 ER titration: the same points, published first in Biochemistry 30, 1591; the original is scored)
+WER5	WEAAAREAAAREAAAREAAAREAAARA	Ac	Am	27	3.27	0.0	0.01	minus_theta222	36910.0		deg cm2 dmol-1	Fig. 4	digitised;NaCl 0.01 M;aromatic_cd=W
+WER3	WEAAAREAAAREAAARA	Ac	Am	17	3.61	0.0	0.01	minus_theta222	33170.0		deg cm2 dmol-1	Fig. 4	digitised;NaCl 0.01 M;aromatic_cd=W;reprint=1991_merutka_biochem30 (Fig. 3 ER titration: the same points, published first in Biochemistry 30, 1591; the original is scored)
+WER5	WEAAAREAAAREAAAREAAAREAAARA	Ac	Am	27	3.62	0.0	0.01	minus_theta222	36910.0		deg cm2 dmol-1	Fig. 4	digitised;NaCl 0.01 M;aromatic_cd=W
+WER3	WEAAAREAAAREAAARA	Ac	Am	17	3.91	0.0	0.01	minus_theta222	33830.0		deg cm2 dmol-1	Fig. 4	digitised;NaCl 0.01 M;aromatic_cd=W;reprint=1991_merutka_biochem30 (Fig. 3 ER titration: the same points, published first in Biochemistry 30, 1591; the original is scored)
+WER5	WEAAAREAAAREAAAREAAAREAAARA	Ac	Am	27	4.04	0.0	0.01	minus_theta222	36990.0		deg cm2 dmol-1	Fig. 4	digitised;NaCl 0.01 M;aromatic_cd=W
+WER3	WEAAAREAAAREAAARA	Ac	Am	17	4.29	0.0	0.01	minus_theta222	34380.0		deg cm2 dmol-1	Fig. 4	digitised;NaCl 0.01 M;aromatic_cd=W;reprint=1991_merutka_biochem30 (Fig. 3 ER titration: the same points, published first in Biochemistry 30, 1591; the original is scored)
+WER3	WEAAAREAAAREAAARA	Ac	Am	17	4.79	0.0	0.01	minus_theta222	35120.0		deg cm2 dmol-1	Fig. 4	digitised;NaCl 0.01 M;aromatic_cd=W;reprint=1991_merutka_biochem30 (Fig. 3 ER titration: the same points, published first in Biochemistry 30, 1591; the original is scored)
+WER3	WEAAAREAAAREAAARA	Ac	Am	17	5.33	0.0	0.01	minus_theta222	35350.0		deg cm2 dmol-1	Fig. 4	digitised;NaCl 0.01 M;aromatic_cd=W;reprint=1991_merutka_biochem30 (Fig. 3 ER titration: the same points, published first in Biochemistry 30, 1591; the original is scored)
+WER3	WEAAAREAAAREAAARA	Ac	Am	17	5.82	0.0	0.01	minus_theta222	35320.0		deg cm2 dmol-1	Fig. 4	digitised;NaCl 0.01 M;aromatic_cd=W;reprint=1991_merutka_biochem30 (Fig. 3 ER titration: the same points, published first in Biochemistry 30, 1591; the original is scored)
+WER3	WEAAAREAAAREAAARA	Ac	Am	17	6.24	0.0	0.01	minus_theta222	35350.0		deg cm2 dmol-1	Fig. 4	digitised;NaCl 0.01 M;aromatic_cd=W;reprint=1991_merutka_biochem30 (Fig. 3 ER titration: the same points, published first in Biochemistry 30, 1591; the original is scored)
+WER3	WEAAAREAAAREAAARA	Ac	Am	17	6.67	0.0	0.01	minus_theta222	35390.0		deg cm2 dmol-1	Fig. 4	digitised;NaCl 0.01 M;aromatic_cd=W;overlapped;reprint=1991_merutka_biochem30 (Fig. 3 ER titration: the same points, published first in Biochemistry 30, 1591; the original is scored)
+WER5	WEAAAREAAAREAAAREAAAREAAARA	Ac	Am	27	6.77	0.0	0.01	minus_theta222	37660.0		deg cm2 dmol-1	Fig. 4	digitised;NaCl 0.01 M;aromatic_cd=W
+WER3	WEAAAREAAAREAAARA	Ac	Am	17	6.81	0.0	0.01	minus_theta222	35390.0		deg cm2 dmol-1	Fig. 4	digitised;NaCl 0.01 M;aromatic_cd=W;overlapped;reprint=1991_merutka_biochem30 (Fig. 3 ER titration: the same points, published first in Biochemistry 30, 1591; the original is scored)
+WER3	WEAAAREAAAREAAARA	Ac	Am	17	7.1	0.0	0.01	minus_theta222	35320.0		deg cm2 dmol-1	Fig. 4	digitised;NaCl 0.01 M;aromatic_cd=W;reprint=1991_merutka_biochem30 (Fig. 3 ER titration: the same points, published first in Biochemistry 30, 1591; the original is scored)
+WER1	WEAAARA	Ac	Am	7	1.98	0.0	0.01	minus_theta222	2440.0		deg cm2 dmol-1	Fig. 4	digitised;NaCl 0.01 M;aromatic_cd=W
+WER1	WEAAARA	Ac	Am	7	2.78	0.0	0.01	minus_theta222	2400.0		deg cm2 dmol-1	Fig. 4	digitised;NaCl 0.01 M;aromatic_cd=W
+WER1	WEAAARA	Ac	Am	7	3.26	0.0	0.01	minus_theta222	2670.0		deg cm2 dmol-1	Fig. 4	digitised;NaCl 0.01 M;aromatic_cd=W
+WER1	WEAAARA	Ac	Am	7	4.14	0.0	0.01	minus_theta222	4040.0		deg cm2 dmol-1	Fig. 4	digitised;NaCl 0.01 M;aromatic_cd=W
+WER1	WEAAARA	Ac	Am	7	4.56	0.0	0.01	minus_theta222	4970.0		deg cm2 dmol-1	Fig. 4	digitised;NaCl 0.01 M;aromatic_cd=W
+WER1	WEAAARA	Ac	Am	7	6.15	0.0	0.01	minus_theta222	6380.0		deg cm2 dmol-1	Fig. 4	digitised;NaCl 0.01 M;aromatic_cd=W
+WER1	WEAAARA	Ac	Am	7	6.87	0.0	0.01	minus_theta222	6490.0		deg cm2 dmol-1	Fig. 4	digitised;NaCl 0.01 M;aromatic_cd=W
+WER4	WEAAAREAAAREAAAREAAARA	Ac	Am	22	2.07	0.0	0.01	minus_theta222	34890.0		deg cm2 dmol-1	Fig. 4	digitised;NaCl 0.01 M;aromatic_cd=W
+WER4	WEAAAREAAAREAAAREAAARA	Ac	Am	22	2.42	0.0	0.01	minus_theta222	34850.0		deg cm2 dmol-1	Fig. 4	digitised;NaCl 0.01 M;aromatic_cd=W
+WER4	WEAAAREAAAREAAAREAAARA	Ac	Am	22	2.74	0.0	0.01	minus_theta222	34770.0		deg cm2 dmol-1	Fig. 4	digitised;NaCl 0.01 M;aromatic_cd=W
+WER4	WEAAAREAAAREAAAREAAARA	Ac	Am	22	3.15	0.0	0.01	minus_theta222	34810.0		deg cm2 dmol-1	Fig. 4	digitised;NaCl 0.01 M;aromatic_cd=W
+WER4	WEAAAREAAAREAAAREAAARA	Ac	Am	22	3.59	0.0	0.01	minus_theta222	35120.0		deg cm2 dmol-1	Fig. 4	digitised;NaCl 0.01 M;aromatic_cd=W
+WER4	WEAAAREAAAREAAAREAAARA	Ac	Am	22	3.97	0.0	0.01	minus_theta222	35590.0		deg cm2 dmol-1	Fig. 4	digitised;NaCl 0.01 M;aromatic_cd=W
+WER4	WEAAAREAAAREAAAREAAARA	Ac	Am	22	4.35	0.0	0.01	minus_theta222	36100.0		deg cm2 dmol-1	Fig. 4	digitised;NaCl 0.01 M;aromatic_cd=W
+WER4	WEAAAREAAAREAAAREAAARA	Ac	Am	22	5.74	0.0	0.01	minus_theta222	36880.0		deg cm2 dmol-1	Fig. 4	digitised;NaCl 0.01 M;aromatic_cd=W
+WER4	WEAAAREAAAREAAAREAAARA	Ac	Am	22	6.3	0.0	0.01	minus_theta222	36800.0		deg cm2 dmol-1	Fig. 4	digitised;NaCl 0.01 M;aromatic_cd=W
+WER4	WEAAAREAAAREAAAREAAARA	Ac	Am	22	6.99	0.0	0.01	minus_theta222	36640.0		deg cm2 dmol-1	Fig. 4	digitised;NaCl 0.01 M;aromatic_cd=W
+WER5	WEAAAREAAAREAAAREAAAREAAARA	Ac	Am	27	4.77	0.0	0.01	minus_theta222	37030.0		deg cm2 dmol-1	Fig. 4	digitised;NaCl 0.01 M;aromatic_cd=W;overlapped
+WER2	WEAAAREAAARA	Ac	Am	12	7.0	15.0	0.0118	minus_theta222	17060.0		deg cm2 dmol-1	Fig. 3B	digitised;T_read=14.7;NaCl 0.01 M;phosphate 0.001 M;aromatic_cd=W
+WER2	WEAAAREAAARA	Ac	Am	12	7.0	30.0	0.0118	minus_theta222	11290.0		deg cm2 dmol-1	Fig. 3B	digitised;T_read=30.1;NaCl 0.01 M;phosphate 0.001 M;aromatic_cd=W
+WER2	WEAAAREAAARA	Ac	Am	12	7.0	45.0	0.0118	minus_theta222	7480.0		deg cm2 dmol-1	Fig. 3B	digitised;T_read=44.9;NaCl 0.01 M;phosphate 0.001 M;aromatic_cd=W
+WER2	WEAAAREAAARA	Ac	Am	12	7.0	60.0	0.0118	minus_theta222	5390.0		deg cm2 dmol-1	Fig. 3B	digitised;T_read=59.0;NaCl 0.01 M;phosphate 0.001 M;aromatic_cd=W
+WER2	WEAAAREAAARA	Ac	Am	12	7.0	75.0	0.0118	minus_theta222	4120.0		deg cm2 dmol-1	Fig. 3B	digitised;T_read=74.6;NaCl 0.01 M;phosphate 0.001 M;aromatic_cd=W
+WER1	WEAAARA	Ac	Am	7	7.0	75.0	0.0118	minus_theta222	2440.0		deg cm2 dmol-1	Fig. 3B	digitised;T_read=75.8;NaCl 0.01 M;phosphate 0.001 M;aromatic_cd=W
+WER1	WEAAARA	Ac	Am	7	7.0	95.0	0.0118	minus_theta222	2350.0		deg cm2 dmol-1	Fig. 3B	digitised;T_read=95.0;NaCl 0.01 M;phosphate 0.001 M;aromatic_cd=W;overlapped
+WER1	WEAAARA	Ac	Am	7	7.0	15.0	0.0118	minus_theta222	4350.0		deg cm2 dmol-1	Fig. 3B	digitised;T_read=15.1;NaCl 0.01 M;phosphate 0.001 M;aromatic_cd=W
+WER1	WEAAARA	Ac	Am	7	7.0	30.0	0.0118	minus_theta222	3080.0		deg cm2 dmol-1	Fig. 3B	digitised;T_read=30.7;NaCl 0.01 M;phosphate 0.001 M;aromatic_cd=W
+WER1	WEAAARA	Ac	Am	7	7.0	45.0	0.0118	minus_theta222	2440.0		deg cm2 dmol-1	Fig. 3B	digitised;T_read=45.5;NaCl 0.01 M;phosphate 0.001 M;aromatic_cd=W
+WER1	WEAAARA	Ac	Am	7	7.0	55.0	0.0118	minus_theta222	2260.0		deg cm2 dmol-1	Fig. 3B	digitised;T_read=55.6;NaCl 0.01 M;phosphate 0.001 M;aromatic_cd=W
+WER1	WEAAARA	Ac	Am	7	7.0	65.0	0.0118	minus_theta222	2440.0		deg cm2 dmol-1	Fig. 3B	digitised;T_read=65.9;NaCl 0.01 M;phosphate 0.001 M;aromatic_cd=W
+WER3	WEAAAREAAAREAAARA	Ac	Am	17	7.0	0.0	0.0118	minus_theta222	35200	400	deg cm2 dmol-1	text	printed_in_text;mean of repeated measurements;NaCl 0.01 M;phosphate 0.001 M;aromatic_cd=W;same_samples_as=1991_merutka_biochem30 Table I (ER, 35,400 at pH 7.0, 0 C; scored there)
+WEK3	WEAAAKEAAAKEAAAKA	Ac	Am	17	7.0	0.0	0.0118	minus_theta222	29400	600	deg cm2 dmol-1	text	printed_in_text;mean of repeated measurements;NaCl 0.01 M;phosphate 0.001 M;aromatic_cd=W;same_samples_as=1991_merutka_biochem30 Table I (EK, 29,700 at pH 7.0, 0 C; scored there)

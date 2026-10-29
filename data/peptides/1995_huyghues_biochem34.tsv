@@ -1,0 +1,87 @@
+peptide_id	sequence	ncap	ccap	n_res	pH	T_C	ionic_strength_M	quantity	value	error	unit	source_table	flags
+1QD	AAQAAADQAAAAQAAY	Ac	Am	16	2.0	0.0	0.01	helix_fraction	0.35		fraction	Table 1	printed;NaCl 0.010 M;aromatic_cd=Y;reprint=1993_huyghues_protsci2_tables1_2 Table 2 (D7/D6; same values on the Scholtz frame);authors_conversion Scholtz 1991a -40,000(1 - 2.5/n), coil +640
+1QDref	AAQAADAQAAAAQAAY	Ac	Am	16	2.0	0.0	0.01	helix_fraction	0.26		fraction	Table 1	printed;NaCl 0.010 M;aromatic_cd=Y;reprint=1993_huyghues_protsci2_tables1_2 Table 2 (D7/D6; same values on the Scholtz frame);authors_conversion Scholtz 1991a -40,000(1 - 2.5/n), coil +640
+1QD	AAQAAADQAAAAQAAY	Ac	Am	16	7.0	0.0	0.01	helix_fraction	0.48		fraction	Table 1	printed;NaCl 0.010 M;aromatic_cd=Y;reprint=1993_huyghues_protsci2_tables1_2 Table 2 (D7/D6; same values on the Scholtz frame);authors_conversion Scholtz 1991a -40,000(1 - 2.5/n), coil +640
+1QDref	AAQAADAQAAAAQAAY	Ac	Am	16	7.0	0.0	0.01	helix_fraction	0.29		fraction	Table 1	printed;NaCl 0.010 M;aromatic_cd=Y;reprint=1993_huyghues_protsci2_tables1_2 Table 2 (D7/D6; same values on the Scholtz frame);authors_conversion Scholtz 1991a -40,000(1 - 2.5/n), coil +640
+2QD	AAQAAADQAAADAAAGY	Ac	Am	17	2.0	0.0	0.01	helix_fraction	0.42		fraction	Table 1	printed;NaCl 0.010 M;aromatic_cd=Y;authors_conversion Scholtz 1991a -40,000(1 - 2.5/n), coil +640
+2QDref	AAAQAADAQAADAAAGY	Ac	Am	17	2.0	0.0	0.01	helix_fraction	0.2		fraction	Table 1	printed;NaCl 0.010 M;aromatic_cd=Y;authors_conversion Scholtz 1991a -40,000(1 - 2.5/n), coil +640
+2QD	AAQAAADQAAADAAAGY	Ac	Am	17	7.0	0.0	0.01	helix_fraction	0.61		fraction	Table 1	printed;NaCl 0.010 M;aromatic_cd=Y;authors_conversion Scholtz 1991a -40,000(1 - 2.5/n), coil +640
+2QDref	AAAQAADAQAADAAAGY	Ac	Am	17	7.0	0.0	0.01	helix_fraction	0.11		fraction	Table 1	printed;NaCl 0.010 M;aromatic_cd=Y;authors_conversion Scholtz 1991a -40,000(1 - 2.5/n), coil +640
+3QD	AAQAAADQAAADQAAADAAAGY	Ac	Am	22	2.0	0.0	0.01	helix_fraction	0.53		fraction	Table 1	printed;NaCl 0.010 M;aromatic_cd=Y;authors_conversion Scholtz 1991a -40,000(1 - 2.5/n), coil +640
+3QDref	AAAQAADAQAADAQAADAAAGY	Ac	Am	22	2.0	0.0	0.01	helix_fraction	0.26		fraction	Table 1	printed;NaCl 0.010 M;aromatic_cd=Y;authors_conversion Scholtz 1991a -40,000(1 - 2.5/n), coil +640
+3QD	AAQAAADQAAADQAAADAAAGY	Ac	Am	22	7.0	0.0	0.01	helix_fraction	0.75		fraction	Table 1	printed;NaCl 0.010 M;aromatic_cd=Y;authors_conversion Scholtz 1991a -40,000(1 - 2.5/n), coil +640
+3QDref	AAAQAADAQAADAQAADAAAGY	Ac	Am	22	7.0	0.0	0.01	helix_fraction	0.15		fraction	Table 1	printed;NaCl 0.010 M;aromatic_cd=Y;authors_conversion Scholtz 1991a -40,000(1 - 2.5/n), coil +640
+1QDref	AAQAADAQAAAAQAAY	Ac	Am	16	4.7	0.0	0.01	minus_theta222	9540		deg cm2 dmol-1	Fig. 2B	digitised;conditions_from_Table_1;NaCl 0.010 M;aromatic_cd=Y;overlapped
+1QDref	AAQAADAQAAAAQAAY	Ac	Am	16	4.93	0.0	0.01	minus_theta222	9570		deg cm2 dmol-1	Fig. 2B	digitised;conditions_from_Table_1;NaCl 0.010 M;aromatic_cd=Y;overlapped
+1QDref	AAQAADAQAAAAQAAY	Ac	Am	16	6.16	0.0	0.01	minus_theta222	9820		deg cm2 dmol-1	Fig. 2B	digitised;conditions_from_Table_1;NaCl 0.010 M;aromatic_cd=Y;overlapped
+1QDref	AAQAADAQAAAAQAAY	Ac	Am	16	6.51	0.0	0.01	minus_theta222	9790		deg cm2 dmol-1	Fig. 2B	digitised;conditions_from_Table_1;NaCl 0.010 M;aromatic_cd=Y
+1QDref	AAQAADAQAAAAQAAY	Ac	Am	16	7.39	0.0	0.01	minus_theta222	9750		deg cm2 dmol-1	Fig. 2B	digitised;conditions_from_Table_1;NaCl 0.010 M;aromatic_cd=Y
+1QDref	AAQAADAQAAAAQAAY	Ac	Am	16	7.79	0.0	0.01	minus_theta222	9960		deg cm2 dmol-1	Fig. 2B	digitised;conditions_from_Table_1;NaCl 0.010 M;aromatic_cd=Y
+1QDref	AAQAADAQAAAAQAAY	Ac	Am	16	8.57	0.0	0.01	minus_theta222	10000		deg cm2 dmol-1	Fig. 2B	digitised;conditions_from_Table_1;NaCl 0.010 M;aromatic_cd=Y
+1QDref	AAQAADAQAAAAQAAY	Ac	Am	16	9.03	0.0	0.01	minus_theta222	9930		deg cm2 dmol-1	Fig. 2B	digitised;conditions_from_Table_1;NaCl 0.010 M;aromatic_cd=Y;tyr_titration
+2QDref	AAAQAADAQAADAAAGY	Ac	Am	17	4.22	0.0	0.01	minus_theta222	5020		deg cm2 dmol-1	Fig. 2B	digitised;conditions_from_Table_1;NaCl 0.010 M;aromatic_cd=Y
+1QDref	AAQAADAQAAAAQAAY	Ac	Am	16	5.86	0.0	0.01	minus_theta222	9610		deg cm2 dmol-1	Fig. 2B	digitised;conditions_from_Table_1;NaCl 0.010 M;aromatic_cd=Y;overlapped
+3QDref	AAAQAADAQAADAQAADAAAGY	Ac	Am	22	4.73	0.0	0.01	minus_theta222	6960		deg cm2 dmol-1	Fig. 2B	digitised;conditions_from_Table_1;NaCl 0.010 M;aromatic_cd=Y
+3QDref	AAAQAADAQAADAQAADAAAGY	Ac	Am	22	5.13	0.0	0.01	minus_theta222	6360		deg cm2 dmol-1	Fig. 2B	digitised;conditions_from_Table_1;NaCl 0.010 M;aromatic_cd=Y
+3QDref	AAAQAADAQAADAQAADAAAGY	Ac	Am	22	5.56	0.0	0.01	minus_theta222	5900		deg cm2 dmol-1	Fig. 2B	digitised;conditions_from_Table_1;NaCl 0.010 M;aromatic_cd=Y
+3QDref	AAAQAADAQAADAQAADAAAGY	Ac	Am	22	6.29	0.0	0.01	minus_theta222	5480		deg cm2 dmol-1	Fig. 2B	digitised;conditions_from_Table_1;NaCl 0.010 M;aromatic_cd=Y
+3QDref	AAAQAADAQAADAQAADAAAGY	Ac	Am	22	6.75	0.0	0.01	minus_theta222	5340		deg cm2 dmol-1	Fig. 2B	digitised;conditions_from_Table_1;NaCl 0.010 M;aromatic_cd=Y;same_samples_as=Table 1 (pH 7.0; printed value scored)
+3QDref	AAAQAADAQAADAQAADAAAGY	Ac	Am	22	7.11	0.0	0.01	minus_theta222	5300		deg cm2 dmol-1	Fig. 2B	digitised;conditions_from_Table_1;NaCl 0.010 M;aromatic_cd=Y;same_samples_as=Table 1 (pH 7.0; printed value scored)
+3QDref	AAAQAADAQAADAQAADAAAGY	Ac	Am	22	9.0	0.0	0.01	minus_theta222	5260		deg cm2 dmol-1	Fig. 2B	digitised;conditions_from_Table_1;NaCl 0.010 M;aromatic_cd=Y
+2QDref	AAAQAADAQAADAAAGY	Ac	Am	17	2.42	0.0	0.01	minus_theta222	6010		deg cm2 dmol-1	Fig. 2B	digitised;conditions_from_Table_1;NaCl 0.010 M;aromatic_cd=Y
+2QDref	AAAQAADAQAADAAAGY	Ac	Am	17	3.06	0.0	0.01	minus_theta222	5900		deg cm2 dmol-1	Fig. 2B	digitised;conditions_from_Table_1;NaCl 0.010 M;aromatic_cd=Y
+2QDref	AAAQAADAQAADAAAGY	Ac	Am	17	3.46	0.0	0.01	minus_theta222	5720		deg cm2 dmol-1	Fig. 2B	digitised;conditions_from_Table_1;NaCl 0.010 M;aromatic_cd=Y
+2QDref	AAAQAADAQAADAAAGY	Ac	Am	17	3.9	0.0	0.01	minus_theta222	5440		deg cm2 dmol-1	Fig. 2B	digitised;conditions_from_Table_1;NaCl 0.010 M;aromatic_cd=Y
+2QDref	AAAQAADAQAADAAAGY	Ac	Am	17	4.49	0.0	0.01	minus_theta222	4700		deg cm2 dmol-1	Fig. 2B	digitised;conditions_from_Table_1;NaCl 0.010 M;aromatic_cd=Y
+2QDref	AAAQAADAQAADAAAGY	Ac	Am	17	5.03	0.0	0.01	minus_theta222	4130		deg cm2 dmol-1	Fig. 2B	digitised;conditions_from_Table_1;NaCl 0.010 M;aromatic_cd=Y
+2QDref	AAAQAADAQAADAAAGY	Ac	Am	17	5.55	0.0	0.01	minus_theta222	3820		deg cm2 dmol-1	Fig. 2B	digitised;conditions_from_Table_1;NaCl 0.010 M;aromatic_cd=Y
+2QDref	AAAQAADAQAADAAAGY	Ac	Am	17	6.27	0.0	0.01	minus_theta222	3320		deg cm2 dmol-1	Fig. 2B	digitised;conditions_from_Table_1;NaCl 0.010 M;aromatic_cd=Y
+2QDref	AAAQAADAQAADAAAGY	Ac	Am	17	6.72	0.0	0.01	minus_theta222	2970		deg cm2 dmol-1	Fig. 2B	digitised;conditions_from_Table_1;NaCl 0.010 M;aromatic_cd=Y;same_samples_as=Table 1 (pH 7.0; printed value scored)
+2QDref	AAAQAADAQAADAAAGY	Ac	Am	17	7.16	0.0	0.01	minus_theta222	2930		deg cm2 dmol-1	Fig. 2B	digitised;conditions_from_Table_1;NaCl 0.010 M;aromatic_cd=Y;same_samples_as=Table 1 (pH 7.0; printed value scored)
+2QDref	AAAQAADAQAADAAAGY	Ac	Am	17	9.1	0.0	0.01	minus_theta222	2970		deg cm2 dmol-1	Fig. 2B	digitised;conditions_from_Table_1;NaCl 0.010 M;aromatic_cd=Y;tyr_titration
+1QD	AAQAAADQAAAAQAAY	Ac	Am	16	2.58	0.0	0.01	minus_theta222	12010		deg cm2 dmol-1	Fig. 2B	digitised;conditions_from_Table_1;NaCl 0.010 M;aromatic_cd=Y;same_samples_as=1993_huyghues_protsci2_tables1_2 (pH 2.25; printed value scored)
+1QD	AAQAAADQAAAAQAAY	Ac	Am	16	2.97	0.0	0.01	minus_theta222	12260		deg cm2 dmol-1	Fig. 2B	digitised;conditions_from_Table_1;NaCl 0.010 M;aromatic_cd=Y
+1QD	AAQAAADQAAAAQAAY	Ac	Am	16	3.26	0.0	0.01	minus_theta222	12680		deg cm2 dmol-1	Fig. 2B	digitised;conditions_from_Table_1;NaCl 0.010 M;aromatic_cd=Y
+1QD	AAQAAADQAAAAQAAY	Ac	Am	16	3.55	0.0	0.01	minus_theta222	13110		deg cm2 dmol-1	Fig. 2B	digitised;conditions_from_Table_1;NaCl 0.010 M;aromatic_cd=Y;overlapped
+1QD	AAQAAADQAAAAQAAY	Ac	Am	16	3.75	0.0	0.01	minus_theta222	13640		deg cm2 dmol-1	Fig. 2B	digitised;conditions_from_Table_1;NaCl 0.010 M;aromatic_cd=Y;overlapped
+1QD	AAQAAADQAAAAQAAY	Ac	Am	16	4.02	0.0	0.01	minus_theta222	14340		deg cm2 dmol-1	Fig. 2B	digitised;conditions_from_Table_1;NaCl 0.010 M;aromatic_cd=Y
+1QD	AAQAAADQAAAAQAAY	Ac	Am	16	4.34	0.0	0.01	minus_theta222	15150		deg cm2 dmol-1	Fig. 2B	digitised;conditions_from_Table_1;NaCl 0.010 M;aromatic_cd=Y
+1QD	AAQAAADQAAAAQAAY	Ac	Am	16	4.65	0.0	0.01	minus_theta222	15750		deg cm2 dmol-1	Fig. 2B	digitised;conditions_from_Table_1;NaCl 0.010 M;aromatic_cd=Y
+1QD	AAQAAADQAAAAQAAY	Ac	Am	16	5.07	0.0	0.01	minus_theta222	16140		deg cm2 dmol-1	Fig. 2B	digitised;conditions_from_Table_1;NaCl 0.010 M;aromatic_cd=Y
+1QD	AAQAAADQAAAAQAAY	Ac	Am	16	5.74	0.0	0.01	minus_theta222	16430		deg cm2 dmol-1	Fig. 2B	digitised;conditions_from_Table_1;NaCl 0.010 M;aromatic_cd=Y
+1QD	AAQAAADQAAAAQAAY	Ac	Am	16	6.23	0.0	0.01	minus_theta222	16460		deg cm2 dmol-1	Fig. 2B	digitised;conditions_from_Table_1;NaCl 0.010 M;aromatic_cd=Y
+1QD	AAQAAADQAAAAQAAY	Ac	Am	16	6.81	0.0	0.01	minus_theta222	16500		deg cm2 dmol-1	Fig. 2B	digitised;conditions_from_Table_1;NaCl 0.010 M;aromatic_cd=Y;overlapped;same_samples_as=1993_huyghues_protsci2_tables1_2 (pH 7.0; printed value scored)
+1QD	AAQAAADQAAAAQAAY	Ac	Am	16	7.0	0.0	0.01	minus_theta222	16500		deg cm2 dmol-1	Fig. 2B	digitised;conditions_from_Table_1;NaCl 0.010 M;aromatic_cd=Y;overlapped;same_samples_as=1993_huyghues_protsci2_tables1_2 (pH 7.0; printed value scored)
+1QD	AAQAAADQAAAAQAAY	Ac	Am	16	7.45	0.0	0.01	minus_theta222	16570		deg cm2 dmol-1	Fig. 2B	digitised;conditions_from_Table_1;NaCl 0.010 M;aromatic_cd=Y
+1QD	AAQAAADQAAAAQAAY	Ac	Am	16	8.31	0.0	0.01	minus_theta222	16600		deg cm2 dmol-1	Fig. 2B	digitised;conditions_from_Table_1;NaCl 0.010 M;aromatic_cd=Y
+1QD	AAQAAADQAAAAQAAY	Ac	Am	16	8.96	0.0	0.01	minus_theta222	16640		deg cm2 dmol-1	Fig. 2B	digitised;conditions_from_Table_1;NaCl 0.010 M;aromatic_cd=Y
+1QD	AAQAAADQAAAAQAAY	Ac	Am	16	2.19	0.0	0.01	minus_theta222	12010		deg cm2 dmol-1	Fig. 2B	digitised;conditions_from_Table_1;NaCl 0.010 M;aromatic_cd=Y;same_samples_as=1993_huyghues_protsci2_tables1_2 (pH 2.25; printed value scored)
+3QD	AAQAAADQAAADQAAADAAAGY	Ac	Am	22	2.33	0.0	0.01	minus_theta222	17870		deg cm2 dmol-1	Fig. 2B	digitised;conditions_from_Table_1;NaCl 0.010 M;aromatic_cd=Y;same_samples_as=Table 1 (pH 2.0; printed value scored)
+3QD	AAQAAADQAAADQAAADAAAGY	Ac	Am	22	2.75	0.0	0.01	minus_theta222	18160		deg cm2 dmol-1	Fig. 2B	digitised;conditions_from_Table_1;NaCl 0.010 M;aromatic_cd=Y;overlapped
+3QD	AAQAAADQAAADQAAADAAAGY	Ac	Am	22	3.03	0.0	0.01	minus_theta222	18580		deg cm2 dmol-1	Fig. 2B	digitised;conditions_from_Table_1;NaCl 0.010 M;aromatic_cd=Y;overlapped
+3QD	AAQAAADQAAADQAAADAAAGY	Ac	Am	22	3.49	0.0	0.01	minus_theta222	19460		deg cm2 dmol-1	Fig. 2B	digitised;conditions_from_Table_1;NaCl 0.010 M;aromatic_cd=Y
+3QD	AAQAAADQAAADQAAADAAAGY	Ac	Am	22	3.87	0.0	0.01	minus_theta222	19960		deg cm2 dmol-1	Fig. 2B	digitised;conditions_from_Table_1;NaCl 0.010 M;aromatic_cd=Y
+3QD	AAQAAADQAAADQAAADAAAGY	Ac	Am	22	4.28	0.0	0.01	minus_theta222	21720		deg cm2 dmol-1	Fig. 2B	digitised;conditions_from_Table_1;NaCl 0.010 M;aromatic_cd=Y
+3QD	AAQAAADQAAADQAAADAAAGY	Ac	Am	22	4.7	0.0	0.01	minus_theta222	22990		deg cm2 dmol-1	Fig. 2B	digitised;conditions_from_Table_1;NaCl 0.010 M;aromatic_cd=Y
+3QD	AAQAAADQAAADQAAADAAAGY	Ac	Am	22	5.03	0.0	0.01	minus_theta222	23950		deg cm2 dmol-1	Fig. 2B	digitised;conditions_from_Table_1;NaCl 0.010 M;aromatic_cd=Y
+3QD	AAQAAADQAAADQAAADAAAGY	Ac	Am	22	5.7	0.0	0.01	minus_theta222	25010		deg cm2 dmol-1	Fig. 2B	digitised;conditions_from_Table_1;NaCl 0.010 M;aromatic_cd=Y
+3QD	AAQAAADQAAADQAAADAAAGY	Ac	Am	22	6.02	0.0	0.01	minus_theta222	25290		deg cm2 dmol-1	Fig. 2B	digitised;conditions_from_Table_1;NaCl 0.010 M;aromatic_cd=Y
+3QD	AAQAAADQAAADQAAADAAAGY	Ac	Am	22	6.48	0.0	0.01	minus_theta222	25500		deg cm2 dmol-1	Fig. 2B	digitised;conditions_from_Table_1;NaCl 0.010 M;aromatic_cd=Y
+3QD	AAQAAADQAAADQAAADAAAGY	Ac	Am	22	6.83	0.0	0.01	minus_theta222	25640		deg cm2 dmol-1	Fig. 2B	digitised;conditions_from_Table_1;NaCl 0.010 M;aromatic_cd=Y;same_samples_as=Table 1 (pH 7.0; printed value scored)
+3QD	AAQAAADQAAADQAAADAAAGY	Ac	Am	22	7.28	0.0	0.01	minus_theta222	25610		deg cm2 dmol-1	Fig. 2B	digitised;conditions_from_Table_1;NaCl 0.010 M;aromatic_cd=Y;same_samples_as=Table 1 (pH 7.0; printed value scored)
+3QD	AAQAAADQAAADQAAADAAAGY	Ac	Am	22	7.72	0.0	0.01	minus_theta222	25780		deg cm2 dmol-1	Fig. 2B	digitised;conditions_from_Table_1;NaCl 0.010 M;aromatic_cd=Y
+3QD	AAQAAADQAAADQAAADAAAGY	Ac	Am	22	8.29	0.0	0.01	minus_theta222	25610		deg cm2 dmol-1	Fig. 2B	digitised;conditions_from_Table_1;NaCl 0.010 M;aromatic_cd=Y
+3QD	AAQAAADQAAADQAAADAAAGY	Ac	Am	22	8.89	0.0	0.01	minus_theta222	25610		deg cm2 dmol-1	Fig. 2B	digitised;conditions_from_Table_1;NaCl 0.010 M;aromatic_cd=Y
+2QD	AAQAAADQAAADAAAGY	Ac	Am	17	2.36	0.0	0.01	minus_theta222	14090		deg cm2 dmol-1	Fig. 2B	digitised;conditions_from_Table_1;NaCl 0.010 M;aromatic_cd=Y;overlapped
+2QD	AAQAAADQAAADAAAGY	Ac	Am	17	2.56	0.0	0.01	minus_theta222	14160		deg cm2 dmol-1	Fig. 2B	digitised;conditions_from_Table_1;NaCl 0.010 M;aromatic_cd=Y;overlapped
+2QD	AAQAAADQAAADAAAGY	Ac	Am	17	2.98	0.0	0.01	minus_theta222	14520		deg cm2 dmol-1	Fig. 2B	digitised;conditions_from_Table_1;NaCl 0.010 M;aromatic_cd=Y
+2QD	AAQAAADQAAADAAAGY	Ac	Am	17	3.43	0.0	0.01	minus_theta222	15300		deg cm2 dmol-1	Fig. 2B	digitised;conditions_from_Table_1;NaCl 0.010 M;aromatic_cd=Y
+2QD	AAQAAADQAAADAAAGY	Ac	Am	17	3.82	0.0	0.01	minus_theta222	16250		deg cm2 dmol-1	Fig. 2B	digitised;conditions_from_Table_1;NaCl 0.010 M;aromatic_cd=Y
+2QD	AAQAAADQAAADAAAGY	Ac	Am	17	4.12	0.0	0.01	minus_theta222	17240		deg cm2 dmol-1	Fig. 2B	digitised;conditions_from_Table_1;NaCl 0.010 M;aromatic_cd=Y
+2QD	AAQAAADQAAADAAAGY	Ac	Am	17	4.59	0.0	0.01	minus_theta222	18830		deg cm2 dmol-1	Fig. 2B	digitised;conditions_from_Table_1;NaCl 0.010 M;aromatic_cd=Y
+2QD	AAQAAADQAAADAAAGY	Ac	Am	17	5.03	0.0	0.01	minus_theta222	19820		deg cm2 dmol-1	Fig. 2B	digitised;conditions_from_Table_1;NaCl 0.010 M;aromatic_cd=Y
+2QD	AAQAAADQAAADAAAGY	Ac	Am	17	5.6	0.0	0.01	minus_theta222	20590		deg cm2 dmol-1	Fig. 2B	digitised;conditions_from_Table_1;NaCl 0.010 M;aromatic_cd=Y
+2QD	AAQAAADQAAADAAAGY	Ac	Am	17	6.32	0.0	0.01	minus_theta222	20880		deg cm2 dmol-1	Fig. 2B	digitised;conditions_from_Table_1;NaCl 0.010 M;aromatic_cd=Y
+2QD	AAQAAADQAAADAAAGY	Ac	Am	17	6.75	0.0	0.01	minus_theta222	20910		deg cm2 dmol-1	Fig. 2B	digitised;conditions_from_Table_1;NaCl 0.010 M;aromatic_cd=Y;same_samples_as=Table 1 (pH 7.0; printed value scored)
+2QD	AAQAAADQAAADAAAGY	Ac	Am	17	7.33	0.0	0.01	minus_theta222	20950		deg cm2 dmol-1	Fig. 2B	digitised;conditions_from_Table_1;NaCl 0.010 M;aromatic_cd=Y;same_samples_as=Table 1 (pH 7.0; printed value scored)
+2QD	AAQAAADQAAADAAAGY	Ac	Am	17	8.47	0.0	0.01	minus_theta222	20910		deg cm2 dmol-1	Fig. 2B	digitised;conditions_from_Table_1;NaCl 0.010 M;aromatic_cd=Y

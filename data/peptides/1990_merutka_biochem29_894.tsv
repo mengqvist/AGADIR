@@ -1,0 +1,9 @@
+peptide_id	sequence	ncap	ccap	n_res	pH	T_C	ionic_strength_M	quantity	value	error	unit	source_table	flags
+AAA	AEAAAKEAAAKEAAAKA	Ac	Am	17	7.0	22.0	0.0118	Tm_C	22		C	Table II	printed;read_from_page_image;NaCl 0.010 M;phosphate 0.001 M;two-state van't Hoff with Delta[theta] 33,500 (not a helicity)
+SAA	AEASAKEAAAKEAAAKA	Ac	Am	17	7.0	11.0	0.0118	Tm_C	11		C	Table II	printed;read_from_page_image;NaCl 0.010 M;phosphate 0.001 M;two-state van't Hoff with Delta[theta] 33,500 (not a helicity)
+ASA	AEAAAKEASAKEAAAKA	Ac	Am	17	7.0	9.0	0.0118	Tm_C	9		C	Table II	printed;read_from_page_image;NaCl 0.010 M;phosphate 0.001 M;two-state van't Hoff with Delta[theta] 33,500 (not a helicity)
+AAS	AEAAAKEAAAKEASAKA	Ac	Am	17	7.0	14.0	0.0118	Tm_C	14		C	Table II	printed;read_from_page_image;NaCl 0.010 M;phosphate 0.001 M;two-state van't Hoff with Delta[theta] 33,500 (not a helicity)
+SSA	AEASAKEASAKEAAAKA	Ac	Am	17	7.0	-1.0	0.0118	Tm_C	-1		C	Table II	printed;read_from_page_image;NaCl 0.010 M;phosphate 0.001 M;two-state van't Hoff with Delta[theta] 33,500 (not a helicity)
+SAS	AEASAKEAAAKEASAKA	Ac	Am	17	7.0	2.0	0.0118	Tm_C	2		C	Table II	printed;read_from_page_image;NaCl 0.010 M;phosphate 0.001 M;two-state van't Hoff with Delta[theta] 33,500 (not a helicity)
+ASS	AEAAAKEASAKEASAKA	Ac	Am	17	7.0	1.0	0.0118	Tm_C	1		C	Table II	printed;read_from_page_image;NaCl 0.010 M;phosphate 0.001 M;two-state van't Hoff with Delta[theta] 33,500 (not a helicity)
+SSS	AEASAKEASAKEASAKA	Ac	Am	17	7.0	-7.0	0.0118	Tm_C	-7		C	Table II	printed;read_from_page_image;NaCl 0.010 M;phosphate 0.001 M;two-state van't Hoff with Delta[theta] 33,500 (not a helicity)

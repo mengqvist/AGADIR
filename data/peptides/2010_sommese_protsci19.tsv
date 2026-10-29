@@ -1,0 +1,56 @@
+peptide_id	sequence	ncap	ccap	n_res	pH	T_C	ionic_strength_M	quantity	value	error	unit	source_table	flags
+E4R4	YSEEEERRRR	Ac	Am	10	7.0	0.0	0.0177	minus_theta222	20100		deg cm2 dmol-1	Table I	printed;background_corrected;Na phosphate 0.010 M;aromatic_cd=Y
+E4R4	YSEEEERRRR	Ac	Am	10	7.0	0.0	0.0177	helix_percent	71.2		percent	Table I	printed;background_corrected;Na phosphate 0.010 M;aromatic_cd=Y;authors_conversion Chen 1974, -39,500(1 - 2.57/n), n = residues - 1, coil 0
+E4K4	YSEEEEKKKK	Ac	Am	10	7.0	0.0	0.0177	minus_theta222	16700		deg cm2 dmol-1	Table I	printed;background_corrected;Na phosphate 0.010 M;aromatic_cd=Y
+E4K4	YSEEEEKKKK	Ac	Am	10	7.0	0.0	0.0177	helix_percent	59.2		percent	Table I	printed;background_corrected;Na phosphate 0.010 M;aromatic_cd=Y;authors_conversion Chen 1974, -39,500(1 - 2.57/n), n = residues - 1, coil 0
+E4R2	YSEEEERR	Ac	Am	8	7.0	0.0	0.0177	minus_theta222	6100		deg cm2 dmol-1	Table I	printed;background_corrected;Na phosphate 0.010 M;aromatic_cd=Y
+E4R2	YSEEEERR	Ac	Am	8	7.0	0.0	0.0177	helix_percent	24.4		percent	Table I	printed;background_corrected;Na phosphate 0.010 M;aromatic_cd=Y;authors_conversion Chen 1974, -39,500(1 - 2.57/n), n = residues - 1, coil 0
+E4K2	YSEEEEKK	Ac	Am	8	7.0	0.0	0.0177	minus_theta222	1900		deg cm2 dmol-1	Table I	printed;background_corrected;Na phosphate 0.010 M;aromatic_cd=Y
+E4K2	YSEEEEKK	Ac	Am	8	7.0	0.0	0.0177	helix_percent	7.6		percent	Table I	printed;background_corrected;Na phosphate 0.010 M;aromatic_cd=Y;authors_conversion Chen 1974, -39,500(1 - 2.57/n), n = residues - 1, coil 0
+E3R3	YSEEERRR	Ac	Am	8	7.0	0.0	0.0177	minus_theta222	11900		deg cm2 dmol-1	Table I	printed;background_corrected;Na phosphate 0.010 M;aromatic_cd=Y
+E3R3	YSEEERRR	Ac	Am	8	7.0	0.0	0.0177	helix_percent	47.6		percent	Table I	printed;background_corrected;Na phosphate 0.010 M;aromatic_cd=Y;authors_conversion Chen 1974, -39,500(1 - 2.57/n), n = residues - 1, coil 0
+E3K3	YSEEEKKK	Ac	Am	8	7.0	0.0	0.0177	minus_theta222	3800		deg cm2 dmol-1	Table I	printed;background_corrected;Na phosphate 0.010 M;aromatic_cd=Y
+E3K3	YSEEEKKK	Ac	Am	8	7.0	0.0	0.0177	helix_percent	14.8		percent	Table I	printed;background_corrected;Na phosphate 0.010 M;aromatic_cd=Y;authors_conversion Chen 1974, -39,500(1 - 2.57/n), n = residues - 1, coil 0
+E3R2	YSEEERR	Ac	Am	7	7.0	0.0	0.0177	minus_theta222	4200		deg cm2 dmol-1	Table I	printed;background_corrected;Na phosphate 0.010 M;aromatic_cd=Y
+E3R2	YSEEERR	Ac	Am	7	7.0	0.0	0.0177	helix_percent	18.6		percent	Table I	printed;background_corrected;Na phosphate 0.010 M;aromatic_cd=Y;authors_conversion Chen 1974, -39,500(1 - 2.57/n), n = residues - 1, coil 0
+E3K2	YSEEEKK	Ac	Am	7	7.0	0.0	0.0177	minus_theta222	-200		deg cm2 dmol-1	Table I	printed;background_corrected;Na phosphate 0.010 M;aromatic_cd=Y
+E3K2	YSEEEKK	Ac	Am	7	7.0	0.0	0.0177	helix_percent	-0.9		percent	Table I	printed;background_corrected;Na phosphate 0.010 M;aromatic_cd=Y;authors_conversion Chen 1974, -39,500(1 - 2.57/n), n = residues - 1, coil 0
+EA3R1	YSEAAAR	Ac	Am	7	7.0	0.0	0.0177	minus_theta222	2400		deg cm2 dmol-1	Table I	printed;background_corrected;Na phosphate 0.010 M;aromatic_cd=Y
+EA3R1	YSEAAAR	Ac	Am	7	7.0	0.0	0.0177	helix_percent	10.2		percent	Table I	printed;background_corrected;Na phosphate 0.010 M;aromatic_cd=Y;authors_conversion Chen 1974, -39,500(1 - 2.57/n), n = residues - 1, coil 0
+EA3K1	YSEAAAK	Ac	Am	7	7.0	0.0	0.0177	minus_theta222	-700		deg cm2 dmol-1	Table I	printed;background_corrected;Na phosphate 0.010 M;aromatic_cd=Y
+EA3K1	YSEAAAK	Ac	Am	7	7.0	0.0	0.0177	helix_percent	-3.1		percent	Table I	printed;background_corrected;Na phosphate 0.010 M;aromatic_cd=Y;authors_conversion Chen 1974, -39,500(1 - 2.57/n), n = residues - 1, coil 0
+A1	YSAAARAARA	Ac	Am	10	7.0	0.0	0.0177	minus_theta222	7600		deg cm2 dmol-1	Table I	printed;background_corrected;Na phosphate 0.010 M;aromatic_cd=Y
+A1	YSAAARAARA	Ac	Am	10	7.0	0.0	0.0177	helix_percent	26.9		percent	Table I	printed;background_corrected;Na phosphate 0.010 M;aromatic_cd=Y;authors_conversion Chen 1974, -39,500(1 - 2.57/n), n = residues - 1, coil 0
+A2	YSARAARA	Ac	Am	8	7.0	0.0	0.0177	minus_theta222	-900		deg cm2 dmol-1	Table I	printed;background_corrected;Na phosphate 0.010 M;aromatic_cd=Y
+A2	YSARAARA	Ac	Am	8	7.0	0.0	0.0177	helix_percent	-3.6		percent	Table I	printed;background_corrected;Na phosphate 0.010 M;aromatic_cd=Y;authors_conversion Chen 1974, -39,500(1 - 2.57/n), n = residues - 1, coil 0
+A3	YSAKAAKA	Ac	Am	8	7.0	0.0	0.0177	minus_theta222	-2100		deg cm2 dmol-1	Table I	printed;background_corrected;Na phosphate 0.010 M;aromatic_cd=Y
+A3	YSAKAAKA	Ac	Am	8	7.0	0.0	0.0177	helix_percent	-8.4		percent	Table I	printed;background_corrected;Na phosphate 0.010 M;aromatic_cd=Y;authors_conversion Chen 1974, -39,500(1 - 2.57/n), n = residues - 1, coil 0
+(E4K4)2	YSEEEEKKKKEEEEKKKK	Ac	Am	18	7.0	0.0	0.0177	minus_theta222	28778		deg cm2 dmol-1	Fig. 1A	digitised;spectrum_read_at_222;Na phosphate 0.010 M;aromatic_cd=Y
+(E4K4)3	YSEEEEKKKKEEEEKKKKEEEEKKKK	Ac	Am	26	7.0	0.0	0.0177	minus_theta222	34963		deg cm2 dmol-1	Fig. 1A	digitised;spectrum_read_at_222;Na phosphate 0.010 M;aromatic_cd=Y
+E4R4	YSEEEERRRR	Ac	Am	10	7.0	0.0	0.0177	helix_percent	69.5		percent	Fig. 1E	digitised;curve_read_every_10C;Na phosphate 0.010 M;aromatic_cd=Y;same_samples_as=Table I (0 C; table value scored)
+E4R4	YSEEEERRRR	Ac	Am	10	7.0	10.0	0.0177	helix_percent	65.8		percent	Fig. 1E	digitised;curve_read_every_10C;Na phosphate 0.010 M;aromatic_cd=Y
+E4R4	YSEEEERRRR	Ac	Am	10	7.0	20.0	0.0177	helix_percent	61.3		percent	Fig. 1E	digitised;curve_read_every_10C;Na phosphate 0.010 M;aromatic_cd=Y
+E4R4	YSEEEERRRR	Ac	Am	10	7.0	30.0	0.0177	helix_percent	56.5		percent	Fig. 1E	digitised;curve_read_every_10C;Na phosphate 0.010 M;aromatic_cd=Y
+E4R4	YSEEEERRRR	Ac	Am	10	7.0	40.0	0.0177	helix_percent	52.2		percent	Fig. 1E	digitised;curve_read_every_10C;Na phosphate 0.010 M;aromatic_cd=Y
+E4R4	YSEEEERRRR	Ac	Am	10	7.0	50.0	0.0177	helix_percent	47.4		percent	Fig. 1E	digitised;curve_read_every_10C;Na phosphate 0.010 M;aromatic_cd=Y
+E4R4	YSEEEERRRR	Ac	Am	10	7.0	60.0	0.0177	helix_percent	44.0		percent	Fig. 1E	digitised;curve_read_every_10C;Na phosphate 0.010 M;aromatic_cd=Y
+E4R4	YSEEEERRRR	Ac	Am	10	7.0	70.0	0.0177	helix_percent	40.7		percent	Fig. 1E	digitised;curve_read_every_10C;Na phosphate 0.010 M;aromatic_cd=Y
+E4R4	YSEEEERRRR	Ac	Am	10	7.0	80.0	0.0177	helix_percent	36.3		percent	Fig. 1E	digitised;curve_read_every_10C;Na phosphate 0.010 M;aromatic_cd=Y
+E4K4	YSEEEEKKKK	Ac	Am	10	7.0	0.0	0.0177	helix_percent	50.9		percent	Fig. 1E	digitised;curve_read_every_10C;Na phosphate 0.010 M;aromatic_cd=Y;internal_conflict (melt at 0 C 50.9 % vs Table I 59.2 % and the Fig. 1B spectrum)
+E4K4	YSEEEEKKKK	Ac	Am	10	7.0	10.0	0.0177	helix_percent	49.0		percent	Fig. 1E	digitised;curve_read_every_10C;Na phosphate 0.010 M;aromatic_cd=Y;internal_conflict (melt at 0 C 50.9 % vs Table I 59.2 % and the Fig. 1B spectrum)
+E4K4	YSEEEEKKKK	Ac	Am	10	7.0	20.0	0.0177	helix_percent	46.1		percent	Fig. 1E	digitised;curve_read_every_10C;Na phosphate 0.010 M;aromatic_cd=Y;internal_conflict (melt at 0 C 50.9 % vs Table I 59.2 % and the Fig. 1B spectrum)
+E4K4	YSEEEEKKKK	Ac	Am	10	7.0	30.0	0.0177	helix_percent	43.6		percent	Fig. 1E	digitised;curve_read_every_10C;Na phosphate 0.010 M;aromatic_cd=Y;internal_conflict (melt at 0 C 50.9 % vs Table I 59.2 % and the Fig. 1B spectrum)
+E4K4	YSEEEEKKKK	Ac	Am	10	7.0	40.0	0.0177	helix_percent	41.5		percent	Fig. 1E	digitised;curve_read_every_10C;Na phosphate 0.010 M;aromatic_cd=Y;internal_conflict (melt at 0 C 50.9 % vs Table I 59.2 % and the Fig. 1B spectrum)
+E4K4	YSEEEEKKKK	Ac	Am	10	7.0	50.0	0.0177	helix_percent	40.0		percent	Fig. 1E	digitised;curve_read_every_10C;Na phosphate 0.010 M;aromatic_cd=Y;internal_conflict (melt at 0 C 50.9 % vs Table I 59.2 % and the Fig. 1B spectrum)
+E4K4	YSEEEEKKKK	Ac	Am	10	7.0	60.0	0.0177	helix_percent	38.2		percent	Fig. 1E	digitised;curve_read_every_10C;Na phosphate 0.010 M;aromatic_cd=Y;internal_conflict (melt at 0 C 50.9 % vs Table I 59.2 % and the Fig. 1B spectrum)
+E4K4	YSEEEEKKKK	Ac	Am	10	7.0	70.0	0.0177	helix_percent	36.6		percent	Fig. 1E	digitised;curve_read_every_10C;Na phosphate 0.010 M;aromatic_cd=Y;internal_conflict (melt at 0 C 50.9 % vs Table I 59.2 % and the Fig. 1B spectrum)
+E4K4	YSEEEEKKKK	Ac	Am	10	7.0	80.0	0.0177	helix_percent	35.0		percent	Fig. 1E	digitised;curve_read_every_10C;Na phosphate 0.010 M;aromatic_cd=Y;internal_conflict (melt at 0 C 50.9 % vs Table I 59.2 % and the Fig. 1B spectrum)
+A1	YSAAARAARA	Ac	Am	10	7.0	0.0	0.0177	helix_percent	25.3		percent	Fig. 1E	digitised;curve_read_every_10C;Na phosphate 0.010 M;aromatic_cd=Y;same_samples_as=Table I (0 C; table value scored)
+A1	YSAAARAARA	Ac	Am	10	7.0	10.0	0.0177	helix_percent	21.0		percent	Fig. 1E	digitised;curve_read_every_10C;Na phosphate 0.010 M;aromatic_cd=Y
+A1	YSAAARAARA	Ac	Am	10	7.0	20.0	0.0177	helix_percent	17.1		percent	Fig. 1E	digitised;curve_read_every_10C;Na phosphate 0.010 M;aromatic_cd=Y
+A1	YSAAARAARA	Ac	Am	10	7.0	30.0	0.0177	helix_percent	14.6		percent	Fig. 1E	digitised;curve_read_every_10C;Na phosphate 0.010 M;aromatic_cd=Y
+A1	YSAAARAARA	Ac	Am	10	7.0	40.0	0.0177	helix_percent	12.3		percent	Fig. 1E	digitised;curve_read_every_10C;Na phosphate 0.010 M;aromatic_cd=Y
+A1	YSAAARAARA	Ac	Am	10	7.0	50.0	0.0177	helix_percent	11.7		percent	Fig. 1E	digitised;curve_read_every_10C;Na phosphate 0.010 M;aromatic_cd=Y
+A1	YSAAARAARA	Ac	Am	10	7.0	60.0	0.0177	helix_percent	12.1		percent	Fig. 1E	digitised;curve_read_every_10C;Na phosphate 0.010 M;aromatic_cd=Y
+A1	YSAAARAARA	Ac	Am	10	7.0	70.0	0.0177	helix_percent	11.6		percent	Fig. 1E	digitised;curve_read_every_10C;Na phosphate 0.010 M;aromatic_cd=Y
+A1	YSAAARAARA	Ac	Am	10	7.0	80.0	0.0177	helix_percent	12.8		percent	Fig. 1E	digitised;curve_read_every_10C;Na phosphate 0.010 M;aromatic_cd=Y

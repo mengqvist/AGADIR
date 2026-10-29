@@ -1,0 +1,21 @@
+peptide_id	sequence	ncap	ccap	n_res	pH	T_C	ionic_strength_M	quantity	value	error	unit	source_table	flags
+G	KAAAAGAAAAKGY	Ac	Am	13	7.0	5.0	0.1072	minus_theta222	430.0		deg cm2 dmol-1	Fig. 1 (0% TFE)	digitised;T_read=4.92;NaCl 0.1 M;Na CD buffer 0.001 M each;aromatic_cd=Y
+G	KAAAAGAAAAKGY	Ac	Am	13	7.0	10.0	0.1072	minus_theta222	440.0		deg cm2 dmol-1	Fig. 1 (0% TFE)	digitised;T_read=10.03;NaCl 0.1 M;Na CD buffer 0.001 M each;aromatic_cd=Y
+G	KAAAAGAAAAKGY	Ac	Am	13	7.0	15.0	0.1072	minus_theta222	540.0		deg cm2 dmol-1	Fig. 1 (0% TFE)	digitised;T_read=15.07;NaCl 0.1 M;Na CD buffer 0.001 M each;aromatic_cd=Y
+G	KAAAAGAAAAKGY	Ac	Am	13	7.0	20.0	0.1072	minus_theta222	610.0		deg cm2 dmol-1	Fig. 1 (0% TFE)	digitised;T_read=19.97;NaCl 0.1 M;Na CD buffer 0.001 M each;aromatic_cd=Y
+G	KAAAAGAAAAKGY	Ac	Am	13	7.0	25.0	0.1072	minus_theta222	790.0		deg cm2 dmol-1	Fig. 1 (0% TFE)	digitised;T_read=25.08;NaCl 0.1 M;Na CD buffer 0.001 M each;aromatic_cd=Y
+G	KAAAAGAAAAKGY	Ac	Am	13	7.0	30.0	0.1072	minus_theta222	900.0		deg cm2 dmol-1	Fig. 1 (0% TFE)	digitised;T_read=30.12;NaCl 0.1 M;Na CD buffer 0.001 M each;aromatic_cd=Y
+G	KAAAAGAAAAKGY	Ac	Am	13	7.0	35.0	0.1072	minus_theta222	1050.0		deg cm2 dmol-1	Fig. 1 (0% TFE)	digitised;T_read=35.02;NaCl 0.1 M;Na CD buffer 0.001 M each;aromatic_cd=Y
+G	KAAAAGAAAAKGY	Ac	Am	13	7.0	40.0	0.1072	minus_theta222	1230.0		deg cm2 dmol-1	Fig. 1 (0% TFE)	digitised;T_read=40.07;NaCl 0.1 M;Na CD buffer 0.001 M each;aromatic_cd=Y
+G	KAAAAGAAAAKGY	Ac	Am	13	7.0	45.0	0.1072	minus_theta222	1410.0		deg cm2 dmol-1	Fig. 1 (0% TFE)	digitised;T_read=45.04;NaCl 0.1 M;Na CD buffer 0.001 M each;aromatic_cd=Y
+G	KAAAAGAAAAKGY	Ac	Am	13	7.0	50.0	0.1072	minus_theta222	1620.0		deg cm2 dmol-1	Fig. 1 (0% TFE)	digitised;T_read=49.94;NaCl 0.1 M;Na CD buffer 0.001 M each;aromatic_cd=Y
+G	KAAAAGAAAAKGY	Ac	Am	13	7.0	55.0	0.1072	minus_theta222	1780.0		deg cm2 dmol-1	Fig. 1 (0% TFE)	digitised;T_read=54.98;NaCl 0.1 M;Na CD buffer 0.001 M each;aromatic_cd=Y
+G	KAAAAGAAAAKGY	Ac	Am	13	7.0	60.0	0.1072	minus_theta222	1960.0		deg cm2 dmol-1	Fig. 1 (0% TFE)	digitised;T_read=60.02;NaCl 0.1 M;Na CD buffer 0.001 M each;aromatic_cd=Y
+G	KAAAAGAAAAKGY	Ac	Am	13	7.0	65.0	0.1072	minus_theta222	2120.0		deg cm2 dmol-1	Fig. 1 (0% TFE)	digitised;T_read=64.92;NaCl 0.1 M;Na CD buffer 0.001 M each;aromatic_cd=Y
+G	KAAAAGAAAAKGY	Ac	Am	13	7.0	70.0	0.1072	minus_theta222	2290.0		deg cm2 dmol-1	Fig. 1 (0% TFE)	digitised;T_read=69.96;NaCl 0.1 M;Na CD buffer 0.001 M each;aromatic_cd=Y
+G	KAAAAGAAAAKGY	Ac	Am	13	7.0	75.0	0.1072	minus_theta222	2530.0		deg cm2 dmol-1	Fig. 1 (0% TFE)	digitised;T_read=75.01;NaCl 0.1 M;Na CD buffer 0.001 M each;aromatic_cd=Y
+I	KAAAAIAAAAKGY	Ac	Am	13	7.0	5.0	0.1072	minus_theta222	8700.0		deg cm2 dmol-1	Fig. 1 (0% TFE)	digitised;T_read=5.13;NaCl 0.1 M;Na CD buffer 0.001 M each;aromatic_cd=Y
+I	KAAAAIAAAAKGY	Ac	Am	13	7.0	10.0	0.1072	minus_theta222	7490.0		deg cm2 dmol-1	Fig. 1 (0% TFE)	digitised;T_read=10.17;NaCl 0.1 M;Na CD buffer 0.001 M each;aromatic_cd=Y
+I	KAAAAIAAAAKGY	Ac	Am	13	7.0	15.0	0.1072	minus_theta222	6600.0		deg cm2 dmol-1	Fig. 1 (0% TFE)	digitised;T_read=15.21;NaCl 0.1 M;Na CD buffer 0.001 M each;aromatic_cd=Y
+I	KAAAAIAAAAKGY	Ac	Am	13	7.0	20.0	0.1072	minus_theta222	5670.0		deg cm2 dmol-1	Fig. 1 (0% TFE)	digitised;T_read=20.18;NaCl 0.1 M;Na CD buffer 0.001 M each;aromatic_cd=Y
+I	KAAAAIAAAAKGY	Ac	Am	13	7.0	25.0	0.1072	minus_theta222	5100.0		deg cm2 dmol-1	Fig. 1 (0% TFE)	digitised;T_read=25.22;NaCl 0.1 M;Na CD buffer 0.001 M each;aromatic_cd=Y

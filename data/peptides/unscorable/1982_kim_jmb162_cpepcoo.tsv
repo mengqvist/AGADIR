@@ -1,0 +1,2 @@
+peptide_id	sequence	ncap	ccap	n_res	pH	T_C	ionic_strength_M	quantity	value	error	unit	source_table	flags
+C-peptide carboxylate	KETAAAKFERQHX			13	5.01	3.0	0.1034	minus_theta222	1130		deg cm2 dmol-1	text (Fig. 2a)	printed_in_text;nonstandard_residue=Hse13 carboxylate (X);minimum_at_227-228nm;NaCl 0.1 M;Na CD buffer 0.001 M each;ninhydrin_concentration

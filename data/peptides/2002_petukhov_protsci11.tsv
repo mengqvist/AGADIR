@@ -1,0 +1,105 @@
+peptide_id	sequence	ncap	ccap	n_res	pH	T_C	ionic_strength_M	quantity	value	error	unit	source_table	flags
+A1F	YGGSAKEAAARAAAAAAA			18	2.0	5.0	0.005	minus_theta222	6822		deg cm2 dmol-1	Table 1	printed;HCl-KCl 0.005 M;aromatic_cd=Y
+A1F	YGGSAKEAAARAAAAAAA			18	2.0	5.0	0.005	helix_percent	20.1		percent	Table 1	printed;HCl-KCl 0.005 M;aromatic_cd=Y;authors_conversion Chen 1974 -39,500(1 - 2.57/n), n = 18, coil 0
+A1A	YGGSAKEAAARAAAAAAA		Am	18	7.0	5.0	0.0089	minus_theta222	19063		deg cm2 dmol-1	Table 1	printed;Na phosphate 0.005 M;aromatic_cd=Y
+A1A	YGGSAKEAAARAAAAAAA		Am	18	7.0	5.0	0.0089	helix_percent	56.3		percent	Table 1	printed;Na phosphate 0.005 M;aromatic_cd=Y;authors_conversion Chen 1974 -39,500(1 - 2.57/n), n = 18, coil 0
+T1F	YGGSAKEAAARAAAAAAT			18	2.0	5.0	0.005	minus_theta222	4367		deg cm2 dmol-1	Table 1	printed;HCl-KCl 0.005 M;aromatic_cd=Y
+T1F	YGGSAKEAAARAAAAAAT			18	2.0	5.0	0.005	helix_percent	12.9		percent	Table 1	printed;HCl-KCl 0.005 M;aromatic_cd=Y;authors_conversion Chen 1974 -39,500(1 - 2.57/n), n = 18, coil 0
+T1A	YGGSAKEAAARAAAAAAT		Am	18	7.0	5.0	0.0089	minus_theta222	12833		deg cm2 dmol-1	Table 1	printed;Na phosphate 0.005 M;aromatic_cd=Y
+T1A	YGGSAKEAAARAAAAAAT		Am	18	7.0	5.0	0.0089	helix_percent	37.9		percent	Table 1	printed;Na phosphate 0.005 M;aromatic_cd=Y;authors_conversion Chen 1974 -39,500(1 - 2.57/n), n = 18, coil 0
+T2A	YGGSAKEAAARAAAAATA		Am	18	7.0	5.0	0.0089	minus_theta222	13544		deg cm2 dmol-1	Table 1	printed;Na phosphate 0.005 M;aromatic_cd=Y
+T2A	YGGSAKEAAARAAAAATA		Am	18	7.0	5.0	0.0089	helix_percent	40.0		percent	Table 1	printed;Na phosphate 0.005 M;aromatic_cd=Y;authors_conversion Chen 1974 -39,500(1 - 2.57/n), n = 18, coil 0
+T3A	YGGSAKEAAARAAAATAA		Am	18	7.0	5.0	0.0089	minus_theta222	11529		deg cm2 dmol-1	Table 1	printed;sequence_typo_in_print (printed YGGSAKEAAARAAAAAAA; guest at the third-last position as in every other X3A row);Na phosphate 0.005 M;aromatic_cd=Y
+T3A	YGGSAKEAAARAAAATAA		Am	18	7.0	5.0	0.0089	helix_percent	34.0		percent	Table 1	printed;sequence_typo_in_print (printed YGGSAKEAAARAAAAAAA; guest at the third-last position as in every other X3A row);Na phosphate 0.005 M;aromatic_cd=Y;authors_conversion Chen 1974 -39,500(1 - 2.57/n), n = 18, coil 0
+T7A	YGGSAKEAAARTAAAAAA		Am	18	7.0	5.0	0.0089	minus_theta222	10293		deg cm2 dmol-1	Table 1	printed;Na phosphate 0.005 M;aromatic_cd=Y
+T7A	YGGSAKEAAARTAAAAAA		Am	18	7.0	5.0	0.0089	helix_percent	30.4		percent	Table 1	printed;Na phosphate 0.005 M;aromatic_cd=Y;authors_conversion Chen 1974 -39,500(1 - 2.57/n), n = 18, coil 0
+S1F	YGGSAKEAAARAAAAAAS			18	2.0	5.0	0.005	minus_theta222	7144		deg cm2 dmol-1	Table 1	printed;HCl-KCl 0.005 M;aromatic_cd=Y
+S1F	YGGSAKEAAARAAAAAAS			18	2.0	5.0	0.005	helix_percent	21.1		percent	Table 1	printed;HCl-KCl 0.005 M;aromatic_cd=Y;authors_conversion Chen 1974 -39,500(1 - 2.57/n), n = 18, coil 0
+S1A	YGGSAKEAAARAAAAAAS		Am	18	7.0	5.0	0.0089	minus_theta222	15914		deg cm2 dmol-1	Table 1	printed;Na phosphate 0.005 M;aromatic_cd=Y
+S1A	YGGSAKEAAARAAAAAAS		Am	18	7.0	5.0	0.0089	helix_percent	47.0		percent	Table 1	printed;Na phosphate 0.005 M;aromatic_cd=Y;authors_conversion Chen 1974 -39,500(1 - 2.57/n), n = 18, coil 0
+S2A	YGGSAKEAAARAAAAASA		Am	18	7.0	5.0	0.0089	minus_theta222	14153		deg cm2 dmol-1	Table 1	printed;Na phosphate 0.005 M;aromatic_cd=Y
+S2A	YGGSAKEAAARAAAAASA		Am	18	7.0	5.0	0.0089	helix_percent	41.8		percent	Table 1	printed;Na phosphate 0.005 M;aromatic_cd=Y;authors_conversion Chen 1974 -39,500(1 - 2.57/n), n = 18, coil 0
+S3A	YGGSAKEAAARAAAASAA		Am	18	7.0	5.0	0.0089	minus_theta222	13442		deg cm2 dmol-1	Table 1	printed;Na phosphate 0.005 M;aromatic_cd=Y
+S3A	YGGSAKEAAARAAAASAA		Am	18	7.0	5.0	0.0089	helix_percent	39.7		percent	Table 1	printed;Na phosphate 0.005 M;aromatic_cd=Y;authors_conversion Chen 1974 -39,500(1 - 2.57/n), n = 18, coil 0
+S7A	YGGSAKEAAARSAAAAAA		Am	18	7.0	5.0	0.0089	minus_theta222	10124		deg cm2 dmol-1	Table 1	printed;Na phosphate 0.005 M;aromatic_cd=Y
+S7A	YGGSAKEAAARSAAAAAA		Am	18	7.0	5.0	0.0089	helix_percent	29.9		percent	Table 1	printed;Na phosphate 0.005 M;aromatic_cd=Y;authors_conversion Chen 1974 -39,500(1 - 2.57/n), n = 18, coil 0
+N1F	YGGSAKEAAARAAAAAAN			18	2.0	5.0	0.005	minus_theta222	5417		deg cm2 dmol-1	Table 1	printed;HCl-KCl 0.005 M;aromatic_cd=Y
+N1F	YGGSAKEAAARAAAAAAN			18	2.0	5.0	0.005	helix_percent	16.0		percent	Table 1	printed;HCl-KCl 0.005 M;aromatic_cd=Y;authors_conversion Chen 1974 -39,500(1 - 2.57/n), n = 18, coil 0
+N1A	YGGSAKEAAARAAAAAAN		Am	18	7.0	5.0	0.0089	minus_theta222	16252		deg cm2 dmol-1	Table 1	printed;Na phosphate 0.005 M;aromatic_cd=Y
+N1A	YGGSAKEAAARAAAAAAN		Am	18	7.0	5.0	0.0089	helix_percent	48.0		percent	Table 1	printed;Na phosphate 0.005 M;aromatic_cd=Y;authors_conversion Chen 1974 -39,500(1 - 2.57/n), n = 18, coil 0
+N2A	YGGSAKEAAARAAAAANA		Am	18	7.0	5.0	0.0089	minus_theta222	15135		deg cm2 dmol-1	Table 1	printed;Na phosphate 0.005 M;aromatic_cd=Y
+N2A	YGGSAKEAAARAAAAANA		Am	18	7.0	5.0	0.0089	helix_percent	44.7		percent	Table 1	printed;Na phosphate 0.005 M;aromatic_cd=Y;authors_conversion Chen 1974 -39,500(1 - 2.57/n), n = 18, coil 0
+N3A	YGGSAKEAAARAAAANAA		Am	18	7.0	5.0	0.0089	minus_theta222	14018		deg cm2 dmol-1	Table 1	printed;Na phosphate 0.005 M;aromatic_cd=Y
+N3A	YGGSAKEAAARAAAANAA		Am	18	7.0	5.0	0.0089	helix_percent	41.4		percent	Table 1	printed;Na phosphate 0.005 M;aromatic_cd=Y;authors_conversion Chen 1974 -39,500(1 - 2.57/n), n = 18, coil 0
+N7A	YGGSAKEAAARNAAAAAA		Am	18	7.0	5.0	0.0089	minus_theta222	10598		deg cm2 dmol-1	Table 1	printed;Na phosphate 0.005 M;aromatic_cd=Y
+N7A	YGGSAKEAAARNAAAAAA		Am	18	7.0	5.0	0.0089	helix_percent	31.3		percent	Table 1	printed;Na phosphate 0.005 M;aromatic_cd=Y;authors_conversion Chen 1974 -39,500(1 - 2.57/n), n = 18, coil 0
+Q1F	YGGSAKEAAARAAAAAAQ			18	2.0	5.0	0.005	minus_theta222	7009		deg cm2 dmol-1	Table 1	printed;HCl-KCl 0.005 M;aromatic_cd=Y
+Q1F	YGGSAKEAAARAAAAAAQ			18	2.0	5.0	0.005	helix_percent	20.7		percent	Table 1	printed;HCl-KCl 0.005 M;aromatic_cd=Y;authors_conversion Chen 1974 -39,500(1 - 2.57/n), n = 18, coil 0
+Q1A	YGGSAKEAAARAAAAAAQ		Am	18	7.0	5.0	0.0089	minus_theta222	18555		deg cm2 dmol-1	Table 1	printed;Na phosphate 0.005 M;aromatic_cd=Y
+Q1A	YGGSAKEAAARAAAAAAQ		Am	18	7.0	5.0	0.0089	helix_percent	54.8		percent	Table 1	printed;Na phosphate 0.005 M;aromatic_cd=Y;authors_conversion Chen 1974 -39,500(1 - 2.57/n), n = 18, coil 0
+Q2A	YGGSAKEAAARAAAAAQA		Am	18	7.0	5.0	0.0089	minus_theta222	17099		deg cm2 dmol-1	Table 1	printed;Na phosphate 0.005 M;aromatic_cd=Y
+Q2A	YGGSAKEAAARAAAAAQA		Am	18	7.0	5.0	0.0089	helix_percent	50.5		percent	Table 1	printed;Na phosphate 0.005 M;aromatic_cd=Y;authors_conversion Chen 1974 -39,500(1 - 2.57/n), n = 18, coil 0
+Q3A	YGGSAKEAAARAAAAQAA		Am	18	7.0	5.0	0.0089	minus_theta222	17031		deg cm2 dmol-1	Table 1	printed;Na phosphate 0.005 M;aromatic_cd=Y
+Q3A	YGGSAKEAAARAAAAQAA		Am	18	7.0	5.0	0.0089	helix_percent	50.3		percent	Table 1	printed;Na phosphate 0.005 M;aromatic_cd=Y;authors_conversion Chen 1974 -39,500(1 - 2.57/n), n = 18, coil 0
+Q7A	YGGSAKEAAARQAAAAAA		Am	18	7.0	5.0	0.0089	minus_theta222	14593		deg cm2 dmol-1	Table 1	printed;Na phosphate 0.005 M;aromatic_cd=Y
+Q7A	YGGSAKEAAARQAAAAAA		Am	18	7.0	5.0	0.0089	helix_percent	43.1		percent	Table 1	printed;Na phosphate 0.005 M;aromatic_cd=Y;authors_conversion Chen 1974 -39,500(1 - 2.57/n), n = 18, coil 0
+G1F	YGGSAKEAAARAAAAAAG			18	2.0	5.0	0.005	minus_theta222	6602		deg cm2 dmol-1	Table 1	printed;HCl-KCl 0.005 M;aromatic_cd=Y
+G1F	YGGSAKEAAARAAAAAAG			18	2.0	5.0	0.005	helix_percent	19.5		percent	Table 1	printed;HCl-KCl 0.005 M;aromatic_cd=Y;authors_conversion Chen 1974 -39,500(1 - 2.57/n), n = 18, coil 0
+G1A	YGGSAKEAAARAAAAAAG		Am	18	7.0	5.0	0.0089	minus_theta222	16252		deg cm2 dmol-1	Table 1	printed;Na phosphate 0.005 M;aromatic_cd=Y
+G1A	YGGSAKEAAARAAAAAAG		Am	18	7.0	5.0	0.0089	helix_percent	48.0		percent	Table 1	printed;Na phosphate 0.005 M;aromatic_cd=Y;authors_conversion Chen 1974 -39,500(1 - 2.57/n), n = 18, coil 0
+G2A	YGGSAKEAAARAAAAAGA		Am	18	7.0	5.0	0.0089	minus_theta222	13070		deg cm2 dmol-1	Table 1	printed;Na phosphate 0.005 M;aromatic_cd=Y
+G2A	YGGSAKEAAARAAAAAGA		Am	18	7.0	5.0	0.0089	helix_percent	38.6		percent	Table 1	printed;Na phosphate 0.005 M;aromatic_cd=Y;authors_conversion Chen 1974 -39,500(1 - 2.57/n), n = 18, coil 0
+G3A	YGGSAKEAAARAAAAGAA		Am	18	7.0	5.0	0.0089	minus_theta222	9396		deg cm2 dmol-1	Table 1	printed;Na phosphate 0.005 M;aromatic_cd=Y
+G3A	YGGSAKEAAARAAAAGAA		Am	18	7.0	5.0	0.0089	helix_percent	27.8		percent	Table 1	printed;Na phosphate 0.005 M;aromatic_cd=Y;authors_conversion Chen 1974 -39,500(1 - 2.57/n), n = 18, coil 0
+G7A	YGGSAKEAAARGAAAAAA		Am	18	7.0	5.0	0.0089	minus_theta222	5112		deg cm2 dmol-1	Table 1	printed;Na phosphate 0.005 M;aromatic_cd=Y
+G7A	YGGSAKEAAARGAAAAAA		Am	18	7.0	5.0	0.0089	helix_percent	15.1		percent	Table 1	printed;Na phosphate 0.005 M;aromatic_cd=Y;authors_conversion Chen 1974 -39,500(1 - 2.57/n), n = 18, coil 0
+V1F	YGGSAKEAAARAAAAAAV			18	2.0	5.0	0.005	minus_theta222	4842		deg cm2 dmol-1	Table 1	printed;HCl-KCl 0.005 M;aromatic_cd=Y
+V1F	YGGSAKEAAARAAAAAAV			18	2.0	5.0	0.005	helix_percent	14.3		percent	Table 1	printed;HCl-KCl 0.005 M;aromatic_cd=Y;authors_conversion Chen 1974 -39,500(1 - 2.57/n), n = 18, coil 0
+V1A	YGGSAKEAAARAAAAAAV		Am	18	7.0	5.0	0.0089	minus_theta222	14136		deg cm2 dmol-1	Table 1	printed;Na phosphate 0.005 M;aromatic_cd=Y
+V1A	YGGSAKEAAARAAAAAAV		Am	18	7.0	5.0	0.0089	helix_percent	41.8		percent	Table 1	printed;Na phosphate 0.005 M;aromatic_cd=Y;authors_conversion Chen 1974 -39,500(1 - 2.57/n), n = 18, coil 0
+V2A	YGGSAKEAAARAAAAAVA		Am	18	7.0	5.0	0.0089	minus_theta222	12426		deg cm2 dmol-1	Table 1	printed;Na phosphate 0.005 M;aromatic_cd=Y
+V2A	YGGSAKEAAARAAAAAVA		Am	18	7.0	5.0	0.0089	helix_percent	36.7		percent	Table 1	printed;Na phosphate 0.005 M;aromatic_cd=Y;authors_conversion Chen 1974 -39,500(1 - 2.57/n), n = 18, coil 0
+V3A	YGGSAKEAAARAAAAVAA		Am	18	7.0	5.0	0.0089	minus_theta222	14746		deg cm2 dmol-1	Table 1	printed;Na phosphate 0.005 M;aromatic_cd=Y
+V3A	YGGSAKEAAARAAAAVAA		Am	18	7.0	5.0	0.0089	helix_percent	43.6		percent	Table 1	printed;Na phosphate 0.005 M;aromatic_cd=Y;authors_conversion Chen 1974 -39,500(1 - 2.57/n), n = 18, coil 0
+V7A	YGGSAKEAAARVAAAAAA		Am	18	7.0	5.0	0.0089	minus_theta222	11072		deg cm2 dmol-1	Table 1	printed;Na phosphate 0.005 M;aromatic_cd=Y
+V7A	YGGSAKEAAARVAAAAAA		Am	18	7.0	5.0	0.0089	helix_percent	32.7		percent	Table 1	printed;Na phosphate 0.005 M;aromatic_cd=Y;authors_conversion Chen 1974 -39,500(1 - 2.57/n), n = 18, coil 0
+I1F	YGGSAKEAAARAAAAAAI			18	2.0	5.0	0.005	minus_theta222	4147		deg cm2 dmol-1	Table 1	printed;HCl-KCl 0.005 M;aromatic_cd=Y
+I1F	YGGSAKEAAARAAAAAAI			18	2.0	5.0	0.005	helix_percent	12.3		percent	Table 1	printed;HCl-KCl 0.005 M;aromatic_cd=Y;authors_conversion Chen 1974 -39,500(1 - 2.57/n), n = 18, coil 0
+I1A	YGGSAKEAAARAAAAAAI		Am	18	7.0	5.0	0.0089	minus_theta222	13950		deg cm2 dmol-1	Table 1	printed;Na phosphate 0.005 M;aromatic_cd=Y
+I1A	YGGSAKEAAARAAAAAAI		Am	18	7.0	5.0	0.0089	helix_percent	41.2		percent	Table 1	printed;Na phosphate 0.005 M;aromatic_cd=Y;authors_conversion Chen 1974 -39,500(1 - 2.57/n), n = 18, coil 0
+I2A	YGGSAKEAAARAAAAAIA		Am	18	7.0	5.0	0.0089	minus_theta222	14221		deg cm2 dmol-1	Table 1	printed;Na phosphate 0.005 M;aromatic_cd=Y
+I2A	YGGSAKEAAARAAAAAIA		Am	18	7.0	5.0	0.0089	helix_percent	42.0		percent	Table 1	printed;Na phosphate 0.005 M;aromatic_cd=Y;authors_conversion Chen 1974 -39,500(1 - 2.57/n), n = 18, coil 0
+I3A	YGGSAKEAAARAAAAIAA		Am	18	7.0	5.0	0.0089	minus_theta222	16371		deg cm2 dmol-1	Table 1	printed;Na phosphate 0.005 M;aromatic_cd=Y
+I3A	YGGSAKEAAARAAAAIAA		Am	18	7.0	5.0	0.0089	helix_percent	48.4		percent	Table 1	printed;Na phosphate 0.005 M;aromatic_cd=Y;authors_conversion Chen 1974 -39,500(1 - 2.57/n), n = 18, coil 0
+I7A	YGGSAKEAAARIAAAAAA		Am	18	7.0	5.0	0.0089	minus_theta222	13713		deg cm2 dmol-1	Table 1	printed;Na phosphate 0.005 M;aromatic_cd=Y
+I7A	YGGSAKEAAARIAAAAAA		Am	18	7.0	5.0	0.0089	helix_percent	40.5		percent	Table 1	printed;Na phosphate 0.005 M;aromatic_cd=Y;authors_conversion Chen 1974 -39,500(1 - 2.57/n), n = 18, coil 0
+L1F	YGGSAKEAAARAAAAAAL			18	2.0	5.0	0.005	minus_theta222	5214		deg cm2 dmol-1	Table 1	printed;HCl-KCl 0.005 M;aromatic_cd=Y
+L1F	YGGSAKEAAARAAAAAAL			18	2.0	5.0	0.005	helix_percent	15.4		percent	Table 1	printed;HCl-KCl 0.005 M;aromatic_cd=Y;authors_conversion Chen 1974 -39,500(1 - 2.57/n), n = 18, coil 0
+L1A	YGGSAKEAAARAAAAAAL		Am	18	7.0	5.0	0.0089	minus_theta222	16286		deg cm2 dmol-1	Table 1	printed;Na phosphate 0.005 M;aromatic_cd=Y
+L1A	YGGSAKEAAARAAAAAAL		Am	18	7.0	5.0	0.0089	helix_percent	48.1		percent	Table 1	printed;Na phosphate 0.005 M;aromatic_cd=Y;authors_conversion Chen 1974 -39,500(1 - 2.57/n), n = 18, coil 0
+L2A	YGGSAKEAAARAAAAALA		Am	18	7.0	5.0	0.0089	minus_theta222	17945		deg cm2 dmol-1	Table 1	printed;Na phosphate 0.005 M;aromatic_cd=Y
+L2A	YGGSAKEAAARAAAAALA		Am	18	7.0	5.0	0.0089	helix_percent	53.0		percent	Table 1	printed;Na phosphate 0.005 M;aromatic_cd=Y;authors_conversion Chen 1974 -39,500(1 - 2.57/n), n = 18, coil 0
+L3A	YGGSAKEAAARAAAALAA		Am	18	7.0	5.0	0.0089	minus_theta222	17675		deg cm2 dmol-1	Table 1	printed;Na phosphate 0.005 M;aromatic_cd=Y
+L3A	YGGSAKEAAARAAAALAA		Am	18	7.0	5.0	0.0089	helix_percent	52.2		percent	Table 1	printed;Na phosphate 0.005 M;aromatic_cd=Y;authors_conversion Chen 1974 -39,500(1 - 2.57/n), n = 18, coil 0
+L7A	YGGSAKEAAARLAAAAAA		Am	18	7.0	5.0	0.0089	minus_theta222	16591		deg cm2 dmol-1	Table 1	printed;Na phosphate 0.005 M;aromatic_cd=Y
+L7A	YGGSAKEAAARLAAAAAA		Am	18	7.0	5.0	0.0089	helix_percent	49.0		percent	Table 1	printed;Na phosphate 0.005 M;aromatic_cd=Y;authors_conversion Chen 1974 -39,500(1 - 2.57/n), n = 18, coil 0
+M1F	YGGSAKEAAARAAAAAAM			18	2.0	5.0	0.005	minus_theta222	7957		deg cm2 dmol-1	Table 1	printed;HCl-KCl 0.005 M;aromatic_cd=Y
+M1F	YGGSAKEAAARAAAAAAM			18	2.0	5.0	0.005	helix_percent	23.5		percent	Table 1	printed;HCl-KCl 0.005 M;aromatic_cd=Y;authors_conversion Chen 1974 -39,500(1 - 2.57/n), n = 18, coil 0
+M1A	YGGSAKEAAARAAAAAAM		Am	18	7.0	5.0	0.0089	minus_theta222	17150		deg cm2 dmol-1	Table 1	printed;Na phosphate 0.005 M;aromatic_cd=Y
+M1A	YGGSAKEAAARAAAAAAM		Am	18	7.0	5.0	0.0089	helix_percent	50.7		percent	Table 1	printed;Na phosphate 0.005 M;aromatic_cd=Y;authors_conversion Chen 1974 -39,500(1 - 2.57/n), n = 18, coil 0
+M2A	YGGSAKEAAARAAAAAMA		Am	18	7.0	5.0	0.0089	minus_theta222	15541		deg cm2 dmol-1	Table 1	printed;Na phosphate 0.005 M;aromatic_cd=Y
+M2A	YGGSAKEAAARAAAAAMA		Am	18	7.0	5.0	0.0089	helix_percent	45.9		percent	Table 1	printed;Na phosphate 0.005 M;aromatic_cd=Y;authors_conversion Chen 1974 -39,500(1 - 2.57/n), n = 18, coil 0
+M3A	YGGSAKEAAARAAAAMAA		Am	18	7.0	5.0	0.0089	minus_theta222	17624		deg cm2 dmol-1	Table 1	printed;Na phosphate 0.005 M;aromatic_cd=Y
+M3A	YGGSAKEAAARAAAAMAA		Am	18	7.0	5.0	0.0089	helix_percent	52.1		percent	Table 1	printed;Na phosphate 0.005 M;aromatic_cd=Y;authors_conversion Chen 1974 -39,500(1 - 2.57/n), n = 18, coil 0
+M7A	YGGSAKEAAARMAAAAAA		Am	18	7.0	5.0	0.0089	minus_theta222	15423		deg cm2 dmol-1	Table 1	printed;Na phosphate 0.005 M;aromatic_cd=Y
+M7A	YGGSAKEAAARMAAAAAA		Am	18	7.0	5.0	0.0089	helix_percent	45.6		percent	Table 1	printed;Na phosphate 0.005 M;aromatic_cd=Y;authors_conversion Chen 1974 -39,500(1 - 2.57/n), n = 18, coil 0
+C1F	YGGSAKEAAARAAAAAAC			18	2.0	5.0	0.005	minus_theta222	6772		deg cm2 dmol-1	Table 1	printed;HCl-KCl 0.005 M;aromatic_cd=Y;bme 1-5 mM
+C1F	YGGSAKEAAARAAAAAAC			18	2.0	5.0	0.005	helix_percent	20.0		percent	Table 1	printed;HCl-KCl 0.005 M;aromatic_cd=Y;bme 1-5 mM;authors_conversion Chen 1974 -39,500(1 - 2.57/n), n = 18, coil 0
+C1A	YGGSAKEAAARAAAAAAC		Am	18	7.0	5.0	0.0089	minus_theta222	15237		deg cm2 dmol-1	Table 1	printed;Na phosphate 0.005 M;aromatic_cd=Y;bme 1-5 mM
+C1A	YGGSAKEAAARAAAAAAC		Am	18	7.0	5.0	0.0089	helix_percent	45.0		percent	Table 1	printed;Na phosphate 0.005 M;aromatic_cd=Y;bme 1-5 mM;authors_conversion Chen 1974 -39,500(1 - 2.57/n), n = 18, coil 0
+C2A	YGGSAKEAAARAAAAACA		Am	18	7.0	5.0	0.0089	minus_theta222	14763		deg cm2 dmol-1	Table 1	printed;Na phosphate 0.005 M;aromatic_cd=Y;bme 1-5 mM
+C2A	YGGSAKEAAARAAAAACA		Am	18	7.0	5.0	0.0089	helix_percent	43.6		percent	Table 1	printed;Na phosphate 0.005 M;aromatic_cd=Y;bme 1-5 mM;authors_conversion Chen 1974 -39,500(1 - 2.57/n), n = 18, coil 0
+C3A	YGGSAKEAAARAAAACAA		Am	18	7.0	5.0	0.0089	minus_theta222	14966		deg cm2 dmol-1	Table 1	printed;Na phosphate 0.005 M;aromatic_cd=Y;bme 1-5 mM
+C3A	YGGSAKEAAARAAAACAA		Am	18	7.0	5.0	0.0089	helix_percent	44.2		percent	Table 1	printed;Na phosphate 0.005 M;aromatic_cd=Y;bme 1-5 mM;authors_conversion Chen 1974 -39,500(1 - 2.57/n), n = 18, coil 0
+C7A	YGGSAKEAAARCAAAAAA		Am	18	7.0	5.0	0.0089	minus_theta222	9480		deg cm2 dmol-1	Table 1	printed;Na phosphate 0.005 M;aromatic_cd=Y;bme 1-5 mM
+C7A	YGGSAKEAAARCAAAAAA		Am	18	7.0	5.0	0.0089	helix_percent	28.0		percent	Table 1	printed;Na phosphate 0.005 M;aromatic_cd=Y;bme 1-5 mM;authors_conversion Chen 1974 -39,500(1 - 2.57/n), n = 18, coil 0
