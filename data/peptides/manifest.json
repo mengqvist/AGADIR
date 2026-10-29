@@ -2045,7 +2045,7 @@
   "1997_fernandezrecio_jmb267_figs": {
     "citation": "Fernandez-Recio, J., Vazquez, A., Civera, C., Sevilla, P. & Sancho, J. (1997). The tryptophan/histidine interaction in alpha-helices. J. Mol. Biol. 267, 184-197.",
     "source_pdf": "doc/1997_fernandez-recio_The-Tryptophan-Histidine-interaction-in-alpha-helices.pdf",
-    "source_table": "Figs. 1a (2 C: WH4, HW4), 1b (25 C: WH4, WH3), 3 (2 C: WAH4, WAH3), 12 (2 C, pH 2-9.5: WH4, WAH4), digitised. Not read: WH3 / HW3 in Fig. 1a and HW3 / HW4 in Fig. 1b (overlapping along one curve).",
+    "source_table": "Figs. 1a (2 C: WH4, HW4, HW3, WH3), 1b (25 C: WH4, WH3, HW3, HW4), 3 (2 C: WAH4, WAH3), 12 (2 C, pH 2-9.5: WH4, WAH4), digitised; Fig. 1a's WH3 circles and Fig. 1b's HW4 squares from their bottom edges.",
     "extractor": "reasoning/evidence/scripts/extract_n270_fernandezrecio1997_figs.py (n270_fernandezrecio_figs.py)",
     "transcription_method": "Native 1-bit rasters (~300 dpi), frames from dark-pixel profiles, n115 markers(); series by fill and band (n270_fernandezrecio_figs.py docstring).",
     "validation": "Fig. 1a WH4 at pH 5.2 7.3 x 10^3 and at 8.9 4.2: under the registered 220-nm pair 24.8 % and 14.3 % vs Table 2's 25 (pH 5.0) and 14 (pH 9.5). Fig. 12 repeats 28 points of Figs. 1a / 3 within 0.08 pH and 250 deg (flagged).",
@@ -2055,11 +2055,11 @@
     "temperature_C": "2 and 25",
     "n_peptides": 5,
     "n_printed_rows": 0,
-    "n_digitised_rows": 124,
+    "n_digitised_rows": 181,
     "conditions_verified_against_source": true,
     "flags_note": "wavelength_220nm; same_samples_as (Fig. 12 repeats); overlapped; aromatic_cd=W.",
     "why_it_matters": "Trp-His+ (i,i+4) across the His titration at 2 and 25 C, with the E6A controls (WAH): the aromatic-His+ class of N256 / N207 (His near the C-end).",
-    "n_data_rows": 124
+    "n_data_rows": 181
   },
   "1993_zhou_biochem32_figs": {
     "citation": "Zhou, N. E., Monera, O. D., Kay, C. M. & Hodges, R. S. (1993). A single-stranded amphipathic alpha-helix in aqueous solution: design, structural characterization, and its application for determining alpha-helical propensities of amino acids. Biochemistry 32, 6190-6197.",
