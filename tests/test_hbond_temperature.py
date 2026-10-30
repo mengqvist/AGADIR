@@ -46,11 +46,12 @@ def test_hydrophobic_pair_keeps_its_entropic_law():
 
 
 def test_polar_pairs_and_table_v_are_temperature_independent():
-    """Gln(i)-Asn(i+4) (Table IVb -0.60; no titrating partner, an energy term) and Glu-(i)-Asn(i+4) (Table IV plus the
-    Table V motif; a side-chain state, whose bond is a constant): side-chain hydrogen bonds."""
+    """Gln(i)-Asn(i+4) (Table IVb -0.60) and Glu-(i)-Asn(i+4) (Table IV plus the Table V motif) are
+    side-chain contacts whose isolated-pair free energies are temperature-independent."""
     lo, hi = _calc("AAAQAAANAAAA", 0.0), _calc("AAAQAAANAAAA", 60.0)
-    assert lo.get_dG_i4()[4] < 0.0
-    assert hi.get_dG_i4()[4] == pytest.approx(lo.get_dG_i4()[4], abs=1e-12)
+    for c in (lo, hi):
+        assert c.get_dG_i4()[4] == 0.0  # owned by the contact-state sum
+        assert S.SideChainStates("AAAQAAANAAAA").segment_correction(c) == pytest.approx(-0.60, abs=1e-12)
     assert S.polar_bond("E", "N", 4, -0.30)[1, 0] == pytest.approx(-0.80)
 
 

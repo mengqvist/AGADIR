@@ -309,9 +309,8 @@ the Table V motif when its residue is charged; the contact is calibrated beside 
 1), so an isolated bond keeps its value; the pair's Coulomb term stays at its Table VI distance; and a side chain in such a
 contact holds no other (no data put two of them on one side chain). Ser, Thr, Asn and Gln join the model as sites with one
 uncharged state. Aromatic-His Table IV/V terms also form a single contact (including Table V at the cap), with
-Phe/Trp as neutral sites and Tyr titrating; their mixed contacts follow the compatibility table. Not included: other
-bonds between two side chains that do not titrate (they stay energy terms), and side chain to main chain hydrogen bonds. The same
-change gives the hydrophobic staple's capping-box half (x1 against x0.5 behind an N, D, S or T N-cap with an N3 acid) to
+Phe/Trp as neutral sites and Tyr titrating; their mixed contacts follow the compatibility table. Side chain to main
+chain hydrogen bonds remain outside the model. The same change gives the hydrophobic staple's capping-box half (x1 against x0.5 behind an N, D, S or T N-cap with an N3 acid) to
 the N3 acid's motif state: the staple keeps its full value only while that acid caps (the coupling the additive rule had,
 lost on 2026-10-26).
 Effect (against the model before, 45-set guard): the scored panels unchanged (Munoz & Serrano 1995 +0.01, the CheY
@@ -322,7 +321,15 @@ Glu-Glu i+4 pair at pH 4.5, both carboxylates half charged, is 0.65 helix points
 treatment gave (the bond steers which one is protonated). The Glu-Glu i+4 cell is Lacroix's published value; no isolated
 measurement of it is in hand.
 
-*Solver note (same date).* `SegmentBatch.solve_helix` now feeds a site's Table IV/V pair couplings into its pKa also
+*Neutral polar contacts (2026-10-30).* The favorable Table IVb Q(i)-T/N/Q(i+4) cells
+(-0.20/-0.60/-0.15 kcal/mol) also use the contact sum and are held alone, including competition with charged partners.
+Isolated pairs retain their published energies, orientation, cap exclusion and temperature independence; no strengths are
+fitted. This extends the existing coarse exclusion assumption, not an independently measured compatibility rule for
+neutral polar groups. The fresh before/after v22 guard passes: all 852 benchmark points unchanged; four of 4407 corpus
+rows move by at most 0.22 helix points. Counted corpus pooled RMSE stays 8.368 (three decimals); Suveges 2008 RMSE
+8.11 -> 8.16. See [N322](../../reasoning/nodes/N322.md) for the full comparison, tests and limitations.
+
+*Solver note (2026-10-27).* `SegmentBatch.solve_helix` now feeds a site's Table IV/V pair couplings into its pKa also
 when the site has no non-Coulomb coefficient of its own (a (1 - p p) term has none). Before, only Cys and His sites ever
 had couplings without one (the Cys/His N-cap rule); including them moves those peptides by <= 0.01 in % helix.
 

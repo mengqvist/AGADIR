@@ -24,11 +24,11 @@ Which contact sets one side chain can hold (the compatibility table; single cont
   combination formed (7-10 %)"); holding two Arg: (-4, -3), (+3, +4), (-4, +3), (-4, +4), (-3, +3) (Wolny's same-side
   E->R pairs; Olson et al. 2001, Proteins 44, 123: cooperative R-E-R triads at i, i+-4 and i, i+-3); one Lys/His and
   one Arg: the straddle (-4, +3) only (no data).
-- A side-chain hydrogen bond with a titrating partner that is not an acid-base pair (polar_bond: Table IV cells of Ser,
+- A side-chain hydrogen bond that is not an acid-base pair (polar_bond: Table IV cells of Ser,
   Thr, Asn, Gln with Asp, Glu, Lys, Arg, His, or of two like-charged acids, and the Table V motifs Gln-Asp-, Glu--Asn,
-  Gln-Glu-) is a contact too, and is held alone: a side chain in such a contact holds no other. Ser, Thr, Asn and Gln
-  join the model as sites with one (uncharged) state. Hydrogen bonds between two side chains that do not titrate stay
-  energy terms (and a Gln or Glu side chain's hydrogen bond to the main chain is not modelled here).
+  Gln-Glu-, plus the neutral Q-T, Q-N and Q-Q i+4 cells) is a contact too, and is held alone: a side chain in such a
+  contact holds no other. Ser, Thr, Asn and Gln join the model as sites with one (uncharged) state. Side-chain hydrogen
+  bonds to the main chain are not modelled here.
 - Aromatic–His contacts carry their combined Table IV/V energy in the same state sum. Phe/Trp join as neutral sites;
   Tyr retains its titration state. Mixed acid/aromatic contacts use the existing compatibility table, including His
   (+3,+4) doubles; aromatic centers hold one contact. This extends the table's coarse geometry rule, rather than
@@ -120,14 +120,14 @@ def table_v(A: str, B: str, k: int):
 
 
 def polar_bond(A: str, B: str, k: int, cell: float):
-    """The side-chain hydrogen bond of a pair A(i)-B(i+k) that is not an acid-base pair, at least one of whose residues
-    titrates and both of which hydrogen-bond (S T N Q D E K R H): bond[s_A][s_B] in kcal/mol by charge state, the
+    """The side-chain hydrogen bond of a pair A(i)-B(i+k) that is not an acid-base pair, both of whose residues
+    hydrogen-bond (S T N Q D E K R H), including two neutral partners: bond[s_A][s_B] in kcal/mol by charge state, the
     Table IV cell (in the states that are not both charged, when both titrate) plus a Table V motif when its residue is
     charged; or None where no state bonds (a contact needs a favourable bond)."""
     charged = ACIDS | BASES
     if (A in ACIDS and B in BASES) or (A in BASES and B in ACIDS):
         return None
-    if not ({A, B} & charged and A in POLAR | charged and B in POLAR | charged):
+    if not (A in POLAR | charged and B in POLAR | charged):
         return None
     bond = np.full((2, 2), cell)
     if A in charged and B in charged:
@@ -320,8 +320,8 @@ def _add_contacts(calc, m):
             Wo = calc._electrostatic_interaction_energy(1.0, 1.0, r_open)
             m["zzW"][a, b] = m["zzW"][b, a] = m["z"][a] * m["z"][b] * Wo
             m["contacts"][(a, b)] = dict(kind="ab", H=H, Hn=Hn, Wc=Wc)
-    # side-chain hydrogen bonds with a titrating partner (polar_bond): the bond alone is the contact; the pair's Coulomb
-    # term, where both are charged, stays at its Table VI distance
+    # Side-chain hydrogen bonds, including two neutral partners (polar_bond): the bond alone is the contact;
+    # the pair's Coulomb term, where both are charged, stays at its Table VI distance.
     for i in sorted(inner):
         for k in (3, 4):
             j = i + k

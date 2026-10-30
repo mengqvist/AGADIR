@@ -300,3 +300,57 @@ def test_transfer_with_aromatic_contacts_matches_enumeration(seq):
               (1 << S.SLOT[-4]) | (1 << S.SLOT[3]))
     assert (double in S._site_masks(m)[his]) == (seq == 'AAAHAAEFAAAA')
     assert S._transfer(m, np.zeros(m['n']))[0] == pytest.approx(_brute(m, np.zeros(m['n'])), abs=1e-10)
+
+
+@pytest.mark.parametrize("partner,g", [("T", -.20), ("N", -.60), ("Q", -.15)])
+@pytest.mark.parametrize("temperature", [0., 25., 60.])
+def test_neutral_polar_pair_keeps_its_energy(partner, g, temperature):
+    seq = "AAAQAAA" + partner + "AAA"
+    assert S.has_candidates(seq)  # activate the solver even without titrating residues
+    c, m = _segment(seq, T=temperature, ncap="Ac")
+    assert len(m["contacts"]) == 1
+    assert not m["charged"].any()
+    assert c.get_dG_i4().sum() == 0.  # no additive duplicate
+    assert S._transfer(m, np.zeros(m["n"]))[0] == pytest.approx(g, abs=1e-12)
+    assert S.SideChainStates(seq).segment_correction(c) == pytest.approx(g, abs=1e-12)
+
+
+@pytest.mark.parametrize("partner", ["T", "N", "Q"])
+@pytest.mark.parametrize("cap", ["N", "C"])
+def test_neutral_polar_pair_excludes_caps(partner, cap):
+    seq = "AAAQAAA" + partner + "AAA"
+    # With Ac at index 0, Q is index 4 and its partner is index 8.
+    c = EnergyCalculator(seq=seq, i=4 if cap == "N" else 1, j=8,
+                         pH=7., T=5., ionic_strength=.05, ncap="Ac", ccap="Am")
+    m = S._sites(c, True)
+    S._add_contacts(c, m)
+    assert not m["contacts"]
+    assert c.get_dG_i4().sum() == 0.
+    assert S.SideChainStates(seq).segment_correction(c) == pytest.approx(0., abs=1e-12)
+
+
+def test_neutral_polar_ownership_preserves_table_orientation_and_unfavorable_cells():
+    tables = S._table_iv()
+    new = {(a, b, k) for k, table in tables.items() for a in S.POLAR for b in S.POLAR
+           if S.owns_polar(a, b, k, float(table.loc[a, b]))}
+    assert new == {("Q", "T", 4), ("Q", "N", 4), ("Q", "Q", 4)}
+    c, m = _segment("AAATAAAQAAA", ncap="Ac")
+    assert not m["contacts"]  # reverse T-Q is zero, not Q-T's favorable cell
+    c, m = _segment("AAANAAANAAA", ncap="Ac")
+    assert not m["contacts"]
+    assert c.get_dG_i4().sum() == pytest.approx(.20)  # unfavorable N-N stays additive
+
+
+@pytest.mark.parametrize("seq", ["AAQAAAQAAAQAA", "AAQAAAQAAADAA", "AAQAAAQAAAEAA", "AARAAQAAATAA"])
+def test_neutral_polar_competition_matches_enumeration(seq):
+    c, m = _segment(seq, ncap="Ac")
+    assert len(m["contacts"]) == 2
+    assert any(not m["charged"][a] and not m["charged"][b] for a, b in m["contacts"])
+    for a, aa in enumerate(m["res"]):
+        if aa in S.POLAR:
+            assert all(mask.bit_count() <= 1 for mask in S._site_masks(m)[a])
+    assert S._transfer(m, np.zeros(m["n"]))[0] == pytest.approx(_brute(m, np.zeros(m["n"])), abs=1e-10)
+    if seq == "AAQAAAQAAAQAA":
+        k = math.expm1(.15 / m["RT"])
+        expected = -m["RT"] * math.log1p(2 * k)  # free + left bond + right bond; never both
+        assert S._transfer(m, np.zeros(m["n"]))[0] == pytest.approx(expected, abs=1e-12)

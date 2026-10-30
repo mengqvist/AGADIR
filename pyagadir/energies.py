@@ -986,8 +986,8 @@ class EnergyCalculator(PrecomputeParams):
             acid_base = bool({AAi, AAi3} & {"D", "E"} and {AAi, AAi3} & {"K", "R", "H"})
             if acid_base and owns_pair(AAi, AAi3, 3, base):
                 base = 0.0
-            # a side-chain hydrogen bond with a titrating partner, inside the helix, is a contact of the two side chains
-            # too (side_chain_states.owns_polar), which carries its Table IV cell
+            # A side-chain hydrogen bond inside the helix, including two neutral partners, is a contact too
+            # (side_chain_states.owns_polar), which carries its Table IV cell.
             interior = not (idx == self.ncap_idx or idx + 3 == self.ccap_idx)
             if interior and not acid_base and owns_polar(AAi, AAi3, 3, self.table_4a_lacroix.loc[AAi, AAi3] / 100.0):
                 base = 0.0
@@ -1059,8 +1059,8 @@ class EnergyCalculator(PrecomputeParams):
             acid_base = bool({AAi, AAi4} & {"D", "E"} and {AAi, AAi4} & {"K", "R", "H"})
             if acid_base and owns_pair(AAi, AAi4, 4, base):
                 base = 0.0
-            # a side-chain hydrogen bond with a titrating partner, inside the helix, is a contact of the two side chains
-            # too (side_chain_states.owns_polar), which carries its Table IV cell and its Table V motif
+            # A side-chain hydrogen bond inside the helix, including two neutral partners, is a contact too
+            # (side_chain_states.owns_polar), which carries its Table IV cell and its Table V motif.
             interior = not (idx == self.ncap_idx or idx + 4 == self.ccap_idx)
             polar_contact = interior and not acid_base and owns_polar(AAi, AAi4, 4,
                                                                       self.table_4b_lacroix.loc[AAi, AAi4] / 100.0)
