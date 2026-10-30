@@ -42,6 +42,41 @@ guard.** The first Petukhov run silently dropped five of thirty peptides to a co
 character in the PDF text; it produced a smaller table rather than an error. Each extractor
 now counts the rows it can see against the rows it emits and raises on a mismatch.
 
+## Published and common-frame helicity
+
+Each row stores what the paper printed. Papers turn [θ]222 into % helix with different baselines (Chen et al. 1974,
+Scholtz et al. 1991, Luo & Baldwin 1997, or a laboratory's own pair), and on the same signal these differ by up to 11
+helix points (Merutka et al. 1991's fitted −40,500 helix baseline against Scholtz's −34,100 at n = 17). The evaluation
+(`reasoning/evidence/scripts/extracted_direct.py`) therefore reports two helicities for every row it reads:
+
+- **published** (`measured_paper`): the printed % or fraction; for a row with only [θ]222, that θ converted with the
+  paper's own stated pair (recorded in `manifest.json`).
+- **common frame** (`measured_common`): the same measurement on one conversion, Scholtz et al. (1991, *Biopolymers* 31,
+  1463–1470) eqs 3–4 with temperature: [θ]H = −40,000(1 − 2.5/n) + 100T, [θ]C = 640 − 45T (n = residues, T in °C),
+  defined once in `reasoning/evidence/scripts/helix_frames.py`. It comes from the row's own θ, else from the same
+  paper's θ at the same conditions, else from inverting the paper's printed conversion; with none of these it equals the
+  published value. `basis_method` says which.
+
+Model development and evaluation use the common frame. The published value is kept on every row and never overwritten,
+so either basis can be selected (`HELIX_BASIS=common|paper`). No aromatic-band correction is applied. A Tyr, Phe or Trp at
+a chain end can move CD helicity by about ±15 points: in our comparison of Song et al. (2008)'s CD with their 13C′ NMR on
+the same peptides, C-terminal GY peptides read 13–16 points low by CD, and a free-amine YGG peptide reads 13 points high.
+The size of the shift does not carry over from one host to another.
+
+**Independent support.** The common frame's temperature terms match a global fit to published fully helical peptides and
+coiled coils (their Table S3) plus an (AAKAA)n-GY length series: ∂[θ]H∞/∂T = +100 ± 30 and ∂[θ]C/∂T = −45 ± 5 deg cm² dmol⁻¹ °C⁻¹, with
+[θ]H∞ = −41,000 ± 1,400 (Zavrtanik, Lah & Hadži 2024, *J. Phys. Chem. B* 128, 2652–2663, Table 1). The steeper +250T
+helix slope of Luo & Baldwin (1997, *Biochemistry* 36, 8413–8421) is about twice what stable helices show (Song et al.
+2008, *Biopolymers* 89, 747–760; Zavrtanik et al. 2024). **Not supported:** the coil intercept +640. The same fit gives
++2,100 ± 300 (Luo & Baldwin: +2,220) and attributes the lower value to treating short peptides as pure coil. Adopting it
+would raise low-helicity rows by up to about 3.5 points; the frame keeps +640 for now. The common frame is a shared
+convention, not an absolute scale.
+
+**Units.** `minus_theta222` is per residue throughout. Where a paper reports ellipticity per peptide unit
+(N_res + 1 for blocked peptides; Zavrtanik et al. 2024) or per backbone amide (Andersen et al. 1996), the extractor
+rescales it to per residue, the one place these files store a derived value. The factor is in the row's `flags` and
+in the manifest.
+
 ## Figure data
 
 Some datasets are read from figures rather than tables (the C-peptide / S-peptide
