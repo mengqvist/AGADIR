@@ -1962,7 +1962,7 @@
     "n_peptides": 6,
     "n_printed_rows": 2,
     "conditions_verified_against_source": true,
-    "flags_note": "reprint=: Fig. 4's n = 3 and Fig. 2B's 10 mM melt (the corpus's ER titration and melt); same_samples_as: the two text values, Fig. 2A's 0 M point and the 0 C points of Fig. 3B; internal_conflict: Fig. 3B's n = 3 melt (vs Fig. 2B's); hofmeister: NaCl > 3 M; digitised_n293: N293 rows (owner's overlap rule); overlapped; aromatic_cd=W.",
+    "flags_note": "reprint=: Fig. 4's n = 3 (the corpus's ER titration); same_samples_as: the two text values, Fig. 2A's 0 M point and the 0 C points of Fig. 3B; internal_conflict: Fig. 2B's 10 mM melt (= Biochem 30, 1591's ER melt; owner chose Fig. 3B's n = 3 melt, 2026-10-30); hofmeister: NaCl > 3 M; digitised_n293: N293 rows (owner's overlap rule); overlapped; aromatic_cd=W.",
     "why_it_matters": "A chain-length series (7- to 27-mers) of an E/R i,i+4 host at 0 C across the Glu titration, and melts of the 7- and 12-mers: length dependence and short-peptide over-prediction (the Sommese class).",
     "n_data_rows": 141
   },
