@@ -229,3 +229,74 @@ def test_the_staple_half_rides_on_the_capping_box():
         assert g0 == pytest.approx(c._capping_n3_energy(st) + 0.5 * c.get_dG_staple(), abs=1e-12)
     finally:
         ion[i] = saved
+
+
+@pytest.mark.parametrize("aromatic", ["F", "Y", "W"])
+@pytest.mark.parametrize("reverse,k", [(False, 3), (False, 4), (True, 3), (True, 4)])
+@pytest.mark.parametrize("cap", [False, True])
+def test_aromatic_contact_reproduces_isolated_binary_pair(aromatic, reverse, k, cap):
+    """The combined IV/V contact reproduces each charge-state free energy, including Tyr and the cap gate;
+    its two contributions never survive as separate additive energies."""
+    A, B = ("H", aromatic) if reverse else (aromatic, "H")
+    seq = "AAA" + A + "A" * (k - 1) + B + "AAA"
+    i, j = 4, 4 + k  # acetyl modification occupies index 0
+    c = EnergyCalculator(seq=seq, i=1, j=j if cap else len(seq), pH=6., T=5., ionic_strength=.05,
+                         ncap="Ac", ccap="Am")
+    m = S._sites(c, True)
+    S._add_contacts(c, m)
+    contacts = [(edge, ct) for edge, ct in m['contacts'].items() if ct.get('aromatic')]
+    if (reverse and k == 3) or (cap and (reverse or k == 3)):
+        assert not contacts  # Table IV excludes the cap; only forward i+4 has a Table V increment
+        return
+    assert len(contacts) == 1
+    (a, b), ct = contacts[0]
+    base = 0. if cap else (-.3 if reverse else (-.25 if k == 3 else (-.6 if aromatic == 'Y' else -.4)))
+    increment = 0. if reverse or k == 3 else (-1. if c.ccap_idx - j <= 1 else -1. / 3.)
+    e = S._contact_energy(m, a, b)
+    for sa, sb in itertools.product([0, 1], repeat=2):
+        expected = (0. if aromatic == 'Y' and sa and sb else base) + (increment if sb else 0.)
+        assert -m['RT'] * np.logaddexp(0., -e[sa, sb] / m['RT']) == pytest.approx(expected, abs=1e-12)
+    assert (c.get_dG_i3() if k == 3 else c.get_dG_i4())[i] == 0.
+
+
+def _ring_competition_model(permitted=False):
+    """Fixed-charge model: use two known favorable contacts to isolate contact entropy from ionization."""
+    rt = .0019872043 * 273.15
+    return dict(n=3, RT=rt, pos=np.array([0., 3., 4.] if permitted else [0., 4., 7.]),
+                res=['H', 'E', 'F'] if permitted else ['W', 'H', 'E'],
+                charged=np.zeros(3, bool), z=np.zeros(3), lnx=np.zeros(3), hF=np.zeros(3), hC=np.zeros(3),
+                C=np.zeros((3, 3)), zzW=np.zeros((3, 3)), motif={},
+                contacts=({(0, 1):dict(kind='ab', H=-.18, Hn=-.18, Wc=0.),
+                           (0, 2):dict(kind='polar', aromatic=True, bond=np.full((2, 2), -.4))} if permitted else
+                          {(0, 1):dict(kind='polar', aromatic=True, bond=np.full((2, 2), -.4)),
+                           (1, 2):dict(kind='ab', H=-.18, Hn=-.18, Wc=0.)}))
+
+
+def test_aromatic_and_acid_contacts_sum_exclusive_alternatives():
+    m = _ring_competition_model()
+    hmask = (1 << S.SLOT[-4]) | (1 << S.SLOT[3])
+    assert hmask not in S._site_masks(m)[1]
+    ka, kb = math.expm1(.4 / m['RT']), math.expm1(.18 / m['RT'])
+    # Free + W-H + H-E, with no W-H/H-E double: sum all alternatives, never select only the best.
+    expected = -m['RT'] * math.log(1 + ka + kb)
+    f = S._transfer(m, np.zeros(3))[0]
+    assert f == pytest.approx(expected, abs=1e-12)
+    assert -.58 < f < -.4
+
+
+def test_aromatic_mixed_double_allowed_by_table_is_retained():
+    m = _ring_competition_model(permitted=True)
+    assert (1 << S.SLOT[3]) | (1 << S.SLOT[4]) in S._site_masks(m)[0]
+    assert S._transfer(m, np.zeros(3))[0] == pytest.approx(-.58, abs=1e-12)
+
+
+@pytest.mark.parametrize("seq", ["AAAWAAAHAAEAAAA", "AAAYAAAHAAEAAAA", "AAAHAAEFAAAA"])
+def test_transfer_with_aromatic_contacts_matches_enumeration(seq):
+    c, m = _segment(seq, pH=6.5)
+    assert len(m['contacts']) == 2
+    assert any(ct.get('aromatic') for ct in m['contacts'].values())
+    his = next(a for a, aa in enumerate(m['res']) if aa == 'H')
+    double = ((1 << S.SLOT[3]) | (1 << S.SLOT[4]) if seq == 'AAAHAAEFAAAA' else
+              (1 << S.SLOT[-4]) | (1 << S.SLOT[3]))
+    assert (double in S._site_masks(m)[his]) == (seq == 'AAAHAAEFAAAA')
+    assert S._transfer(m, np.zeros(m['n']))[0] == pytest.approx(_brute(m, np.zeros(m['n'])), abs=1e-10)

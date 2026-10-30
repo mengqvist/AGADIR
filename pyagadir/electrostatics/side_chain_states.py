@@ -29,6 +29,10 @@ Which contact sets one side chain can hold (the compatibility table; single cont
   Gln-Glu-) is a contact too, and is held alone: a side chain in such a contact holds no other. Ser, Thr, Asn and Gln
   join the model as sites with one (uncharged) state. Hydrogen bonds between two side chains that do not titrate stay
   energy terms (and a Gln or Glu side chain's hydrogen bond to the main chain is not modelled here).
+- Aromatic–His contacts carry their combined Table IV/V energy in the same state sum. Phe/Trp join as neutral sites;
+  Tyr retains its titration state. Mixed acid/aromatic contacts use the existing compatibility table, including His
+  (+3,+4) doubles; aromatic centers hold one contact. This extends the table's coarse geometry rule, rather than
+  introducing a newly measured compatibility rule for aromatic rings. Table IV excludes caps; Table V retains them.
 Rotamer populations do not appear: every separation is reachable from the populated chi1 wells, so a side chain's
 direction is a matter of its contacts, and the cost of adopting a contact is inside the contact's calibrated free energy.
 
@@ -68,6 +72,7 @@ EXACT_RANGE = 4
 LIKE_ROW = {"D": "DD", "E": "EE", "K": "KK", "R": "RR"}
 ACIDS, BASES = set("DE"), set("KRH")
 POLAR = set("STNQ")  # side chains that hydrogen-bond but do not titrate here
+AROMATIC = set("FYW")
 R_KCAL = 0.0019872043
 SLOT = {-4: 0, -3: 1, 3: 2, 4: 3}
 NBITS, CBITS = 0b0011, 0b1100
@@ -143,14 +148,37 @@ def owns_polar(A: str, B: str, k: int, cell: float) -> bool:
     return polar_bond(A, B, k, cell) is not None
 
 
+def is_aromatic_his(A: str, B: str) -> bool:
+    return (A in AROMATIC and B == "H") or (A == "H" and B in AROMATIC)
+
+
+def aromatic_bond(calc, i: int, k: int):
+    """Combined Table IV/V aromatic–His energy in each binary charge state. Table IV excludes caps; the forward
+    i+4 Table V increment also reaches caps and keeps its C1/C-cap scaling. Tyr's charged state is retained."""
+    j = i + k
+    A, B = calc.seq_list[i], calc.seq_list[j]
+    if not is_aromatic_his(A, B):
+        return None
+    table = calc.table_4a_lacroix if k == 3 else calc.table_4b_lacroix
+    cell = float(table.loc[A, B]) / 100.0 if i != calc.ncap_idx and j != calc.ccap_idx else 0.0
+    bond = np.full((2, 2), cell)
+    if "Y" in (A, B):
+        bond[1, 1] = 0.0  # original Table IV "not both charged" convention
+    if k == 4 and A in AROMATIC and B == "H":
+        from pyagadir.energies import TABLE_V_AROMATIC_HIS
+        bond[:, 1] += TABLE_V_AROMATIC_HIS * (1.0 if calc.ccap_idx - j <= 1 else 1.0 / 3.0)
+    return bond if (bond < 0).any() else None
+
+
 def has_candidates(seq: str) -> bool:
-    """Whether a sequence has a candidate contact three or four residues apart: an acid-base pair, or a side-chain
-    hydrogen bond with a titrating partner (owns_polar)."""
+    """Whether a sequence has a candidate acid-base, polar hydrogen-bond or aromatic–His contact at i+3/i+4."""
     t4 = _table_iv()
     for i, a in enumerate(seq):
         for k in (3, 4):
             if i + k < len(seq):
                 b = seq[i + k]
+                if is_aromatic_his(a, b):
+                    return True
                 if (a in ACIDS and b in BASES) or (a in BASES and b in ACIDS):
                     return True
                 if a in t4[k].index and b in t4[k].columns and owns_polar(a, b, k, float(t4[k].loc[a, b])):
@@ -223,8 +251,8 @@ def _sites(calc, helix: bool):
 
 
 def _add_polar_site(m, i, aa):
-    """A side chain that hydrogen-bonds but does not titrate (S T N Q) joins the model as a site with one charge state:
-    no charge, no field, no Coulomb coupling. Returns its site index."""
+    """A non-titrating contact partner (S T N Q F W) joins with one neutral state, no field or Coulomb coupling.
+    Returns its site index."""
     n = m["n"]
     for key in ("z", "lnx", "hF", "hC"):
         m[key] = np.append(m[key], 0.0)
@@ -313,6 +341,21 @@ def _add_contacts(calc, m):
                 b = where[j] = _add_polar_site(m, j, B)
             m["contacts"][(a, b)] = dict(kind="polar", bond=bond)
 
+    # One combined ring contact carries Table IV and V, so neither can coexist independently with a competing bond.
+    # Unlike the hydrogen-bond loop, include caps here: aromatic_bond retains each term's own cap convention.
+    for i in calc.helix_indices:
+        for k in (3, 4):
+            j = i + k
+            if j > calc.ccap_idx:
+                continue
+            bond = aromatic_bond(calc, i, k)
+            if bond is None:
+                continue
+            for pos in (i, j):
+                if pos not in where:
+                    where[pos] = _add_polar_site(m, pos, calc.seq_list[pos])
+            m["contacts"][(where[i], where[j])] = dict(kind="polar", bond=bond, aromatic=True)
+
 
 def _contact_energy(m, a, b):
     """e[s_a][s_b]: the contact's free energy relative to the open pair, calibrated on the isolated pair."""
@@ -374,18 +417,18 @@ def _add_motifs(calc, m):
 def _site_masks(m):
     """Allowed contact masks per site: 0, every single candidate contact, the table's doubles."""
     cand = {a: {} for a in range(m["n"])}
-    cand_ab = {a: {} for a in range(m["n"])}
+    compatible = {a: {} for a in range(m["n"])}
     for (a, b), ct in m["contacts"].items():
         k = int(round(m["pos"][b] - m["pos"][a]))
         cand[a][k] = m["res"][b]
         cand[b][-k] = m["res"][a]
-        if ct["kind"] == "ab":
-            cand_ab[a][k] = m["res"][b]
-            cand_ab[b][-k] = m["res"][a]
+        if ct["kind"] == "ab" or ct.get("aromatic"):
+            compatible[a][k] = m["res"][b]
+            compatible[b][-k] = m["res"][a]
     masks = []
     for a in range(m["n"]):
         ms = {0} | {1 << SLOT[o] for o in cand[a]}
-        ms |= allowed_doubles(m["res"][a], cand_ab[a])  # a side-chain hydrogen bond (polar contact) is held alone
+        ms |= allowed_doubles(m["res"][a], compatible[a])  # other polar hydrogen bonds are held alone
         masks.append(sorted(ms))
     return masks
 

@@ -187,6 +187,7 @@ def test_point_energy_terms_are_the_solver_mean_field_energy(seq, ncap, ccap, pH
     ("AAQAADAAAAQAAEAANAAKA", "Ac", "Am", 4.0, 0, 21),   # Table V Gln-Asp-, Gln-Glu-, Glu--Asn
     ("DAKAAEDAAAKAAAAD", None, None, 4.2, 0, 16),       # free termini, Asp C-cap, Petukhov-type N-terminus
     ("YGGSHAAAAKAAAAEHAAAKA", "Ac", "Am", 6.3, 4, 15),   # His N-cap and interior His
+    ("AAAYAAAHAA", "Ac", "Am", 6.3, 1, 9),             # Tyr/His precursor fields for the exact contact sum
 ])
 def test_point_law_charges_minimise_the_mean_field_free_energy(seq, ncap, ccap, pH, i, j):
     """Point-charge law: at the solver's helix-state charges, the helix-state mean-field free energy (ionisation

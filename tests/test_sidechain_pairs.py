@@ -134,18 +134,24 @@ def test_glu_arg_i3_orientation_second_host(pH, ionic):
     assert er.get_percent_helix() > re_.get_percent_helix()
 
 
-def test_aromatic_his_table_v_full_value():
-    """Table V aromatic(i)-His+(i+4) keeps its full -0.4 kcal/mol with His at C1 (no Coulomb coil share): the
+@pytest.mark.parametrize("aromatic", ["F", "W"])
+@pytest.mark.parametrize("ccap_idx,scale", [(8, 1.0), (9, 1.0), (10, 1.0 / 3.0)])
+def test_aromatic_his_table_v_full_value(aromatic, ccap_idx, scale):
+    """Table V aromatic(i)-His+(i+4) has its calibrated -1.0 kcal/mol at C1/C-cap and one third inside: the
     Phe-8...His-12+ contact of the C-peptide (Fairman et al. 1989). The His+ - His0 difference of the Phe's i,i+4
     term isolates it, since the Table IV base does not depend on pH; at 0 C no temperature correction applies."""
     from pyagadir.energies import EnergyCalculator
+    from pyagadir.electrostatics import side_chain_states as states
 
     def term(pH):
-        # Ac A A A F A A A H A A Am; segment N-cap at index 1, C-cap at index 9, so His (index 8) is C1
-        c = EnergyCalculator(seq="AAAFAAAHAA", i=1, j=9, pH=pH, T=0.0, ionic_strength=0.1, ncap="Ac", ccap="Am")
-        return float(c.get_dG_i4()[4]), abs(float(c.modified_seq_ionization_hel[8]))
+        c = EnergyCalculator(seq=f"AAA{aromatic}AAAHAA", i=1, j=ccap_idx, pH=pH, T=0.0,
+                             ionic_strength=0.1, ncap="Ac", ccap="Am")
+        p_his = abs(float(c.modified_seq_ionization_hel[8]))
+        assert c.get_dG_i4()[4] == 0.0  # no additive duplicate of the contact
+        bond = states.aromatic_bond(c, 4, 4)
+        return float(bond[0] @ [1.0 - p_his, p_his]), p_his
 
     e_low, p_low = term(4.0)
     e_high, p_high = term(10.0)
     assert p_low > 0.9 and p_high < 0.1
-    assert abs((e_low - e_high) - (-0.4) * (p_low - p_high)) < 0.01
+    assert abs((e_low - e_high) - (-1.0 * scale) * (p_low - p_high)) < 0.01

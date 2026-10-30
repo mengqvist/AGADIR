@@ -8,7 +8,7 @@ from pyagadir.chemistry import (E_CHARGE, EPSILON_0, N_AVOGADRO, T_REF, acidic_r
                                 basic_residue_ionization, calculate_permittivity, debye_screening_kappa)
 from pyagadir.electrostatics import Electrostatics
 from pyagadir.electrostatics.common import SegmentBatch
-from pyagadir.electrostatics.side_chain_states import owns_pair, owns_polar
+from pyagadir.electrostatics.side_chain_states import is_aromatic_his, owns_pair, owns_polar
 from pyagadir.utils import is_valid_peptide_sequence, is_valid_ncap_ccap, is_valid_conditions
 
 # The electrostatics are in pyagadir/electrostatics/: point.py (the point-charge law, the macrodipole and the terminal
@@ -66,8 +66,14 @@ HBOND_DH_REF = -0.895
 # Table V Gln(i)-Asp-(i+4) side-chain hydrogen bond (Lacroix 1998 supplementary Table V: -0.5 kcal/mol), re-derived from
 # the measurement that isolates it, the Asp walk of Huyghues-Despointes, Scholtz & Baldwin (1993, Protein Sci. 2, 1604):
 # with this model its printed tables are best fitted at -0.15 or weaker and its pH 7 figure at -0.30, and -0.5 is
-# rejected by both (+1.7 and +1.1 helix points RMSE); -0.225 lies between. The other Table V motifs keep their values.
+# rejected by both (+1.7 and +1.1 helix points RMSE); -0.225 lies between.
 TABLE_V_GLN_ASP = -0.225
+
+# Additional aromatic(i)-His+(i+4) stabilization, kcal/mol (published Table V: -0.4). Armstrong et al. 1993's
+# terminal Phe/His matched-pair pH double contrast gives about -1.003 with this model; rounded to -1.0. Full strength
+# with His at C1/C-cap, one third elsewhere. This is added to Table IV, not the total pair free energy.
+# Calibration, withheld interior contrast and known WH4 overprediction: reasoning/nodes/N258.md.
+TABLE_V_AROMATIC_HIS = -1.0
 
 CAPPING_BOX_DG = -0.9  # capping box beyond the Nc-3 column (get_dG_Ncap)
 
@@ -959,6 +965,8 @@ class EnergyCalculator(PrecomputeParams):
             interior = not (idx == self.ncap_idx or idx + 3 == self.ccap_idx)
             if interior and not acid_base and owns_polar(AAi, AAi3, 3, self.table_4a_lacroix.loc[AAi, AAi3] / 100.0):
                 base = 0.0
+            if is_aromatic_his(AAi, AAi3):
+                base = 0.0  # combined aromatic–His contact is carried by the side-chain states
 
             # Other titratable pairs: Table IV applies to the states that are not both charged.
             if not acid_base and (AAi in (self.pos_charge_aa + self.neg_charge_aa)) and (AAi3 in (self.pos_charge_aa + self.neg_charge_aa)):
@@ -1032,6 +1040,8 @@ class EnergyCalculator(PrecomputeParams):
                                                                       self.table_4b_lacroix.loc[AAi, AAi4] / 100.0)
             if polar_contact:
                 base = 0.0
+            if is_aromatic_his(AAi, AAi4):
+                base = 0.0  # Table IV and V belong to the same contact state
 
             # Other titratable pairs: suppress Table IV in the both-charged microstate.
             if not acid_base and (AAi in (self.pos_charge_aa + self.neg_charge_aa)) and (AAi4 in (self.pos_charge_aa + self.neg_charge_aa)):
@@ -1050,24 +1060,15 @@ class EnergyCalculator(PrecomputeParams):
             # acid-base and polar pairs are side-chain hydrogen bonds: temperature-independent (HBOND_DH_REF)
 
             extra = 0.0  # Table V hydrogen-bond motifs
-            aro_his = 0.0  # Table V aromatic-His+ motif (a ring-cation contact, not a hydrogen bond)
 
             # --- Table V add-ons (orientation matters: position i -> position i+4) ---
             # Added to Table IV when the residue is charged, weighted by its helix-state charged fraction, as net
             # (helix-minus-coil) energies like Table IV (Lacroix 1998 supplement). Each is a side-chain contact formed
-            # on one face of the helix and scarcely in the coil. Values as published, except Gln-Asp- (TABLE_V_GLN_ASP),
-            # re-derived from the Asp walk that isolates it.
+            # on one face of the helix and scarcely in the coil. Gln-Asp- and aromatic-His+ have re-derived strengths
+            # (TABLE_V_GLN_ASP, TABLE_V_AROMATIC_HIS); the remaining values are as published.
 
-            # FYW (i) with His+ (i+4): -0.4 kcal/mol when His is at C1 or C-cap; otherwise divide by 3. This is the
-            # Phe8...His12+ interaction of the C-peptide (Fairman et al. 1989); with the full value the C-peptide
-            # family (Shoemaker et al. 1987, Fairman et al. 1989, Mitchinson & Baldwin 1986) is predicted 0.9-1.7
-            # helix points (RMSE) closer.
-            if AAi in ["F", "Y", "W"] and AAi4 == "H":
-                p_his = abs(self.modified_seq_ionization_hel[idx + 4])  # population of His+
-                # His is "C1" if it is the residue just before C-cap; "C-cap" if it is C-cap itself
-                his_is_C1_or_Ccap = (idx + 4 == self.ccap_idx) or (idx + 4 == self.ccap_idx - 1)
-                val = -0.4 if his_is_C1_or_Ccap else (-0.4 / 3.0)
-                aro_his += p_his * val
+            # Aromatic–His Table IV/V terms, including the cap-supported Table V increment, are summed together
+            # in side_chain_states.aromatic_bond. Do not also add them here or in mean-field ionization coefficients.
 
             # Gln (i) with Asp- (i+4): TABLE_V_GLN_ASP (published -0.5; re-derived from the Asp walk). These three motifs
             # are carried by the side-chain states inside the helix (polar_contact); here only where a cap takes part.
@@ -1087,6 +1088,6 @@ class EnergyCalculator(PrecomputeParams):
 
             # the Gln-Asp-, Glu--Asn and Gln-Glu- motifs (side-chain hydrogen bonds) and the aromatic-His+ contact are
             # temperature-independent
-            energy[idx] = base + extra + aro_his
+            energy[idx] = base + extra
 
         return energy
