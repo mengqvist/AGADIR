@@ -54,6 +54,28 @@ class ParamTable:
 # 0.943 so that Leu's protein offset equals its peptide value. Charge-independent. See params/README.md.
 FIRST_TURN_N2_OFFSET = {"K": 0.25, "R": 0.25, "H": -0.059, "C": 0.228, "F": 0.162, "Y": 0.157, "W": 0.141}
 
+# Last-turn offsets (kcal/mol at 0 C; C1, C2, C3 = one, two, three residues before the segment's C-cap) added to the
+# Table 1 interior (Ncen) cell. Petukhov, Uegaki, Yumoto & Serrano (2002, Protein Sci. 11, 766) walked each non-charged,
+# non-aromatic residue through C1, C2, C3 and C7 of YGGSAKEAAARAAAAAAA-NH2 and fitted the differences from C7 in AGADIR
+# (their Table 2, "relative to position C7"). Polar residues gain from side-chain solvation and from bonds to the
+# backbone in the distorted C1/C2 geometry; beta-branched Val and Ile gain side-chain entropy at C3; Gly is better at
+# C1/C2 and worse at C3. The printed Table 2 stops at Ile: Leu and Met take the values of the abstract (Leu "relatively
+# neutral at C1", -0.1 to -0.2 at C2 and C3, here -0.15; Met +0.2 at C1 and C2, -0.2 at C3). Cys (measured, no value
+# printed) and the residues they did not measure (charged, aromatic, Pro, Ala) keep their interior cell.
+# The paper fitted these offsets together with its host's interior (C7) values, so Table 1's Ncen cells of T, S, N, Q, G,
+# V and I are the paper's C7 values (params/README.md, table_1_lacroix).
+C_TERM_OFFSET = {
+    "G": (-1.11, -0.55, 0.62),
+    "S": (-0.33, -0.17, -0.20),
+    "T": (-0.02, -0.32, -0.02),
+    "N": (-0.45, -0.35, -0.25),
+    "Q": (-0.37, -0.17, -0.22),
+    "V": (-0.18, 0.00, -0.40),
+    "I": (0.05, -0.05, -0.33),
+    "L": (0.00, -0.15, -0.15),
+    "M": (0.20, 0.20, -0.20),
+}
+
 # Backbone hydrogen bond, Munoz & Serrano 1995-III eq. (8): an enthalpy, dH_ref = -0.895 kcal/mol per bond at 0 C (Lacroix
 # 1998, Discussion), with the heat capacity dCp (EnergyCalculator.dCp); the entropy of fixing the backbone is in
 # get_dG_Int. Its value agrees with the measured helix enthalpy, -0.9 +- 0.1 kcal/mol per residue, independent of
@@ -594,6 +616,10 @@ class EnergyCalculator(PrecomputeParams):
             # charge states pay it, wherever the N2 cell applies.
             if col == "N2":
                 energy[idx] += self._first_turn_n2_offset(AA)
+            # Last-turn offset (C_TERM_OFFSET), on the interior cell only: a residue still in the first turn keeps its
+            # N1-N4 cell, which is already a positional value.
+            if col == "Ncen" and c_dist <= 3 and AA in C_TERM_OFFSET:
+                energy[idx] += C_TERM_OFFSET[AA][c_dist - 1]
 
         # Munoz & Serrano 1995-III eq. (9): dG_Int = -t (dS_ref + dCp ln(t/t_ref)),
         # i.e. dG_ref * t/t_ref - t * dCp * ln(t/t_ref).  t_ref = 0 C (T_REF).
