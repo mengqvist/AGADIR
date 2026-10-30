@@ -1,0 +1,74 @@
+peptide_id	sequence	ncap	ccap	n_res	position	residue	pH	T_C	ionic_strength_M	quantity	value	error	unit	source_table	flags
+Ac(AAQAA)3am	AAQAAAAQAAAAQAA	Ac	Am	15	1	A	7.0	0.0		CO_shift_coil_0C_ppm	177.75	0.06	ppm	Table 1	printed;D2O
+Ac(AAQAA)3am	AAQAAAAQAAAAQAA	Ac	Am	15	1	A	7.0	0.0		CO_shift_helix_minus_coil_ppm	2.53	0.07	ppm	Table 1	printed;D2O
+Ac(AAQAA)3am	AAQAAAAQAAAAQAA	Ac	Am	15	1	A	7.0	0.0		two_state_Tm_C	0	1	C	Table 1	printed;D2O
+Ac(AAQAA)3am	AAQAAAAQAAAAQAA	Ac	Am	15	1	A	7.0	0.0		two_state_width_C	80	5	C	Table 1	printed;D2O;log K = +1 to -1
+Ac(AAQAA)3am	AAQAAAAQAAAAQAA	Ac	Am	15	1	A	7.0	1.0		helix_percent_residue	45.4		percent	Fig. 4	digitised;D2O;two-state 13C=O
+Ac(AAQAA)3am	AAQAAAAQAAAAQAA	Ac	Am	15	2	A	7.0	0.0		CO_shift_coil_0C_ppm	177.58	0.06	ppm	Table 1	printed;D2O
+Ac(AAQAA)3am	AAQAAAAQAAAAQAA	Ac	Am	15	2	A	7.0	0.0		CO_shift_helix_minus_coil_ppm	2.94	0.07	ppm	Table 1	printed;D2O
+Ac(AAQAA)3am	AAQAAAAQAAAAQAA	Ac	Am	15	2	A	7.0	0.0		two_state_Tm_C	-2	1	C	Table 1	printed;D2O
+Ac(AAQAA)3am	AAQAAAAQAAAAQAA	Ac	Am	15	2	A	7.0	0.0		two_state_width_C	81	5	C	Table 1	printed;D2O;log K = +1 to -1
+Ac(AAQAA)3am	AAQAAAAQAAAAQAA	Ac	Am	15	2	A	7.0	1.0		helix_percent_residue	49.5		percent	Fig. 4	digitised;D2O;two-state 13C=O
+Ac(AAQAA)3am	AAQAAAAQAAAAQAA	Ac	Am	15	3	Q	7.0	0.0		CO_shift_coil_0C_ppm	175.11	0.06	ppm	Table 1	printed;D2O
+Ac(AAQAA)3am	AAQAAAAQAAAAQAA	Ac	Am	15	3	Q	7.0	0.0		CO_shift_helix_minus_coil_ppm	2.93	0.07	ppm	Table 1	printed;D2O
+Ac(AAQAA)3am	AAQAAAAQAAAAQAA	Ac	Am	15	3	Q	7.0	0.0		two_state_Tm_C	7	1	C	Table 1	printed;D2O
+Ac(AAQAA)3am	AAQAAAAQAAAAQAA	Ac	Am	15	3	Q	7.0	0.0		two_state_width_C	89	5	C	Table 1	printed;D2O;log K = +1 to -1
+Ac(AAQAA)3am	AAQAAAAQAAAAQAA	Ac	Am	15	3	Q	7.0	1.0		helix_percent_residue	56.4		percent	Fig. 4	digitised;D2O;two-state 13C=O
+Ac(AAQAA)3am	AAQAAAAQAAAAQAA	Ac	Am	15	4	A	7.0	0.0		CO_shift_coil_0C_ppm	177.23	0.06	ppm	Table 1	printed;D2O
+Ac(AAQAA)3am	AAQAAAAQAAAAQAA	Ac	Am	15	4	A	7.0	0.0		CO_shift_helix_minus_coil_ppm	2.54	0.07	ppm	Table 1	printed;D2O
+Ac(AAQAA)3am	AAQAAAAQAAAAQAA	Ac	Am	15	4	A	7.0	0.0		two_state_Tm_C	3	1	C	Table 1	printed;D2O
+Ac(AAQAA)3am	AAQAAAAQAAAAQAA	Ac	Am	15	4	A	7.0	0.0		two_state_width_C	85	5	C	Table 1	printed;D2O;log K = +1 to -1
+Ac(AAQAA)3am	AAQAAAAQAAAAQAA	Ac	Am	15	4	A	7.0	1.0		helix_percent_residue	54.5		percent	Fig. 4	digitised;D2O;two-state 13C=O
+Ac(AAQAA)3am	AAQAAAAQAAAAQAA	Ac	Am	15	5	A	7.0	0.0		CO_shift_coil_0C_ppm	177.36	0.06	ppm	Table 1	printed;D2O
+Ac(AAQAA)3am	AAQAAAAQAAAAQAA	Ac	Am	15	5	A	7.0	0.0		CO_shift_helix_minus_coil_ppm	2.83	0.07	ppm	Table 1	printed;D2O
+Ac(AAQAA)3am	AAQAAAAQAAAAQAA	Ac	Am	15	5	A	7.0	0.0		two_state_Tm_C	6	1	C	Table 1	printed;D2O
+Ac(AAQAA)3am	AAQAAAAQAAAAQAA	Ac	Am	15	5	A	7.0	0.0		two_state_width_C	90	5	C	Table 1	printed;D2O;log K = +1 to -1
+Ac(AAQAA)3am	AAQAAAAQAAAAQAA	Ac	Am	15	5	A	7.0	1.0		helix_percent_residue	59.5		percent	Fig. 4	digitised;D2O;two-state 13C=O
+Ac(AAQAA)3am	AAQAAAAQAAAAQAA	Ac	Am	15	6	A	7.0	0.0		CO_shift_coil_0C_ppm	177.36	0.06	ppm	Table 1	printed;D2O
+Ac(AAQAA)3am	AAQAAAAQAAAAQAA	Ac	Am	15	6	A	7.0	0.0		CO_shift_helix_minus_coil_ppm	2.75	0.07	ppm	Table 1	printed;D2O
+Ac(AAQAA)3am	AAQAAAAQAAAAQAA	Ac	Am	15	6	A	7.0	0.0		two_state_Tm_C	5	1	C	Table 1	printed;D2O
+Ac(AAQAA)3am	AAQAAAAQAAAAQAA	Ac	Am	15	6	A	7.0	0.0		two_state_width_C	90	5	C	Table 1	printed;D2O;log K = +1 to -1
+Ac(AAQAA)3am	AAQAAAAQAAAAQAA	Ac	Am	15	6	A	7.0	1.0		helix_percent_residue	56.0		percent	Fig. 4	digitised;D2O;two-state 13C=O
+Ac(AAQAA)3am	AAQAAAAQAAAAQAA	Ac	Am	15	7	A	7.0	0.0		CO_shift_coil_0C_ppm	177.6	0.06	ppm	Table 1	printed;D2O
+Ac(AAQAA)3am	AAQAAAAQAAAAQAA	Ac	Am	15	7	A	7.0	0.0		CO_shift_helix_minus_coil_ppm	2.71	0.07	ppm	Table 1	printed;D2O
+Ac(AAQAA)3am	AAQAAAAQAAAAQAA	Ac	Am	15	7	A	7.0	0.0		two_state_Tm_C	6	1	C	Table 1	printed;D2O
+Ac(AAQAA)3am	AAQAAAAQAAAAQAA	Ac	Am	15	7	A	7.0	0.0		two_state_width_C	84	5	C	Table 1	printed;D2O;log K = +1 to -1
+Ac(AAQAA)3am	AAQAAAAQAAAAQAA	Ac	Am	15	7	A	7.0	1.0		helix_percent_residue	56.8		percent	Fig. 4	digitised;D2O;two-state 13C=O
+Ac(AAQAA)3am	AAQAAAAQAAAAQAA	Ac	Am	15	8	Q	7.0	0.0		CO_shift_coil_0C_ppm	175.15	0.06	ppm	Table 1	printed;D2O
+Ac(AAQAA)3am	AAQAAAAQAAAAQAA	Ac	Am	15	8	Q	7.0	0.0		CO_shift_helix_minus_coil_ppm	2.96	0.07	ppm	Table 1	printed;D2O
+Ac(AAQAA)3am	AAQAAAAQAAAAQAA	Ac	Am	15	8	Q	7.0	0.0		two_state_Tm_C	9	1	C	Table 1	printed;D2O
+Ac(AAQAA)3am	AAQAAAAQAAAAQAA	Ac	Am	15	8	Q	7.0	0.0		two_state_width_C	92	5	C	Table 1	printed;D2O;log K = +1 to -1
+Ac(AAQAA)3am	AAQAAAAQAAAAQAA	Ac	Am	15	8	Q	7.0	1.0		helix_percent_residue	59.4		percent	Fig. 4	digitised;D2O;two-state 13C=O
+Ac(AAQAA)3am	AAQAAAAQAAAAQAA	Ac	Am	15	9	A	7.0	0.0		CO_shift_coil_0C_ppm	177.24	0.06	ppm	Table 1	printed;D2O
+Ac(AAQAA)3am	AAQAAAAQAAAAQAA	Ac	Am	15	9	A	7.0	0.0		CO_shift_helix_minus_coil_ppm	2.46	0.07	ppm	Table 1	printed;D2O
+Ac(AAQAA)3am	AAQAAAAQAAAAQAA	Ac	Am	15	9	A	7.0	0.0		two_state_Tm_C	5	1	C	Table 1	printed;D2O
+Ac(AAQAA)3am	AAQAAAAQAAAAQAA	Ac	Am	15	9	A	7.0	0.0		two_state_width_C	84	5	C	Table 1	printed;D2O;log K = +1 to -1
+Ac(AAQAA)3am	AAQAAAAQAAAAQAA	Ac	Am	15	9	A	7.0	1.0		helix_percent_residue	54.7		percent	Fig. 4	digitised;D2O;two-state 13C=O
+Ac(AAQAA)3am	AAQAAAAQAAAAQAA	Ac	Am	15	10	A	7.0	0.0		CO_shift_coil_0C_ppm	177.32	0.06	ppm	Table 1	printed;D2O
+Ac(AAQAA)3am	AAQAAAAQAAAAQAA	Ac	Am	15	10	A	7.0	0.0		CO_shift_helix_minus_coil_ppm	2.64	0.07	ppm	Table 1	printed;D2O
+Ac(AAQAA)3am	AAQAAAAQAAAAQAA	Ac	Am	15	10	A	7.0	0.0		two_state_Tm_C	3	1	C	Table 1	printed;D2O
+Ac(AAQAA)3am	AAQAAAAQAAAAQAA	Ac	Am	15	10	A	7.0	0.0		two_state_width_C	89	5	C	Table 1	printed;D2O;log K = +1 to -1
+Ac(AAQAA)3am	AAQAAAAQAAAAQAA	Ac	Am	15	10	A	7.0	1.0		helix_percent_residue	49.3		percent	Fig. 4	digitised;D2O;two-state 13C=O
+Ac(AAQAA)3am	AAQAAAAQAAAAQAA	Ac	Am	15	11	A	7.0	0.0		CO_shift_coil_0C_ppm	177.29	0.06	ppm	Table 1	printed;D2O
+Ac(AAQAA)3am	AAQAAAAQAAAAQAA	Ac	Am	15	11	A	7.0	0.0		CO_shift_helix_minus_coil_ppm	2.48	0.07	ppm	Table 1	printed;D2O
+Ac(AAQAA)3am	AAQAAAAQAAAAQAA	Ac	Am	15	11	A	7.0	0.0		two_state_Tm_C	-5	1	C	Table 1	printed;D2O
+Ac(AAQAA)3am	AAQAAAAQAAAAQAA	Ac	Am	15	11	A	7.0	0.0		two_state_width_C	94	5	C	Table 1	printed;D2O;log K = +1 to -1
+Ac(AAQAA)3am	AAQAAAAQAAAAQAA	Ac	Am	15	11	A	7.0	1.0		helix_percent_residue	39.1		percent	Fig. 4	digitised;D2O;two-state 13C=O
+Ac(AAQAA)3am	AAQAAAAQAAAAQAA	Ac	Am	15	12	A	7.0	0.0		CO_shift_coil_0C_ppm	177.49	0.06	ppm	Table 1	printed;D2O
+Ac(AAQAA)3am	AAQAAAAQAAAAQAA	Ac	Am	15	12	A	7.0	0.0		CO_shift_helix_minus_coil_ppm	2.42	0.07	ppm	Table 1	printed;D2O
+Ac(AAQAA)3am	AAQAAAAQAAAAQAA	Ac	Am	15	12	A	7.0	0.0		two_state_Tm_C	-6	1	C	Table 1	printed;D2O
+Ac(AAQAA)3am	AAQAAAAQAAAAQAA	Ac	Am	15	12	A	7.0	0.0		two_state_width_C	84	5	C	Table 1	printed;D2O;log K = +1 to -1
+Ac(AAQAA)3am	AAQAAAAQAAAAQAA	Ac	Am	15	12	A	7.0	1.0		helix_percent_residue	35.8		percent	Fig. 4	digitised;D2O;two-state 13C=O
+Ac(AAQAA)3am	AAQAAAAQAAAAQAA	Ac	Am	15	13	Q	7.0	0.0		CO_shift_coil_0C_ppm	175.07	0.06	ppm	Table 1	printed;D2O
+Ac(AAQAA)3am	AAQAAAAQAAAAQAA	Ac	Am	15	13	Q	7.0	0.0		CO_shift_helix_minus_coil_ppm	2.38	0.07	ppm	Table 1	printed;D2O
+Ac(AAQAA)3am	AAQAAAAQAAAAQAA	Ac	Am	15	13	Q	7.0	0.0		two_state_Tm_C	-2	1	C	Table 1	printed;D2O
+Ac(AAQAA)3am	AAQAAAAQAAAAQAA	Ac	Am	15	13	Q	7.0	0.0		two_state_width_C	86	5	C	Table 1	printed;D2O;log K = +1 to -1
+Ac(AAQAA)3am	AAQAAAAQAAAAQAA	Ac	Am	15	13	Q	7.0	1.0		helix_percent_residue	37.1		percent	Fig. 4	digitised;D2O;two-state 13C=O
+Ac(AAQAA)3am	AAQAAAAQAAAAQAA	Ac	Am	15	14	A	7.0	0.0		CO_shift_coil_0C_ppm	176.86	0.06	ppm	Table 1	printed;D2O
+Ac(AAQAA)3am	AAQAAAAQAAAAQAA	Ac	Am	15	14	A	7.0	0.0		CO_shift_helix_minus_coil_ppm	0.78	0.07	ppm	Table 1	printed;D2O
+Ac(AAQAA)3am	AAQAAAAQAAAAQAA	Ac	Am	15	14	A	7.0	0.0		two_state_Tm_C	-8	1	C	Table 1	printed;D2O
+Ac(AAQAA)3am	AAQAAAAQAAAAQAA	Ac	Am	15	14	A	7.0	0.0		two_state_width_C	84	5	C	Table 1	printed;D2O;log K = +1 to -1
+Ac(AAQAA)3am	AAQAAAAQAAAAQAA	Ac	Am	15	14	A	7.0	1.0		helix_percent_residue	12.1		percent	Fig. 4	digitised;D2O;two-state 13C=O
+Ac(AAQAA)3am	AAQAAAAQAAAAQAA	Ac	Am	15	15	A	7.0	0.0		CO_shift_coil_0C_ppm	179.98	0.06	ppm	Table 1	printed;D2O
+Ac(AAQAA)3am	AAQAAAAQAAAAQAA	Ac	Am	15	15	A	7.0	0.0		CO_shift_helix_minus_coil_ppm	0.0	0.07	ppm	Table 1	printed;D2O
+Ac(AAQAA)3am	AAQAAAAQAAAAQAA	Ac	Am	15	15	A	7.0	1.0		helix_percent_residue	0.0		percent	Fig. 4	on the axis (Table 1: no transition);D2O

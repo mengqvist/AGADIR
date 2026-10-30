@@ -1,0 +1,4 @@
+peptide_id	sequence	ncap	ccap	n_res	pH	T_C	ionic_strength_M	quantity	value	error	unit	source_table	flags
+3Abu	YKAAXAKAAXAKAAXAK	Ac	Am	17	7.0	0.0	1.0072	minus_theta222	20300		deg cm2 dmol-1	Table 1	printed;read_from_page_image;NaCl 1 M;Na citrate/phosphate/borate 1 mM each;tyr_concentration;aromatic_cd=Y1;nonstandard_residue=alpha-amino-n-butyric acid (aB, ethyl side chain) at 5, 10, 15 (X)
+3Nval	YKAAXAKAAXAKAAXAK	Ac	Am	17	7.0	0.0	1.0072	minus_theta222	26100		deg cm2 dmol-1	Table 1	printed;read_from_page_image;NaCl 1 M;Na citrate/phosphate/borate 1 mM each;tyr_concentration;aromatic_cd=Y1;nonstandard_residue=norvaline (nV, propyl) at 5, 10, 15 (X)
+3Nle	YKAAXAKAAXAKAAXAK	Ac	Am	17	7.0	0.0	1.0072	minus_theta222	28200		deg cm2 dmol-1	Table 1	printed;read_from_page_image;NaCl 1 M;Na citrate/phosphate/borate 1 mM each;tyr_concentration;aromatic_cd=Y1;nonstandard_residue=norleucine (nL, butyl) at 5, 10, 15 (X)

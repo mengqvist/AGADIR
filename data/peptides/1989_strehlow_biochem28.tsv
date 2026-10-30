@@ -1,0 +1,62 @@
+peptide_id	sequence	ncap	ccap	n_res	pH	T_C	ionic_strength_M	quantity	value	error	unit	source_table	flags
+III	AETAAAKFLRAHA	Ac	Am	13	5.3	3.0	0.1038	minus_theta222	13200	400	deg cm2 dmol-1	Table I	printed;read_from_page_image;NaCl 0.1 M;Na citrate/borate/phosphate 1 mM each;ninhydrin_concentration;reprint=1987_shoemaker_nature326 (III at pH 5.3, 3 C: 13,226 digitised; also Shoemaker 1990 Table I RN 21)
+IIIA1G	GETAAAKFLRAHA	Ac	Am	13	5.3	3.0	0.1038	minus_theta222	10900	500	deg cm2 dmol-1	Table I	printed;read_from_page_image;NaCl 0.1 M;Na citrate/borate/phosphate 1 mM each;ninhydrin_concentration
+IIIA4G	AETGAAKFLRAHA	Ac	Am	13	5.3	3.0	0.1038	minus_theta222	4200	200	deg cm2 dmol-1	Table I	printed;read_from_page_image;NaCl 0.1 M;Na citrate/borate/phosphate 1 mM each;ninhydrin_concentration
+IIIA5G	AETAGAKFLRAHA	Ac	Am	13	5.3	3.0	0.1038	minus_theta222	5400	250	deg cm2 dmol-1	Table I	printed;read_from_page_image;NaCl 0.1 M;Na citrate/borate/phosphate 1 mM each;ninhydrin_concentration
+IIIA6G	AETAAGKFLRAHA	Ac	Am	13	5.3	3.0	0.1038	minus_theta222	6500	400	deg cm2 dmol-1	Table I	printed;read_from_page_image;NaCl 0.1 M;Na citrate/borate/phosphate 1 mM each;ninhydrin_concentration
+IIIA13G	AETAAAKFLRAHG	Ac	Am	13	5.3	3.0	0.1038	minus_theta222	13200	100	deg cm2 dmol-1	Table I	printed;read_from_page_image;NaCl 0.1 M;Na citrate/borate/phosphate 1 mM each;ninhydrin_concentration;two_determinations
+IIIA1G	GETAAAKFLRAHA	Ac	Am	13	1.43	3.0	0.1002	minus_theta222	7759		deg cm2 dmol-1	Fig. 3	digitised;NaCl 0.1 M;Na citrate/borate/phosphate 1 mM each;ninhydrin_concentration
+IIIA1G	GETAAAKFLRAHA	Ac	Am	13	2.34	3.0	0.1007	minus_theta222	7650		deg cm2 dmol-1	Fig. 3	digitised;NaCl 0.1 M;Na citrate/borate/phosphate 1 mM each;ninhydrin_concentration
+IIIA1G	GETAAAKFLRAHA	Ac	Am	13	3.12	3.0	0.1014	minus_theta222	7867		deg cm2 dmol-1	Fig. 3	digitised;NaCl 0.1 M;Na citrate/borate/phosphate 1 mM each;ninhydrin_concentration
+IIIA1G	GETAAAKFLRAHA	Ac	Am	13	3.76	3.0	0.102	minus_theta222	8924		deg cm2 dmol-1	Fig. 3	digitised;NaCl 0.1 M;Na citrate/borate/phosphate 1 mM each;ninhydrin_concentration
+IIIA1G	GETAAAKFLRAHA	Ac	Am	13	3.86	3.0	0.102	minus_theta222	9006		deg cm2 dmol-1	Fig. 3	digitised;NaCl 0.1 M;Na citrate/borate/phosphate 1 mM each;ninhydrin_concentration
+IIIA1G	GETAAAKFLRAHA	Ac	Am	13	4.53	3.0	0.1027	minus_theta222	9914		deg cm2 dmol-1	Fig. 3	digitised;NaCl 0.1 M;Na citrate/borate/phosphate 1 mM each;ninhydrin_concentration
+IIIA1G	GETAAAKFLRAHA	Ac	Am	13	5.28	3.0	0.1037	minus_theta222	10781		deg cm2 dmol-1	Fig. 3	digitised;NaCl 0.1 M;Na citrate/borate/phosphate 1 mM each;ninhydrin_concentration;same_samples_as=Table I
+IIIA1G	GETAAAKFLRAHA	Ac	Am	13	6.03	3.0	0.1049	minus_theta222	10307		deg cm2 dmol-1	Fig. 3	digitised;NaCl 0.1 M;Na citrate/borate/phosphate 1 mM each;ninhydrin_concentration
+IIIA1G	GETAAAKFLRAHA	Ac	Am	13	6.95	3.0	0.1071	minus_theta222	8246		deg cm2 dmol-1	Fig. 3	digitised;NaCl 0.1 M;Na citrate/borate/phosphate 1 mM each;ninhydrin_concentration
+IIIA1G	GETAAAKFLRAHA	Ac	Am	13	8.09	3.0	0.1088	minus_theta222	6512		deg cm2 dmol-1	Fig. 3	digitised;NaCl 0.1 M;Na citrate/borate/phosphate 1 mM each;ninhydrin_concentration
+IIIA1G	GETAAAKFLRAHA	Ac	Am	13	9.36	3.0	0.1096	minus_theta222	5997		deg cm2 dmol-1	Fig. 3	digitised;NaCl 0.1 M;Na citrate/borate/phosphate 1 mM each;ninhydrin_concentration
+IIIA1G	GETAAAKFLRAHA	Ac	Am	13	9.63	3.0	0.1097	minus_theta222	5820		deg cm2 dmol-1	Fig. 3	digitised;NaCl 0.1 M;Na citrate/borate/phosphate 1 mM each;ninhydrin_concentration
+IIIA13G	AETAAAKFLRAHG	Ac	Am	13	1.45	3.0	0.1002	minus_theta222	10144		deg cm2 dmol-1	Fig. 3	digitised;NaCl 0.1 M;Na citrate/borate/phosphate 1 mM each;ninhydrin_concentration
+IIIA13G	AETAAAKFLRAHG	Ac	Am	13	2.24	3.0	0.1007	minus_theta222	10103		deg cm2 dmol-1	Fig. 3	digitised;NaCl 0.1 M;Na citrate/borate/phosphate 1 mM each;ninhydrin_concentration
+IIIA13G	AETAAAKFLRAHG	Ac	Am	13	3.27	3.0	0.1016	minus_theta222	10496		deg cm2 dmol-1	Fig. 3	digitised;NaCl 0.1 M;Na citrate/borate/phosphate 1 mM each;ninhydrin_concentration
+IIIA13G	AETAAAKFLRAHG	Ac	Am	13	3.8	3.0	0.102	minus_theta222	11282		deg cm2 dmol-1	Fig. 3	digitised;NaCl 0.1 M;Na citrate/borate/phosphate 1 mM each;ninhydrin_concentration
+IIIA13G	AETAAAKFLRAHG	Ac	Am	13	4.19	3.0	0.1023	minus_theta222	12042		deg cm2 dmol-1	Fig. 3	digitised;NaCl 0.1 M;Na citrate/borate/phosphate 1 mM each;ninhydrin_concentration
+IIIA13G	AETAAAKFLRAHG	Ac	Am	13	4.77	3.0	0.103	minus_theta222	12841		deg cm2 dmol-1	Fig. 3	digitised;NaCl 0.1 M;Na citrate/borate/phosphate 1 mM each;ninhydrin_concentration
+IIIA13G	AETAAAKFLRAHG	Ac	Am	13	5.28	3.0	0.1037	minus_theta222	13180		deg cm2 dmol-1	Fig. 3	digitised;NaCl 0.1 M;Na citrate/borate/phosphate 1 mM each;ninhydrin_concentration;same_samples_as=Table I
+IIIA13G	AETAAAKFLRAHG	Ac	Am	13	5.92	3.0	0.1047	minus_theta222	12679		deg cm2 dmol-1	Fig. 3	digitised;NaCl 0.1 M;Na citrate/borate/phosphate 1 mM each;ninhydrin_concentration
+IIIA13G	AETAAAKFLRAHG	Ac	Am	13	6.37	3.0	0.1057	minus_theta222	12136		deg cm2 dmol-1	Fig. 3	digitised;NaCl 0.1 M;Na citrate/borate/phosphate 1 mM each;ninhydrin_concentration
+IIIA13G	AETAAAKFLRAHG	Ac	Am	13	6.78	3.0	0.1067	minus_theta222	10700		deg cm2 dmol-1	Fig. 3	digitised;NaCl 0.1 M;Na citrate/borate/phosphate 1 mM each;ninhydrin_concentration
+IIIA13G	AETAAAKFLRAHG	Ac	Am	13	7.47	3.0	0.1081	minus_theta222	9277		deg cm2 dmol-1	Fig. 3	digitised;NaCl 0.1 M;Na citrate/borate/phosphate 1 mM each;ninhydrin_concentration
+IIIA13G	AETAAAKFLRAHG	Ac	Am	13	8.28	3.0	0.1089	minus_theta222	8287		deg cm2 dmol-1	Fig. 3	digitised;NaCl 0.1 M;Na citrate/borate/phosphate 1 mM each;ninhydrin_concentration
+IIIA13G	AETAAAKFLRAHG	Ac	Am	13	9.24	3.0	0.1095	minus_theta222	8436		deg cm2 dmol-1	Fig. 3	digitised;NaCl 0.1 M;Na citrate/borate/phosphate 1 mM each;ninhydrin_concentration
+IIIA4G	AETGAAKFLRAHA	Ac	Am	13	1.38	3.0	0.1002	minus_theta222	2662		deg cm2 dmol-1	Fig. 3	digitised;NaCl 0.1 M;Na citrate/borate/phosphate 1 mM each;ninhydrin_concentration
+IIIA4G	AETGAAKFLRAHA	Ac	Am	13	2.3	3.0	0.1007	minus_theta222	2690		deg cm2 dmol-1	Fig. 3	digitised;NaCl 0.1 M;Na citrate/borate/phosphate 1 mM each;ninhydrin_concentration
+IIIA4G	AETGAAKFLRAHA	Ac	Am	13	3.22	3.0	0.1015	minus_theta222	2703		deg cm2 dmol-1	Fig. 3	digitised;NaCl 0.1 M;Na citrate/borate/phosphate 1 mM each;ninhydrin_concentration
+IIIA4G	AETGAAKFLRAHA	Ac	Am	13	3.88	3.0	0.102	minus_theta222	3204		deg cm2 dmol-1	Fig. 3	digitised;NaCl 0.1 M;Na citrate/borate/phosphate 1 mM each;ninhydrin_concentration
+IIIA4G	AETGAAKFLRAHA	Ac	Am	13	4.68	3.0	0.1029	minus_theta222	3923		deg cm2 dmol-1	Fig. 3	digitised;NaCl 0.1 M;Na citrate/borate/phosphate 1 mM each;ninhydrin_concentration
+IIIA4G	AETGAAKFLRAHA	Ac	Am	13	5.28	3.0	0.1037	minus_theta222	4180		deg cm2 dmol-1	Fig. 3	digitised;NaCl 0.1 M;Na citrate/borate/phosphate 1 mM each;ninhydrin_concentration;same_samples_as=Table I
+IIIA4G	AETGAAKFLRAHA	Ac	Am	13	6.19	3.0	0.1053	minus_theta222	3625		deg cm2 dmol-1	Fig. 3	digitised;NaCl 0.1 M;Na citrate/borate/phosphate 1 mM each;ninhydrin_concentration
+IIIA4G	AETGAAKFLRAHA	Ac	Am	13	6.92	3.0	0.107	minus_theta222	2784		deg cm2 dmol-1	Fig. 3	digitised;NaCl 0.1 M;Na citrate/borate/phosphate 1 mM each;ninhydrin_concentration
+IIIA4G	AETGAAKFLRAHA	Ac	Am	13	8.4	3.0	0.109	minus_theta222	2107		deg cm2 dmol-1	Fig. 3	digitised;NaCl 0.1 M;Na citrate/borate/phosphate 1 mM each;ninhydrin_concentration
+IIIA4G	AETGAAKFLRAHA	Ac	Am	13	9.48	3.0	0.1096	minus_theta222	1795		deg cm2 dmol-1	Fig. 3	digitised;NaCl 0.1 M;Na citrate/borate/phosphate 1 mM each;ninhydrin_concentration
+IIIA5G	AETAGAKFLRAHA	Ac	Am	13	1.43	3.0	0.1002	minus_theta222	3516		deg cm2 dmol-1	Fig. 3	digitised;NaCl 0.1 M;Na citrate/borate/phosphate 1 mM each;ninhydrin_concentration
+IIIA5G	AETAGAKFLRAHA	Ac	Am	13	2.32	3.0	0.1007	minus_theta222	3381		deg cm2 dmol-1	Fig. 3	digitised;NaCl 0.1 M;Na citrate/borate/phosphate 1 mM each;ninhydrin_concentration
+IIIA5G	AETAGAKFLRAHA	Ac	Am	13	3.21	3.0	0.1015	minus_theta222	3720		deg cm2 dmol-1	Fig. 3	digitised;NaCl 0.1 M;Na citrate/borate/phosphate 1 mM each;ninhydrin_concentration
+IIIA5G	AETAGAKFLRAHA	Ac	Am	13	3.91	3.0	0.1021	minus_theta222	4248		deg cm2 dmol-1	Fig. 3	digitised;NaCl 0.1 M;Na citrate/borate/phosphate 1 mM each;ninhydrin_concentration
+IIIA5G	AETAGAKFLRAHA	Ac	Am	13	4.63	3.0	0.1028	minus_theta222	5183		deg cm2 dmol-1	Fig. 3	digitised;NaCl 0.1 M;Na citrate/borate/phosphate 1 mM each;ninhydrin_concentration
+IIIA5G	AETAGAKFLRAHA	Ac	Am	13	5.29	3.0	0.1038	minus_theta222	5319		deg cm2 dmol-1	Fig. 3	digitised;NaCl 0.1 M;Na citrate/borate/phosphate 1 mM each;ninhydrin_concentration;same_samples_as=Table I
+IIIA5G	AETAGAKFLRAHA	Ac	Am	13	6.07	3.0	0.105	minus_theta222	5007		deg cm2 dmol-1	Fig. 3	digitised;NaCl 0.1 M;Na citrate/borate/phosphate 1 mM each;ninhydrin_concentration
+IIIA5G	AETAGAKFLRAHA	Ac	Am	13	7.02	3.0	0.1072	minus_theta222	3476		deg cm2 dmol-1	Fig. 3	digitised;NaCl 0.1 M;Na citrate/borate/phosphate 1 mM each;ninhydrin_concentration
+IIIA5G	AETAGAKFLRAHA	Ac	Am	13	8.5	3.0	0.109	minus_theta222	2676		deg cm2 dmol-1	Fig. 3	digitised;NaCl 0.1 M;Na citrate/borate/phosphate 1 mM each;ninhydrin_concentration
+IIIA5G	AETAGAKFLRAHA	Ac	Am	13	9.37	3.0	0.1096	minus_theta222	2581		deg cm2 dmol-1	Fig. 3	digitised;NaCl 0.1 M;Na citrate/borate/phosphate 1 mM each;ninhydrin_concentration
+IIIA6G	AETAAGKFLRAHA	Ac	Am	13	1.37	3.0	0.1002	minus_theta222	4343		deg cm2 dmol-1	Fig. 3	digitised;NaCl 0.1 M;Na citrate/borate/phosphate 1 mM each;ninhydrin_concentration
+IIIA6G	AETAAGKFLRAHA	Ac	Am	13	2.31	3.0	0.1007	minus_theta222	4357		deg cm2 dmol-1	Fig. 3	digitised;NaCl 0.1 M;Na citrate/borate/phosphate 1 mM each;ninhydrin_concentration
+IIIA6G	AETAAGKFLRAHA	Ac	Am	13	3.2	3.0	0.1015	minus_theta222	4722		deg cm2 dmol-1	Fig. 3	digitised;NaCl 0.1 M;Na citrate/borate/phosphate 1 mM each;ninhydrin_concentration
+IIIA6G	AETAAGKFLRAHA	Ac	Am	13	3.99	3.0	0.1021	minus_theta222	5278		deg cm2 dmol-1	Fig. 3	digitised;NaCl 0.1 M;Na citrate/borate/phosphate 1 mM each;ninhydrin_concentration
+IIIA6G	AETAAGKFLRAHA	Ac	Am	13	4.6	3.0	0.1028	minus_theta222	5861		deg cm2 dmol-1	Fig. 3	digitised;NaCl 0.1 M;Na citrate/borate/phosphate 1 mM each;ninhydrin_concentration
+IIIA6G	AETAAGKFLRAHA	Ac	Am	13	5.31	3.0	0.1038	minus_theta222	6254		deg cm2 dmol-1	Fig. 3	digitised;NaCl 0.1 M;Na citrate/borate/phosphate 1 mM each;ninhydrin_concentration;same_samples_as=Table I
+IIIA6G	AETAAGKFLRAHA	Ac	Am	13	6.16	3.0	0.1052	minus_theta222	5861		deg cm2 dmol-1	Fig. 3	digitised;NaCl 0.1 M;Na citrate/borate/phosphate 1 mM each;ninhydrin_concentration
+IIIA6G	AETAAGKFLRAHA	Ac	Am	13	7.0	3.0	0.1072	minus_theta222	4736		deg cm2 dmol-1	Fig. 3	digitised;NaCl 0.1 M;Na citrate/borate/phosphate 1 mM each;ninhydrin_concentration
+IIIA6G	AETAAGKFLRAHA	Ac	Am	13	8.37	3.0	0.109	minus_theta222	3923		deg cm2 dmol-1	Fig. 3	digitised;NaCl 0.1 M;Na citrate/borate/phosphate 1 mM each;ninhydrin_concentration
+IIIA6G	AETAAGKFLRAHA	Ac	Am	13	9.63	3.0	0.1097	minus_theta222	3869		deg cm2 dmol-1	Fig. 3	digitised;NaCl 0.1 M;Na citrate/borate/phosphate 1 mM each;ninhydrin_concentration
