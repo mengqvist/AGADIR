@@ -1,0 +1,13 @@
+peptide_id	sequence	ncap	ccap	n_res	pH	T_C	ionic_strength_M	quantity	value	error	unit	source_table	flags
+F3M7	YGFAKAMAAKAAAAKAA	Ac	Am	17	7.0	0.0	0.0189	minus_theta222	17600		deg cm2 dmol-1	Table 1	printed (read from the page image);10 mM NaCl + 5 mM phosphate;aromatic_cd=Y1,F3
+F3M7	YGFAKAMAAKAAAAKAA	Ac	Am	17	7.0	0.0	0.0189	helix_percent	51.6		percent	Table 1	printed (read from the page image);10 mM NaCl + 5 mM phosphate;aromatic_cd=Y1,F3
+F8M12	YGAAKAAFAKAMAAKAA	Ac	Am	17	7.0	0.0	0.0189	minus_theta222	12700		deg cm2 dmol-1	Table 1	printed (read from the page image);10 mM NaCl + 5 mM phosphate;aromatic_cd=Y1,F8
+F8M12	YGAAKAAFAKAMAAKAA	Ac	Am	17	7.0	0.0	0.0189	helix_percent	37.2		percent	Table 1	printed (read from the page image);10 mM NaCl + 5 mM phosphate;aromatic_cd=Y1,F8
+F7M12	YGAAKAFAAKAMAAKAA	Ac	Am	17	7.0	0.0	0.0189	minus_theta222	7600		deg cm2 dmol-1	Table 1	printed (read from the page image);10 mM NaCl + 5 mM phosphate;aromatic_cd=Y1,F7
+F7M12	YGAAKAFAAKAMAAKAA	Ac	Am	17	7.0	0.0	0.0189	helix_percent	22.3		percent	Table 1	printed (read from the page image);10 mM NaCl + 5 mM phosphate;aromatic_cd=Y1,F7
+F13M17	YGAAKAAAAKAAFAKAM	Ac	Am	17	7.0	0.0	0.0189	minus_theta222	16500		deg cm2 dmol-1	Table 1	printed (read from the page image);10 mM NaCl + 5 mM phosphate;aromatic_cd=Y1,F13
+F13M17	YGAAKAAAAKAAFAKAM	Ac	Am	17	7.0	0.0	0.0189	helix_percent	48.4		percent	Table 1	printed (read from the page image);10 mM NaCl + 5 mM phosphate;aromatic_cd=Y1,F13
+M8F12	YGAAKAAMAKAFAAKAA	Ac	Am	17	7.0	0.0	0.0189	minus_theta222	11100		deg cm2 dmol-1	Table 1	printed (read from the page image);10 mM NaCl + 5 mM phosphate;aromatic_cd=Y1,F12;printed % 32.1 vs theta/34,118 = 32.5 (the paper's own; Tables 1 and 2 agree on 32.1)
+M8F12	YGAAKAAMAKAFAAKAA	Ac	Am	17	7.0	0.0	0.0189	helix_percent	32.1		percent	Table 1	printed (read from the page image);10 mM NaCl + 5 mM phosphate;aromatic_cd=Y1,F12;printed % 32.1 vs theta/34,118 = 32.5 (the paper's own; Tables 1 and 2 agree on 32.1)
+M7F12	YGAAKAMAAKAFAAKAA	Ac	Am	17	7.0	0.0	0.0189	minus_theta222	6300		deg cm2 dmol-1	Table 1	printed (read from the page image);10 mM NaCl + 5 mM phosphate;aromatic_cd=Y1,F12
+M7F12	YGAAKAMAAKAFAAKAA	Ac	Am	17	7.0	0.0	0.0189	helix_percent	18.5		percent	Table 1	printed (read from the page image);10 mM NaCl + 5 mM phosphate;aromatic_cd=Y1,F12

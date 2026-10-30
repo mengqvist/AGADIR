@@ -1,0 +1,18 @@
+peptide_id	sequence	ncap	ccap	n_res	pH	T_C	ionic_strength_M	quantity	value	error	unit	source_table	flags
+Parent S3	YMSEDELKAAEAAFKRHGPT	Ac	Am	20	6.0	4.0	0.01	minus_theta222	16000		deg cm2 dmol-1	Table 1	printed;KF 0.01 M;aromatic_cd=Y1,F14;C-cap (position 18) = G;C' (19, 20) = PT;reprint=1994_zhou_proteins18_table1:S3_parent (same laboratory, rounded)
+Parent S3	YMSEDELKAAEAAFKRHGPT	Ac	Am	20	6.0	4.0	0.01	helix_percent	50		percent	Table 1	printed;KF 0.01 M;aromatic_cd=Y1,F14;C-cap (position 18) = G;C' (19, 20) = PT;reprint=1994_zhou_proteins18_table1:S3_parent (same laboratory, rounded)
+APT	YMSEDELKAAEAAFKRHAPT	Ac	Am	20	6.0	4.0	0.01	minus_theta222	17400		deg cm2 dmol-1	Table 1	printed;KF 0.01 M;aromatic_cd=Y1,F14;C-cap (position 18) = A;C' (19, 20) = PT;reprint=1993_lyu_biochem32:A18 (same laboratory, rounded)
+APT	YMSEDELKAAEAAFKRHAPT	Ac	Am	20	6.0	4.0	0.01	helix_percent	54		percent	Table 1	printed;KF 0.01 M;aromatic_cd=Y1,F14;C-cap (position 18) = A;C' (19, 20) = PT;reprint=1993_lyu_biochem32:A18 (same laboratory, rounded)
+NPT	YMSEDELKAAEAAFKRHNPT	Ac	Am	20	6.0	4.0	0.01	minus_theta222	20000		deg cm2 dmol-1	Table 1	printed;KF 0.01 M;aromatic_cd=Y1,F14;C-cap (position 18) = N;C' (19, 20) = PT;reprint=1994_zhou_proteins18_table1:N18 (same laboratory, rounded)
+NPT	YMSEDELKAAEAAFKRHNPT	Ac	Am	20	6.0	4.0	0.01	helix_percent	63		percent	Table 1	printed;KF 0.01 M;aromatic_cd=Y1,F14;C-cap (position 18) = N;C' (19, 20) = PT;reprint=1994_zhou_proteins18_table1:N18 (same laboratory, rounded)
+QPT	YMSEDELKAAEAAFKRHQPT	Ac	Am	20	6.0	4.0	0.01	minus_theta222	17920		deg cm2 dmol-1	Table 1	printed;KF 0.01 M;aromatic_cd=Y1,F14;C-cap (position 18) = Q;C' (19, 20) = PT;reprint=1993_lyu_biochem32:Q18 (same laboratory, rounded)
+QPT	YMSEDELKAAEAAFKRHQPT	Ac	Am	20	6.0	4.0	0.01	helix_percent	56		percent	Table 1	printed;KF 0.01 M;aromatic_cd=Y1,F14;C-cap (position 18) = Q;C' (19, 20) = PT;reprint=1993_lyu_biochem32:Q18 (same laboratory, rounded)
+SPT	YMSEDELKAAEAAFKRHSPT	Ac	Am	20	6.0	4.0	0.01	minus_theta222	17400		deg cm2 dmol-1	Table 1	printed;KF 0.01 M;aromatic_cd=Y1,F14;C-cap (position 18) = S;C' (19, 20) = PT;reprint=1993_lyu_biochem32:S18 (same laboratory, rounded)
+SPT	YMSEDELKAAEAAFKRHSPT	Ac	Am	20	6.0	4.0	0.01	helix_percent	54		percent	Table 1	printed;KF 0.01 M;aromatic_cd=Y1,F14;C-cap (position 18) = S;C' (19, 20) = PT;reprint=1993_lyu_biochem32:S18 (same laboratory, rounded)
+GVP	YMSEDELKAAEAAFKRHGVP	Ac	Am	20	6.0	4.0	0.01	minus_theta222	18340		deg cm2 dmol-1	Table 1	printed;KF 0.01 M;aromatic_cd=Y1,F14;C-cap (position 18) = G;C' (19, 20) = VP;reprint=1995_gong_protsci4:GVP (same laboratory, rounded)
+GVP	YMSEDELKAAEAAFKRHGVP	Ac	Am	20	6.0	4.0	0.01	helix_percent	57		percent	Table 1	printed;KF 0.01 M;aromatic_cd=Y1,F14;C-cap (position 18) = G;C' (19, 20) = VP;reprint=1995_gong_protsci4:GVP (same laboratory, rounded)
+GIS	YMSEDELKAAEAAFKRHGIS	Ac	Am	20	6.0	4.0	0.01	minus_theta222	17400		deg cm2 dmol-1	Table 1	printed;KF 0.01 M;aromatic_cd=Y1,F14;C-cap (position 18) = G;C' (19, 20) = IS
+GIS	YMSEDELKAAEAAFKRHGIS	Ac	Am	20	6.0	4.0	0.01	helix_percent	54		percent	Table 1	printed;KF 0.01 M;aromatic_cd=Y1,F14;C-cap (position 18) = G;C' (19, 20) = IS
+GWS	YMSEDELKAAEAAFKRHGWS	Ac	Am	20	6.0	4.0	0.01	minus_theta222	16570		deg cm2 dmol-1	Table 1	printed;KF 0.01 M;aromatic_cd=Y1,F14,W19;C-cap (position 18) = G;C' (19, 20) = WS
+GWS	YMSEDELKAAEAAFKRHGWS	Ac	Am	20	6.0	4.0	0.01	helix_percent	52		percent	Table 1	printed;KF 0.01 M;aromatic_cd=Y1,F14,W19;C-cap (position 18) = G;C' (19, 20) = WS
+GWS	YMSEDELKAAEAAFKRHGWS	Ac	Am	20	6.0	4.0	0.01	helix_percent_trp_corrected	48		percent	Table 1	printed;KF 0.01 M;aromatic_cd=Y1,F14,W19;C-cap (position 18) = G;C' (19, 20) = WS;Trp-corrected per Chakrabartty et al. 1994 (not a scored quantity)
