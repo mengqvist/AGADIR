@@ -2272,5 +2272,44 @@
     "reason_unscorable": "beta-aminoalanine and homolysine are not representable in the model",
     "extractor": "reasoning/evidence/scripts/extract_n290_sah_miller.py",
     "n_data_rows": 6
+  },
+  "nmr/2005_fesinmeyer_protsci14": {
+    "citation": "Fesinmeyer, R.M., Peterson, E.S., Dyer, R.B. & Andersen, N.H. (2005). Studies of helix fraying and solvation using 13C' isotopomers. Protein Sci. 14, 2324-2332.",
+    "source_pdf": "doc/2005_fesinmeyer_Studies-of-helix-fraying-and-solvation-using-13C-isotopomers.pdf",
+    "source_table": "Fig. 4A (per-residue fH at 275 K, 13C' CSD series), Fig. 4B (fH relative to residue 11 at 275-325 K), Fig. 1A (aqueous CSD melts 275-325 K) and printed values on pp. 2329-2331. Not scored by the guard (NMR per-residue profile).",
+    "transcription_method": "Raster figures extracted at native resolution (Fig. 4: 604 x 1397 px; Fig. 1: 880 x 1896 px, stored as a negative) and read by n300_fesinmeyer_digitise.py (colour masks, 5x5 / 7x7 openings, tick calibration to 0.0012 fH / 0.005 ppm); overlapped markers by the owner's free-edge rule; residue 18 / YGG-3V by hand.",
+    "validation": "Fig. 4A vs the printed text: fH 0.793 / 0.484 / 0.275 / 0.047 vs 0.80 / 0.49 / 0.28 / 0.05; ratios to the residue-10-12 mean 0.933 / 0.651 / 0.369 / 0.063 vs 92.6 / 65.3 / 37.3 / 6.7 %. Fig. 1A: the printed percentages imply the same residue-10-12 mean from residue 16 and from 17 (2.370 / 2.380 ppm at 275 K; 0.605 / 0.607 at 325 K). Fig. 1A CSD / Fig. 4A fH = 3.19 vs Eq. 1's 3.053 (4.6 %, flagged). Fig. 4B vs Fig. 1A (residues 16-18 over the bundle top) within 0.007-0.017; Fig. 4B's 325 K ratios give 0.866 / 0.475 / 0.262 of the residue-10-12 mean vs printed 87.4 / 48.3 / 26.9 %.",
+    "conditions_quote": "'The samples consisted of ~2 mM peptide in 20 mM phosphate buffer (pH 7.0) with 10% D2O.' 'fH(T) = (delta_obs - delta_ref peptide)/(3.040 + 0.00715 T(C))' (Eq. 1).",
+    "ionic_strength_derivation": "20 mM sodium phosphate at pH 7.0 -> 0.0355 M (buffer_I).",
+    "same_peptides_elsewhere": "YGG-3A and YGG-3V are rows of 1994_chakrabartty_protsci3_table1 (CD, 0 C, 1.0 M NaCl: 0.677 and 0.093). Different measurement (NMR, 20 mM phosphate): not a reprint.",
+    "extractor": "reasoning/evidence/scripts/extract_n300_fesinmeyer2005.py",
+    "conditions_verified_against_source": true,
+    "n_data_rows": 176
+  },
+  "unscorable/2001_thomas_pnas98": {
+    "citation": "Thomas, S.T., Loladze, V.V. & Makhatadze, G.I. (2001). Hydration of the peptide backbone largely defines the thermodynamic propensity scale of residues at the C' position of the C-capping box of alpha-helices. Proc. Natl. Acad. Sci. USA 98, 10670-10675.",
+    "source_pdf": "doc/2001_thomas_Hydration-of-the-peptide-backbone-largely-defines-the-thermodynamic-propensity-scale-of-residues-at-the-C-position-of-the-C-capping-box-of-a-helices.pdf",
+    "source_table": "Table 1 (Tm, dG(50 C), ddG(50 C) of the 17 position-35 variants, pH 3.0).",
+    "transcription_method": "From the text layer; minus signs dropped by the layer ('20.7' = -0.7) restored.",
+    "validation": "ddG(50) = dG(50, variant) - dG(50, WT 5.3) holds for all 17 rows within 0.05 kJ/mol after sign restoration.",
+    "conditions_quote": "'Comparison is done under a fixed set of conditions, 50 C and pH 3.0.' 'all described ubiquitin variants contained R63K substitution.' C-capping box 'Ile30Gln31Asp32Lys33Glu34Gly35Ile36Pro37'.",
+    "ionic_strength_derivation": "Not stated for the pH 3 DSC buffer (the NMR samples were 5 mM acetate pH 5.0): left blank.",
+    "why_unscorable": "Protein (ubiquitin) unfolding free energies; the model predicts isolated-peptide helicity. Kept as the measured C' scale (= AGADIR's C-cap position when the residue is alpha-L) for capping work (N300, N207).",
+    "extractor": "reasoning/evidence/scripts/extract_n300_ubiquitin_cprime.py",
+    "conditions_verified_against_source": true,
+    "n_data_rows": 51
+  },
+  "unscorable/2006_bang_ncb2": {
+    "citation": "Bang, D., Gribenko, A.V., Tereshko, V., Kossiakoff, A.A., Kent, S.B. & Makhatadze, G.I. (2006). Dissecting the energetics of protein alpha-helix C-cap termination through chemical protein synthesis. Nat. Chem. Biol. 2, 139-143.",
+    "source_pdf": "doc/2006_bang_Dissecting-the-energetics-of-protein-a-helix-C-cap-termination-through-chemical-protein-synthesis.pdf",
+    "source_table": "Table 1 (ddG of [D-aa35] vs [L-aa35] ubiquitins; conformational penalty = difference).",
+    "transcription_method": "From the text layer (signs printed with en-dashes, read as minus).",
+    "validation": "ddG_L - ddG_D = printed conformational column for all four residues; ddG_L equals Thomas 2001 Table 1.",
+    "conditions_quote": "'DSC was performed as described10' (ref. 10 = Thomas et al. 2001: pH 3.0, 50 C reference). 'D-Gln35 and D-Ala35 gave variant ubiquitin molecules with stability equal to that of wild-type'.",
+    "ionic_strength_derivation": "Not stated: left blank.",
+    "why_unscorable": "Protein stabilities with D-amino acids; unscorable. Shows the C' Gly preference is mostly alpha-L strain (conformational 4.0 kJ/mol unbranched, 7.5 beta-branched; solvation <= 3.5).",
+    "extractor": "reasoning/evidence/scripts/extract_n300_ubiquitin_cprime.py",
+    "conditions_verified_against_source": true,
+    "n_data_rows": 12
   }
 }
